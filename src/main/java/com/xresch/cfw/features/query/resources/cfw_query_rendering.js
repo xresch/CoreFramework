@@ -74,9 +74,15 @@ function cfw_query_createCustomizers(queryResult, fields){
 	//--------------------------------
 	// Default Customizer
 	let defaultCustomizer = cfw_query_customizerCreateDefault();
-	for(let i in fields){
+	
+	let knownFields = fields;
+	if(queryResult.records.length > 0){
+		knownFields = Object.keys(queryResult.records[0]).concat(knownFields);
+	}
+
+	for(let i in knownFields){
 		
-		let fieldname = fields[i];
+		let fieldname = knownFields[i];
 		
 		if(customizers[fieldname] == null){
 			customizers[fieldname] = defaultCustomizer;
@@ -716,7 +722,6 @@ function cfw_query_formatSpecial_Link(span, object){
  * 
  ******************************************************************************/
 function cfw_query_formatSpecial_Display(span, object){
-	console.log("cfw_query_formatSpecial_Display")
 	
 	let records = object.queryResults.records;
 	let height =  object.height;
@@ -877,7 +882,6 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
  ******************************************************************************/
 function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
-	console.log(queryResult);
 	let targetDiv = $(resultTarget);
 	targetDiv.html(""); 
 	
