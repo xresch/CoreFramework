@@ -58,21 +58,30 @@ function cfw_query_createLables(queryResult){
  ******************************************************************************/
 function cfw_query_createCustomizers(queryResult, fields){
 	
-	var fieldFormats = queryResult.displaySettings.fieldFormats;
-	var customizers = {};
+
+	//--------------------------------
+	// Customizer for every FieldFormat
+	let fieldFormats = queryResult.displaySettings.fieldFormats;
+	let customizers = {};
 	
-	var defaultCustomizer = cfw_query_customizerCreateDefault();
-	for(var i in fields){
-		var fieldname = fields[i];
+	for(let fieldname in fieldFormats){
+		let formatterArray = fieldFormats[fieldname];
+
+		customizers[fieldname] = cfw_query_customizerCreateCustom(formatterArray);
+
+	}
+	
+	//--------------------------------
+	// Default Customizer
+	let defaultCustomizer = cfw_query_customizerCreateDefault();
+	for(let i in fields){
 		
-		if(fieldFormats == null || fieldFormats[fieldname] == null){
+		let fieldname = fields[i];
+		
+		if(customizers[fieldname] == null){
 			customizers[fieldname] = defaultCustomizer;
-		}else{
-			formatterArray = fieldFormats[fieldname];
-			customizers[fieldname] = cfw_query_customizerCreateCustom(formatterArray);
-			
 		}
-		
+
 	}
 
 	return customizers;
@@ -925,7 +934,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	options.visibleFields = ((queryResult.displaySettings.visiblefields != null)) ? queryResult.displaySettings.visiblefields : queryResult.detectedFields;
 	options.visibleFields = _.without(options.visibleFields, options.bgstylefield, options.textstylefield);
 	
-	options.customizers = cfw_query_createCustomizers(queryResult, options.visibleFields);	
+	let customizerFields = options.visibleFields.concat(queryResult.detectedFields);
+	options.customizers = cfw_query_createCustomizers(queryResult, customizerFields);	
 	
 	rendererIndex = cfw_query_getRendererIndex(queryResult);		
 	options.labels = cfw_query_createLables(queryResult);	

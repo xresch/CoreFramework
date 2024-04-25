@@ -320,6 +320,9 @@ function cfw_renderer_common_openDetailsTable(e){
 
 	e.stopPropagation();
 	
+	// well haz to do thiz or they may get stück
+	$('.popover').remove();
+	
 	if($(this).closest('.block-modal').length > 0){
 		return;
 	}
