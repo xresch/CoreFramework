@@ -868,18 +868,19 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
  ******************************************************************************/
 function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
+	console.log(queryResult);
 	let targetDiv = $(resultTarget);
 	targetDiv.html(""); 
 	
-	var options = {};
+	let options = {};
 	//-----------------------------------
 	// Create Title				
 	if(queryResult.metadata.title == true){
-		var execSeconds = '';
+		let execSeconds = '';
 		if(queryResult.execTimeMillis != -1){
 			execSeconds = " ("+(queryResult.execTimeMillis / 1000).toFixed(3)+"s)";
 		}
-		var title = $('<p class="query-title">');
+		let title = $('<p class="query-title">');
 		
 		title.text(queryResult.metadata.name + execSeconds);
 		targetDiv.append(title);
@@ -914,20 +915,22 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	//-----------------------------------
 	// Zoom
 	if(queryResult.displaySettings.zoom != null){
-		var zoomString = ""+queryResult.displaySettings.zoom;
+		let zoomString = ""+queryResult.displaySettings.zoom;
 		if(!zoomString.endsWith("%")){ zoomString += "%";}
 		targetDiv.css('zoom', zoomString);
 	}
 	
 	//-----------------------------------
-	// Customizers
-	options.customizers = cfw_query_createCustomizers(queryResult, queryResult.detectedFields);	
+	// Various Options
+	options.visibleFields = ((queryResult.displaySettings.visiblefields != null)) ? queryResult.displaySettings.visiblefields : queryResult.detectedFields;
+	options.visibleFields = _.without(options.visibleFields, options.bgstylefield, options.textstylefield);
+	
+	options.customizers = cfw_query_createCustomizers(queryResult, options.visibleFields);	
 	
 	rendererIndex = cfw_query_getRendererIndex(queryResult);		
 	options.labels = cfw_query_createLables(queryResult);	
 	
-	options.visibleFields = ((queryResult.displaySettings.visiblefields != null)) ? queryResult.displaySettings.visiblefields : queryResult.detectedFields;
-	options.visibleFields = _.without(options.visibleFields, options.bgstylefield, options.textstylefield);
+	
 	
 	options.titleFields = ((queryResult.displaySettings.titlefields != null)) ? queryResult.displaySettings.titlefields : null;
 	options.titleFormat = ((queryResult.displaySettings.titleformat != null)) ? queryResult.displaySettings.titleformat : null;
@@ -942,7 +945,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
 	//-----------------------------------
 	// Render Definition 
-	var renderDefinition = {
+	let renderDefinition = {
 			data: queryResult.records,
 		 	//idfield: 'PK_ID',
 		 	bgstylefield: options.bgstylefield,
@@ -1066,12 +1069,12 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
 	//-----------------------------------
 	// Merge with Custom Settings
-	var rendererName = "table";
+	let rendererName = "table";
 	if(queryResult.displaySettings.as != null){
 		rendererName = queryResult.displaySettings.as.trim().toLowerCase();
 	}
 	// Merge custom settings into default settings for selected renderer
-	var customSettings = queryResult.displaySettings.settings;
+	let customSettings = queryResult.displaySettings.settings;
 	if(customSettings != null){
 		var currentSettings = renderDefinition.rendererSettings[rendererName];
 		Object.assign(currentSettings, customSettings);
@@ -1080,7 +1083,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
 	//-----------------------------------
 	// Render!!!
-	var renderResult = CFW.render.getRenderer("dataviewer").render(renderDefinition);	
+	let renderResult = CFW.render.getRenderer("dataviewer").render(renderDefinition);	
 	
 	targetDiv.append(renderResult);
 }
