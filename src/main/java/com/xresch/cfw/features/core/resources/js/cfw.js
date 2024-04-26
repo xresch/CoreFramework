@@ -298,6 +298,25 @@ function cfw_colors_colorizeElement(element, color, type, borderSize){
 /************************************************************************************************
  * Creates a random RGB string like "rgba(112, 54, 210, 1.0)" 
  ************************************************************************************************/
+function cfw_colors_RGB2HEX(rgb) {
+    if(CFW.utils.isNullOrEmpty(rgb) ){
+		return rgb;
+	}
+    
+    if (/^#[0-9A-F]{6}$/i.test(rgb)) return rgb;
+
+    rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+).*$/);
+   
+    function hex(x) {
+        return ("0" + parseInt(x).toString(16)).slice(-2);
+    }
+    
+    return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+}
+	
+/************************************************************************************************
+ * Creates a random RGB string like "rgba(112, 54, 210, 1.0)" 
+ ************************************************************************************************/
 function cfw_colors_randomRGB() {
 	var r = Math.floor(Math.random()*255);
 	var g = Math.floor(Math.random()*255);
@@ -1199,6 +1218,7 @@ function cfw_internal_updateCustomListField(element){
 	originalField.val(JSON.stringify(newListValues));
 
 }
+
 /**************************************************************************************
  * Initialize a ChartSettingsField created with the Java object CFWField.
  * @param fieldID the name of the field
@@ -1431,7 +1451,6 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 	 cfw_internal_applyChartSettings(fieldID, wrapper, jsonData);
 }
 
-
 /**************************************************************************************
  * 
  *************************************************************************************/
@@ -1510,6 +1529,142 @@ function cfw_internal_updateChartSettings(elementID){
 	originalField.val(JSON.stringify(chartSettings));
 	//originalField.dropdown('toggle');
 
+}
+
+/**************************************************************************************
+ * Initialize a ChartSettingsField created with the Java object CFWField.
+ * @param fieldID the name of the field
+ * @return nothing
+ *************************************************************************************/
+function cfw_initializeColorPickerField(fieldID, colorOrClass){
+	
+	var selector = '#'+fieldID;
+
+	var colorpickerField = $(selector);
+
+	var wrapper = $('<div class="cfw-chartsettings-field-wrapper flex-grow-1">');
+	colorpickerField.before(wrapper);
+	wrapper.append(colorpickerField);
+	
+	colorpickerField.val(colorOrClass);
+	
+	//----------------------------------
+	// Add Classes
+	//var classes = chartSettingsField.attr('class');
+	//chartSettingsField.addClass('d-none');
+
+	//----------------------------------
+	// Create HTML
+	
+	wrapper.append(`<div class="cfw-colorpicker dropdown dropright">
+		<button id="${fieldID}-BUTTON" class="btn btn-sm" type="button" onclick="CFW.ui.toggleDropdownMenuFixed(event, this)" >
+			&nbsp;
+		</button>
+		<div id="${fieldID}-DROPDOWNMENU" class="dropdown-menu-fixed col-sm-12" onclick="event.stopPropagation();">
+			
+			<div class="row m-1"><strong>Choose Color</strong></div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-CUSTOMCOLOR">
+					Custom:
+				</label>   
+				<div class="col-sm-9">
+					<input id="${fieldID}-CUSTOMCOLOR" class="form-control-inline form-control-sm col-md-12" type="color" onchange="cfw_internal_updateColorPickerValueCustom(\'${fieldID}\')" >	
+				</div>
+			</div>
+		
+		<div class="row m-1"><strong>Default Colors</strong></div>
+		<div class="row m-1">  
+			<div class="col-sm-12">
+				<div class="cfw-color-box bg-cfw-green" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-green')">&nbsp;</div>
+				<div class="cfw-color-box bg-cfw-limegreen" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-limegreen')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-yellow" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-yellow')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-orange" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-orange')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-red" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-red')">&nbsp;</div>	
+			</div>
+		</div>	
+		<div class="row m-1">  
+			<div class="col-sm-12">
+				<div class="cfw-color-box bg-cfw-blue" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-blue')">&nbsp;</div>
+				<div class="cfw-color-box bg-cfw-indigo" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-indigo')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-purple" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-purple')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-pink" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-pink')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-teal" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-teal')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-cyan" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-cyan')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-white" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-white')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-lightgray" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-lightgray')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-gray" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-gray')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-darkgray" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-darkgray')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-black" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-black')">&nbsp;</div>	
+				<div class="cfw-color-box bg-cfw-none" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-none')">&nbsp;</div>	
+
+			</div>
+		</div>	
+												
+		</div>
+	</div>`);
+	
+	//-----------------------------------------
+	// Set Data
+	 cfw_internal_updateColorPickerValue(fieldID, colorOrClass);
+}
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_updateColorPickerValueCustom(fieldID){
+	console.log("cfw_internal_updateColorPickerValueCustom")
+	let selector = "#"+fieldID; 
+	
+	let colorOrClass = $(selector+"-CUSTOMCOLOR").val();
+	
+
+	cfw_internal_updateColorPickerValue(fieldID, colorOrClass);
+}
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_updateColorPickerValue(fieldID, colorOrClass){
+	
+	let selector = "#"+fieldID; 
+	let originalField = $(selector);
+	
+	//--------------------------
+	// Update Selected Value
+	originalField.val(colorOrClass);
+
+	//--------------------------
+	// Get UI thingies to Update
+	let button = $(selector+"-BUTTON");
+	let customPicker = $(selector+"-CUSTOMCOLOR");
+	
+	//--------------------------
+	// Update Colors
+	button.css("background-color", "");
+	button.attr('class', 'btn btn-sm');
+	if(!CFW.utils.isNullOrEmpty(colorOrClass)){
+		
+		CFW.colors.colorizeElement(button, colorOrClass, "bg", null);
+		
+		let hexColor = colorOrClass;
+
+		if(!hexColor.startsWith("#")){
+			let workspace = CFW.ui.getWorkspace();
+			let tempDiv = $('<div>');
+			workspace.append(tempDiv); // needed or won't get a color when using css-classes
+			
+			CFW.colors.colorizeElement(tempDiv, colorOrClass, "bg", null);
+			let rgbColor = tempDiv.css('background-color');
+
+			hexColor = CFW.colors.RGB2HEX(rgbColor);
+		}
+		customPicker.val(hexColor);
+	}else{
+		
+		CFW.colors.colorizeElement(button, "cfw-none", "bg", null);
+	}
+	
 }
 
 /**************************************************************************************
@@ -5211,6 +5366,7 @@ var CFW = {
 	},
 	colors: {
 		colorizeElement: cfw_colors_colorizeElement,
+		RGB2HEX: cfw_colors_RGB2HEX,
 		randomRGB: cfw_colors_randomRGB,
 		randomHSL: cfw_colors_randomHSL,
 		randomSL: cfw_colors_randomSL,

@@ -1198,16 +1198,9 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	
 	// ---------------------------------------
 	// Resolve Classes
-	var FGCOLORClass = '';
 	var borderClass = '';
 	if(merged.FGCOLOR != null && merged.FGCOLOR.trim().length > 0){
-		FGCOLORClass = ' text-'+merged.FGCOLOR;
 		borderClass = ' border-'+merged.FGCOLOR;
-	}
-	
-	var BGCOLORClass = '';
-	if(merged.BGCOLOR != null && merged.BGCOLOR.trim().length > 0){
-		BGCOLORClass = ' bg-'+merged.BGCOLOR;
 	}
 		
 	var advancedDisplayClass = 'd-none';
@@ -1257,7 +1250,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	
 	
 	var htmlString =
-		'<div class="grid-stack-item-content card d-flex '+titleposClass+" "+BGCOLORClass+' '+FGCOLORClass+'">'
+		'<div class="grid-stack-item-content card d-flex '+titleposClass+'">'
 		+'	<div role="button" class="cfw-dashboard-widget-actionicons text-cfw-lightgray show-on-edit">'
 		+'		<div role="button" class="actionicon-delete '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_remove(\''+merged.guid+'\')"><i class="fas fa-times"></i></div>'
 		+'		<div role="button" class="actionicon-duplicate '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_duplicate(\''+merged.guid+'\')"><i class="fas fa-clone"></i></div>'
@@ -1301,6 +1294,12 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	
 	var widgetItem = $('<div id="'+merged.guid+'" data-id="'+merged.PK_ID+'"  class="grid-stack-item">');
 	widgetItem.append(htmlString);
+	
+	//------------------------------
+	// Colorize BG and FG
+	let itemToColorize = widgetItem.find('.grid-stack-item-content');
+	CFW.colors.colorizeElement(itemToColorize, merged.BGCOLOR, "bg", null);
+	CFW.colors.colorizeElement(itemToColorize, merged.FGCOLOR, "text", null);
 	widgetItem.data("widgetObject", merged)
 	
 	if(merged.widgetBody != null && merged.widgetBody != ''){

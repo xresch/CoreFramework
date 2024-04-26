@@ -176,16 +176,18 @@ public class DashboardWidget extends CFWObject {
 			.setValue("")
 			;
 	
-	private CFWField<String> bgcolor = CFWField.newString(FormFieldType.SELECT, DashboardWidgetFields.BGCOLOR)
+	private CFWField<String> bgcolor = CFWField.newString(FormFieldType.COLORPICKER, DashboardWidgetFields.BGCOLOR)
 			.setColumnDefinition("VARCHAR(64)")
+			.setLabel("Background Color")
 			.setDescription("The background color of the widget.")
 			.addOptions(colorOptions)
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
 			.setValue("")
 			;
 	
-	private CFWField<String> fgcolor = CFWField.newString(FormFieldType.SELECT, DashboardWidgetFields.FGCOLOR)
+	private CFWField<String> fgcolor = CFWField.newString(FormFieldType.COLORPICKER, DashboardWidgetFields.FGCOLOR)
 			.setColumnDefinition("VARCHAR(64)")
+			.setLabel("Foreground Color")
 			.setDescription("The forground color of the widget, used for text and borders.")
 			.addOptions(colorOptions)
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/

@@ -129,6 +129,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		LIST, 
 		CUSTOM_LIST,
 		WYSIWYG, 
+		COLORPICKER,
 		DATEPICKER, 
 		DATETIMEPICKER, 
 		TIMEFRAMEPICKER,
@@ -645,6 +646,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			case EMAIL:  			html.append("<input type=\"email\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 									break;
 								
+			case COLORPICKER:  		createColorPicker(html, cssClasses);
+									break;
+			
 			case DATEPICKER:  		createDatePicker(html, cssClasses);
 									break;
 			
@@ -860,7 +864,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	/***********************************************************************************
-	 * Create DatePicker
+	 * Create WYSIWYG
 	 ***********************************************************************************/
 	private void createWYSIWYG(StringBuilder html, String cssClasses) {
 		
@@ -879,8 +883,23 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			form.javascript.append("cfw_initializeSummernote('"+form.getFormID()+"', '"+name+"');\r\n");
 		}
 
-		
 	}
+	
+	/***********************************************************************************
+	 * Create Color Picker
+	 ***********************************************************************************/
+	private void createColorPicker(StringBuilder html, String cssClasses) {
+				
+		//---------------------------------
+		// Create Field
+		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"colorpicker\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
+		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_initializeColorPickerField('"+name+"', '"+value+"');\r\n");
+		}
+				
+	}
+	
 	/***********************************************************************************
 	 * Create DatePicker
 	 ***********************************************************************************/
@@ -906,7 +925,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 
 	
 	/***********************************************************************************
-	 * Create DatePicker
+	 * Create DateTimePicker
 	 ***********************************************************************************/
 	private void createDateTimePicker(StringBuilder html, String cssClasses) {
 		
@@ -950,8 +969,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				
 	}
 	
+
 	/***********************************************************************************
-	 * Create Select
+	 * Create Timezone Select
 	 ***********************************************************************************/
 	private void createTimezoneSelect(StringBuilder html, String cssClasses) {
 		
