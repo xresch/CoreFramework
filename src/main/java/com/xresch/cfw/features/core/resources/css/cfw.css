@@ -79,17 +79,18 @@ pre {
 .bg-cfw-teal {			background-color: var(--cfw-teal); }
 .bg-cfw-cyan {			background-color: var(--cfw-cyan); }
 .bg-cfw-white {			background-color: var(--cfw-white); }
-.bg-cfw-lightgray {			background-color: var(--cfw-lightgray); }
+.bg-cfw-lightgray {		background-color: var(--cfw-lightgray); }
 .bg-cfw-gray {			background-color: var(--cfw-gray); }
 .bg-cfw-darkgray {		background-color: var(--cfw-darkgray); }
 .bg-cfw-black {			background-color: var(--cfw-black); }
 .bg-cfw-none {			background-color: none; }
+.bg-cfw-transparent {	background-color: transparent; }
 
-.text-cfw-green{ 		color: var(--cfw-green); }
-.text-cfw-limegreen{ 			color: var(--cfw-limegreen); }
+.text-cfw-green{ 			color: var(--cfw-green); }
+.text-cfw-limegreen{ 		color: var(--cfw-limegreen); }
 .text-cfw-yellow{ 			color: var(--cfw-yellow); }
-.text-cfw-orange{ 		color: var(--cfw-orange); }
-.text-cfw-red{ 			color: var(--cfw-red); }
+.text-cfw-orange{ 			color: var(--cfw-orange); }
+.text-cfw-red{ 				color: var(--cfw-red); }
 .text-cfw-blue {			color: var(--cfw-blue); }
 .text-cfw-indigo {			color: var(--cfw-indigo); }
 .text-cfw-purple {			color: var(--cfw-purple); }
@@ -102,12 +103,14 @@ pre {
 .text-cfw-darkgray {		color: var(--cfw-darkgray); }
 .text-cfw-black {			color: var(--cfw-black); }
 .text-cfw-none {			color: none; }
+.text-cfw-transparent {		color: transparent; }
 
-.border-cfw-green{ 		border-color: var(--cfw-green); }
-.border-cfw-limegreen{ 			border-color: var(--cfw-limegreen); }
+
+.border-cfw-green{ 			border-color: var(--cfw-green); }
+.border-cfw-limegreen{ 		border-color: var(--cfw-limegreen); }
 .border-cfw-yellow{ 		border-color: var(--cfw-yellow); }
 .border-cfw-orange{ 		border-color: var(--cfw-orange); }
-.border-cfw-red{ 		border-color: var(--cfw-red); }
+.border-cfw-red{ 			border-color: var(--cfw-red); }
 .border-cfw-blue {			border-color: var(--cfw-blue); }
 .border-cfw-indigo {		border-color: var(--cfw-indigo); }
 .border-cfw-purple {		border-color: var(--cfw-purple); }
@@ -120,6 +123,7 @@ pre {
 .border-cfw-darkgray {		border-color: var(--cfw-darkgray); }
 .border-cfw-black {			border-color: var(--cfw-black); }
 .border-cfw-none {			border-color: none; }
+.border-cfw-transparent {	border-color: transparent; }
 
 .border-cfw-overlay {	
 	border: 1px rgba(0,0,0,0.2) solid; 

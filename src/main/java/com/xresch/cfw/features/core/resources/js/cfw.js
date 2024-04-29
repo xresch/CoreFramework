@@ -1563,7 +1563,6 @@ function cfw_initializeColorPickerField(fieldID, colorOrClass){
 		<div id="${fieldID}-DROPDOWNMENU" class="dropdown-menu-fixed col-sm-12" onclick="event.stopPropagation();">
 			
 			<div class="row m-1"><strong>Choose Color</strong></div>
-			
 			<div class="row m-1">  
 				<label class="col-sm-3" for="${fieldID}-CUSTOMCOLOR">
 					Custom:
@@ -1573,33 +1572,55 @@ function cfw_initializeColorPickerField(fieldID, colorOrClass){
 				</div>
 			</div>
 		
-		<div class="row m-1"><strong>Default Colors</strong></div>
-		<div class="row m-1">  
-			<div class="col-sm-12">
-				<div class="cfw-color-box bg-cfw-green" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-green')">&nbsp;</div>
-				<div class="cfw-color-box bg-cfw-limegreen" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-limegreen')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-yellow" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-yellow')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-orange" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-orange')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-red" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-red')">&nbsp;</div>	
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-CUSTOMCOLOR">
+					Default:
+				</label>   
+				<div class="col-sm-9">
+					<div class="cfw-color-box cursor-pointer bg-cfw-none" onclick="cfw_internal_updateColorPickerValue('${fieldID}', null)">&nbsp;</div>
+				</div>
 			</div>
-		</div>	
-		<div class="row m-1">  
-			<div class="col-sm-12">
-				<div class="cfw-color-box bg-cfw-blue" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-blue')">&nbsp;</div>
-				<div class="cfw-color-box bg-cfw-indigo" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-indigo')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-purple" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-purple')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-pink" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-pink')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-teal" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-teal')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-cyan" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-cyan')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-white" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-white')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-lightgray" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-lightgray')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-gray" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-gray')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-darkgray" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-darkgray')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-black" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-black')">&nbsp;</div>	
-				<div class="cfw-color-box bg-cfw-none" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-none')">&nbsp;</div>	
-
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-CUSTOMCOLOR">
+					Transparent:
+				</label>   
+				<div class="col-sm-9">
+					<div class="cfw-color-box cursor-pointer  bg-cfw-transparent" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-transparent')">&nbsp;</div>
+				</div>
 			</div>
-		</div>	
+			
+			<div class="row m-1"><strong>Default Colors</strong></div>
+			<div class="row m-1">  
+				<div class="col-sm-12">
+					<div class="cfw-color-box cursor-pointer bg-cfw-green" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-green')">&nbsp;</div>
+					<div class="cfw-color-box cursor-pointer bg-cfw-limegreen" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-limegreen')">&nbsp;</div>	
+					<div class="cfw-color-box cursor-pointer bg-cfw-yellow" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-yellow')">&nbsp;</div>	
+					<div class="cfw-color-box cursor-pointer bg-cfw-orange" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-orange')">&nbsp;</div>	
+					<div class="cfw-color-box cursor-pointer bg-cfw-red" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-red')">&nbsp;</div>	
+				</div>
+			</div>	
+			
+			
+			<div class="row m-1">  
+				<div class="col-sm-12">
+					<div class="cfw-color-box cursor-pointer bg-cfw-blue" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-blue')">&nbsp;</div>
+					<div class="cfw-color-box cursor-pointer bg-cfw-indigo" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-indigo')">&nbsp;</div>	
+					<div class="cfw-color-box cursor-pointer bg-cfw-purple" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-purple')">&nbsp;</div>	
+					<div class="cfw-color-box cursor-pointer bg-cfw-pink" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-pink')">&nbsp;</div>	
+					<div class="cfw-color-box cursor-pointer bg-cfw-cyan" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-cyan')">&nbsp;</div>	
+				</div>
+			</div>	
+			
+			<div class="row m-1">  
+				<div class="col-sm-12">
+					<div class="cfw-color-box cursor-pointer bg-cfw-white" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-white')">&nbsp;</div>	
+					<div class="cfw-color-box cursor-pointer bg-cfw-lightgray" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-lightgray')">&nbsp;</div>	
+					<div class="cfw-color-box cursor-pointer bg-cfw-gray" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-gray')">&nbsp;</div>	
+					<div class="cfw-color-box cursor-pointer bg-cfw-darkgray" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-darkgray')">&nbsp;</div>	
+					<div class="cfw-color-box cursor-pointer bg-cfw-black" onclick="cfw_internal_updateColorPickerValue('${fieldID}', 'cfw-black')">&nbsp;</div>	
+				</div>
+			</div>	
 												
 		</div>
 	</div>`);
