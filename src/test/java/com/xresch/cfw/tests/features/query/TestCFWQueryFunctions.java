@@ -1642,6 +1642,40 @@ source json data=`
 		
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testIsUndef() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+				| record
+					[NAME, VALUE, LOCATION]
+					["Treya", 42]
+				| set 
+					EVAL_VALUE = isUndef(VALUE)
+					EVAL_LOCATION = isUndef(LOCATION)
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals(false, record.get("EVAL_VALUE").getAsBoolean());
+		Assertions.assertEquals(true, record.get("EVAL_LOCATION").getAsBoolean());
+
+		
+	}
+	
 	
 	/****************************************************************
 	 * 

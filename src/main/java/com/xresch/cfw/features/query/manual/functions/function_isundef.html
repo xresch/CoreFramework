@@ -1,0 +1,15 @@
+
+<p>This function will return true only if the specified fieldname is undefined for the record.
+This is different than checking for null, as null is assigned to a fieldname.</p>
+
+<p>The following query creates sample records and show some uses of the iUndef-function:</p>
+
+<pre><code class="language-cfwquery">| record
+	[NAME, VALUE]
+	["Aurora", 42]
+	["Treya"]
+	["Marion", "Panna Cotta"]
+	["Alejandra"]
+	[null, null]
+| set eval = isUndef(VALUE) </code></pre>
+
