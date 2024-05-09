@@ -870,6 +870,7 @@ public class CFWQueryParser {
 				while(this.hasMoreTokens()) {
 					CFWQueryToken lookahead = this.lookahead();
 					if(lookahead.isStringOrText()
+					|| lookahead.type() == CFWQueryTokenType.FUNCTION_NAME
 					|| lookahead.type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_OPEN) {
 						//-------------------------------
 						// Create Access Part
@@ -899,7 +900,7 @@ public class CFWQueryParser {
 						}
 						
 					}else {
-						this.throwParseException("Expected string or '[fieldname]' after dot operator '.'. ", this.cursor()-1);
+						this.throwParseException("Expected string, function or '[fieldname]' after dot operator '.'. ", this.cursor()-1);
 					}
 					
 				}

@@ -36,8 +36,8 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	@BeforeAll
 	public static void setup() {
 		
-		FeatureQuery feature = new FeatureQuery();
-		feature.register();
+		//FeatureQuery feature = new FeatureQuery();
+		//feature.register();
 		
 		CFW.Files.addAllowedPackage(PACKAGE_FUNCTIONS);
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
+import org.joda.time.Instant;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.CFWQueryExecutor;
+import com.xresch.cfw.features.query.CFWQueryResult;
+import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
@@ -22,12 +27,21 @@ import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartBinaryExpression;
 import com.xresch.cfw.features.query.parse.QueryPartJsonMemberAccess;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
+import com.xresch.cfw.tests._master.DBTestMaster;
 
-public class TestCFWQueryParts {
+public class TestCFWQueryParts extends DBTestMaster {
+	
+	private static CFWQueryContext context = new CFWQueryContext();
+	
+	private static long earliest = new Instant().minus(1000*60*30).getMillis();
+	private static long latest = new Instant().getMillis();
 	
 	@BeforeAll
 	public static void setup() {
 		CFW.Files.addAllowedPackage("com.xresch.cfw.tests.features.query.testdata");
+				
+		context.setEarliest(earliest);
+		context.setLatest(latest);
 	}
 	/****************************************************************
 	 * 
@@ -414,6 +428,48 @@ public class TestCFWQueryParts {
 					new EnhancedJsonObject(object)
 				).getAsString()
 			);
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testQueryPartJsonMemberAccess_usingFunctions() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+				| paramdefaults
+					object = {"test": "hello"}
+					array = ["hello", "World"]
+					favoriteField = "favorite"
+					objectField = "object"
+				| source empty
+				| set
+					TEST_OBJECT = param(object).test 				# returns "hello"
+					TEST_ARRAY = param(array).[1] 					# returns "World"
+					temp = {"favorite": "tiramisu", "object": { "sub": 42  } }
+					TEST_ACCESS = temp.param(favoriteField)			# returns "tiramisu"
+					TEST_SUBACCESS = temp.param(objectField).sub	# returns 42		
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("hello", record.get("TEST_OBJECT").getAsString());
+		Assertions.assertEquals("World", record.get("TEST_ARRAY").getAsString());
+		Assertions.assertEquals("tiramisu", record.get("TEST_ACCESS").getAsString());
+		Assertions.assertEquals(42, record.get("TEST_SUBACCESS").getAsInt());
+
+		
 	}
 	
 	

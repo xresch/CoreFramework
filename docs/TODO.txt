@@ -170,7 +170,7 @@ DONE
 - Parameter: Added basic documentation to the parameter definitions 
 - Query: Command formatlink - supports a "style" parameter to style the link with CSS
 - Query: Fixed issues with newline in parameter substitution
-
+- Query: JSON Member Access now supports the use of functions
 - Query: Added Commands:
 	- displayfields (plus alias formatdisplay)
 

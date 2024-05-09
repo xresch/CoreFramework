@@ -11,6 +11,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.parse.QueryPartValue.QueryPartValueType;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
@@ -41,7 +42,9 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	public QueryPartJsonMemberAccess(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
 		super();
 		this.context = context;
-		if( !(leftside instanceof QueryPartJsonMemberAccess) ) {
+		
+		if( !(leftside instanceof QueryPartJsonMemberAccess) 
+		) {
 			this.leftside = leftside;
 			this.rightside = rightside;
 		}else {
@@ -49,6 +52,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			this.leftside = memberAccess.leftside;
 			this.rightside = new QueryPartJsonMemberAccess(context, memberAccess.rightside, rightside);
 		}
+		
 	}
 	
 	/******************************************************************************************************
@@ -99,19 +103,36 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * QueryPart.determineValue() will be used.
 	 * If rightside is QueryPartJsonMemberAccess, the next level will be fetched recursively;
 	 * 
+	 * To whomever dares to touch the code of this method: MAKE SURE TO THOUROUGHLY TEST THE CHANGES!
+	 * 
 	 ******************************************************************************************************/
 	public JsonElement accessMemberRecursively(EnhancedJsonObject rootObject, JsonElement currentElement) {
 		
-		//======================================================
+		//#############################################################################
 		// Handle Leftside, resolve json member
-		//======================================================
+		//#############################################################################
 		
-		JsonElement nextElement = null;
+		JsonElement nextElement = null;	
 		
+		//--------------------------
+		// Handle Function Call
+		if(leftside instanceof QueryPartFunction){
+			QueryPartValue functionResult = leftside.determineValue(rootObject);
+			QueryPartValueType type = functionResult.type();
+			
+			if( type.equals(QueryPartValueType.JSON) ) {
+				nextElement = functionResult.getAsJsonElement();
+			}else {
+				nextElement = currentElement;
+				rightside = new QueryPartJsonMemberAccess(context, functionResult.determineValue(rootObject), rightside);
+
+			}
+		}
 		
-		if(leftside instanceof QueryPartJsonMemberAccess){
-			//--------------------------
-			// Handle JsonMemberAccess
+		//--------------------------
+		// Handle JsonMemberAccess
+		else if(leftside instanceof QueryPartJsonMemberAccess){
+			
 			QueryPartJsonMemberAccess accessExpression = (QueryPartJsonMemberAccess)leftside;
 			nextElement = accessExpression.accessMemberRecursively(rootObject, currentElement);
 		}
@@ -160,9 +181,9 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			context.addMessage(MessageType.ERROR,"Could not access object member: "+leftside+"."+rightside);
 		}
 		
-		//======================================================
+		//#############################################################################
 		// Handle Rightside, resolve value or next level
-		//======================================================
+		//#############################################################################
 		if(rightside instanceof QueryPartJsonMemberAccess) {
 			return ((QueryPartJsonMemberAccess)rightside).accessMemberRecursively(rootObject, nextElement);
 		}else {
