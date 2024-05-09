@@ -211,26 +211,49 @@ function cfw_usermgmt_editGroup(roleID){
 }
 
 /******************************************************************
- * Print the list of roles;
+ * 
+ ******************************************************************/
+function cfw_usermgmt_printGroupListCanEdit(data){
+	cfw_usermgmt_printGroupList(data, true, "This list contains all the groups that you can edit. Either you are the owner of the group or an editor.");
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_usermgmt_printGroupListOverview(data){
+	cfw_usermgmt_printGroupList(data, false, "Here you can find a list of all groups and their owners and editors. This can help you finding someone that can add you to a group.");
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_usermgmt_printGroupListAdmin(data){
+	cfw_usermgmt_printGroupList(data, true, "Groups are basically the same as roles, only difference is that users can choose to share things like dashboards with groups. You can assign additional permissions through groups.");
+}
+	
+/******************************************************************
+ * Print the list of roles or groups;
  * 
  * @param data as returned by CFW.http.getJSON()
  * @return 
  ******************************************************************/
-function cfw_usermgmt_printGroupList(data){
+function cfw_usermgmt_printGroupList(data, allowEdit, description){
 	
 	var parent = $("#tab-content");
 	
 	//--------------------------------
-	// Button
-	parent.append("<p>Groups are basically the same as roles, only difference is that users can choose to share things like dashboards with groups. You can assign additional permissions through groups.</p>");
+	// Description
+	parent.append("<p>"+description+"</p>");
 	
 	//--------------------------------
 	// Button
-	var createButton = $('<button class="btn btn-sm btn-success mb-2" onclick="cfw_usermgmt_createGroup()">'
-							+ '<i class="fas fa-plus-circle"></i> '+ CFWL('cfw_usermgmt_createGroup')
-					   + '</button>');
-	
-	parent.append(createButton);
+	if(allowEdit){
+		var createButton = $('<button class="btn btn-sm btn-success mb-2" onclick="cfw_usermgmt_createGroup()">'
+								+ '<i class="fas fa-plus-circle"></i> '+ CFWL('cfw_usermgmt_createGroup')
+						   + '</button>');
+		
+		parent.append(createButton);
+	}
 	
 	//--------------------------------
 	// Table
@@ -244,49 +267,52 @@ function cfw_usermgmt_printGroupList(data){
 		// Prepare actions
 		var actionButtons = [];
 		
-		//-------------------------
-		// Edit Button
-		actionButtons.push(
-			function (record, id){ 
-				return '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
-					+'onclick="cfw_usermgmt_editGroup('+record.PK_ID+');">'
-					+ '<i class="fa fa-pen"></i>'
-					+ '</button>';
-			});
-			
-		//-------------------------
-		// Change Owner Button
-		actionButtons.push(
-			function (record, id){
-
-				if(JSDATA.userid == record.FK_ID_GROUPOWNER
-				|| CFW_USERMGMT_SCOPE == CFW_USERMGMT_SCOPE_USERMGMT ){
-					return '<button class="btn btn-primary btn-sm" alt="Change Owner" title="Change Owner" '
-						+'onclick="cfw_usermgmt_changeGroupOwner('+id+');">'
-						+ '<i class="fas fa-user-edit"></i>'
+		if(allowEdit){
+			//-------------------------
+			// Edit Button
+			actionButtons.push(
+				function (record, id){ 
+					return '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+						+'onclick="cfw_usermgmt_editGroup('+record.PK_ID+');">'
+						+ '<i class="fa fa-pen"></i>'
+						+ '</button>';
+				});
+				
+			//-------------------------
+			// Change Owner Button
+			actionButtons.push(
+				function (record, id){
+	
+					if(JSDATA.userid == record.FK_ID_GROUPOWNER
+					|| CFW_USERMGMT_SCOPE == CFW_USERMGMT_SCOPE_USERMGMT ){
+						return '<button class="btn btn-primary btn-sm" alt="Change Owner" title="Change Owner" '
+							+'onclick="cfw_usermgmt_changeGroupOwner('+id+');">'
+							+ '<i class="fas fa-user-edit"></i>'
+							+ '</button>';
+					}
+					
+					return "&nbsp;";
+				});
+				
+			//-------------------------
+			// Delete Button
+			actionButtons.push(
+				function (record, id){
+					
+				if( record.IS_DELETABLE 
+				&& (JSDATA.userid == record.FK_ID_GROUPOWNER
+					|| CFW_USERMGMT_SCOPE == CFW_USERMGMT_SCOPE_USERMGMT )
+				){
+					return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
+						+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the group <b>&quot;'+record.NAME+'&quot;</b> ?\', \'Delete\', \'cfw_usermgmt_delete(\\\'groups\\\','+record.PK_ID+');\')">'
+						+ '<i class="fa fa-trash"></i>'
 						+ '</button>';
 				}
 				
-				return "&nbsp;";
+				return '&nbsp;';
+	
 			});
-		//-------------------------
-		// Delete Button
-		actionButtons.push(
-			function (record, id){
-				
-			if( record.IS_DELETABLE 
-			&& (JSDATA.userid == record.FK_ID_GROUPOWNER
-				|| CFW_USERMGMT_SCOPE == CFW_USERMGMT_SCOPE_USERMGMT )
-			){
-				return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the group <b>&quot;'+record.NAME+'&quot;</b> ?\', \'Delete\', \'cfw_usermgmt_delete(\\\'groups\\\','+record.PK_ID+');\')">'
-					+ '<i class="fa fa-trash"></i>'
-					+ '</button>';
-			}
-			
-			return '&nbsp;';
-
-		});
+		}
 		
 		//-----------------------------------
 		// Render Data
@@ -297,11 +323,14 @@ function cfw_usermgmt_printGroupList(data){
 			 	textstylefield: null,
 			 	titlefields: ['NAME',],
 			 	titleformat: '{0}',
-			 	visiblefields: ['PK_ID', 'OWNER', 'NAME', 'DESCRIPTION'],
+			 	visiblefields: ['PK_ID', 'OWNER', 'NAME', 'JSON_EDITORS', 'DESCRIPTION'],
 			 	labels: {
 			 		PK_ID: "ID",
+			 		JSON_EDITORS: "Editors"
 			 	},
-			 	customizers: {},
+			 	customizers: {
+					JSON_EDITORS: cfw_customizer_badgesFromObjectValues 
+				 },
 				actions: actionButtons,
 				
 				rendererSettings: {

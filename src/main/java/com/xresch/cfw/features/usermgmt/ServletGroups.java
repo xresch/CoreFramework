@@ -24,7 +24,7 @@ import com.xresch.cfw.validation.PasswordValidator;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
 public class ServletGroups extends HttpServlet
@@ -49,7 +49,7 @@ public class ServletGroups extends HttpServlet
 			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureUserManagement.PACKAGE_RESOURCE, "cfw_usermgmt_common.js");
 			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureUserManagement.PACKAGE_RESOURCE, "cfw_usermgmt_groups.js");
 						
-			html.addJavascriptCode("cfw_usermgmt_groups_initialDraw({tab: 'groups'});");
+			html.addJavascriptCode("cfw_usermgmt_groups_initialDraw({tab: 'mygroups'});");
 			
 	        response.setContentType("text/html");
 	        response.setStatus(HttpServletResponse.SC_OK);

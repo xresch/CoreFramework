@@ -3302,11 +3302,11 @@ function cfw_format_numbersInThousands(value, decimals, addBlank, isBytes) {
 /**************************************************************************************
  * 
  *************************************************************************************/
-function cfw_format_arrayToBadges(stringArray, addLineBreaks) {
+function cfw_format_badgesFromArray(stringArray, addLineBreaks) {
 	
 	if(stringArray == null) return '';
 
-	var badgesHTML = '<div>';
+	let badgesHTML = '<div>';
 	
 		for(id in stringArray){
 			badgesHTML += '<span class="badge badge-primary m-1">'+stringArray[id]+'</span>';
@@ -3317,6 +3317,27 @@ function cfw_format_arrayToBadges(stringArray, addLineBreaks) {
 	
 	return badgesHTML;
 }
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_format_badgesFromObjectValues(object, addLineBreaks) {
+	
+	if(object == null) return '';
+
+	let badgesHTML = '<div>';
+	
+		for(fieldname in object){
+			let value = object[fieldname];
+			badgesHTML += '<span class="badge badge-primary m-1">'+value+'</span>';
+			if(addLineBreaks) { badgesHTML += '</br>'; }
+		}
+		
+	badgesHTML += '</div>';
+	
+	return badgesHTML;
+}
+
 
 
 
@@ -3511,9 +3532,15 @@ function cfw_customizer_booleanFormat(record, value) {
 /**************************************************************************************
  * 
  *************************************************************************************/
-function cfw_customizer_badgeFormat(record, value) { 
-	
-	return cfw_format_arrayToBadges(value);
+function cfw_customizer_badgesFromArray(record, value) { 
+	return cfw_format_badgesFromArray(value);
+};
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_customizer_badgesFromObjectValues(record, value) { 
+	return cfw_format_badgesFromObjectValues(value);
 };
 
 /**************************************************************************************
@@ -5419,27 +5446,29 @@ var CFW = {
 		sortArrayByValueOfObject: cfw_sortArrayByValueOfObject
 	},
 	format: {
-		epochToTimestamp: 	cfw_format_epochToTimestamp,
-		epochToDate: 		cfw_format_epochToDate,
-		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
-		millisToClock: 		cfw_format_millisToClock,
-		timeToDuration: 	cfw_format_timeToDuration,
-		millisToDuration: 	cfw_format_millisToDuration,
-		cfwSchedule: 		cfw_format_cfwSchedule,
-		splitCFWSchedule: 	cfw_format_splitCFWSchedule,
-		objectToHTMLList: 	cfw_format_objectToHTMLList,
-		csvToObjectArray: 	cfw_format_csvToObjectArray,
-		capitalize: 		cfw_format_capitalize,
-		numberSeparators: 	cfw_format_numberSeparators,
-		numbersInThousands: cfw_format_numbersInThousands,
-		arrayToBadges: 		cfw_format_arrayToBadges,
-		formToParams: 		cfw_format_formToParams,
-		formToArray: 		cfw_format_formToArray,
-		formToObject: 		cfw_format_formToObject
+		  epochToTimestamp: 	cfw_format_epochToTimestamp
+		, epochToDate: 			cfw_format_epochToDate
+		, fieldNameToLabel: 	cfw_format_fieldNameToLabel
+		, millisToClock: 		cfw_format_millisToClock
+		, timeToDuration: 		cfw_format_timeToDuration
+		, millisToDuration: 	cfw_format_millisToDuration
+		, cfwSchedule: 			cfw_format_cfwSchedule
+		, splitCFWSchedule: 	cfw_format_splitCFWSchedule
+		, objectToHTMLList: 	cfw_format_objectToHTMLList
+		, csvToObjectArray: 	cfw_format_csvToObjectArray
+		, capitalize: 			cfw_format_capitalize
+		, numberSeparators: 	cfw_format_numberSeparators
+		, numbersInThousands: 	cfw_format_numbersInThousands
+		, badgesFromArray: 		cfw_format_badgesFromArray
+		, badgesFromObjectValues: cfw_format_badgesFromObjectValues
+		, formToParams: 		cfw_format_formToParams
+		, formToArray: 			cfw_format_formToArray
+		, formToObject: 		cfw_format_formToObject
 	},
 	customizer: {
 		booleanFormat: 	cfw_customizer_booleanFormat,
-		badgeFormat: 	cfw_customizer_badgeFormat,
+		badgesFromArray: 	cfw_customizer_badgesFromArray,
+		badgesFromObjectValues: 	cfw_customizer_badgesFromObjectValues,
 	},
 	http: {
 		readCookie: cfw_http_readCookie,

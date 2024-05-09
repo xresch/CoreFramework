@@ -9,7 +9,7 @@
 					
 				var tags = widgetObject.JSON_SETTINGS.tags;
 				
-				callback(widgetObject, CFW.format.arrayToBadges( tags.split(',') ) );
+				callback(widgetObject, CFW.format.badgesFromArray( tags.split(',') ) );
 			},
 			
 		}
