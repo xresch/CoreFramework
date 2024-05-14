@@ -1,0 +1,20 @@
+
+<p>The object-function is used to create an object and takes arguments alternating between fieldnames and values. 
+The function returns the value right after the first condition that evaluates to true.</p>
+
+
+<p>The following example creates a single empty record and show some example uses of the object-function:</p>
+<pre><code class="language-cfwquery">| source empty
+| set
+	test = object(
+			  "hello", "world"
+			, "boolean", true
+			, "number", 42
+			, "null", null
+			, "array", [null, 1, true, "three"]
+			, "object", {a: 1, b: 2}
+			, "object2", object("sub", "object")
+		)
+| unbox test</code></pre>
+
+	
