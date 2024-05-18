@@ -28,21 +28,21 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
+public class CFWQueryCommandFormatCSS extends CFWQueryCommand {
 	
-	private static final String COMMAND_NAME = "displayfields";
+	private static final String COMMAND_NAME = "formatcss";
 
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandDisplayFields.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandFormatCSS.class.getName());
 	
 	private ArrayList<QueryPartAssignment> displaySettingsParts = new ArrayList<>();
 	private QueryPartAssignment fieldsPart = null; 
-	private QueryPartAssignment heightPart = null; 
+	private QueryPartAssignment stylePart = null; 
 	private QueryPartAssignment widthPart = null; 
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandDisplayFields(CFWQuery parent) {
+	public CFWQueryCommandFormatCSS(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -51,7 +51,7 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME, "formatdisplay"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -59,7 +59,7 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Formats the specified fields with the defined display settings(see command ).";
+		return "Formats the specified fields with the defined css style.";
 	}
 
 	/***********************************************************************************************
@@ -67,7 +67,7 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" fields=<fields> height=<height> width=<width> "+CFWQueryCommandDisplay.DESCIRPTION_SYNTAX;
+		return COMMAND_NAME+" fields=<fields> style=<style>";
 	}
 	
 	/***********************************************************************************************
@@ -75,17 +75,13 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return CFWQueryCommandDisplay.DESCRIPTION_SYNTAX_DETAILS
-					.replace(
-							  "<ul>"
-							, """
-							  <ul>
-							  	<li><b>fields:&nbsp;</b>Array of the fieldnames these display settings should be applied too.</li>
-							  	<li><b>height:&nbsp;</b>(Optional) CSS height attribute to control the size of the display.</li>
-							  	<li><b>width:&nbsp;</b>(Optional) CSS width attribute to control the size of the display.</li>
-							  """
-					)
-				;
+		return """
+			  <ul>
+			  	<li><b>fields:&nbsp;</b>Array of the fieldnames these display settings should be applied too.</li>
+			  	<li><b>style:&nbsp;</b>The CSS style that should be applied to the field.</li>
+			  </ul>
+			  """
+			;
 	}
 
 	/***********************************************************************************************
@@ -116,10 +112,8 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 				
 				if(partName.toLowerCase().equals("fields")) {
 					fieldsPart = zePart;
-				}else if(partName.toLowerCase().equals("height")) {
-					heightPart = zePart;
-				}else if(partName.toLowerCase().equals("width")) {
-					widthPart = zePart;
+				}else if(partName.toLowerCase().equals("style")) {
+					stylePart = zePart;
 				}else {
 					this.displaySettingsParts.add((QueryPartAssignment)currentPart);
 					continue;
@@ -149,7 +143,6 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 	public void initializeAction() throws Exception {
 		ArrayList<String> fieldnames = fieldsPart.determineValue(null).getAsStringArray(); // determineValue(null): do not convert fieldnames to field values 
 		CFWQueryCommandFormatField.addFormatterByName(this.getQueryContext(), fieldnames, "special"); 
-
 	}
 	
 	/***********************************************************************************************
@@ -165,14 +158,11 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 				// Get Values
 				ArrayList<String> fieldnames = fieldsPart.determineValue(null).getAsStringArray(); // determineValue(null): do not convert fieldnames to field values 
 				
-				String height = "100%";
-				if(heightPart != null) {
-					height = heightPart.determineValue(record).getAsString(); 
+				String style = "";
+				if(stylePart != null) {
+					style = stylePart.determineValue(record).getAsString(); 
 				}
-				String width = "100%";
-				if(widthPart != null) {
-					width = widthPart.determineValue(record).getAsString(); 
-				}
+
 				
 				//-------------------------------------
 				// Iterate Fieldnames
@@ -189,58 +179,9 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 					// Create object for Special Formatter
 					JsonObject specialObject = new JsonObject();
 
-					specialObject.addProperty("format", "display");
-					specialObject.addProperty("height", height);
-					specialObject.addProperty("width", width);
-					
-					//--------------------------------------
-					// Create Display Settings
-					CFWQueryResult result = new CFWQueryResult(getQueryContext());
-					JsonObject displaySettings = new JsonObject();
-					
-					//--------------------------------------
-					// Copy everything from original, needed for styling stuff etc...
-					JsonObject originalDisplaySettings = this.getParent().getContext().getDisplaySettings();
-					for(Entry<String, JsonElement> entry : originalDisplaySettings.entrySet()) {
-						displaySettings.add(entry.getKey(), entry.getValue());
-					}
-					result.setDisplaySettings(displaySettings);
-					
-					//--------------------------------------
-					// Override Original Display Settings
-					displaySettings.addProperty("menu", false);
-					for(QueryPartAssignment assignment : displaySettingsParts) {
-
-						String propertyName = assignment.getLeftSideAsString(null);
-
-						QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
-						if(valuePart.isString()) {
-							String value = valuePart.getAsString();
-							value = CFW.Security.sanitizeHTML(value);
-							displaySettings.addProperty(propertyName, value);
-						}else {
-							valuePart.addToJsonObject(propertyName, displaySettings);
-						}
-					}
-					
-					//--------------------------------------
-					// Add the data
-					JsonElement data = record.get(fieldname);
-					if(data.isJsonArray()) {
-						result.setRecords(data.getAsJsonArray());
-					}else if(data.isJsonObject()) {
-						JsonArray array = new JsonArray();
-						array.add(data.getAsJsonObject());
-						result.setRecords(array);
-					}else {
-						JsonArray array = new JsonArray();
-						JsonObject object = new JsonObject();
-						object.add("value", data);
-						array.add(object);
-						result.setRecords(array);
-					}
-					
-					specialObject.add("queryResults", result.toJson());
+					specialObject.addProperty("format", "css");
+					specialObject.addProperty("style", style);
+					specialObject.add("value", record.get(fieldname));
 					
 					//-------------------------------------
 					// Replace Value 

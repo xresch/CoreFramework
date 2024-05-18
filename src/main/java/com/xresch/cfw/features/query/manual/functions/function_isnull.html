@@ -1,0 +1,14 @@
+
+<p>The following query creates sample records and show some uses of the isNull-function:</p>
+
+<pre><code class="language-cfwquery">| source random records=100
+| set
+	EMPTY= isNull() 				 	 # returns null
+	ISNULL = isNull(null) 				 # returns true
+	ISNULL_FIELD = isNull(LIKES_TIRAMISU) # returns true or false
+	ISEMPTY_A = isNull("") 				 # returns false
+	ISEMPTY_B = isNull(trim("  	")) 	 # returns false
+	NOTEMPTY = isNull(" ") 				 # returns false
+	BOOLEAN = isNull(true) 				 # returns false
+	NUMBER= isNull(123) 				 # returns false</code></pre>
+

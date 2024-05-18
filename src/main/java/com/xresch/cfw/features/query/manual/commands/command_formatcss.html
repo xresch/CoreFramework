@@ -1,0 +1,28 @@
+
+<p>Add the style to the specified fields. This command is useful if you want to format fields based on values of other fields.</p>
+
+<p>Following query will format the fields LOCATION and FIRSTNAME. The CSS will be determined using the case function, evaluating the values of other fields. </p>
+<pre><code class="language-cfwquery">| source random
+| formatcss
+	fields = [LOCATION, FIRSTNAME]
+	style = case(
+				(LIKES_TIRAMISU AND VALUE > 50 )
+					, "background-color: purple; 
+					   color: yellow; 
+					   padding: 5px; "
+					   
+				, (LIKES_TIRAMISU AND VALUE &lt;= 50 AND  INDEX &lt;= 20)
+					, "background-color: yellow; 
+					   color: purple; 
+					   padding: 5px; "
+					   
+				, true
+					, "background-color: blue; 
+					   color: white; 
+					   padding: 5px; 
+					   font-size: xx-small;"
+			)</code></pre>
+
+
+
+

@@ -1605,12 +1605,54 @@ source json data=`
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testIsNull() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source random records=1
+| set
+	EMPTY= isNull() 				 	 # returns null
+	ISNULL = isNull(null) 				 # returns true
+	ISNULL_FIELD = isNull(LIKES_TIRAMISU) # returns true or false
+	ISEMPTY_A = isNull("") 				 # returns false
+	ISEMPTY_B = isNull(trim("  	")) 	 # returns false
+	NOTEMPTY = isNull(" ") 				 # returns false
+	BOOLEAN = isNull(true) 				 # returns false
+	NUMBER= isNull(123) 				 # returns false
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+
+		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
+		Assertions.assertEquals(true, record.get("ISNULL").getAsBoolean());
+		Assertions.assertEquals(false, record.get("ISEMPTY_A").getAsBoolean());
+		Assertions.assertEquals(false, record.get("ISEMPTY_B").getAsBoolean());
+		Assertions.assertEquals(false, record.get("NOTEMPTY").getAsBoolean());
+		Assertions.assertEquals(false, record.get("BOOLEAN").getAsBoolean());
+		Assertions.assertEquals(false, record.get("NUMBER").getAsBoolean());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testIsNullOrEmpty() throws IOException {
 		
 		//---------------------------------
 		String queryString = """
-| source empty records=1
-| set
+				| source empty records=1
+				| set
 	EMPTY= isNullOrEmpty() 						 # returns null
 	ISNULL = isNullOrEmpty(null) 				 # returns true
 	ISEMPTY_A = isNullOrEmpty("") 				 # returns true
@@ -1631,7 +1673,7 @@ source json data=`
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
 		JsonObject record = queryResults.getRecord(0);
-
+		
 		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
 		Assertions.assertEquals(true, record.get("ISNULL").getAsBoolean());
 		Assertions.assertEquals(true, record.get("ISEMPTY_A").getAsBoolean());

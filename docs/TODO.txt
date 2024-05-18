@@ -101,6 +101,7 @@ Potential TODOs
 - Query: Test cases
 	- command messages
 	- command if, else, end
+	- command formatcss
 	- command formatdisplay
 	- metadata template
 	- function array
@@ -173,8 +174,10 @@ DONE
 - Query: JSON Member Access now supports the use of functions
 - Query: Added Commands:
 	- displayfields (plus alias formatdisplay)
-
+	- formatcss
+	
 - Query: Added Functions:
+	- isNull
 	- isUndef
 	- records
     - timetruncate 

@@ -691,6 +691,7 @@ function cfw_query_formatSpecial(span, value){
 	if( typeof value == "object"){
 		
 		switch(value.format){
+			case "css":			cfw_query_formatSpecial_CSS(span, value);   break;
 			case "link":		cfw_query_formatSpecial_Link(span, value);   break;
 			case "display":		cfw_query_formatSpecial_Display(span, value);   break;
 			default:			break;
@@ -749,6 +750,28 @@ function cfw_query_formatSpecial_Display(span, object){
 	//---------------------------------
 	// Any other data type
 	span.text(JSON.stringify(records));
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatSpecial_CSS(span, object){
+	
+	let value = object.value;
+	let style =  object.style;
+
+	span.attr("style", style);
+
+	
+	//---------------------------------
+	// Data is null
+	if(value == null){
+		cfw_query_formatShowNulls(span, value);
+	}
+
+	//---------------------------------
+	// Any other data type
+	span.text(JSON.stringify(value));
 }
 
 /*******************************************************************************
