@@ -90,7 +90,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionMedian;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionMeta;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionMin;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionNow;
-import com.xresch.cfw.features.query.functions.CFWQueryFunctionNullTo;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionObject;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionParam;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionPerc;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandom;
@@ -270,7 +270,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionMeta(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionMin(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionNow(null));
-		CFW.Registry.Query.registerFunction(new CFWQueryFunctionNullTo(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionObject(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionParam(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionPerc(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandom(null));

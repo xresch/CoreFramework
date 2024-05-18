@@ -109,6 +109,7 @@ Potential TODOs
 	- function fields
 	- function interval
 	- function intervalunit
+	- function object
 	- function records
 	
 - Charts Renderer: Add description to manual page "working with render".
@@ -179,6 +180,7 @@ DONE
 - Query: Added Functions:
 	- isNull
 	- isUndef
+	- object
 	- records
     - timetruncate 
 
