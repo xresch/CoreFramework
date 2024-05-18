@@ -240,6 +240,20 @@ public class CFWQueryParser {
 	}
 	
 	/***********************************************************************************************
+	 * Get the previous part from the array of parts.
+	 * Returns null of there is no previous part.
+	 ***********************************************************************************************/
+	private QueryPart getPreviousPart() {
+
+		QueryPart previousPart = null;
+		if( currentQueryParts.size() > 0) { 
+			previousPart = currentQueryParts.remove(currentQueryParts.size()-1);
+		}
+		
+		return previousPart;
+	}
+	
+	/***********************************************************************************************
 	 * Pops the previous part from the array of parts.
 	 * Returns null of there is no previous part.
 	 ***********************************************************************************************/
@@ -602,6 +616,26 @@ public class CFWQueryParser {
 
 				if(paramGroup instanceof QueryPartGroup) {
 					firstPart = new QueryPartFunction(currentContext, functionName, (QueryPartGroup)paramGroup);
+
+					if(this.lookahead() != null 
+					&& this.lookahead().type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_OPEN) {
+						QueryPart arrayPart = this.parseQueryPart(CFWQueryParserContext.FUNCTION);
+						
+						if(arrayPart instanceof QueryPartArray 
+						&& ((QueryPartArray)arrayPart).getQueryPartsArray().size() == 1) {
+							//--------------------------------------------------
+							// Make JSON member access on function return value 
+							firstPart = new QueryPartJsonMemberAccess(currentContext, firstPart, arrayPart);
+							
+						}else {
+							//--------------------------------------------------
+							// Failover, shouldn't really happen, but you never know ...
+							currentQueryParts.add(firstPart);
+							firstPart = arrayPart;
+						}
+						
+						
+					}
 				}else {
 					this.throwParseException("expected parameters after function: "+functionName, firstToken.position());
 				}
@@ -656,7 +690,8 @@ public class CFWQueryParser {
 				CFWQueryToken previousToken = this.lookat(-1);
 				if(previousToken != null) {
 					isPreviousArrayable =  previousToken.isStringOrText(true, true, true)
-										 ||  previousToken.type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE;
+										 || previousToken.type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE
+										 ;
 				}
 				firstToken = this.consumeToken();
 				
@@ -672,7 +707,7 @@ public class CFWQueryParser {
 					arrayPart.add(secondPart);
 				}
 				
-				//Create member access if previous is string and array contains index
+				//Create member access if previous is string/function and array contains index
 				if(isPreviousArrayable && arrayPart.isIndex()) {
 					QueryPart previousPart = popPreviousPart();
 					if(previousPart instanceof QueryPartAssignment) {
@@ -689,7 +724,14 @@ public class CFWQueryParser {
 				
 				// Close Array
 				if(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE) {
+					//TODO check if this is needed >> contextStack.pop(CFWQueryParserContext.ARRAY);
 					this.consumeToken();
+				}
+				
+				//------------------------------
+				// Handle Functions
+				if(context == CFWQueryParserContext.FUNCTION) {
+					return firstPart;
 				}
 				
 				

@@ -5,12 +5,20 @@
 	or when using the API to execute queries and structuring the returned result.
 </p>
 
+<h2>Formating Objects(and Arrays)</h2>
+<p>For easier reading of objects, you can use the formatfield-command to format an object as a list:
+</p>
+<pre><code class="language-cfwquery">| source random records=10 type=various
+| keep GRAPH_DATA
+| formatfield 
+	GRAPH_DATA = ['list', "bullets", "10px", false]</code></pre>
+	
+	
 <h2>Creating Objects</h2>
 <p>You can create your own objects for every record using curly braces'{}'.
 Here an example on how to do that:
 </p>
-<pre><code class="language-cfwquery">| source random records= 10
-| keep INDEX, ID, FIRSTNAME
+<pre><code class="language-cfwquery">| source empty records=10
 | set
   #########################################
   # Static Objects
@@ -30,7 +38,20 @@ Here an example on how to do that:
   object.category = randomFrom(['X', 'Y', 'Z'])
   object.isIsness = randomFrom([true, false, null])
   object.subobject.value = randomFrom([111, 222, 333])
-| remove INDEX, ID, FIRSTNAME</code></pre>
+  #########################################
+  # Object Function
+  #########################################
+  functionObject = 
+  		object(
+  			"id", 22
+  			"name", "Roberta"
+  			"likesPannaCotta", true
+  			"status", null
+  			"tags", ["beauty", "italian", "model", "dancer"]
+  			"attributes", object("height", 172, "eyeColor", "green" )
+  		)
+| formatfield 
+	fields() = ['list', "bullets", "10px", false]</code></pre>
 
 
 <h2>Accessing Object Members</h2>
@@ -72,6 +93,30 @@ Following query gets a random member name and accesses its value with the '.[ran
   randomName = randomFrom(object) # get a random member name from the object (either: percent | float | category | subobject)
   memberValue = object.[randomName] # get the value of the random member
   memberSubValue = object.[randomName].value # access a value of a sub object</code></pre>
+  
+<p>When you use functions and the return value is an object or array, you can access members directly.
+Also you can use function return values inside of access expressions:</p>
+<pre><code class="language-cfwquery">| paramdefaults
+	object = {"test": "hello"}
+	array = ["hello", "World"]
+	favoriteField = "favorite"
+	objectField = "object"
+| source empty
+| set
+	###################################################
+  	# Access member from function return value
+  	###################################################
+	OBJECT = param(object).test 				# returns "hello"
+	OBJECT_B = param(object)[test]				# returns "hello"
+	OBJECT_C = param(object).[test]				# returns "hello"
+	ARRAY = param(array)[1] 					# returns "World"
+	ARRAY_B = param(array).[1] 					# returns "World"
+	###################################################
+  	# Use function return value in access expression
+ 	###################################################
+	temp = {"favorite": "tiramisu", "object": { "sub": 42  } }
+	FUNC_ACCESS = temp.param(favoriteField)			# returns "tiramisu"
+	FUNC_SUBACCESS = temp.param(objectField).sub	# returns 42	</code></pre>
 
 
 <h2>Unboxing Objects</h2>

@@ -438,18 +438,21 @@ public class TestCFWQueryParts extends DBTestMaster {
 		
 		//---------------------------------
 		String queryString = """
-				| paramdefaults
-					object = {"test": "hello"}
-					array = ["hello", "World"]
-					favoriteField = "favorite"
-					objectField = "object"
-				| source empty
-				| set
-					TEST_OBJECT = param(object).test 				# returns "hello"
-					TEST_ARRAY = param(array).[1] 					# returns "World"
-					temp = {"favorite": "tiramisu", "object": { "sub": 42  } }
-					TEST_ACCESS = temp.param(favoriteField)			# returns "tiramisu"
-					TEST_SUBACCESS = temp.param(objectField).sub	# returns 42		
+| paramdefaults
+	object = {"test": "hello"}
+	array = ["hello", "World"]
+	favoriteField = "favorite"
+	objectField = "object"
+| source empty
+| set
+	OBJECT = param(object).test 				# returns "hello"
+	OBJECT_B = param(object)[test]				# returns "hello"
+	OBJECT_C = param(object).[test]				# returns "hello"
+	ARRAY = param(array)[1] 					# returns "World"
+	ARRAY_B = param(array).[1] 					# returns "World"
+	temp = {"favorite": "tiramisu", "object": { "sub": 42  } }
+	FUNC_ACCESS = temp.param(favoriteField)			# returns "tiramisu"
+	FUNC_SUBACCESS = temp.param(objectField).sub	# returns 42	
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
@@ -464,10 +467,13 @@ public class TestCFWQueryParts extends DBTestMaster {
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
 		JsonObject record = queryResults.getRecord(0);
-		Assertions.assertEquals("hello", record.get("TEST_OBJECT").getAsString());
-		Assertions.assertEquals("World", record.get("TEST_ARRAY").getAsString());
-		Assertions.assertEquals("tiramisu", record.get("TEST_ACCESS").getAsString());
-		Assertions.assertEquals(42, record.get("TEST_SUBACCESS").getAsInt());
+		Assertions.assertEquals("hello", record.get("OBJECT").getAsString());
+		Assertions.assertEquals("hello", record.get("OBJECT_B").getAsString());
+		Assertions.assertEquals("hello", record.get("OBJECT_C").getAsString());
+		Assertions.assertEquals("World", record.get("ARRAY").getAsString());
+		Assertions.assertEquals("World", record.get("ARRAY_B").getAsString());
+		Assertions.assertEquals("tiramisu", record.get("FUNC_ACCESS").getAsString());
+		Assertions.assertEquals(42, record.get("FUNC_SUBACCESS").getAsInt());
 
 		
 	}
