@@ -1683,6 +1683,51 @@ source json data=`
 		Assertions.assertEquals(false, record.get("NUMBER").getAsBoolean());
 		
 	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testIsNumber() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source random records=1
+| keep FIRSTNAME, INDEX
+| set
+	EMPTY= isNumber() 				 	# returns null
+	NULL = isNumber(null) 				# returns false
+	FIELD = isNumber(INDEX) 			# returns true
+	NUMBA = isNumber(42) 				# returns true
+	STRING_A = isNumber("88") 	 		# returns true
+	STRING_B = isNumber("88", false) 	# returns false
+	BOOLEAN = isNumber(true) 			# returns false
+	OBJECT = isNumber({value: 8008}) 	# returns false
+	ARRAY = isNumber([222]) 			# returns false
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
+		Assertions.assertEquals(false, record.get("NULL").getAsBoolean());
+		Assertions.assertEquals(true, record.get("FIELD").getAsBoolean());
+		Assertions.assertEquals(true, record.get("NUMBA").getAsBoolean());
+		Assertions.assertEquals(true, record.get("STRING_A").getAsBoolean());
+		Assertions.assertEquals(false, record.get("STRING_B").getAsBoolean());
+		Assertions.assertEquals(false, record.get("BOOLEAN").getAsBoolean());
+		Assertions.assertEquals(false, record.get("OBJECT").getAsBoolean());
+		Assertions.assertEquals(false, record.get("ARRAY").getAsBoolean());
+		
+	}
 	
 	/****************************************************************
 	 * 

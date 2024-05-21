@@ -1,0 +1,16 @@
+
+<p>The following query creates sample records and show some uses of the isNumber-function:</p>
+
+<pre><code class="language-cfwquery">| source random records=100
+| keep FIRSTNAME, INDEX
+| set
+	EMPTY= isNumber() 				 	# returns null
+	NULL = isNumber(null) 				# returns false
+	FIELD = isNumber(INDEX) 			# returns true
+	NUMBA = isNumber(42) 				# returns true
+	STRING_A = isNumber("88") 	 		# returns true
+	STRING_B = isNumber("88", false) 	# returns false
+	BOOLEAN = isNumber(true) 			# returns false
+	OBJECT = isNumber({value: 8008}) 	# returns false
+	ARRAY = isNumber([222]) 			# returns false</code></pre>
+

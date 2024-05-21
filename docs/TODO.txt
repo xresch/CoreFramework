@@ -179,6 +179,7 @@ DONE
 	
 - Query: Added Functions:
 	- isNull
+	- isNumber
 	- isUndef
 	- object
 	- records
