@@ -1605,9 +1605,55 @@ source json data=`
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testIsBoolean() throws IOException {
+		
+		String queryString = """
+| source random records=1
+| keep FIRSTNAME, LIKES_TIRAMISU
+| filter LIKES_TIRAMISU != null
+| set
+	EMPTY = isBoolean() 				# returns null
+	NULL = isBoolean(null) 				# returns false
+	FIELD = isBoolean(LIKES_TIRAMISU) 	# returns true
+	BOOL_TRUE = isBoolean(true) 		# returns true
+	BOOL_FALSE = isBoolean(false) 		# returns true
+	STRING_A = isBoolean("false") 	 	# returns true
+	STRING_B = isBoolean("true", false) # returns false
+	NUMBA = isBoolean(42) 				# returns false
+	OBJECT = isBoolean( {value: true} ) # returns false
+	ARRAY = isBoolean( [true] ) 		# returns false
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
+		Assertions.assertEquals(false, record.get("NULL").getAsBoolean());
+		Assertions.assertEquals(true, record.get("FIELD").getAsBoolean());
+		Assertions.assertEquals(true, record.get("BOOL_TRUE").getAsBoolean());
+		Assertions.assertEquals(true, record.get("BOOL_FALSE").getAsBoolean());
+		Assertions.assertEquals(true, record.get("STRING_A").getAsBoolean());
+		Assertions.assertEquals(false, record.get("STRING_B").getAsBoolean());
+		Assertions.assertEquals(false, record.get("NUMBA").getAsBoolean());
+		Assertions.assertEquals(false, record.get("OBJECT").getAsBoolean());
+		Assertions.assertEquals(false, record.get("ARRAY").getAsBoolean());
+		
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testIsNull() throws IOException {
 		
-		//---------------------------------
 		String queryString = """
 | source random records=1
 | set
@@ -1649,7 +1695,6 @@ source json data=`
 	@Test
 	public void testIsNullOrEmpty() throws IOException {
 		
-		//---------------------------------
 		String queryString = """
 				| source empty records=1
 				| set
@@ -1689,7 +1734,6 @@ source json data=`
 	@Test
 	public void testIsNumber() throws IOException {
 		
-		//---------------------------------
 		String queryString = """
 | source random records=1
 | keep FIRSTNAME, INDEX
@@ -1735,7 +1779,6 @@ source json data=`
 	@Test
 	public void testIsUndef() throws IOException {
 		
-		//---------------------------------
 		String queryString = """
 				| record
 					[NAME, VALUE, LOCATION]

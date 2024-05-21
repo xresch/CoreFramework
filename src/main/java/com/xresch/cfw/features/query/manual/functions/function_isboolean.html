@@ -1,0 +1,18 @@
+
+<p>The following query creates sample records and show some uses of the isBoolean-function:</p>
+
+<pre><code class="language-cfwquery">| source random records=100
+| keep FIRSTNAME, LIKES_TIRAMISU
+| filter LIKES_TIRAMISU != null
+| set
+	EMPTY = isBoolean() 				# returns null
+	NULL = isBoolean(null) 				# returns false
+	FIELD = isBoolean(LIKES_TIRAMISU) 	# returns true
+	BOOL_TRUE = isBoolean(true) 		# returns true
+	BOOL_FALSE = isBoolean(false) 		# returns true
+	STRING_A = isBoolean("false") 	 	# returns true
+	STRING_B = isBoolean("true", false) # returns false
+	NUMBA = isBoolean(42) 				# returns false
+	OBJECT = isBoolean( {value: true} ) # returns false
+	ARRAY = isBoolean( [true] ) 		# returns false</code></pre>
+
