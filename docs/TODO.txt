@@ -181,6 +181,7 @@ DONE
 	- isBoolean
 	- isNull
 	- isNumber
+	- isObject
 	- isUndef
 	- object
 	- records

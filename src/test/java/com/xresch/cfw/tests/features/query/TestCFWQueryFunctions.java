@@ -1772,6 +1772,50 @@ source json data=`
 		Assertions.assertEquals(false, record.get("ARRAY").getAsBoolean());
 		
 	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testIsObject() throws IOException {
+		
+		String queryString = """
+| source empty records=1
+| set OBJECT_FIELD = {a: null, b: 1, c: true, d: "three" }
+| set
+	EMPTY = isObject() 				# returns null
+	NULL = isObject(null) 			# returns false
+	FIELD = isObject(OBJECT_FIELD) 	# returns true
+	OBJECT = isObject({a: 22}) 		# returns true
+	OBJECT_EMPTY = isObject({}) 	# returns true
+	STRING = isObject('{b: 99}') 	# returns false
+	BOOLEAN = isObject(true) 		# returns false
+	NUMBA = isObject(42) 			# returns false
+	ARRAY = isObject( [true] ) 		# returns false
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
+		Assertions.assertEquals(false, record.get("NULL").getAsBoolean());
+		Assertions.assertEquals(true, record.get("FIELD").getAsBoolean());
+		Assertions.assertEquals(true, record.get("OBJECT").getAsBoolean());
+		Assertions.assertEquals(true, record.get("OBJECT_EMPTY").getAsBoolean());
+		Assertions.assertEquals(false, record.get("STRING").getAsBoolean());
+		Assertions.assertEquals(false, record.get("BOOLEAN").getAsBoolean());
+		Assertions.assertEquals(false, record.get("NUMBA").getAsBoolean());
+		Assertions.assertEquals(false, record.get("ARRAY").getAsBoolean());
+		
+	}
 	
 	/****************************************************************
 	 * 

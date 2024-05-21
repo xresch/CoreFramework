@@ -1,0 +1,16 @@
+
+<p>The following query creates sample records and show some uses of the isObject-function:</p>
+
+<pre><code class="language-cfwquery">| source empty records=10
+| set OBJECT_FIELD = {a: null, b: 1, c: true, d: "three" }
+| set
+	EMPTY = isObject() 				# returns null
+	NULL = isObject(null) 			# returns false
+	FIELD = isObject(OBJECT_FIELD) 	# returns true
+	OBJECT = isObject({a: 22}) 		# returns true
+	OBJECT_EMPTY = isObject({}) 	# returns true
+	STRING = isObject('{b: 99}') 	# returns false
+	BOOLEAN = isObject(true) 		# returns false
+	NUMBA = isObject(42) 			# returns false
+	ARRAY = isObject( [true] ) 		# returns false</code></pre>
+
