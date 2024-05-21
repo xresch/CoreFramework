@@ -178,6 +178,7 @@ DONE
 	- formatcss
 	
 - Query: Added Functions:
+	- isArray
 	- isBoolean
 	- isNull
 	- isNumber

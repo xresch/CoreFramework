@@ -1605,12 +1605,56 @@ source json data=`
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testIsArray() throws IOException {
+		
+		String queryString = """
+| source empty records=1
+| set ARRAY_FIELD = [null, 1, true, "three"]
+| set
+	EMPTY = isArray() 				# returns null
+	NULL = isArray(null) 			# returns false
+	FIELD = isArray(ARRAY_FIELD) 	# returns true
+	ARRAY = isArray([1, 2, 3]) 		# returns true
+	ARRAY_EMPTY = isArray([]) 		# returns true
+	STRING = isArray('["tiramisu"]')# returns false
+	BOOLEAN = isArray(true) 		# returns false
+	NUMBA = isArray(42) 			# returns false
+	OBJECT = isArray( {"z": 34} ) 	# returns false
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
+		Assertions.assertEquals(false, record.get("NULL").getAsBoolean());
+		Assertions.assertEquals(true, record.get("FIELD").getAsBoolean());
+		Assertions.assertEquals(true, record.get("ARRAY").getAsBoolean());
+		Assertions.assertEquals(true, record.get("ARRAY_EMPTY").getAsBoolean());
+		Assertions.assertEquals(false, record.get("STRING").getAsBoolean());
+		Assertions.assertEquals(false, record.get("BOOLEAN").getAsBoolean());
+		Assertions.assertEquals(false, record.get("NUMBA").getAsBoolean());
+		Assertions.assertEquals(false, record.get("OBJECT").getAsBoolean());
+		
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testIsBoolean() throws IOException {
 		
 		String queryString = """
 | source random records=1
 | keep FIRSTNAME, LIKES_TIRAMISU
-| filter LIKES_TIRAMISU != null
+| set LIKES_TIRAMISU = true
 | set
 	EMPTY = isBoolean() 				# returns null
 	NULL = isBoolean(null) 				# returns false

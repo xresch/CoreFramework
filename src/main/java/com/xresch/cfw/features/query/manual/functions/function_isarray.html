@@ -1,0 +1,16 @@
+
+<p>The following query creates sample records and show some uses of the isArray-function:</p>
+
+<pre><code class="language-cfwquery">| source empty records=10
+| set ARRAY_FIELD = [null, 1, true, "three"]
+| set
+	EMPTY = isArray() 				# returns null
+	NULL = isArray(null) 			# returns false
+	FIELD = isArray(ARRAY_FIELD) 	# returns true
+	ARRAY = isArray([1, 2, 3]) 		# returns true
+	ARRAY_EMPTY = isArray([]) 		# returns true
+	STRING = isArray('["tiramisu"]')# returns false
+	BOOLEAN = isArray(true) 		# returns false
+	NUMBA = isArray(42) 			# returns false
+	OBJECT = isArray( {"z": 34} ) 	# returns false</code></pre>
+
