@@ -1816,6 +1816,7 @@ source json data=`
 		Assertions.assertEquals(false, record.get("ARRAY").getAsBoolean());
 		
 	}
+	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
@@ -1857,6 +1858,49 @@ source json data=`
 		Assertions.assertEquals(false, record.get("STRING").getAsBoolean());
 		Assertions.assertEquals(false, record.get("BOOLEAN").getAsBoolean());
 		Assertions.assertEquals(false, record.get("NUMBA").getAsBoolean());
+		Assertions.assertEquals(false, record.get("ARRAY").getAsBoolean());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testIsString() throws IOException {
+		
+		String queryString = """
+| source empty records=1
+| set STRING_FIELD = "I am a String"
+| set
+	EMPTY = isString() 				# returns null
+	NULL = isString(null) 			# returns false
+	FIELD = isString(STRING_FIELD ) # returns true
+	STRING = isString('Yay!')		# returns false
+	BOOLEAN = isString(true) 		# returns false
+	NUMBA = isString(42) 			# returns false
+	OBJECT = isString( {"z": 34} ) 	# returns false
+	ARRAY = isString([1, 2, 3]) 	# returns false
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
+		Assertions.assertEquals(false, record.get("NULL").getAsBoolean());
+		Assertions.assertEquals(true, record.get("FIELD").getAsBoolean());
+		Assertions.assertEquals(true, record.get("STRING").getAsBoolean());
+		Assertions.assertEquals(false, record.get("BOOLEAN").getAsBoolean());
+		Assertions.assertEquals(false, record.get("NUMBA").getAsBoolean());
+		Assertions.assertEquals(false, record.get("OBJECT").getAsBoolean());
 		Assertions.assertEquals(false, record.get("ARRAY").getAsBoolean());
 		
 	}

@@ -1,0 +1,15 @@
+
+<p>The following query creates sample records and show some uses of the isString-function:</p>
+
+<pre><code class="language-cfwquery">| source empty records=1
+| set STRING_FIELD = "I am a String"
+| set
+	EMPTY = isString() 				# returns null
+	NULL = isString(null) 			# returns false
+	FIELD = isString(STRING_FIELD ) # returns true
+	STRING = isString('Yay!')		# returns false
+	BOOLEAN = isString(true) 		# returns false
+	NUMBA = isString(42) 			# returns false
+	OBJECT = isString( {"z": 34} ) 	# returns false
+	ARRAY = isString([1, 2, 3]) 	# returns false</code></pre>
+

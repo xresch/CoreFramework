@@ -183,6 +183,7 @@ DONE
 	- isNull
 	- isNumber
 	- isObject
+	- isString
 	- isUndef
 	- object
 	- records
