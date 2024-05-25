@@ -18,8 +18,6 @@ CFW_QUERY_URL = "/app/query";
 			//------------------------------------------
 			// Parameterize Edit Widget Modal Request
 			if(inputField.hasClass("query-original")){
-				console.log("A");
-				let widgetType = $('#edited-widget-type').text();
 
 				let originalQuery = originalRequestAttributes.query;
 				
@@ -28,15 +26,14 @@ CFW_QUERY_URL = "/app/query";
 					let cursorPos = requestAttributes.cfwAutocompleteCursorPosition;
 					let beforeCursor = originalQuery.substring(0, cursorPos);
 					
-					// TODO: Find a more stable way to access params for currentPage
+					//TODO Find a more stable way to access params for currentPage
 					let params = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);	
 					
 					let beforeCursorNew = cfw_parameter_substituteInString(beforeCursor, params);
 					let newCursorPos = cursorPos + (beforeCursorNew.length - beforeCursor.length);
 					
 					requestAttributes.cfwAutocompleteCursorPosition = newCursorPos;
-					console.log(cursorPos);
-					console.log(newCursorPos);
+
 				
 				}
 				
