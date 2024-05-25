@@ -2447,10 +2447,15 @@ function cfw_timeframePicker_shift(origin, direction){
  * to the server.
  * You can add more parameters to the paramObject provided to the callback function
  * 
- * @param functionToEnhanceParams(inputField, parmObject) callback function, will get an object that can be enhanced with more parameters
+ * @param functionToEnhanceParams(inputField, paramObject, originalParamObject) 
+ * 		callback function, will get an object that can be enhanced with more parameters
+ * 			inputField: element on which autocomplete was triggered
+ * 			paramObject: parameters for the autocomplete request, change this object.
+ * 			originalParamObject: the original parameters without changes
  *************************************************************************************/
-function cfw_autocomplete_setParamEnhancer(functionToEnhanceParams){
-	CFW.global.autcompleteParamEnhancerFunction = functionToEnhanceParams;
+function cfw_autocomplete_addParamEnhancer(functionToEnhanceParams){
+	
+	CFW.global.autcompleteParamEnhancerFunctions.push(functionToEnhanceParams);
 }
 
 /**************************************************************************************
@@ -2676,9 +2681,12 @@ function cfw_autocompleteEventHandler(e, settings) {
 				params.cfwAutocompleteFieldname = settings.fieldName;
 				params.cfwAutocompleteSearchstring = settings.inputField.value;
 				params.cfwAutocompleteCursorPosition = settings.inputField.selectionStart;
+				
 				//function to customize the autocomplete
-				if(CFW.global.autcompleteParamEnhancerFunction != null){
-					CFW.global.autcompleteParamEnhancerFunction(settings.$input, params);
+				let origParamsClone = _.cloneDeep(params);
+				for(let i in CFW.global.autcompleteParamEnhancerFunctions){
+					let currentFunc = CFW.global.autcompleteParamEnhancerFunctions[i];
+					currentFunc(settings.$input, params, _.cloneDeep(origParamsClone));
 				}
 				
 				cfw_http_postJSON('/cfw/autocomplete', params, 
@@ -5402,7 +5410,7 @@ var CFW = {
 		formID: 'cfw-formID',
 		autocompleteCounter: 0,
 		autocompleteFocus: -1,
-		autcompleteParamEnhancerFunction: null,
+		autcompleteParamEnhancerFunctions: [],
 		timeframePickerOnchangeHandlers: {},
 		isLocaleFetching: null,
 		lastServerAccess: moment(),

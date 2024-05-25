@@ -837,7 +837,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 					label: 'Sharing Details',
 					name: 'table',
 					renderdef: {
-						visiblefields: ["NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
+						visiblefields: ["IS_FAVED", "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
 						labels: {
 					 		PK_ID: "ID",
 					 		IS_SHARED: 'Shared',

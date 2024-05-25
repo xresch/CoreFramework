@@ -384,12 +384,15 @@ function cfw_parameter_getStoredUserParams(){
  * with the values set by the Parameter Widgets (if applicable) 
  * and returns a clone of the object held by customParams. 
  * Also adds the parameters earliest and latest with epoch time from the time picker.
- * @param customParams
+ * @param customParams which should be added to the params
  ******************************************************************************/
 function cfw_parameter_getFinalParams(customParams){
 	
 	var storedViewerParams = cfw_parameter_getStoredUserParams();
-	var mergedParams = _.cloneDeep(customParams);
+	var mergedParams = {};
+	if(customParams != null){
+		mergedParams =_.cloneDeep(customParams);
+	}
 	
 	for(var index in mergedParams){
 		

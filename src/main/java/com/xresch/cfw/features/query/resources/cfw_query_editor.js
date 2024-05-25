@@ -6,7 +6,51 @@ CFW_QUERY_URL = "/app/query";
 
 /*******************************************************************************
  * 
- ******************************************************************************/
+ *******************************************************************************/
+(function (){
+	
+	//-------------------------------------
+	// Add ParamEnhancer Function
+	// needed to adjust cursor position on
+	// parameter changes
+	cfw_autocomplete_addParamEnhancer( function(inputField, requestAttributes, originalRequestAttributes){
+
+			//------------------------------------------
+			// Parameterize Edit Widget Modal Request
+			if(inputField.hasClass("query-original")){
+				console.log("A");
+				let widgetType = $('#edited-widget-type').text();
+
+				let originalQuery = originalRequestAttributes.query;
+				
+				if(originalQuery.includes("$")){
+
+					let cursorPos = requestAttributes.cfwAutocompleteCursorPosition;
+					let beforeCursor = originalQuery.substring(0, cursorPos);
+					
+					// TODO: Find a more stable way to access params for currentPage
+					let params = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);	
+					
+					let beforeCursorNew = cfw_parameter_substituteInString(beforeCursor, params);
+					let newCursorPos = cursorPos + (beforeCursorNew.length - beforeCursor.length);
+					
+					requestAttributes.cfwAutocompleteCursorPosition = newCursorPos;
+					console.log(cursorPos);
+					console.log(newCursorPos);
+				
+				}
+				
+				return;
+			}
+
+			
+		}
+	);
+}) ()
+
+/*******************************************************************************
+ * 
+ *******************************************************************************/
 function cfw_query_editor_getManualPage(type, componentName){
 	
 	//-----------------------------------

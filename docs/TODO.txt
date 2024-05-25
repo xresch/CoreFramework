@@ -168,11 +168,12 @@ DONE
 - Dashboard: Fixed versions showing up in shared list
 - Dashboard: Widget Default Settings: New option "Pause" allows the widget to be paused in case of issues.
 - Dashboard: Widget Default Settings: You can now be be picker with colors by picking colors with the color picker.
-
+- Dashboard: Show favorite icon on Sharing Details view
 - Parameter: Added basic documentation to the parameter definitions 
 - Query: Command formatlink - supports a "style" parameter to style the link with CSS
 - Query: Fixed issues with newline in parameter substitution
 - Query: JSON Member Access now supports the use of functions
+- Query: Editor - Autocomplete works better when using $xxx$-placeholders for parameters
 - Query: Added Commands:
 	- displayfields (plus alias formatdisplay)
 	- formatcss

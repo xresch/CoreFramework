@@ -1766,8 +1766,8 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 	//--------------------------------------------
 	// Enhance Autocomplete Requests
 	
-	cfw_autocomplete_setParamEnhancer( function(inputField, requestAttributes){
-		
+	cfw_autocomplete_addParamEnhancer( function(inputField, requestAttributes, originalRequestAttributes){
+
 			//---------------------------
 			// Add DashboardID
 			requestAttributes['cfw-dashboardid'] = CFW_DASHBOARD_URLPARAMS.id;
@@ -1778,11 +1778,11 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			//------------------------------------------
 			// Parameterize Edit Widget Modal Request
 			if($('#editWidgetComposite').is(":visible")){
-				let widgetType = $('#edited-widget-type').val();
-				
-				let dashboardParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
+				let widgetType = $('#edited-widget-type').text();
+
+				let dashboardParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);		
 				let parameterizedRequestAttributes = cfw_parameter_applyToFields(requestAttributes, dashboardParams, widgetType);
-				
+								
 				Object.assign(requestAttributes, parameterizedRequestAttributes);
 				
 				return;
