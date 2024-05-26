@@ -942,7 +942,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * 
 	 *****************************************************************************/
 	public ResultSet fetchHierarchyResultSet(String... resultFields) {
-		return createFetchHierarchyQuery(resultFields)
+		return createFetchHierarchyQuery((Object[])resultFields)
 					.getResultSet();
 	}
 	
@@ -1053,7 +1053,7 @@ public class CFWHierarchy<T extends CFWObject> {
 				
 		//--------------------------------------------
 		// Set ordering
-		statement.orderby(hierarchyAndPrimaryFieldnames)
+		statement.orderby((Object[])hierarchyAndPrimaryFieldnames)
 				 .nullsFirst();
 
 		return statement;

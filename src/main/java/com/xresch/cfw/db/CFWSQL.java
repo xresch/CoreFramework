@@ -713,7 +713,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public boolean insert() {
 
-		return insert(fields.keySet().toArray(new String[] {}));
+		return insert(fields.keySet().toArray(new Object[] {}));
 	}
 	
 	/****************************************************************

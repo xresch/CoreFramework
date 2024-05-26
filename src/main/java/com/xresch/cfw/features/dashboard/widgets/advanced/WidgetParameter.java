@@ -26,16 +26,13 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
-import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
-import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
-import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.utils.CFWUtilsText;
-import com.xresch.cfw.validation.CustomValidator;
 
 public class WidgetParameter extends WidgetDefinition {
 

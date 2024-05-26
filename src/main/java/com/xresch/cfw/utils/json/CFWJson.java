@@ -625,6 +625,7 @@ public class CFWJson {
 	 * @deprecated use toCSV() instead
 	 * @return empty string if array is empty
 	 *************************************************************************************/
+	@Deprecated
 	public static String formatJsonArrayToCSV(JsonArray convertThis, String delimiter) {
 		
 		if(convertThis == null || convertThis.isEmpty() ) { return ""; }
