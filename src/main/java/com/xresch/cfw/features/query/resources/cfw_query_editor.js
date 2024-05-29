@@ -21,7 +21,7 @@ CFW_QUERY_URL = "/app/query";
 
 				let originalQuery = originalRequestAttributes.query;
 				
-				if(originalQuery.includes("$")){
+				if(originalQuery != null && originalQuery.includes("$")){
 
 					let cursorPos = requestAttributes.cfwAutocompleteCursorPosition;
 					let beforeCursor = originalQuery.substring(0, cursorPos);
