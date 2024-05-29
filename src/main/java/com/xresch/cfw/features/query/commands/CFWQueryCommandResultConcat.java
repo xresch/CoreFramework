@@ -204,7 +204,12 @@ public class CFWQueryCommandResultConcat extends CFWQueryCommand {
 			//----------------------------
 			// Remove Merged Results
 			CFWQueryResultList previousResults = this.getQueryContext().getResultList();
-			for(CFWQueryResult result : resultsToCopy.getResultList()) {
+			
+			// use a clone to avoid ConcurrentModificationException
+			ArrayList<CFWQueryResult> clonedList = new ArrayList<>(); 
+			clonedList.addAll(resultsToCopy.getResultList());
+			
+			for(CFWQueryResult result : clonedList) {
 				 previousResults.removeResult(result);
 			}
 			

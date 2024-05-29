@@ -94,6 +94,7 @@ Potential TODOs
 - Query: Manual Page - How to create charts 
 - Query: Mimic calling mimic working with meta()
 - Query: Autocomplete - fix "F:" replace issue
+- Query: fixed ConcurrentModificationException when using command resultconcat
 - Query: Test cases
 	- command messages
 	- command if, else, end
