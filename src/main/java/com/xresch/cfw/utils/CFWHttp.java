@@ -927,7 +927,7 @@ public class CFWHttp {
 			
 			BufferedReader in = null;
 			StringBuilder builder = new StringBuilder();
-			
+			int responseCode = -1;
 			try{
 				
 				//------------------------------
@@ -941,7 +941,8 @@ public class CFWHttp {
 
 				//------------------------------
 				// Get Response Stream
-				if (conn.getResponseCode() <= 299) {
+				responseCode = conn.getResponseCode();
+				if (responseCode <= 299) {
 				    in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				} else {
 				    in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
@@ -961,7 +962,10 @@ public class CFWHttp {
 		        
 			}catch(Exception e) {
 				new CFWLog(responseLogger)
-					.severe("Exception occured while accessing URL: "+e.getMessage(), e);
+					.severe("Exception occured while accessing URL: Type=\""+e.getClass().getSimpleName()
+							+"\", HTTPStatus=\""+responseCode+"\""
+							+"\", Message=\""+e.getMessage()+"\""
+							, e);
 				errorOccured = true;
 			}finally {
 				if(in != null) {

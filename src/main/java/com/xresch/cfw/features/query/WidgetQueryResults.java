@@ -431,7 +431,18 @@ public class WidgetQueryResults extends WidgetDefinition {
 		for(JsonElement element : resultArray) {
 			
 			JsonObject current = element.getAsJsonObject();
-			Float value = current.get(valueField).getAsFloat();
+			JsonElement valueFieldElement = current.get(valueField);
+			Float value = -1f;
+			
+			//-------------------------------
+			// Get Value 
+			if(valueFieldElement.isJsonPrimitive() 
+			&& valueFieldElement.getAsJsonPrimitive().isNumber()) {
+				value = valueFieldElement.getAsFloat();
+			}else {
+				CFW.Messages.addWarningMessage("Value was not a number: "+CFW.JSON.toString(valueFieldElement) );
+				continue;
+			}
 
 			CFWStateOption condition = CFW.Conditions.getConditionForValue(value, taskParams);
 			if(condition != null 
