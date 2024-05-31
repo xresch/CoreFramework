@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -19,6 +20,8 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
+import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
@@ -44,13 +47,20 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
 
-
+	private QueryPartValue listFormatter = null;
 
 	/******************************************************************
 	 *
 	 ******************************************************************/
 	public CFWQuerySourceWeb(CFWQuery parent) {
 		super(parent);
+		
+		JsonArray listFormatterParams = new JsonArray();
+		listFormatterParams.add("list");
+		listFormatterParams.add("none");
+		listFormatterParams.add("0px");
+		listFormatterParams.add(true);
+		listFormatter = QueryPartValue.newJson(listFormatterParams);
 	}
 
 	
@@ -284,8 +294,38 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 				new JsonTimerangeChecker(timefield, timeformat, earliestMillis, latestMillis)
 					.epochAsNewField("_epoch");
 		
-		JsonElement element = CFW.JSON.fromJson(data);
+		//------------------------------------
+		// Parse Data
+		JsonElement element;
+		try {
+			element = CFW.JSON.fromJson(data);
+		}catch(Exception e) {
+			
+			EnhancedJsonObject exceptionObject = new EnhancedJsonObject();
+			exceptionObject.addProperty("Key", "Exception" );
+			exceptionObject.addProperty("Value", CFW.Utils.Text.stacktraceToString(e) );
+			outQueue.add( exceptionObject );
+			
+			exceptionObject = new EnhancedJsonObject();
+			exceptionObject.addProperty("Key", "HTTPStatus" );
+			exceptionObject.addProperty("Value", response.getStatus() );
+			outQueue.add( exceptionObject );
+			exceptionObject = new EnhancedJsonObject();
+			exceptionObject.addProperty("Key", "HTTPHeaders" );
+			exceptionObject.add("Value", CFW.JSON.objectToJsonElement(response.getHeaders()) );
+			outQueue.add( exceptionObject );
+			
+			exceptionObject = new EnhancedJsonObject();
+			exceptionObject.addProperty("Key", "ResponseBody" );
+			exceptionObject.addProperty("Value", data );
+			outQueue.add( exceptionObject );
+						
+			CFWQueryCommandFormatField.addFormatter(this.parent.getContext(), "Value", listFormatter);
+			return;
+		}
 		
+		//------------------------------------
+		// Iterate Data
 		if(element.isJsonObject()) {
 			
 			if(timefield != null && !timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {

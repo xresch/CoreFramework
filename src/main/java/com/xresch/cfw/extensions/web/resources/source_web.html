@@ -149,11 +149,43 @@ The following query uses the unbox command to keep some of the original fields(f
 	method="POST"
 	url="https://jsonplaceholder.typicode.com/posts"
 	headers={'Content-Type': 'application/json; charset=UTF-8'}
-	body="
-		{
-		    title: 'foo',
-		    body: 'bar',
-		    userId: 1,
-		}
-	"</code></pre>	
+	body={
+		    "title": "foo",
+		    "body": "bar",
+		    "userId": 2
+		}</code></pre>	
+
+<h2>Fetching Data From JIRA</h2>
+<p>Following is an example how to fetch data from the API of the well known project management tool JIRA:</p>
+<pre><code class="language-cfwquery">| source web 
+    method="GET"
+    url="https://jira.acme.com/rest/api/2/search"
+    username="yourApiUser"
+    password="yourAPIpassword"
+    headers={'Content-Type': 'application/json; charset=UTF-8', 'accept': 'application/json'}
+    body=`{"jql": "resolution = Unresolved AND created >= '-1d' ORDER BY created DESC, updated DESC", "maxResults": 10} `
+| unbox issues replace=true
+| unbox issues replace=true
+| rename 
+    id="ID" 
+    key="KEY"
+    self="URL"
+| unbox fields.parent.id 				| rename id="PARENT_ID"
+| unbox fields.parent.key 				| rename key="PARENT_KEY"
+| unbox fields.parent.self 				| rename self="PARENT_URL"
+| unbox fields.summary 					| rename summary="TITLE"
+| unbox fields.assignee.name 			| rename name="ASSIGNEE"
+| unbox fields.assignee.emailAddress 	| rename emailAddress ="ASSIGNEE_EMAIL"
+| unbox fields.reporter.name 			| rename name="REPORTER"
+| unbox fields.reporter.emailAddress 	| rename emailAddress ="REPORTER_EMAIL"
+| unbox fields.status.name 				| rename name ="STATUS"
+| unbox fields.created 					| rename created ="CREATED"
+| unbox fields.updated 					| rename updated ="UPDATED"
+| remove expand, fields
+| set
+    CREATED = timeparse("yyyy-MM-dd'T'HH:mm:ss.SSSZ", CREATED)
+    UPDATED = timeparse("yyyy-MM-dd'T'HH:mm:ss.SSSZ", UPDATED)
+| formatfield 
+    [fields, issues] = list
+    [CREATED, UPDATED] = date</code></pre>	
 

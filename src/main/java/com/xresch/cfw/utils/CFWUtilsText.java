@@ -19,7 +19,7 @@ public class CFWUtilsText {
 		if(string == null) return null;
 		return string.substring(0,1).toUpperCase() + string.substring(1).toLowerCase();
 	}
-	
+		
 	
 	/*******************************************************************
 	 * 
@@ -123,6 +123,24 @@ public class CFWUtilsText {
         }
 
         return len1 - len2;
+	}
+	
+	/*******************************************************************
+	 * 
+	 *******************************************************************/
+	public static String stacktraceToString(Throwable throwable) {
+		
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(throwable.getClass());
+		buffer.append(": ");
+		buffer.append(throwable.getMessage());
+		
+		for(StackTraceElement element : throwable.getStackTrace()){
+			buffer.append(" <br/>  at ");
+			buffer.append(element);
+		}
+		
+		return buffer.toString();
 	}
 	
 	/*******************************************************************

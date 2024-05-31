@@ -755,6 +755,7 @@ public class CFWHttp {
 	 ******************************************************************************************************/
 	public class CFWHttpRequestBuilder {
 		
+		private static final String HEADER_CONTENT_TYPE = "Content-Type";
 		String method = "GET";
 		String URL = null;
 		String requestBody = null;
@@ -833,7 +834,7 @@ public class CFWHttp {
 		 ***********************************************/
 		public CFWHttpRequestBuilder body(String contentType, String content) {
 			this.requestBodyContentType = contentType;
-			this.header("Content-Type", contentType);
+			this.header(HEADER_CONTENT_TYPE, contentType);
 			this.requestBody = content;
 			return this;
 		}
@@ -881,8 +882,10 @@ public class CFWHttp {
 					//-----------------------------------
 					// Handle POST Body
 					if(requestBody != null) {
-						if(!Strings.isNullOrEmpty(requestBodyContentType)) {
-							connection.setRequestProperty("Content-Type", requestBodyContentType);
+						if(headers.containsKey(HEADER_CONTENT_TYPE)) {
+							connection.setRequestProperty(HEADER_CONTENT_TYPE, headers.get(HEADER_CONTENT_TYPE));
+						}else if(!Strings.isNullOrEmpty(requestBodyContentType)) {
+							connection.setRequestProperty(HEADER_CONTENT_TYPE, requestBodyContentType);
 						}
 						connection.setDoOutput(true);
 						connection.connect();
@@ -1035,7 +1038,7 @@ public class CFWHttp {
 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error: ");
 					return jsonArray;
 				}else {
-					new CFWLog(responseLogger).severe("Error occured while reading http response.");
+					new CFWLog(responseLogger).severe("Error occured while reading http response:"+CFW.JSON.toString(jsonElement));
 				}
 			}
 			

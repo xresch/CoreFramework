@@ -455,18 +455,8 @@ public class CFWLog {
 			// Handle Throwable
 			//-------------------------
 			if(throwable != null){
-				
-				StringBuilder buffer = new StringBuilder();
-				buffer.append(throwable.getClass());
-				buffer.append(": ");
-				buffer.append(throwable.getMessage());
-				
-				for(StackTraceElement element : throwable.getStackTrace()){
-					buffer.append(" <br/>  at ");
-					buffer.append(element);
-				}
-				
-				this.exception = buffer.toString();
+								
+				this.exception = CFW.Utils.Text.stacktraceToString(throwable);
 			
 			}
 			
