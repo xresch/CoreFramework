@@ -162,6 +162,7 @@ DONE
 
 ------- current -------
 - Groups: Added a List of all groups with owner and editors, to simplify finding someone that can add you to a group
+- Alerting: Do not send mails to inactive users.
 - Dashboard: Fixed versions showing up in shared list
 - Dashboard: Widget Default Settings: New option "Pause" allows the widget to be paused in case of issues.
 - Dashboard: Widget Default Settings: You can now be be picker with colors by picking colors with the color picker.

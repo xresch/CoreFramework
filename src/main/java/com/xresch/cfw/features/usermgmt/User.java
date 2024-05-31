@@ -777,6 +777,11 @@ public class User extends CFWObject {
 		return this;
 	}
 	
+	public boolean isStatusActive() {
+		return this.status.getValue().equals("Active");
+
+	}
+	
 	public boolean isRenamable() {
 		return isRenamable.getValue();
 	}

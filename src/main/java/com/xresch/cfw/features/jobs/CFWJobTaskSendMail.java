@@ -68,7 +68,7 @@ public class CFWJobTaskSendMail extends CFWJobTask {
 		MailTestSettings settings = new MailTestSettings();
 		settings.mapJobExecutionContext(context);
 		
-		HashMap<Integer, User> userlist = CFW.DB.Users.convertToUserList(settings.getUsersToMail());
+		HashMap<Integer, User> userlist = CFW.DB.Users.convertToUserList(settings.getUsersToMail(), true);
 		new CFWMailBuilder(settings.getSubject())
 					.fromNoReply()
 					.recipientsTo(userlist)

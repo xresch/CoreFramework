@@ -220,15 +220,21 @@ public class CFWDBUser {
 	/***************************************************************
 	 * Takes a Map<UserID, something> and fetches the users from
 	 * the DB and returns a HashMap<Integer, User>.
+	 * @param removeInactive TODO
 	 * 
 	 * @return Returns a list, can be empty, never null
 	 ****************************************************************/
-	public static HashMap<Integer, User> convertToUserList(Map<String, String> usersToAlert) {
+	public static HashMap<Integer, User> convertToUserList(Map<String, String> usersToAlert, boolean removeInactive) {
 		
 		HashMap<Integer, User> uniqueUsers = new HashMap<>();
 		if(usersToAlert != null) {
 			for(String userID : usersToAlert.keySet()) {
 				User user = CFW.DB.Users.selectByID(userID);
+				
+				if(removeInactive && !user.isStatusActive()) {
+					continue;
+				}
+				
 				if(user != null) {
 					uniqueUsers.put(user.id(), user);
 				}
