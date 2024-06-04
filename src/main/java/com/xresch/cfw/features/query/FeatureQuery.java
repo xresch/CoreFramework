@@ -120,6 +120,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeframeOffset;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionToJSON;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTrim;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionType;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionUserdata;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceAppDB;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceApplog;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceAuditlog;
@@ -305,6 +306,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionToJSON(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTrim(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionType(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionUserdata(null));
 		 
 		//----------------------------------
 		// Register Sources

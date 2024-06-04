@@ -403,8 +403,13 @@ public class CFW {
 			
 			for(CFWAppFeature feature : features) {
 				if(feature.isFeatureEnabled()) {
-					feature.addFeature(executor);
-					new CFWLog(logger).info("Feature Loaded: "+feature.getClass().getName());
+					// surround with try-catch to make sure a single corrupt feature cannot kill the app.
+					try{
+						feature.addFeature(executor);
+						new CFWLog(logger).info("Feature Loaded: "+feature.getClass().getName());
+					}catch(Throwable e) {
+						new CFWLog(logger).severe("Unexpected error while initializing feature: "+e.getMessage(), e);
+					}
 				}
 			}
 						

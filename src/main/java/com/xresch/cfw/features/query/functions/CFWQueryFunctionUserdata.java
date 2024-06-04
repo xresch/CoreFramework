@@ -3,24 +3,26 @@ package com.xresch.cfw.features.query.functions;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
+import com.xresch.cfw.features.usermgmt.User;
 
 /************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionNullTo extends CFWQueryFunction {
+public class CFWQueryFunctionUserdata extends CFWQueryFunction {
 
 	
-	public static final String FUNCTION_NAME = "nullto";
+	public static final String FUNCTION_NAME = "userdata";
 
-	public CFWQueryFunctionNullTo(CFWQueryContext context) {
+	public CFWQueryFunctionUserdata(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -47,14 +49,14 @@ public class CFWQueryFunctionNullTo extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(fieldname, valueForNulls)";
+		return FUNCTION_NAME+"(username)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the value, if it is null sets it to another value.";
+		return "Returns an object containing data of a user.";
 	}
 	
 	/***********************************************************************************************
@@ -62,8 +64,7 @@ public class CFWQueryFunctionNullTo extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>fieldname:&nbsp;</b>The field which null values should be manipulated.</p>"
-			  +"<p><b>valueForNulls:&nbsp;</b>The value that should be used for null values.</p>"
+		return "<p><b>username:&nbsp;</b>(Optional) The username to return data for, if not specified return data for the current user.</p>"
 			;
 	}
 
@@ -98,27 +99,35 @@ public class CFWQueryFunctionNullTo extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
+		JsonObject userdata = new JsonObject();
+		
 		//----------------------------------
 		// Return same value if not second param
-		if(parameters.size() >= 2) { 
+		User user = null;
+		if(parameters.size() == 0) { 
+			user = CFW.Context.Request.getUser();
+		}else {
+			QueryPartValue usernameOrMail = parameters.get(0);
 			
-			QueryPartValue value = parameters.get(0); 
-			QueryPartValue valueForNulls = parameters.get(1); 
-			
-			if(value.isNull()) {
-				return valueForNulls;
-			}else {
-				return value;
-			}
+			user = CFW.DB.Users.selectByUsernameOrMail(usernameOrMail.toString());
+		}
+		
+		if(user == null) {
+			user = new User();
 		}
 		
 		//----------------------------------
-		// Return empty string if no params
-		if(parameters.size() == 0) { return QueryPartValue.newString(""); }
-		
+		// Create User Object
+		userdata.addProperty("id", user.id());
+		userdata.addProperty("username", user.username());
+		userdata.addProperty("firstname", user.firstname());
+		userdata.addProperty("lastname", user.lastname());
+		userdata.addProperty("email", user.email());
+		userdata.addProperty("status", user.status());
+
 		//----------------------------------
 		// parameters.size() == 1
-		return parameters.get(0);
+		return QueryPartValue.newJson(userdata);
 		
 	}
 
