@@ -1,0 +1,15 @@
+
+<p>Following query uses the function to demonstrate it's usage:</p>
+
+<pre><code class="language-cfwquery">| source empty
+| set
+	currentuser = userdata() # return an object with data of current user
+	byUsername = userdata("admin") # return data by username
+	byEmail = userdata("admin@emp.ch") # return data by email
+	unknown = userdata("userDoesNotExist") # returns an object with null values
+	username = userdata().username # directly get the username
+	id = userdata().id # directly get the username
+	firstname= userdata().firstname # directly get the username
+	lastname= userdata().lastname # directly get the username
+	email = userdata().email # directly get the username</code></pre>
+

@@ -49,7 +49,7 @@ public class CFWQueryFunctionUserdata extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(username)";
+		return FUNCTION_NAME+"(usernameOrEmail)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -64,7 +64,7 @@ public class CFWQueryFunctionUserdata extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>username:&nbsp;</b>(Optional) The username to return data for, if not specified return data for the current user.</p>"
+		return "<p><b>usernameOrEmail:&nbsp;</b>(Optional) The username or email to return data for, if not specified return data for the current user.</p>"
 			;
 	}
 

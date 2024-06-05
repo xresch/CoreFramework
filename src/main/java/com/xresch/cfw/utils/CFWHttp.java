@@ -996,19 +996,67 @@ public class CFWHttp {
 			return body;
 		}
 		
+		/******************************************************************************************************
+		 * Get the body content of the response as a JsonObject.
+		 * @param url used for the request.
+		 * @return JsonObject or null in case of issues
+		 ******************************************************************************************************/
+		public JsonElement getResponseBodyAsJsonElement(){
+			
+			//----------------------------------
+			// Check Body
+			if(Strings.isNullOrEmpty(body)) {
+				new CFWLog(responseLogger).severe("Http Response was empty, cannot convert to a JsonElement.", new Exception());
+				return null;
+			}
+			
+			if(!body.trim().startsWith("{")
+			&& !body.trim().startsWith("[")
+			) {
+				String messagePart = (body.length() <= 100) ? body : body.substring(0, 95)+"... (truncated)";
+				new CFWLog(responseLogger).severe("Http Response was not a JsonElement: "+messagePart, new Exception());
+				return null;
+			}
+			
+			//----------------------------------
+			// Create Object
+			JsonElement jsonElement = CFW.JSON.fromJson(body);
+
+			if(jsonElement == null) {
+				new CFWLog(responseLogger).severe("Error occured while converting http response body to JSON Element.", new Exception());
+			}
+			
+			return jsonElement;
+
+		}
 		
 		/******************************************************************************************************
 		 * Get the body content of the response as a JsonObject.
 		 * @param url used for the request.
-		 * @return JsonArray or null
+		 * @return JsonObject or null in case of issues
 		 ******************************************************************************************************/
 		public JsonObject getResponseBodyAsJsonObject(){
 			
+			//----------------------------------
+			// Check Body
+			if(Strings.isNullOrEmpty(body)) {
+				new CFWLog(responseLogger).severe("Http Response was empty, cannot convert to a JsonElement.", new Exception());
+				return null;
+			}
+			
+			if(!body.trim().startsWith("{")) {
+				String messagePart = (body.length() <= 100) ? body : body.substring(0, 95)+"... (truncated)";
+				new CFWLog(responseLogger).severe("Http Response was not a JsonObject: "+messagePart, new Exception());
+				return null;
+			}
+			
+			//----------------------------------
+			// Create Object
 			JsonElement jsonElement = CFW.JSON.fromJson(body);
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			
 			if(jsonObject == null) {
-				new CFWLog(responseLogger).severe("Error occured while converting http response body to JSON Object.");
+				new CFWLog(responseLogger).severe("Error occured while converting http response body to JSON Object.", new Exception());
 			}
 			
 			return jsonObject;
@@ -1022,6 +1070,23 @@ public class CFWHttp {
 		 ******************************************************************************************************/
 		public JsonArray getResponseBodyAsJsonArray(){
 			
+			//----------------------------------
+			// Check Body
+			if(Strings.isNullOrEmpty(body)) {
+				new CFWLog(responseLogger).severe("Http Response was empty, cannot convert to JSON.", new Exception());
+				return null;
+			}
+			
+			if(!body.trim().startsWith("{")
+			&& !body.trim().startsWith("[")
+			) {
+				String messagePart = (body.length() <= 100) ? body : body.substring(0, 95)+"... (truncated)";
+				new CFWLog(responseLogger).severe("Http Response was not JSON: "+messagePart, new Exception());
+				return null;
+			}
+			
+			//----------------------------------
+			// CreateArray
 			JsonArray jsonArray = new JsonArray();
 			
 			JsonElement jsonElement = CFW.JSON.fromJson(body);

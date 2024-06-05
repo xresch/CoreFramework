@@ -16,7 +16,8 @@ import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.CFWQueryResultList;
-import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw.tests.assets.CFWTestUtils;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
@@ -3196,6 +3197,67 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		Assertions.assertEquals("2023-04-20 00:00", record.get("DAY").getAsString());
 		Assertions.assertEquals("2023-03-31 00:00", record.get("MONTH").getAsString());
 		Assertions.assertEquals("2022-12-31 00:00", record.get("YEAR").getAsString());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testUserdata() throws IOException {
+
+		//---------------------------------
+		// Le Query
+		String queryString = """
+| source empty
+| set
+	currentuser = userdata() # return an object with data of current user
+	byUsername = userdata("testuser") # return data by username
+	byEmail = userdata("test@te.st") # return data by email
+	username = userdata().username # directly get the username
+	id = userdata().id # directly get the username
+	firstname = userdata().firstname # directly get the username
+	lastname = userdata().lastname # directly get the username
+	email = userdata().email # directly get the username
+				""";
+		
+		//---------------------------------
+		// Prepare ze Session
+		CFWSessionData data = new CFWSessionData("pseudoSessionID");
+		
+		User user = new User()
+						.id(42)
+						.username("testuser")
+						.firstname("Testina")
+						.lastname("Testonia")
+						.email("test@te.st");
+		
+		data.setUser(user);
+		
+		CFW.Context.Request.setSessionData(data);
+		
+		//---------------------------------
+		// Executione
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, -120);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(true, record.get("currentuser").isJsonObject());
+		System.out.println(CFW.JSON.toJSON(record.get("currentuser")));
+		Assertions.assertEquals(true, record.get("byUsername").isJsonObject());
+		Assertions.assertEquals(true, record.get("byEmail").isJsonObject());
+		Assertions.assertEquals(42, record.get("id").getAsInt());
+		Assertions.assertEquals("testuser", record.get("username").getAsString());
+		Assertions.assertEquals("Testina", record.get("firstname").getAsString());
+		Assertions.assertEquals("Testonia", record.get("lastname").getAsString());
+		Assertions.assertEquals("test@te.st", record.get("email").getAsString());
 		
 	}
 	

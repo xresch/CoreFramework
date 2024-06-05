@@ -408,7 +408,7 @@ public class CFW {
 						feature.addFeature(executor);
 						new CFWLog(logger).info("Feature Loaded: "+feature.getClass().getName());
 					}catch(Throwable e) {
-						new CFWLog(logger).severe("Unexpected error while initializing feature: "+e.getMessage(), e);
+						new CFWLog(logger).severe("Unexpected error while initializing feature: "+feature.getClass().getName(), e);
 					}
 				}
 			}
