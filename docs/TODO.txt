@@ -172,6 +172,7 @@ DONE
 - Query: Fixed issues with newline in parameter substitution
 - Query: JSON Member Access now supports the use of functions
 - Query: Editor - Autocomplete works better when using $xxx$-placeholders for parameters
+- Query: Source web - returns details on exception, plus some bug fixes
 - Query: Added Commands:
 	- displayfields (plus alias formatdisplay)
 	- formatcss

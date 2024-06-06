@@ -43,10 +43,13 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	private static final String PARAM_BODY 		= "body";
 	private static final String PARAM_USERNAME 	= "username";
 	private static final String PARAM_PASSWORD 	= "password";
+	private static final String PARAM_AS	= "as";
 	
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
 
+	private String parseAs = "json";
+	
 	private QueryPartValue listFormatter = null;
 
 	/******************************************************************
@@ -77,7 +80,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Takes http parameters as input and loads JSON data from a Web API.";
+		return "Takes http parameters as input and loads data from a Web API.";
 	}
 	
 	/******************************************************************
@@ -85,7 +88,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionTime() {
-		return "Use the parameters timefield and timeformat to specify the time filtering.(Default: no filtering by time)";
+		return "For JSON: Use the parameters timefield and timeformat to specify the time filtering.(Default: no filtering by time)";
 	}
 	
 	/******************************************************************
@@ -189,6 +192,13 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 								.setDescription("(Optional)The password for Basic Authentication.")
 								.addValidator(new NotNullOrEmptyValidator())
 								.disableSanitization()
+						)
+				
+				.addField(
+						CFWField.newString(FormFieldType.TEXT, PARAM_AS)
+						.setDescription("(Optional)Define how the response should be parsed, either 'json' or 'plain'. (Default: json)")
+						.addValidator(new NotNullOrEmptyValidator())
+						.disableSanitization()
 						)
 				
 				.addField(
@@ -296,31 +306,41 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		
 		//------------------------------------
 		// Parse Data
+		
+		switch(parseAs) {
+			
+			case "json":
+			default:
+				parseAsJson(outQueue, limit, response, data, timefield, timerangeChecker);
+			break;
+		}
+		
+	
+	}
+
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void parseAsJson(
+				LinkedBlockingQueue<EnhancedJsonObject> outQueue
+				, int limit
+				, CFWHttpResponse response
+				, String data
+				, String timefield
+				, JsonTimerangeChecker timerangeChecker
+				) throws ParseException {
+		
+		//------------------------------------
+		// Parse Data
 		JsonElement element;
+		
 		try {
 			element = CFW.JSON.fromJson(data);
 		}catch(Exception e) {
 			
-			EnhancedJsonObject exceptionObject = new EnhancedJsonObject();
-			exceptionObject.addProperty("Key", "Exception" );
-			exceptionObject.addProperty("Value", CFW.Utils.Text.stacktraceToString(e) );
-			outQueue.add( exceptionObject );
-			
-			exceptionObject = new EnhancedJsonObject();
-			exceptionObject.addProperty("Key", "HTTPStatus" );
-			exceptionObject.addProperty("Value", response.getStatus() );
-			outQueue.add( exceptionObject );
-			exceptionObject = new EnhancedJsonObject();
-			exceptionObject.addProperty("Key", "HTTPHeaders" );
-			exceptionObject.add("Value", CFW.JSON.objectToJsonElement(response.getHeaders()) );
-			outQueue.add( exceptionObject );
-			
-			exceptionObject = new EnhancedJsonObject();
-			exceptionObject.addProperty("Key", "ResponseBody" );
-			exceptionObject.addProperty("Value", data );
-			outQueue.add( exceptionObject );
-						
-			CFWQueryCommandFormatField.addFormatter(this.parent.getContext(), "Value", listFormatter);
+			//------------------------------------
+			// Create Error Response
+			createExceptionResponse(outQueue, response, data, e);
 			return;
 		}
 		
@@ -353,7 +373,33 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 				
 			}
 		}
-	
+	}
+
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void createExceptionResponse(LinkedBlockingQueue<EnhancedJsonObject> outQueue, CFWHttpResponse response,
+			String data, Exception e) throws ParseException {
+		EnhancedJsonObject exceptionObject = new EnhancedJsonObject();
+		exceptionObject.addProperty("Key", "Exception" );
+		exceptionObject.addProperty("Value", CFW.Utils.Text.stacktraceToString(e) );
+		outQueue.add( exceptionObject );
+		
+		exceptionObject = new EnhancedJsonObject();
+		exceptionObject.addProperty("Key", "HTTPStatus" );
+		exceptionObject.addProperty("Value", response.getStatus() );
+		outQueue.add( exceptionObject );
+		exceptionObject = new EnhancedJsonObject();
+		exceptionObject.addProperty("Key", "HTTPHeaders" );
+		exceptionObject.add("Value", CFW.JSON.objectToJsonElement(response.getHeaders()) );
+		outQueue.add( exceptionObject );
+		
+		exceptionObject = new EnhancedJsonObject();
+		exceptionObject.addProperty("Key", "ResponseBody" );
+		exceptionObject.addProperty("Value", data );
+		outQueue.add( exceptionObject );
+					
+		CFWQueryCommandFormatField.addFormatter(this.parent.getContext(), "Value", listFormatter);
 	}
 
 }
