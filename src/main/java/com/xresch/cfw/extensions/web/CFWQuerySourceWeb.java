@@ -312,8 +312,10 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		
 		switch(parseAs) {
 			
-			case "plain":	parseAsPlain(outQueue, limit, response, timefield, timerangeChecker); 	break;
 			case "json":	parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case "plain":	parseAsPlain(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case "http":	parseAsHTTP(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case "lines":	parseAsLines(outQueue, limit, response, timefield, timerangeChecker); 	break;
 			default:  		parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;
 
 		}
@@ -400,6 +402,76 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 			
 			EnhancedJsonObject object = new EnhancedJsonObject();
 			object.addProperty("response", data);
+			outQueue.add( object );
+			
+		}catch(Exception e) {
+			
+			//------------------------------------
+			// Create Error Response
+			createExceptionResponse(outQueue, response, data, e);
+			return;
+		}
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void parseAsLines(
+				LinkedBlockingQueue<EnhancedJsonObject> outQueue
+				, int limit
+				, CFWHttpResponse response
+				, String timefield
+				, JsonTimerangeChecker timerangeChecker
+				) throws ParseException {
+		
+		String data = response.getResponseBody();
+		
+		//------------------------------------
+		// Parse Data
+		
+		try {
+			
+			if(!Strings.isNullOrEmpty(data)) {
+				
+				for( String line : data.split("\n\r|\n") ){
+					EnhancedJsonObject object = new EnhancedJsonObject();
+					object.addProperty("line", line);
+					outQueue.add( object );
+				}
+			}
+			
+			
+		}catch(Exception e) {
+			
+			//------------------------------------
+			// Create Error Response
+			createExceptionResponse(outQueue, response, data, e);
+			return;
+		}
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void parseAsHTTP(
+				LinkedBlockingQueue<EnhancedJsonObject> outQueue
+				, int limit
+				, CFWHttpResponse response
+				, String timefield
+				, JsonTimerangeChecker timerangeChecker
+				) throws ParseException {
+		
+		//------------------------------------
+		// Parse Data
+		String data = response.getResponseBody();
+		try {
+			
+			EnhancedJsonObject object = new EnhancedJsonObject();
+			object.addProperty("status", response.getStatus());
+			object.add("headers", response.getHeadersAsJson());
+			object.addProperty("body", data);
 			outQueue.add( object );
 			
 		}catch(Exception e) {

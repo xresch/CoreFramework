@@ -3,6 +3,8 @@
 
 <p>Following is a basic example that fetches user data from a public test API:</p>
 
+
+<h2>Type: JSON</h2>
 <pre><code class="language-cfwquery">| source web 
 	method="GET"
 	url="https://jsonplaceholder.typicode.com/users"</code></pre>
@@ -154,6 +156,25 @@ The following query uses the unbox command to keep some of the original fields(f
 		    "body": "bar",
 		    "userId": 2
 		}</code></pre>	
+		
+
+<h2>Type: Lines</h2>
+<p>Following is an example how to fetch data and parse the response as lines:</p>
+<pre><code class="language-cfwquery">| source web 
+	as="lines"
+	method="GET"
+	#url="https://jsonplaceholder.typicode.com/users"
+	url="http://localhost:8888/metrics"
+| filter 
+	line ~= "^[^#].*"
+| set
+	metric = extract(line, "^(.*?)\{.*")
+	fields = extract(line, "^.*?(\{.*?\}).*")
+	value = extract(line, "^.*?\} (.*)")
+	fields = tojson(replace(fields, ",}", "}"))
+| formatfield fields=list</code></pre>	
+
+
 
 <h2>Fetching Data From JIRA</h2>
 <p>Following is an example how to fetch data from the API of the well known project management tool JIRA:</p>
@@ -188,4 +209,8 @@ The following query uses the unbox command to keep some of the original fields(f
 | formatfield 
     [fields, issues] = list
     [CREATED, UPDATED] = date</code></pre>	
+
+
+
+
 
