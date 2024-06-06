@@ -194,7 +194,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_AS)
-						.setDescription("(Optional)Define how the response should be parsed, either 'json' or 'plain'. (Default: json)")
+						.setDescription("(Optional)Define how the response should be parsed, options: 'json' | 'plain' | 'http' | 'lines' (Default: json)")
 						.addValidator(new NotNullOrEmptyValidator())
 						.disableSanitization()
 						)
