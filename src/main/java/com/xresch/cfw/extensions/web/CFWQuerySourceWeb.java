@@ -2,9 +2,10 @@ package com.xresch.cfw.extensions.web;
 
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.w3c.dom.Document;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
@@ -19,11 +20,9 @@ import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
-import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
@@ -55,7 +54,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	 ******************************************************************/
 	public CFWQuerySourceWeb(CFWQuery parent) {
 		super(parent);
-		
+
 		JsonArray listFormatterParams = new JsonArray();
 		listFormatterParams.add("list");
 		listFormatterParams.add("none");
@@ -86,7 +85,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionTime() {
-		return "For JSON: Use the parameters timefield and timeformat to specify the time filtering.(Default: no filtering by time)";
+		return "Use earliest() and latest() functions to add time filtering to your HTTP-requests. For type=json: You can use the parameters timefield and timeformat to specify the time filtering.(Default: no filtering by time)";
 	}
 	
 	/******************************************************************
@@ -312,11 +311,13 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		
 		switch(parseAs) {
 			
-			case "json":	parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case "plain":	parseAsPlain(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case "http":	parseAsHTTP(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case "lines":	parseAsLines(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			default:  		parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case "json":		parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;	
+			case "htmlflat":	parseAsHTML(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case "xmlflat":		parseAsXML(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case "plain":		parseAsPlain(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case "http":		parseAsHTTP(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case "lines":		parseAsLines(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			default:  			parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;
 
 		}
 		
@@ -333,7 +334,6 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 				, String timefield
 				, JsonTimerangeChecker timerangeChecker
 				) throws ParseException {
-		
 		
 		String data = response.getResponseBody();
 		
@@ -380,6 +380,78 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 				
 			}
 		}
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void parseAsXML(
+				LinkedBlockingQueue<EnhancedJsonObject> outQueue
+				, int limit
+				, CFWHttpResponse response
+				, String timefield
+				, JsonTimerangeChecker timerangeChecker
+				) throws ParseException {
+		
+		String data = response.getResponseBody();
+		
+		//------------------------------------
+		// Parse Data
+		
+		try {
+			
+			Document document = CFW.XML.parseToDocument(data);
+			JsonArray array = CFW.XML.convertDocumentToJsonFlat(document, "");
+			
+			for(JsonElement element : array) {
+				EnhancedJsonObject object = new EnhancedJsonObject(element.getAsJsonObject());
+				outQueue.add( object );
+			}
+			
+		}catch(Exception e) {
+			
+			//------------------------------------
+			// Create Error Response
+			createExceptionResponse(outQueue, response, data, e);
+			return;
+		}
+		
+	}
+	
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void parseAsHTML(
+				LinkedBlockingQueue<EnhancedJsonObject> outQueue
+				, int limit
+				, CFWHttpResponse response
+				, String timefield
+				, JsonTimerangeChecker timerangeChecker
+				) throws ParseException {
+		
+		String data = response.getResponseBody();
+		
+		//------------------------------------
+		// Parse Data
+		try {
+			
+			org.jsoup.nodes.Document document = CFW.HTML.parseToDocument(data);
+			JsonArray array = CFW.HTML.convertDocumentToJsonFlat(document, "");
+			
+			for(JsonElement element : array) {
+				EnhancedJsonObject object = new EnhancedJsonObject(element.getAsJsonObject());
+				outQueue.add( object );
+			}
+			
+		}catch(Exception e) {
+			
+			//------------------------------------
+			// Create Error Response
+			createExceptionResponse(outQueue, response, data, e);
+			return;
+		}
+		
 	}
 	
 	/******************************************************************

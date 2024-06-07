@@ -1,10 +1,12 @@
 
+<div id="manual-toc"></div>
+
 <p>The web source is fetching JSON data from a URL. This can be useful to call REST API's and such. This source supports the use of Basic Authentication and HTTP Headers. </p>
 
 <p>Following is a basic example that fetches user data from a public test API:</p>
 
 
-<h2>Type: JSON</h2>
+<h2>Type: json</h2>
 <pre><code class="language-cfwquery">| source web 
 	method="GET"
 	url="https://jsonplaceholder.typicode.com/users"</code></pre>
@@ -157,8 +159,21 @@ The following query uses the unbox command to keep some of the original fields(f
 		    "userId": 2
 		}</code></pre>	
 		
+<h2>Type: htmlflat</h2>
+<p>Following is an example how to fetch data and parse the response as HTML. The response will be :</p>
+<pre><code class="language-cfwquery">| source web 
+	as="htmlflat"
+	method="GET"
+	url="https://www.nasa.gov"
+| sort key
+| filter
+	attributes.owntext != ""
+| unbox 
+	attributes.id
+	attributes.class</code></pre>	
 
-<h2>Type: Lines</h2>
+
+<h2>Type: lines</h2>
 <p>Following is an example how to fetch data and parse the response as lines:</p>
 <pre><code class="language-cfwquery">| source web 
 	as="lines"

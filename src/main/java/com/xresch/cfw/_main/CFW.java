@@ -84,6 +84,7 @@ import com.xresch.cfw.spi.CFWAppFeature;
 import com.xresch.cfw.spi.CFWAppInterface;
 import com.xresch.cfw.utils.CFWDump;
 import com.xresch.cfw.utils.CFWFiles;
+import com.xresch.cfw.utils.CFWHTML;
 import com.xresch.cfw.utils.CFWHttp;
 import com.xresch.cfw.utils.CFWMath;
 import com.xresch.cfw.utils.CFWRandom;
@@ -94,6 +95,7 @@ import com.xresch.cfw.utils.CFWTime;
 import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.utils.CFWUtilsArray;
 import com.xresch.cfw.utils.CFWUtilsText;
+import com.xresch.cfw.utils.CFWXML;
 import com.xresch.cfw.utils.json.CFWJson;
 import com.xresch.cfw.validation.CFWValidation;
 
@@ -163,6 +165,7 @@ public class CFW {
 	public static class Dump extends CFWDump {}
 	public static class Files extends CFWFiles {}
 	public static class HTTP extends CFWHttp {}
+	public static class HTML extends CFWHTML {}
 	public static class JSON extends CFWJson {}
 	public static class Localization extends CFWLocalization {}
 	public static class Math extends CFWMath {}
@@ -195,6 +198,7 @@ public class CFW {
 	
 	
 	public static class Time extends CFWTime {}
+	public static class XML extends CFWXML {}
 
 
 	//##############################################################################

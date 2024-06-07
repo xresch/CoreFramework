@@ -3828,22 +3828,37 @@ function cfw_ui_addToast(toastTitle, toastBody, style, delay){
 	// Create Toast 
 	//--------------------------------------------
 		
-	var toastHTML = '<div class="toast bg-'+clazz+' text-light" role="alert" aria-live="assertive" aria-atomic="true" data-animation="true" '+autohide+'>'
+	var toastHTML = 
+		      '<div class="toast bg-'+clazz+' text-light" role="alert" aria-live="assertive" aria-atomic="true" data-animation="true" '+autohide+'>'
 			+ '  <div class="toast-header bg-'+clazz+' text-light">'
-			//+ '	<img class="rounded mr-2" alt="...">'
-			+ '	<strong class="mr-auto word-break-word">'+toastTitle+'</strong>'
-			//+ '	<small class="text-muted">just now</small>'
-			+ '	<button type="button" class="ml-2 mb-auto close" data-dismiss="toast" aria-label="Close">'
-			+ '	  <span aria-hidden="true">&times;</span>'
-			+ '	</button>'
-			+ '  </div>';
-	
-	if(toastBody != null){
-		toastHTML += '  <div class="toast-body">'+ toastBody+'</div>';	
-	}
-	toastHTML += '</div>';
+			  + '	<strong class="mr-auto word-break-word"></strong>'
+			  + '	<button type="button" class="ml-2 mb-auto close" data-dismiss="toast" aria-label="Close">'
+			  + '	  <span aria-hidden="true">&times;</span>'
+			  + '	</button>'
+			+ '  </div>' 
+			+ '  <div class="toast-body"></div>'
+			+ '</div>';
 	
 	var toast = $(toastHTML);
+	
+	//-------------------------------------
+	// Handle Title
+	if(toastTitle != null){
+		
+		if(toastTitle.length > 500){
+			toastTitle = toastTitle.substring(0, 500) + "... (truncated)";
+		}
+		toast.find('.toast-header').text(toastTitle);	
+	}
+	//-------------------------------------
+	// Handle Body
+	if(toastBody != null){
+		
+		if(toastBody.length > 500){
+			toastBody = toastBody.substring(0, 500) + "... (truncated)";
+		}
+		toast.find('.toast-body').text(toastBody);	
+	}
 	
 	toastDiv.append(toast);
 	toast.toast('show');

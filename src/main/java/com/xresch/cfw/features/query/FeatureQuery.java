@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query;
 
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
@@ -132,6 +133,7 @@ import com.xresch.cfw.features.query.sources.CFWQuerySourceText;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceThreaddump;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
@@ -142,6 +144,8 @@ import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
  * @license MIT-License
  ************************************************************************************************************/
 public class FeatureQuery extends CFWAppFeature {
+	
+	private static final Logger logger = CFWLog.getLogger(FeatureQuery.class.getName());
 	
 	private static final String URI_QUERY = "/app/query";
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.query.resources";
@@ -527,16 +531,21 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
 		// Pages for each Source
+		
 		TreeMap<String, Class<? extends CFWQuerySource>> sourcelist = CFW.Registry.Query.getSourceList();
 		
 		
 		for(String sourceName : sourcelist.keySet()) {
-			
-			CFWQuerySource current = CFW.Registry.Query.createSourceInstance(pseudoQuery, sourceName);
-			
-			CFWQueryManualPageSource page = new CFWQueryManualPageSource(sourceName, current);
-			
-			sourcePage.addChild(page);
+
+			try {
+				
+				CFWQuerySource current = CFW.Registry.Query.createSourceInstance(pseudoQuery, sourceName);
+				CFWQueryManualPageSource page = new CFWQueryManualPageSource(sourceName, current);
+				sourcePage.addChild(page);
+				
+			}catch(Exception e) {
+				new CFWLog(logger).severe("Error while creating page for source: "+sourceName, e);
+			}
 			
 		}
 		
@@ -555,10 +564,14 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		for(String commandName : commandlist.keySet()) {
 			
-			CFWQueryCommand current = CFW.Registry.Query.createCommandInstance(pseudoQuery, commandName);
-			
-			new CFWQueryManualPageCommand(commandsPage, commandName, current);
-						
+			try {
+				
+				CFWQueryCommand current = CFW.Registry.Query.createCommandInstance(pseudoQuery, commandName);
+				new CFWQueryManualPageCommand(commandsPage, commandName, current);
+				
+			}catch(Exception e) {
+				new CFWLog(logger).severe("Error while creating page for command: "+commandName, e);
+			}			
 		}
 		
 		//----------------------------------
@@ -574,10 +587,15 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		for(String functionName : functionlist.keySet()) {
 			
-			CFWQueryFunction current = CFW.Registry.Query.createFunctionInstance(pseudoQuery.getContext(), functionName);
-			
-			CFWQueryManualPageFunction currentPage = new CFWQueryManualPageFunction(functionName, current);
-			functionsMainPage.addChild(currentPage);
+			try {
+				
+				CFWQueryFunction current = CFW.Registry.Query.createFunctionInstance(pseudoQuery.getContext(), functionName);
+				CFWQueryManualPageFunction currentPage = new CFWQueryManualPageFunction(functionName, current);
+				functionsMainPage.addChild(currentPage);
+				
+			}catch(Exception e) {
+				new CFWLog(logger).severe("Error while creating page for function: "+functionName, e);
+			}
 		}
 		
 
