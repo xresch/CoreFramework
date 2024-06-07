@@ -28,6 +28,7 @@ public class CFWHTML {
 	 * Parses a HTML String and returns a document.
 	 * 
 	 * @param xmlString
+	 * @param doFlat if true returns a flat structure, else returns a hierarchical structure
 	 * @return document or null on error
 	 **************************************************************************************/		
 	public static Document parseToDocument(String htmlString) {
@@ -40,28 +41,29 @@ public class CFWHTML {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/		
-	public static JsonArray convertDocumentToJsonFlat(Document doc, String prefix) {
+	public static JsonArray convertDocumentToJson(Document doc, String prefix, boolean doFlat) {
 		
 		
 		JsonArray result = new JsonArray();
 		
 		if(doc != null) {
 			Elements elements = doc.children();
-			convertElementsToJsonFlat(prefix, elements, result);
+			convertElementsToJson(prefix, elements, result, doFlat);
 		}
 
 		return result;
 	}
 	
 	/**************************************************************************************
-	 * Transforms the elements to a flat JsonStructure.
+	 * Transforms the elements to a flat JsonArray with JsonObjects.
 	 * This method will be called recursively for each child node.
 	 * 
 	 * @param parentKey the prefix added to the key to represent the folder/file/node structure.
 	 * @param elements the node list to transform
 	 * @param result the CSVData instance were the results will be stored
+	 * @param doFlat if true returns a flat structure, else returns a hierarchical structure
 	 **************************************************************************************/	
-	public static void convertElementsToJsonFlat(String parentKey, Elements elements, JsonArray result){
+	public static void convertElementsToJson(String parentKey, Elements elements, JsonArray result, boolean doFlat){
 		
 		//----------------------------------
 		// Check Nodes
@@ -81,9 +83,10 @@ public class CFWHTML {
 		// Iterate Nodes
 		for(int i = 0; i < elements.size(); i++){
 			Element current = elements.get(i);
-			JsonObject row = new JsonObject();
-		
 			String currentName = current.tagName();
+			
+			JsonObject row = new JsonObject();
+			row.addProperty("tag", currentName);
 					
 			//----------------------------------
 			// Get Element Text
@@ -120,10 +123,11 @@ public class CFWHTML {
 			//----------------------------------------------
 			// Create Value: check for Attributes
 			row.addProperty("key", nextKey);
+			row.addProperty("text", elementText);
+			
 			JsonObject attributesObject = new JsonObject();
 			row.add("attributes", attributesObject);	
 			
-			attributesObject.addProperty("owntext", elementText);
 			
 			//----------------------------------------------
 			// Create Value: check for Attributes
@@ -139,12 +143,20 @@ public class CFWHTML {
 			result.add(row);
 			
 			if(current.childNodeSize() > 0){
-				convertElementsToJsonFlat(nextKey, current.children(), result);
+				
+				JsonArray nextResult = result;
+				
+				if( !doFlat ) {
+					JsonArray childrenArray = new JsonArray();
+					row.add("children", childrenArray);
+					nextResult = childrenArray;
+				}
+				
+				convertElementsToJson(nextKey, current.children(), nextResult, doFlat);
 			}
 			
 		}
 		
 	}
-
 
 }

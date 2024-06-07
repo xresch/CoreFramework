@@ -164,36 +164,63 @@ The following query uses the unbox command to keep some of the original fields(f
 		
 		
 		
-<h2>Parse As HTML to Flat Table</h2>
+<h2>Parse As HTML</h2>
 <p>Following is an example how to fetch data and parse the response as HTML. The response will be a flat table containing all elements from the HTML tree:</p>
 <pre><code class="language-cfwquery">| source web 
-	as="htmlflat"
+	as="html"
 	method="GET"
 	url="https://www.nasa.gov"
 | sort key
 | filter
-	attributes.owntext != ""
+	text != ""
 | unbox 
 	attributes.id
 	attributes.class</code></pre>	
+	
+<p>Using 'as=htmltree'  will also parse as HTML, but retains the tree structure of the elements:</p>
+<pre><code class="language-cfwquery">| source web 
+	as="htmltree"
+	method="GET"
+	url="https://www.xresch.com"
+| unbox children
+| unbox children
+| unbox children
+| sort key 
+	</code></pre>	
 
-<h2>Parse As XML to Flat Table</h2>
+
+
+
+<h2>Parse As XML</h2>
 <p>Following is an example how to fetch data and parse the response as XML. The response will be a flat table containing all elements from the XML tree:</p>
 <pre><code class="language-cfwquery">| source web 
-	as="xmlflat"
+	as="xml"
 	method="GET"
 	url="https://run.mocky.io/v3/7d94a2d4-ac28-4a31-b295-bacca4269027"
-	/* Above Mock URL returns:
+	/* Above Mock URL returned at some point in history:
 	&lt;record>
    		&lt;firstname>Aurora&lt;/firstname>
    		&lt;lastname>Testonia&lt;/lastname>
    		&lt;country>Ireland&lt;/country>
    		&lt;dessert withcream="true" creamWipped="yes please">Tiramisu&lt;/dessert>
 	&lt;/record> */
-| sort key
-| filter
-	attributes.owntext != ""
-| unbox </code></pre>	
+| sort key</code></pre>	
+
+<p>Using 'as=xmltree' will also parse as XML, but retains the tree structure of the elements:</p>
+<pre><code class="language-cfwquery">| source web 
+	as="xmltree"
+	method="GET"
+	url="https://run.mocky.io/v3/7d94a2d4-ac28-4a31-b295-bacca4269027"
+	/* Above Mock URL returned at some point in history:
+	&lt;record>
+   		&lt;firstname>Aurora&lt;/firstname>
+   		&lt;lastname>Testonia&lt;/lastname>
+   		&lt;country>Ireland&lt;/country>
+   		&lt;dessert withcream="true" creamWipped="yes please">Tiramisu&lt;/dessert>
+	&lt;/record> */
+| unbox children
+| unbox children
+| sort key </code></pre>	
 
 
 

@@ -173,7 +173,7 @@ DONE
 - Query: JSON Member Access now supports the use of functions
 - Query: Editor - Autocomplete works better when using $xxx$-placeholders for parameters
 - Query: Source web - returns details on exception, plus some bug fixes
-- Query: Source web - supports additional parameter "as" to select how the data should be parsed ('json', 'htmlflat', 'xmlflat', 'plain', 'http', 'lines')
+- Query: Source web - supports additional parameter "as" to select how the data should be parsed, options: ["html","htmltree","http","json","lines","plain","xml","xmltree"]
 - Query: Added Commands:
 	- displayfields (plus alias formatdisplay)
 	- formatcss

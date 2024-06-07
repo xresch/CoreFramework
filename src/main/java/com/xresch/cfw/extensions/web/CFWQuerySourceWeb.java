@@ -58,8 +58,10 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	public enum CFWQuerySourceWebType {
 
 		  json("Parse the response into a json object or array.")
-		, htmlflat("Parse the response as HTML and convert it into a flat table.")
-		, xmlflat("Parse the response as XML and convert it into a flat table.")
+		, html("Parse the response as HTML and convert it into a flat table.")
+		, htmltree("Parse the response as HTML and convert it into a json structure.")
+		, xml("Parse the response as XML and convert it into a flat table.")
+		, xmltree("Parse the response as XML and convert it into a json structure.")
 		, plain("Parse the response as plain text and convert it to a single record with field 'response'.")
 		, http("Parse the response as HTTP and creates a single record containing HTTP status, headers and body.")
 		, lines("Parse the response as text and return every line as its own record.")
@@ -375,12 +377,13 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		switch(type) {
 			
 			case json:		parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;	
-			case htmlflat:	parseAsHTML(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case xmlflat:	parseAsXML(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case html:		parseAsHTML(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case htmltree:	parseAsHTMLTree(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case xml:		parseAsXML(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case xmltree:	parseAsXMLTree(outQueue, limit, response, timefield, timerangeChecker); 	break;
 			case plain:		parseAsPlain(outQueue, limit, response, timefield, timerangeChecker); 	break;
 			case http:		parseAsHTTP(outQueue, limit, response, timefield, timerangeChecker); 	break;
 			case lines:		parseAsLines(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			default:  		parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;
 
 		}
 		
@@ -464,7 +467,43 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		try {
 			
 			Document document = CFW.XML.parseToDocument(data);
-			JsonArray array = CFW.XML.convertDocumentToJsonFlat(document, "");
+			JsonArray array = CFW.XML.convertDocumentToJson(document, "", true);
+			
+			for(JsonElement element : array) {
+				EnhancedJsonObject object = new EnhancedJsonObject(element.getAsJsonObject());
+				outQueue.add( object );
+			}
+			
+		}catch(Exception e) {
+			
+			//------------------------------------
+			// Create Error Response
+			createExceptionResponse(outQueue, response, data, e);
+			return;
+		}
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void parseAsXMLTree(
+				LinkedBlockingQueue<EnhancedJsonObject> outQueue
+				, int limit
+				, CFWHttpResponse response
+				, String timefield
+				, JsonTimerangeChecker timerangeChecker
+				) throws ParseException {
+		
+		String data = response.getResponseBody();
+		
+		//------------------------------------
+		// Parse Data
+		
+		try {
+			
+			Document document = CFW.XML.parseToDocument(data);
+			JsonArray array = CFW.XML.convertDocumentToJson(document, "", false);
 			
 			for(JsonElement element : array) {
 				EnhancedJsonObject object = new EnhancedJsonObject(element.getAsJsonObject());
@@ -500,7 +539,42 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		try {
 			
 			org.jsoup.nodes.Document document = CFW.HTML.parseToDocument(data);
-			JsonArray array = CFW.HTML.convertDocumentToJsonFlat(document, "");
+			JsonArray array = CFW.HTML.convertDocumentToJson(document, "", true);
+			
+			for(JsonElement element : array) {
+				EnhancedJsonObject object = new EnhancedJsonObject(element.getAsJsonObject());
+				outQueue.add( object );
+			}
+			
+		}catch(Exception e) {
+			
+			//------------------------------------
+			// Create Error Response
+			createExceptionResponse(outQueue, response, data, e);
+			return;
+		}
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void parseAsHTMLTree(
+				LinkedBlockingQueue<EnhancedJsonObject> outQueue
+				, int limit
+				, CFWHttpResponse response
+				, String timefield
+				, JsonTimerangeChecker timerangeChecker
+				) throws ParseException {
+		
+		String data = response.getResponseBody();
+		
+		//------------------------------------
+		// Parse Data
+		try {
+			
+			org.jsoup.nodes.Document document = CFW.HTML.parseToDocument(data);
+			JsonArray array = CFW.HTML.convertDocumentToJson(document, "", false);
 			
 			for(JsonElement element : array) {
 				EnhancedJsonObject object = new EnhancedJsonObject(element.getAsJsonObject());

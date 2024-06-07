@@ -71,20 +71,22 @@ public class CFWXML {
 	 * by the file filter defined in the arguments.
 	 *
 	 * @param document the document to convert
+	 * @param keyPrefix custom prefix for the keys, useful if you want to merge multiple results
+	 * @param doFlat if true returns a flat structure, else returns a hierarchical structure
 	 * @return JsonArray containing JsonObjects, or empty
 	 **************************************************************************************/		
-	public static JsonArray convertDocumentToJsonFlat(Document document, String prefix) {
-		
+	public static JsonArray convertDocumentToJson(Document document, String keyPrefix, boolean doFlat) {
 		
 		JsonArray result = new JsonArray();
 		
 		if(document != null) {
 			NodeList nodes = document.getChildNodes();
-			convertNodesToJsonFlat(prefix, nodes, result);
+			convertNodesToJson(keyPrefix, nodes, result, doFlat);
 		}
 
 		return result;
 	}
+	
 	
 	/**************************************************************************************
 	 * Transforms the nodes of the nodelist to csv key value pairs.
@@ -93,8 +95,9 @@ public class CFWXML {
 	 * @param parentKey the prefix added to the key to represent the folder/file/node structure.
 	 * @param nodes the node list to transform
 	 * @param result the CSVData instance were the results will be stored
+	 * @param doFlat if true returns a flat structure, else returns a hierarchical structure
 	 **************************************************************************************/	
-	public static void convertNodesToJsonFlat(String parentKey, NodeList nodes, JsonArray result){
+	public static void convertNodesToJson(String parentKey, NodeList nodes, JsonArray result, boolean doFlat){
 		
 		//----------------------------------
 		// Check Nodes
@@ -124,9 +127,10 @@ public class CFWXML {
 				value = (value != null) ? value : "";
 				value = value.replaceAll("\n|\r\n|\t", " ").trim();
 				
+				row.addProperty("tag", "cdata");
 				row.addProperty("key", key);
+				row.addProperty("text", value.trim());
 				row.add("attributes", attributesObject);	
-				attributesObject.addProperty("ownText", value.trim());
 				result.add(row);
 
 				logger.info("Transformed xml-Node: "+key+" >> "+value);
@@ -177,9 +181,10 @@ public class CFWXML {
 				
 				//----------------------------------------------
 				// Create Value: check for Attributes
+				row.addProperty("tag", currentName);
 				row.addProperty("key", nextKey);
+				row.addProperty("text", elementText);
 				row.add("attributes", attributesObject);	
-				attributesObject.addProperty("owntext", elementText);
 				
 
 				//----------------------------------------------
@@ -204,7 +209,15 @@ public class CFWXML {
 				result.add(row);
 
 				if(currentNode.hasChildNodes()){
-					convertNodesToJsonFlat(nextKey, currentNode.getChildNodes(), result);
+					
+					JsonArray nextResult = result;
+					
+					if( !doFlat ) {
+						JsonArray childrenArray = new JsonArray();
+						row.add("children", childrenArray);
+						nextResult = childrenArray;
+					}
+					convertNodesToJson(nextKey, currentNode.getChildNodes(), nextResult, doFlat);
 				}
 				
 			}
