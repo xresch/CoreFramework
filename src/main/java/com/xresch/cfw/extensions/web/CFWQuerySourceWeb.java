@@ -1,9 +1,13 @@
 package com.xresch.cfw.extensions.web;
 
 import java.text.ParseException;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.w3c.dom.Document;
 
@@ -25,6 +29,7 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 import com.xresch.cfw.validation.CustomValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
@@ -47,8 +52,55 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
 	
+	
 	private QueryPartValue listFormatter = null;
 
+	public enum CFWQuerySourceWebType {
+
+		  json("Parse the response into a json object or array.")
+		, htmlflat("Parse the response as HTML and convert it into a flat table.")
+		, xmlflat("Parse the response as XML and convert it into a flat table.")
+		, plain("Parse the response as plain text and convert it to a single record with field 'response'.")
+		, http("Parse the response as HTTP and creates a single record containing HTTP status, headers and body.")
+		, lines("Parse the response as text and return every line as its own record.")
+		;
+		
+		//==============================
+		// Caches
+		private static TreeSet<String> enumNames = null;		
+		
+		//==============================
+		// Fields
+		private String shortDescription;
+
+		private CFWQuerySourceWebType(String shortDescription) {
+			this.shortDescription = shortDescription;
+		}
+				
+		public String shortDescription() { return this.shortDescription; }
+		
+		/********************************************************************************************
+		 * Returns a set with all names
+		 ********************************************************************************************/
+		public static TreeSet<String> getNames() {
+			if(enumNames == null) {
+				enumNames = new TreeSet<>();
+				
+				for(CFWQuerySourceWebType unit : CFWQuerySourceWebType.values()) {
+					enumNames.add(unit.name());
+				}
+			}
+			return enumNames;
+		}
+		
+		/********************************************************************************************
+		 * 
+		 ********************************************************************************************/
+		public static boolean has(String enumName) {
+			return getNames().contains(enumName);
+		}
+
+	}
 	/******************************************************************
 	 *
 	 ******************************************************************/
@@ -193,7 +245,8 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_AS)
-						.setDescription("(Optional)Define how the response should be parsed, options: 'json' | 'plain' | 'http' | 'lines' (Default: json)")
+						.setDescription("(Optional)Define how the response should be parsed, options: "
+								 					+CFW.JSON.toJSON( CFWQuerySourceWebType.getNames()))
 						.addValidator(new NotNullOrEmptyValidator())
 						.disableSanitization()
 						)
@@ -230,8 +283,18 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		// Get As
 		String parseAs = (String) parameters.getField(PARAM_AS).getValue();	
 		if(Strings.isNullOrEmpty(parseAs)) { parseAs = "json"; };
-		
 		parseAs = parseAs.trim().toLowerCase();
+		
+		if( !CFWQuerySourceWebType.has(parseAs) ){
+			this.getParent().getContext().addMessageError("source web: value as='"+parseAs+"' is not supported."
+														 +" Available options: "
+														 +CFW.JSON.toJSON( CFWQuerySourceWebType.getNames()) );
+			return;
+		}
+		
+		CFWQuerySourceWebType type = CFWQuerySourceWebType.valueOf(parseAs);
+		
+
 		
 		//------------------------------------
 		// Get Method
@@ -309,15 +372,15 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		//------------------------------------
 		// Parse Data
 		
-		switch(parseAs) {
+		switch(type) {
 			
-			case "json":		parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;	
-			case "htmlflat":	parseAsHTML(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case "xmlflat":		parseAsXML(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case "plain":		parseAsPlain(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case "http":		parseAsHTTP(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case "lines":		parseAsLines(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			default:  			parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case json:		parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;	
+			case htmlflat:	parseAsHTML(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case xmlflat:	parseAsXML(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case plain:		parseAsPlain(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case http:		parseAsHTTP(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case lines:		parseAsLines(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			default:  		parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;
 
 		}
 		
