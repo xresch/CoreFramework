@@ -1,12 +1,14 @@
 
 <div id="manual-toc"></div>
 
-<p>The web source is fetching JSON data from a URL. This can be useful to call REST API's and such. This source supports the use of Basic Authentication and HTTP Headers. </p>
+<p>The web source is fetching data from a URL and can parse it in various ways. 
+This can be useful to call REST API's and such. This source supports the use of Basic Authentication and HTTP Headers. </p>
+
 
 <p>Following is a basic example that fetches user data from a public test API:</p>
 
 
-<h2>Type: json</h2>
+<h2>Parse As JSON</h2>
 <pre><code class="language-cfwquery">| source web 
 	method="GET"
 	url="https://jsonplaceholder.typicode.com/users"</code></pre>
@@ -159,8 +161,11 @@ The following query uses the unbox command to keep some of the original fields(f
 		    "userId": 2
 		}</code></pre>	
 		
-<h2>Type: htmlflat</h2>
-<p>Following is an example how to fetch data and parse the response as HTML. The response will be :</p>
+		
+		
+		
+<h2>Parse As HTML to Flat Table</h2>
+<p>Following is an example how to fetch data and parse the response as HTML. The response will be a flat table containing all elements from the HTML tree:</p>
 <pre><code class="language-cfwquery">| source web 
 	as="htmlflat"
 	method="GET"
@@ -172,8 +177,27 @@ The following query uses the unbox command to keep some of the original fields(f
 	attributes.id
 	attributes.class</code></pre>	
 
+<h2>Parse As XML to Flat Table</h2>
+<p>Following is an example how to fetch data and parse the response as XML. The response will be a flat table containing all elements from the XML tree:</p>
+<pre><code class="language-cfwquery">| source web 
+	as="xmlflat"
+	method="GET"
+	url="https://run.mocky.io/v3/7d94a2d4-ac28-4a31-b295-bacca4269027"
+	/* Above Mock URL returns:
+	&lt;record>
+   		&lt;firstname>Aurora&lt;/firstname>
+   		&lt;lastname>Testonia&lt;/lastname>
+   		&lt;country>Ireland&lt;/country>
+   		&lt;dessert withcream="true" creamWipped="yes please">Tiramisu&lt;/dessert>
+	&lt;/record> */
+| sort key
+| filter
+	attributes.owntext != ""
+| unbox </code></pre>	
 
-<h2>Type: lines</h2>
+
+
+<h2>Parse As Lines</h2>
 <p>Following is an example how to fetch data and parse the response as lines:</p>
 <pre><code class="language-cfwquery">| source web 
 	as="lines"

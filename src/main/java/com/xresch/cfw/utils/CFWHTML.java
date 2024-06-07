@@ -89,10 +89,9 @@ public class CFWHTML {
 			// Get Element Text
 			String elementText = current.ownText();
 
-			if(!Strings.isNullOrEmpty(elementText)){
-				elementText = elementText.replaceAll("\r\n|\r|\n|\t", " ");
-			}
-				
+			elementText = (elementText != null) ? elementText : "";
+			elementText = elementText.replaceAll("\n|\r\n|\t", " ").trim();
+			
 			//----------------------------------
 			// Create unique key 
 			String nextKey = parentKey + currentName;

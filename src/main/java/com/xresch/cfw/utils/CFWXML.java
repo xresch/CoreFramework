@@ -115,13 +115,18 @@ public class CFWXML {
 		for(int i = 0; i < nodes.getLength(); i++){
 			Node currentNode = nodes.item(i);
 			JsonObject row = new JsonObject();
+			JsonObject attributesObject = new JsonObject();
 			
 			if(currentNode.getNodeType() == Node.CDATA_SECTION_NODE){
 				String key = parentKey+".cdata";
-				String value = currentNode.getNodeValue().replaceAll("\n|\r\n|\t", " ");
 				
-				row.addProperty("Key", key);
-				row.addProperty("Value", value);
+				String value = currentNode.getNodeValue();
+				value = (value != null) ? value : "";
+				value = value.replaceAll("\n|\r\n|\t", " ").trim();
+				
+				row.addProperty("key", key);
+				row.add("attributes", attributesObject);	
+				attributesObject.addProperty("ownText", value.trim());
 				result.add(row);
 
 				logger.info("Transformed xml-Node: "+key+" >> "+value);
@@ -139,7 +144,8 @@ public class CFWXML {
 					
 					if(firstChild.getNodeType() == Node.TEXT_NODE){
 						elementText = firstChild.getNodeValue();
-						elementText = elementText.replaceAll("\r\n|\r|\n|\t", " ");
+						elementText = (elementText != null) ? elementText : "";
+						elementText = elementText.replaceAll("\n|\r\n|\t", " ").trim();
 					}
 				}
 					
@@ -168,6 +174,13 @@ public class CFWXML {
 						break;
 					}
 				}
+				
+				//----------------------------------------------
+				// Create Value: check for Attributes
+				row.addProperty("key", nextKey);
+				row.add("attributes", attributesObject);	
+				attributesObject.addProperty("owntext", elementText);
+				
 
 				//----------------------------------------------
 				// Create Value: check for Attributes
@@ -178,34 +191,18 @@ public class CFWXML {
 					
 					for(int k = 0; k < attributes.getLength();k++){
 						Node attribute = attributes.item(k);
-						currentValue.append(attribute.getNodeName())
-									.append("=")
-									.append(attribute.getNodeValue());
-
-						//add comma if it is not the last attribute
-						if(k != attributes.getLength()-1 ) {
-							currentValue.append(" / ");
-						}
+						attributesObject.addProperty(attribute.getNodeName(), attribute.getNodeValue());
 					}
 					
-					if(!elementText.toString().trim().isEmpty()){
-						currentValue.append(" / text=")
-									.append(elementText);
-					}
+					
 				}else{
 					currentValue.append(elementText);
 				}
 				
 				//----------------------------------
 				// Add row to result 
-				if(!currentValue.toString().trim().isEmpty() ){
-					
-					row.addProperty("Key", nextKey);
-					row.addProperty("Value", currentValue.toString());
-					result.add(row);
-					logger.info("Transformed xml-Node to csv: "+nextKey+" >> "+currentValue.toString());
-				}
-				
+				result.add(row);
+
 				if(currentNode.hasChildNodes()){
 					convertNodesToJsonFlat(nextKey, currentNode.getChildNodes(), result);
 				}
