@@ -25,7 +25,7 @@ import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2024 
  * @license MIT-License
  **************************************************************************************************************/
 public class FeatureCredentials extends CFWAppFeature {
@@ -34,12 +34,9 @@ public class FeatureCredentials extends CFWAppFeature {
 	public static final String URI_DASHBOARD_VIEW = "/app/credentials/view";
 	public static final String URI_DASHBOARD_VIEW_PUBLIC = "/public/credentials/view";
 	
-	public static final String PERMISSION_CREDENTIALS_VIEWER = "Credentials Viewer";
-	public static final String PERMISSION_CREDENTIALS_CREATOR = "Credentials Creator";
-	public static final String PERMISSION_CREDENTIALS_CREATOR_PUBLIC = "Credentials Creator Public";
-	public static final String PERMISSION_CREDENTIALS_ADMIN = "Credentials Admin";
-	public static final String PERMISSION_CREDENTIALS_TASKS = "Credentials Tasks";
-	public static final String PERMISSION_CREDENTIALS_FAST_RELOAD = "Credentials Fast Reload";
+	public static final String PERMISSION_CREDENTIALS_VIEWER = "Credentials: Viewer";
+	public static final String PERMISSION_CREDENTIALS_CREATOR = "Credentials: Creator";
+	public static final String PERMISSION_CREDENTIALS_ADMIN = "Credentials: Admin";
 	
 	public static final String CONFIG_CATEGORY = "Credentials";
 	public static final String CONFIG_DEFAULT_IS_SHARED = "Default Is Shared";
@@ -61,8 +58,6 @@ public class FeatureCredentials extends CFWAppFeature {
 	public static final String MANUAL_NAME_DASHBOARD = "Credentials";
 	public static final String MANUAL_NAME_WIDGETS = "Widgets";
 	public static final String MANUAL_PATH_WIDGETS = MANUAL_NAME_DASHBOARD+"|"+MANUAL_NAME_WIDGETS;
-	
-	private static ScheduledFuture<?> taskCreateVersions;
 	
 	public static final ManualPage MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
 					new ManualPage(MANUAL_NAME_DASHBOARD)
@@ -128,45 +123,6 @@ public class FeatureCredentials extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuTools-Credentialss")
 				, null);
 		
-			//----------------------------------
-	    	// Register Menus
-			MenuItem favoritesMenu = (MenuItem)new MenuItem("Favorites")
-				.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-				.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-				.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-				.addAttribute("id", "cfwMenuButtons-Favorites")
-				.setDynamicCreator(new DynamicItemCreator() {		
-		
-					@Override
-					public ArrayList<HierarchicalHTMLItem> createDynamicItems() {
-						
-						ArrayList<HierarchicalHTMLItem> childitems = new ArrayList<HierarchicalHTMLItem>();
-						ArrayList<CFWCredentials> credentialsList = CFW.DB.Credentials.getFavedCredentialsList();
-						
-						//-------------------------
-						// Handle no Faves
-						if(credentialsList.isEmpty()) {
-							childitems.add(
-									new MenuItem("No Favorites")
-								);
-							return childitems;
-						}
-						
-						for(CFWCredentials current : credentialsList) {
-
-							childitems.add(
-								(MenuItem)new MenuItem(current.name())
-									.noIconSpace(true)
-									.href(URI_DASHBOARD_VIEW+ "?id="+current.id()) 	
-							);
-						}
-						return childitems;
-					}
-				});
-			
-			favoritesMenu.faicon("fas fa-star");
-		
-		CFW.Registry.Components.addButtonsMenuItem(favoritesMenu, null);
 		
 	}
 
@@ -209,12 +165,6 @@ public class FeatureCredentials extends CFWAppFeature {
 					false
 				);	
 		
-		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_CREDENTIALS_CREATOR_PUBLIC, FeatureUserManagement.CATEGORY_USER)
-					.description("Additional permission for credentials creators to allow making public links for credentials."),
-					true,
-					false
-				);	
 		
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_CREDENTIALS_ADMIN, FeatureUserManagement.CATEGORY_USER)
@@ -223,19 +173,6 @@ public class FeatureCredentials extends CFWAppFeature {
 					false
 				);	
 		
-		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_CREDENTIALS_TASKS, FeatureUserManagement.CATEGORY_USER)
-				.description("Add and edit tasks of widgets."),
-				true,
-				false
-				);	
-		
-		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_CREDENTIALS_FAST_RELOAD, FeatureUserManagement.CATEGORY_USER)
-				.description("Gives the user the option to reload the credentials every minute."),
-				true,
-				false
-				);
 		
 		//============================================================
 		// CONFIGURATION

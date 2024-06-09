@@ -30,7 +30,7 @@ import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWCredentials extends CFWObject {
@@ -59,7 +59,7 @@ public class CFWCredentials extends CFWObject {
 		// About these fields:
 		// First they have been only stored in this objects table CFW_CREDENTIALS as JSON.
 		// Now the primary data is stored in the respective tables >> CFW_CREDENTIALS_*_MAP.
-		// Data in CFW_CREDENTIALS is secondary but still updated, as it is used for access management.
+		// Data in CFW_CREDENTIALS is secondary but still updated, as it is used for sharing management.
 		, JSON_SHARE_WITH_USERS
 		, JSON_SHARE_WITH_GROUPS
 		, JSON_EDITORS
@@ -68,15 +68,7 @@ public class CFWCredentials extends CFWObject {
 		, ALLOW_EDIT_SETTINGS
 		, TIME_CREATED
 		, LAST_UPDATED
-		, IS_PUBLIC
-		, START_FULLSCREEN
-		, IS_DELETABLE
-		, IS_RENAMABLE 
 		, IS_ARCHIVED
-		// not using primary key for this, as it allows for easier switch between versions
-		, VERSION_GROUP
-		// zero is current, else it counts up 1 for every version, later version are higher 
-		, VERSION
 	}
 
 	private static Logger logger = CFWLog.getLogger(CFWCredentials.class.getName());
@@ -162,58 +154,11 @@ public class CFWCredentials extends CFWObject {
 			.setDescription("The date and time the credentials was last updated. Will be null if automatic version was created.")
 			.setValue(new Timestamp(new Date().getTime()));
 	
-	private CFWField<Boolean> isPublic = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWCredentialsFields.IS_PUBLIC)
-			.apiFieldType(FormFieldType.TEXT)
-			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
-			.setDescription("Make the credentials accessible through a public URL without the need for sign-in or having an account. This is unrelated to any other sharing options.")
-			.setValue(false)
-			;
-	
-	private CFWField<Boolean> startFullscreen = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWCredentialsFields.START_FULLSCREEN)
-			.apiFieldType(FormFieldType.TEXT)
-			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
-			.setDescription("Make the credentials start in fullscreen mode.")
-			.setValue(false)
-			;
-	
-	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, CFWCredentialsFields.IS_DELETABLE.toString())
-			.setDescription("Flag to define if the credentials can be deleted or not.")
-			.setValue(true)
-			;
-	
-	private CFWField<Boolean> isRenamable = CFWField.newBoolean(FormFieldType.NONE, CFWCredentialsFields.IS_RENAMABLE.toString())
-			.setColumnDefinition("BOOLEAN DEFAULT TRUE")
-			.setDescription("Flag to define if the credentials can be renamed or not.")
-			.setValue(true)
-			.setChangeHandler(new CFWFieldChangeHandler<Boolean>() {
-				
-				@Override
-				public boolean handle(Boolean oldValue, Boolean newValue) {
-					if(!newValue) {
-						name.isDisabled(true);
-					}else {
-						name.isDisabled(false);
-					}
-					
-					return true;
-				}
-			});
-	
+
 	private CFWField<Boolean> isArchived = CFWField.newBoolean(FormFieldType.NONE, CFWCredentialsFields.IS_ARCHIVED)
 			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
 			.setDescription("Flag to define if the credentials is archived.")
 			.setValue(false)
-			;
-	
-	private CFWField<String> versionGroup = CFWField.newString(FormFieldType.HIDDEN, CFWCredentialsFields.VERSION_GROUP)
-			.setDescription("Identifier used for the grouping of the versions.")
-			.setValue(null);
-	
-	private CFWField<Integer> version = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsFields.VERSION)
-			.setColumnDefinition("INT DEFAULT 0")
-			.setDescription("The version of the credentials, 0 is the current version.")
-			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(0)
 			;
 	
 	
@@ -242,13 +187,7 @@ public class CFWCredentials extends CFWObject {
 				, alloweEditSettings
 				, timeCreated
 				, lastUpdated
-				, isPublic
-				, startFullscreen
-				, isDeletable
-				, isRenamable
 				, isArchived
-				, versionGroup
-				, version
 			);
 	}
 	
@@ -323,8 +262,6 @@ public class CFWCredentials extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						CFWCredentialsFields.PK_ID.toString(), 
-						CFWCredentialsFields.VERSION.toString(),
-//						CredentialsFields.CATEGORY.toString(),
 						CFWCredentialsFields.NAME.toString(),
 						CFWCredentialsFields.IS_ARCHIVED.toString(),
 				};
@@ -333,8 +270,6 @@ public class CFWCredentials extends CFWObject {
 				new String[] {
 						CFWCredentialsFields.PK_ID.toString(), 
 						CFWCredentialsFields.FK_ID_USER.toString(),
-						CFWCredentialsFields.VERSION_GROUP.toString(),
-						CFWCredentialsFields.VERSION.toString(),
 						CFWCredentialsFields.NAME.toString(),
 						CFWCredentialsFields.DESCRIPTION.toString(),
 						CFWCredentialsFields.TAGS.toString(),
@@ -345,14 +280,8 @@ public class CFWCredentials extends CFWObject {
 						CFWCredentialsFields.JSON_EDITOR_GROUPS.toString(),
 						CFWCredentialsFields.ALLOW_EDIT_SETTINGS.toString(),
 						CFWCredentialsFields.TIME_CREATED.toString(),
-						CFWCredentialsFields.LAST_UPDATED.toString(),
-						CFWCredentialsFields.IS_PUBLIC.toString(),
-						CFWCredentialsFields.START_FULLSCREEN.toString(),
-						CFWCredentialsFields.IS_DELETABLE.toString(),
-						CFWCredentialsFields.IS_RENAMABLE.toString(),		
-						CFWCredentialsFields.IS_ARCHIVED.toString(),		
-						CFWCredentialsFields.VERSION.toString(),		
-						CFWCredentialsFields.VERSION_GROUP.toString(),			
+						CFWCredentialsFields.LAST_UPDATED.toString(),	
+						CFWCredentialsFields.IS_ARCHIVED.toString(),
 				};
 
 		//----------------------------------
@@ -709,41 +638,6 @@ public class CFWCredentials extends CFWObject {
 		return this;
 	}
 	
-	public boolean isPublic() {
-		return isPublic.getValue();
-	}
-	
-	public CFWCredentials isPublic(boolean value) {
-		this.isPublic.setValue(value);
-		return this;
-	}
-	public boolean startFullscreen() {
-		return startFullscreen.getValue();
-	}
-	
-	public CFWCredentials startFullscreen(boolean value) {
-		this.startFullscreen.setValue(value);
-		return this;
-	}
-	
-	public boolean isDeletable() {
-		return isDeletable.getValue();
-	}
-	
-	public CFWCredentials isDeletable(boolean isDeletable) {
-		this.isDeletable.setValue(isDeletable);
-		return this;
-	}	
-	
-	public boolean isRenamable() {
-		return isRenamable.getValue();
-	}
-	
-	public CFWCredentials isRenamable(boolean isRenamable) {
-		this.isRenamable.setValue(isRenamable);
-		return this;
-	}	
-	
 	public boolean isArchived() {
 		return isArchived.getValue();
 	}
@@ -752,22 +646,5 @@ public class CFWCredentials extends CFWObject {
 		this.isArchived.setValue(isRenamable);
 		return this;
 	}	
-	
-	public String versionGroup() {
-		return versionGroup.getValue();
-	}
-	
-	public CFWCredentials versionGroup(String value) {
-		this.versionGroup.setValue(value);
-		return this;
-	}
-	public Integer version() {
-		return version.getValue();
-	}
-	
-	public CFWCredentials version(Integer value) {
-		this.version.setValue(value);
-		return this;
-	}
 	
 }

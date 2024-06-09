@@ -32,7 +32,7 @@ import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2024 
  * @license MIT-License
  **************************************************************************************************************/
 public class ServletCredentialsList extends HttpServlet
@@ -125,9 +125,6 @@ public class ServletCredentialsList extends HttpServlet
 	  											break;
 	  											
 					case "myarchived":	 		jsonResponse.getContent().append(CFW.DB.Credentials.getUserArchivedListAsJSON());
-												break;
-	  											
-					case "favedcredentials": 	jsonResponse.getContent().append(CFW.DB.Credentials.getFavedCredentialsListAsJSON());
 												break;
 	  											
 					case "sharedcredentials": 	jsonResponse.getContent().append(CFW.DB.Credentials.getSharedCredentialsListAsJSON());
@@ -273,11 +270,6 @@ public class ServletCredentialsList extends HttpServlet
 			if(credentials != null) {
 				
 				credentials.updateSelectorFields();
-				
-				if(!CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_CREATOR_PUBLIC)
-				&& !CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
-					credentials.getField(CFWCredentialsFields.IS_PUBLIC.toString()).isDisabled(true);
-				}
 				
 				CFWForm editCredentialsForm = credentials.toForm("cfwEditCredentialsForm"+ID, "Update Credentials");
 

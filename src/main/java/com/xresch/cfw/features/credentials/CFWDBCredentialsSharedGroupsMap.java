@@ -18,7 +18,7 @@ import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2022
+ * @author Reto Scheiwiller, (c) Copyright 2024
  * @license Org Manager License
  **************************************************************************************************************/
 public class CFWDBCredentialsSharedGroupsMap {

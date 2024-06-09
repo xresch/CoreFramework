@@ -545,9 +545,8 @@ public  class CFWDBDefaultOperations {
 	}
 	
 	/***************************************************************
-	 * Select a role by it's name.
-	 * @param id of the role
-	 * @return Returns a role or null if not found or in case of exception.
+	 * Checks if a records with the given value already exists.
+	 * @return Returns true if exists, false otherwise.
 	 ****************************************************************/
 	public static boolean checkExistsBy(Class<? extends CFWObject> cfwObjectClass, String column, Object value ) {
 		
@@ -560,6 +559,39 @@ public  class CFWDBDefaultOperations {
 					.executeCount();
 			
 			return (count > 0);
+			
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.warn("Error while instanciating object.", e);
+		} 
+		
+		return false;
+
+	}
+	
+	/***************************************************************
+	 * Checks if a records with the given value already exists,
+	 * ignores the value of the record passed to this method.
+	 * @return Returns true if exists, false otherwise.
+	 ****************************************************************/
+	public static boolean checkExistsByIgnoreSelf(CFWObject object, String column, Object value ) {
+		
+		try {
+
+			if(object.getPrimaryKeyValue() != null
+			&& object.getPrimaryKeyValue() > 0) {
+				int count = object
+								.queryCache(object.getClass(), "CFWDBDefaultOperations.checkExistsByIgnoreSelf"+column)
+								.selectCount()
+								.where(column, value)
+								.and().not().is(object.getPrimaryKeyFieldname(), object.getPrimaryKeyValue())
+								.limit(1)
+								.executeCount();
+				
+				return (count > 0);
+			}else {
+				return checkExistsBy(object.getClass(), column, value );
+			}
 			
 		} catch (Exception e) {
 			new CFWLog(logger)

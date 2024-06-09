@@ -15,7 +15,7 @@ import com.xresch.cfw.features.usermgmt.User.UserFields;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2022
+ * @author Reto Scheiwiller, (c) Copyright 2024
  * @license Org Manager License
  **************************************************************************************************************/
 public class CFWCredentialsEditorsMap extends CFWObject {

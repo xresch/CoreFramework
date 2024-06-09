@@ -5,6 +5,12 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.UserAuditExecutor;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024 
+ * @license MIT-License
+ **************************************************************************************************************/
+
 public class UserAuditExecutorCredentialsUserDirect implements UserAuditExecutor {
 
 	@Override
