@@ -362,7 +362,7 @@ function cfw_credentialslist_printCredentials(data, type){
 				var htmlString = '';
 				if(JSDATA.userid == record.FK_ID_OWNER 
 				|| type == 'admincredentials'
-				|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
+				|| (record.IS_EDITOR) ){
 					htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
 						+'onclick="cfw_credentialslist_editCredentials('+id+')");">'
 						+ '<i class="fa fa-pen"></i>'

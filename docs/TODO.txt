@@ -161,6 +161,7 @@ DONE
 ====
 
 ------- current -------
+- NEW FEARTURE: Credentials Management to not have credentials in queries
 - Groups: Added a List of all groups with owner and editors, to simplify finding someone that can add you to a group
 - Alerting: Do not send mails to inactive users.
 - Dashboard: Fixed versions showing up in shared list

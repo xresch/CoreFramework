@@ -111,7 +111,9 @@ public class ServletCredentialsList extends HttpServlet
 		|| action.toLowerCase().equals("copy")
 		|| action.toLowerCase().equals("getform")) {
 			if(!CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_CREATOR)
-			   && !CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+			   && !CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)
+			   && !CFW.DB.Credentials.checkCanEdit(ID)
+			   ) {
 				CFWMessages.noPermission();
 				return;
 			}
@@ -137,10 +139,7 @@ public class ServletCredentialsList extends HttpServlet
 					case "adminarchived": 		jsonResponse.getContent().append(CFW.DB.Credentials.getAdminArchivedListAsJSON());
 												break;	
 												
-					case "credentialsversions": 	jsonResponse.getContent().append(CFW.DB.Credentials.getCredentialsVersionsListAsJSON(ID));
-												break;	
-												
-					case "credentialstats": 		String timeframeString = request.getParameter("timeframe");
+					case "credentialstats": 	String timeframeString = request.getParameter("timeframe");
 												CFWTimeframe time = new CFWTimeframe(timeframeString);
 												jsonResponse.setPayload(CFW.DB.Credentials.getEAVStats(ID, time.getEarliest(), time.getLatest()));
 												break;									
@@ -303,7 +302,8 @@ public class ServletCredentialsList extends HttpServlet
 	private void createEditCredentialsForm(JSONResponse json, String ID) {
 		
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_CREATOR)
-		|| CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+		|| CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)
+		|| CFW.DB.Credentials.checkCanEdit(ID)) {
 			CFWCredentials credentials = CFW.DB.Credentials.selectByID(Integer.parseInt(ID));
 			
 			if(credentials != null) {

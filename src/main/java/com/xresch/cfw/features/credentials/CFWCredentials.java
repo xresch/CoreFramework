@@ -72,7 +72,6 @@ public class CFWCredentials extends CFWObject {
 		, JSON_EDITORS
 		, JSON_EDITOR_GROUPS
 		
-		, ALLOW_EDIT_SETTINGS
 		, TIME_CREATED
 		, LAST_UPDATED
 		, IS_ARCHIVED
@@ -169,13 +168,6 @@ public class CFWCredentials extends CFWObject {
 	private CFWField<LinkedHashMap<String,String>> editors = this.createSelectorFieldEditors(null);
 		
 	private CFWField<LinkedHashMap<String,String>> editorGroups = this.createSelectorFieldEditorGroups(null);
-
-	private CFWField<Boolean> alloweEditSettings = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWCredentialsFields.ALLOW_EDIT_SETTINGS)
-			.apiFieldType(FormFieldType.TEXT)
-			.setColumnDefinition("BOOLEAN DEFAULT TRUE")
-			.setDescription("Allow editors of the credentials to change the settings of the credentials.")
-			.setValue(true)
-			;
 	
 	private CFWField<Timestamp> timeCreated = CFWField.newTimestamp(FormFieldType.NONE, CFWCredentialsFields.TIME_CREATED)
 			.setDescription("The date and time the credentials was created.")
@@ -223,7 +215,6 @@ public class CFWCredentials extends CFWObject {
 				, shareWithGroups
 				, editors
 				, editorGroups
-				, alloweEditSettings
 				, timeCreated
 				, lastUpdated
 				, isArchived
@@ -256,7 +247,6 @@ public class CFWCredentials extends CFWObject {
 						CFWCredentialsFields.JSON_SHARE_WITH_GROUPS.toString(),
 						CFWCredentialsFields.JSON_EDITORS.toString(),
 						CFWCredentialsFields.JSON_EDITOR_GROUPS.toString(),
-						CFWCredentialsFields.ALLOW_EDIT_SETTINGS.toString(),
 						CFWCredentialsFields.TIME_CREATED.toString(),
 						CFWCredentialsFields.LAST_UPDATED.toString(),	
 						CFWCredentialsFields.IS_ARCHIVED.toString(),
@@ -603,14 +593,6 @@ public class CFWCredentials extends CFWObject {
 		return this;
 	}
 	
-	public boolean alloweEditSettings() {
-		return alloweEditSettings.getValue();
-	}
-	
-	public CFWCredentials alloweEditSettings(boolean isShared) {
-		this.alloweEditSettings.setValue(isShared);
-		return this;
-	}
 	
 	public Timestamp timeCreated() {
 		return timeCreated.getValue();

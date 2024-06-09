@@ -353,9 +353,9 @@ public class CFWDBCredentials {
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWCredentialsFields.PK_ID
 				  , CFWCredentialsFields.NAME
+				  , CFWCredentialsFields.ACCOUNT
 				  , CFWCredentialsFields.DESCRIPTION
 				  , CFWCredentialsFields.TAGS
-				  , CFWCredentialsFields.ALLOW_EDIT_SETTINGS
 				  )
 			.where(CFWCredentialsFields.IS_SHARED, true)
 			.and(CFWCredentialsFields.IS_ARCHIVED, false)
@@ -378,9 +378,9 @@ public class CFWDBCredentials {
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWCredentialsFields.PK_ID
 					, CFWCredentialsFields.NAME
+					, CFWCredentialsFields.ACCOUNT
 					, CFWCredentialsFields.DESCRIPTION
 					, CFWCredentialsFields.TAGS
-					, CFWCredentialsFields.ALLOW_EDIT_SETTINGS
 					)
 			.where(CFWCredentialsFields.IS_ARCHIVED, false)
 			.and().custom("(");
@@ -420,23 +420,7 @@ public class CFWDBCredentials {
 		return CFW.JSON.toJSON(sharedBoards);
 	}
 	
-	
-	/***************************************************************
-	 * Return a list of all version of a credentials as json string.
-	 * 
-	 * @return Returns a result set with all users or null.
-	 ****************************************************************/
-	public static String getCredentialsVersionsListAsJSON(String credentialsID) {
-		
-		CFWCredentials credentials = selectByID(credentialsID);
-		
-		return new CFWSQL(credentials)
-				.queryCache()
-				.select()
-				.where(CFWCredentialsFields.PK_ID, credentialsID)
-				.getAsJSON();
-	}
-			
+				
 	
 	/***************************************************************
 	 * 
