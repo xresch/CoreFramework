@@ -10,8 +10,8 @@ import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
-import com.xresch.cfw.features.credentials.Credentials.CredentialsFields;
-import com.xresch.cfw.features.credentials.CredentialsEditorGroupsMap.CredentialsEditorGroupsMapFields;
+import com.xresch.cfw.features.credentials.CFWCredentials.CFWCredentialsFields;
+import com.xresch.cfw.features.credentials.CFWCredentialsEditorGroupsMap.CFWCredentialsEditorGroupsMapFields;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -157,7 +157,7 @@ public class CFWDBCredentialsEditorGroupsMap {
 			return false;
 		}
 		
-		CFWCredentials credentials = CFW.DB.Credentialss.selectByID(credentialsID);
+		CFWCredentials credentials = CFW.DB.Credentials.selectByID(credentialsID);
 		Role role = CFW.DB.Roles.selectByID(roleID);
 		
 		return assignGroupToCredentials(role, credentials);
@@ -261,7 +261,7 @@ public class CFWDBCredentialsEditorGroupsMap {
 			return false;
 		}
 				
-		CFWCredentials credentials = CFW.DB.Credentialss.selectByID(credentialsID);
+		CFWCredentials credentials = CFW.DB.Credentials.selectByID(credentialsID);
 		Role role = CFW.DB.Roles.selectByID(roleID);
 		return removeGroupFromCredentials(role, credentials);
 
@@ -303,7 +303,7 @@ public class CFWDBCredentialsEditorGroupsMap {
 	}
 
 //	/***************************************************************
-//	 * Retrieve the credentialss for a role as key/labels.
+//	 * Retrieve the credentials for a role as key/labels.
 //	 * Useful for autocomplete.
 //	 * @param credentials
 //	 * @return ResultSet

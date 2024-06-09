@@ -26,8 +26,8 @@ import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.credentials.Credentials.CredentialsFields;
-import com.xresch.cfw.features.credentials.widgets.advanced.WidgetParameter;
+import com.xresch.cfw.features.credentials.CFWCredentials.CFWCredentialsFields;
+import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.usermgmt.Permission;
@@ -54,8 +54,8 @@ public class CFWDBCredentials {
 	private static final Logger logger = CFWLog.getLogger(CFWDBCredentials.class.getName());
 	
 	private static final String[] auditLogFieldnames = new String[] { 
-			CredentialsFields.PK_ID.toString()
-		  , CredentialsFields.NAME.toString()
+			CFWCredentialsFields.PK_ID.toString()
+		  , CFWCredentialsFields.NAME.toString()
 		};
 	
 	public static TreeSet<String> cachedTags = null;
@@ -100,107 +100,6 @@ public class CFWDBCredentials {
 		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item);
 	}
 	
-	/**********************************************************************************
-	 * 
-	 * @param credentialsID¨the id of the credentials that should be duplicated.
-	 * @param forVersioning true if this duplicate should be for versioning
-	 * @return
-	 **********************************************************************************/
-	public static Integer createDuplicate(String credentialsID, boolean forVersioning) { 
-
-		CFWCredentials duplicate = CFW.DB.Credentialss.selectByID(credentialsID);
-		duplicate.updateSelectorFields();
-		
-		//---------------------------------
-		// Make sure it has a version group 
-		if(Strings.isNullOrEmpty(duplicate.versionGroup()) ) {
-			duplicate.versionGroup(UUID.randomUUID().toString());
-			duplicate.update(CredentialsFields.VERSION_GROUP);
-		}
-		
-		int originalID = duplicate.id();
-		
-		duplicate.id(null);
-		duplicate.timeCreated( new Timestamp(new Date().getTime()) );
-		
-		// need to check if null for automatic versioning
-		Integer id =  CFW.Context.Request.getUserID();
-		
-		if(forVersioning) {
-			
-			int maxVersion = getMaxVersionForCredentials(originalID);
-			duplicate.version(maxVersion+1);
-			
-		}else {
-			duplicate.foreignKeyOwner(id);
-			duplicate.name(duplicate.name()+"(Copy)");
-			duplicate.version(0);
-			duplicate.versionGroup(UUID.randomUUID().toString());
-			duplicate.isShared(false);
-		}
-		
-		CFW.DB.transactionStart();
-		
-		Integer newID = duplicate.insertGetPrimaryKey();
-		
-		if(newID != null) {
-			
-				duplicate.id(newID);
-				//-----------------------------------------
-				// Save Selector Fields
-				//-----------------------------------------
-				boolean success = true;
-				success &= duplicate.saveSelectorFields();
-				if(!success) {
-					CFW.DB.transactionRollback();
-					new CFWLog(logger).severe("Error while saving selector fields for duplicate.");
-					return null;
-				}
-				//-----------------------------------------
-				// Duplicate Widgets
-				//-----------------------------------------
-				ArrayList<CredentialsWidget> widgetList = CFW.DB.CredentialsWidgets.getWidgetsForCredentials(credentialsID);
-				
-				for(CredentialsWidget widgetToCopy : widgetList) {
-					widgetToCopy.id(null);
-					widgetToCopy.foreignKeyCredentials(newID);
-					
-					if(!widgetToCopy.insert()) {
-						CFW.DB.transactionRollback();
-						new CFWLog(logger).severe("Error while duplicating widget.");
-						return null;
-					}
-				}
-				
-				//-----------------------------------------
-				// Duplicate Parameters
-				//-----------------------------------------
-				ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForCredentials(credentialsID);
-				
-				for(CFWParameter paramToCopy : parameterList) {
-					
-					paramToCopy.id(null);
-					paramToCopy.foreignKeyCredentials(newID);
-					
-					if(!paramToCopy.insert()) {
-						CFW.DB.transactionRollback();
-						new CFWLog(logger).severe("Error while duplicating credentials parameter.");
-						return null;
-					}
-
-				}
-				
-			CFW.DB.transactionCommit();
-			
-			CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Credentials duplicated successfully.");
-		}
-			
-		
-		
-		return newID;
-
-	}
-
 	
 	//####################################################################################################
 	// UPDATE
@@ -220,7 +119,7 @@ public class CFWDBCredentials {
 				.lastUpdated(new Timestamp(System.currentTimeMillis()));
 		
 		return new CFWSQL(toUpdate)
-			.update(CredentialsFields.LAST_UPDATED)
+			.update(CFWCredentialsFields.LAST_UPDATED)
 			;
 		
 	}
@@ -244,7 +143,7 @@ public class CFWDBCredentials {
 		new CFWLog(logger).audit(CFWAuditLogAction.MOVE, CFWCredentials.class, auditMessage);
 		
 		return new CFWSQL(toUpdate)
-			.update(CredentialsFields.IS_ARCHIVED)
+			.update(CFWCredentialsFields.IS_ARCHIVED)
 			;
 	}
 	
@@ -253,16 +152,8 @@ public class CFWDBCredentials {
 	//####################################################################################################
 	public static boolean deleteByID(String id) {
 		
-		boolean success = true;
-		CFW.DB.transactionStart();
-		
-			// delete widgets and related jobs first to not have jobs unrelated to widgets.
-			success &= CFW.DB.CredentialsWidgets.deleteWidgetsForCredentials(id); 
-			success &= CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, CredentialsFields.PK_ID.toString(), id); 
-		
-		CFW.DB.transactionEnd(success);
+		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, CFWCredentialsFields.PK_ID.toString(), id); 
 
-		return success;
 	}
 
 	
@@ -277,58 +168,43 @@ public class CFWDBCredentials {
 		}
 	} 
 	
-	
-	
-	private static boolean deleteJobsForCredentials(String id)	{ 
-		
-		ArrayList<CredentialsWidget> widgets = CFW.DB.CredentialsWidgets.getWidgetsForCredentials(id);
-		
-		
-			boolean success = true;
-			for(CredentialsWidget widget : widgets) {
-				success &= CFW.DB.CredentialsWidgets.deleteJobsForWidget(widget.id());
-			}
-		
-		return success;
-	} 
-		
 		
 	//####################################################################################################
 	// SELECT
 	//####################################################################################################
 	public static CFWCredentials selectByID(String id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CredentialsFields.PK_ID.toString(), id);
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWCredentialsFields.PK_ID.toString(), id);
 	}
 	
 	public static CFWCredentials selectByID(int id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CredentialsFields.PK_ID.toString(), id);
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWCredentialsFields.PK_ID.toString(), id);
 	}
 	
 	public static CFWCredentials selectFirstByName(String name) { 
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CredentialsFields.NAME.toString(), name);
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWCredentialsFields.NAME.toString(), name);
 	}
 	
 	
 	/***************************************************************
-	 * Return a list of all user credentialss
+	 * Return a list of all user credentials
 	 * 
-	 * @return Returns a resultSet with all credentialss or null.
+	 * @return Returns a resultSet with all credentials or null.
 	 ****************************************************************/
 	public static ResultSet getUserCredentialsList() {
 		
 		return new CFWCredentials()
 				.queryCache(CFWDBCredentials.class, "getUserCredentialsList")
 				.select()
-				.where(CredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
-				.and(CredentialsFields.VERSION, 0)
-				.orderby(CredentialsFields.NAME.toString())
+				.where(CFWCredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+				.and(CFWCredentialsFields.VERSION, 0)
+				.orderby(CFWCredentialsFields.NAME.toString())
 				.getResultSet();
 		
 	}
 	
 
 	/***************************************************************
-	 * Return a list of all user credentialss as json string.
+	 * Return a list of all user credentials as json string.
 	 * 
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/
@@ -338,15 +214,15 @@ public class CFWDBCredentials {
 				.queryCache(CFWDBCredentials.class, "getUserCredentialsListAsJSON")
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
-				.where(CredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
-				.and(CredentialsFields.VERSION, 0)
-				.and(CredentialsFields.IS_ARCHIVED, false)
-				.orderby(CredentialsFields.NAME.toString())
+				.where(CFWCredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+				.and(CFWCredentialsFields.VERSION, 0)
+				.and(CFWCredentialsFields.IS_ARCHIVED, false)
+				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
 	}
 	
 	/***************************************************************
-	 * Return a list of all user credentialss as json string.
+	 * Return a list of all user credentials as json string.
 	 * 
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/
@@ -356,16 +232,16 @@ public class CFWDBCredentials {
 				.queryCache()
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
-				.where(CredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
-				.and(CredentialsFields.VERSION, 0)
-				.and(CredentialsFields.IS_ARCHIVED, true)
-				.orderby(CredentialsFields.NAME.toString())
+				.where(CFWCredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+				.and(CFWCredentialsFields.VERSION, 0)
+				.and(CFWCredentialsFields.IS_ARCHIVED, true)
+				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
 	}
 	
 	
 	/***************************************************************
-	 * Return a list of all credentialss the user has faved.
+	 * Return a list of all credentials the user has faved.
 	 * 
 	 * @return ArrayList<Credentials>
 	 ****************************************************************/
@@ -379,7 +255,7 @@ public class CFWDBCredentials {
 				.getAsObjectListConvert(CFWCredentials.class);
 	}
 	/***************************************************************
-	 * Return a list of all credentialss the user has faved.
+	 * Return a list of all credentials the user has faved.
 	 * 
 	 * @return json string
 	 ****************************************************************/
@@ -396,7 +272,7 @@ public class CFWDBCredentials {
 	
 
 	/***************************************************************
-	 * Return a list of all user credentialss as json string.
+	 * Return a list of all user credentials as json string.
 	 * 
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/
@@ -408,9 +284,9 @@ public class CFWDBCredentials {
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
-				.where(CredentialsFields.VERSION, 0)
-				.and(CredentialsFields.IS_ARCHIVED, false)
-				.orderby(CredentialsFields.NAME.toString())
+				.where(CFWCredentialsFields.VERSION, 0)
+				.and(CFWCredentialsFields.IS_ARCHIVED, false)
+				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
 		}else {
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
@@ -419,7 +295,7 @@ public class CFWDBCredentials {
 	}
 	
 	/***************************************************************
-	 * Return a list of all archived credentialss as json string.
+	 * Return a list of all archived credentials as json string.
 	 * 
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/
@@ -431,9 +307,9 @@ public class CFWDBCredentials {
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
-				.where(CredentialsFields.VERSION, 0)
-				.and(CredentialsFields.IS_ARCHIVED, true)
-				.orderby(CredentialsFields.NAME.toString())
+				.where(CFWCredentialsFields.VERSION, 0)
+				.and(CFWCredentialsFields.IS_ARCHIVED, true)
+				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
 		}else {
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
@@ -443,7 +319,7 @@ public class CFWDBCredentials {
 	
 	
 	/***************************************************************
-	 * Return a list of all user credentialss as json string.
+	 * Return a list of all user credentials as json string.
 	 * 
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/
@@ -468,16 +344,16 @@ public class CFWDBCredentials {
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, userID)
-			.select(CredentialsFields.PK_ID
-				  , CredentialsFields.NAME
-				  , CredentialsFields.DESCRIPTION
-				  , CredentialsFields.TAGS
-				  , CredentialsFields.IS_PUBLIC
-				  , CredentialsFields.ALLOW_EDIT_SETTINGS
+			.select(CFWCredentialsFields.PK_ID
+				  , CFWCredentialsFields.NAME
+				  , CFWCredentialsFields.DESCRIPTION
+				  , CFWCredentialsFields.TAGS
+				  , CFWCredentialsFields.IS_PUBLIC
+				  , CFWCredentialsFields.ALLOW_EDIT_SETTINGS
 				  )
-			.where(CredentialsFields.IS_SHARED, true)
-			.and(CredentialsFields.VERSION, 0)
-			.and(CredentialsFields.IS_ARCHIVED, false)
+			.where(CFWCredentialsFields.IS_SHARED, true)
+			.and(CFWCredentialsFields.VERSION, 0)
+			.and(CFWCredentialsFields.IS_ARCHIVED, false)
 			.and().custom("(");
 		
 		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
@@ -486,7 +362,7 @@ public class CFWDBCredentials {
 			if(i > 0) {
 				query.or();
 			}
-			query.like(CredentialsFields.JSON_SHARE_WITH_GROUPS, "%\""+roleID+"\":%");
+			query.like(CFWCredentialsFields.JSON_SHARE_WITH_GROUPS, "%\""+roleID+"\":%");
 		}
 		
 		query.custom(")");
@@ -496,15 +372,15 @@ public class CFWDBCredentials {
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, userID)
-			.select(CredentialsFields.PK_ID
-					, CredentialsFields.NAME
-					, CredentialsFields.DESCRIPTION
-					, CredentialsFields.TAGS
-					, CredentialsFields.IS_PUBLIC
-					, CredentialsFields.ALLOW_EDIT_SETTINGS
+			.select(CFWCredentialsFields.PK_ID
+					, CFWCredentialsFields.NAME
+					, CFWCredentialsFields.DESCRIPTION
+					, CFWCredentialsFields.TAGS
+					, CFWCredentialsFields.IS_PUBLIC
+					, CFWCredentialsFields.ALLOW_EDIT_SETTINGS
 					)
-			.where(CredentialsFields.VERSION, 0)
-			.and(CredentialsFields.IS_ARCHIVED, false)
+			.where(CFWCredentialsFields.VERSION, 0)
+			.and(CFWCredentialsFields.IS_ARCHIVED, false)
 			.and().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {
@@ -512,7 +388,7 @@ public class CFWDBCredentials {
 			if(i > 0) {
 				query.or();
 			}
-			query.like(CredentialsFields.JSON_EDITOR_GROUPS, "%\""+roleID+"\":%");
+			query.like(CFWCredentialsFields.JSON_EDITOR_GROUPS, "%\""+roleID+"\":%");
 		}
 		
 		query.custom(")");
@@ -532,7 +408,7 @@ public class CFWDBCredentials {
 		for(JsonElement boardElement : sharedBoards) {
 			JsonObject board = boardElement.getAsJsonObject();
 			board.addProperty("IS_EDITOR"
-					, checkCanEdit(board.get(CredentialsFields.PK_ID.toString()).getAsInt())
+					, checkCanEdit(board.get(CFWCredentialsFields.PK_ID.toString()).getAsInt())
 				);
 			
 		}
@@ -555,340 +431,10 @@ public class CFWDBCredentials {
 		return new CFWSQL(credentials)
 				.queryCache()
 				.select()
-				.where(CredentialsFields.PK_ID, credentialsID)
-				.or(CredentialsFields.VERSION_GROUP, credentials.versionGroup())
-				.orderbyDesc(CredentialsFields.VERSION)
+				.where(CFWCredentialsFields.PK_ID, credentialsID)
+				.or(CFWCredentialsFields.VERSION_GROUP, credentials.versionGroup())
+				.orderbyDesc(CFWCredentialsFields.VERSION)
 				.getAsJSON();
-	}
-	
-	
-	/***************************************************************
-	 * Return a JSON string for export.
-	 * 
-	 * @return Returns a JSON array string.
-	 ****************************************************************/
-	public static String getJsonArrayForExport(String credentialsID) {
-
-		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)
-		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)
-		|| CFW.DB.Credentialss.checkCanEdit(credentialsID)) {			
-			JsonArray credentialsArray = null;
-			if(Strings.isNullOrEmpty(credentialsID)) {
-				credentialsArray = new CFWCredentials()
-						.queryCache(CFWDBCredentials.class, "getJsonArrayForExportAll")
-						.select()
-						.getObjectsAsJSONArray();
-			}else {
-				credentialsArray = new CFWCredentials()
-						.queryCache(CFWDBCredentials.class, "getJsonArrayForExport")
-						.select()
-						.where(CredentialsFields.PK_ID, credentialsID)
-						.getObjectsAsJSONArray();
-			}
-			
-			//-------------------------------
-			// For Every Credentials
-			for(JsonElement element : credentialsArray) {
-				if(element.isJsonObject()) {
-					//-------------------------------
-					// Get Username
-					JsonElement useridElement = element.getAsJsonObject().get(CredentialsFields.FK_ID_USER.toString());
-					if(!useridElement.isJsonNull() && useridElement.isJsonPrimitive()) {
-						String username = CFW.DB.Users.selectUsernameByID(useridElement.getAsInt());
-						element.getAsJsonObject().addProperty("username", username);
-					}
-					//-------------------------------
-					// Get Widgets & Parameters
-					JsonElement idElement = element.getAsJsonObject().get(CredentialsFields.PK_ID.toString());
-					if(!idElement.isJsonNull() && idElement.isJsonPrimitive()) {
-						JsonArray widgets = CFW.DB.CredentialsWidgets.getJsonArrayForExport(idElement.getAsString());
-						element.getAsJsonObject().add("widgets", widgets);
-						
-						JsonArray parameters = CFW.DB.Parameters.getJsonArrayForExport(idElement.getAsString());
-						element.getAsJsonObject().add("parameters", parameters);
-					}
-					
-				}
-			}
-			
-			return CFW.JSON.toJSONPretty(credentialsArray);
-		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!") );
-			return "[]";
-		}
-	}
-	
-	/***************************************************************
-	 * Import an jsonArray exported with getJsonArrayForExport().
-	 * 
-	 * @return Returns a JSON array string.
-	 ****************************************************************/
-	public static boolean importByJson(String jsonArray, boolean keepOwner) {
-
-		//-----------------------------
-		// Resolve JSON Array
-		JsonElement element = CFW.JSON.stringToJsonElement(jsonArray);
-		JsonArray array = null;
-		
-		if(element.isJsonArray()) {
-			array = element.getAsJsonArray();
-		}else if(element.isJsonObject()) {
-			JsonObject object = element.getAsJsonObject();
-			if(object.has("payload")) {
-				array = object.get("payload").getAsJsonArray();
-			}else {
-				new CFWLog(logger)
-					.severe(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."), new Exception());
-				return false;
-			}
-		}else {
-			new CFWLog(logger)
-				.severe(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."), new Exception());
-			return false;
-		}
-		
-		//-----------------------------
-		// Create Credentialss
-		for(JsonElement credentialsElement : array) {
-			if(credentialsElement.isJsonObject()) {
-				JsonObject credentialsObject = credentialsElement.getAsJsonObject();
-				
-				//-----------------------------
-				// Map values
-				CFWCredentials credentials = new CFWCredentials();
-				credentials.mapJsonFields(credentialsObject, true, true);
-				credentials.id(null);
-				credentials.timeCreated( new Timestamp(new Date().getTime()) );
-				
-				String importedName = credentials.name() +"(Imported)";
-				credentials.name(importedName);
-				
-				//-----------------------------
-				// Reset Credentials ID and Owner
-				credentials.id(null);
-				
-				if(keepOwner && credentialsObject.has("username")) {
-					String username = credentialsObject.get("username").getAsString();
-					User owner = CFW.DB.Users.selectByUsernameOrMail(username);
-					if(owner != null) {
-						credentials.foreignKeyOwner(owner.id());
-					}else {
-						CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
-								CFW.L("cfw_credentials_error_usernotresolved",
-									  "The the credentials owner with name '{0}' could not be resolved. Set the owner to the importing user.",
-									  credentialsObject.has("username"))
-						);
-						credentials.foreignKeyOwner(CFW.Context.Request.getUser().id());
-					}
-				}else {
-					credentials.foreignKeyOwner(CFW.Context.Request.getUser().id());
-				}
-				
-				//-----------------------------
-				// Resolve Shared Users
-				if(credentials.sharedWithUsers() != null) {
-					LinkedHashMap<String, String> resolvedViewers = new LinkedHashMap<String, String>();
-					for(String id : credentials.sharedWithUsers().keySet()) {
-						User user = CFW.DB.Users.selectByID(Integer.parseInt(id));
-						if(user != null) {
-							
-							resolvedViewers.put(""+user.id(), user.createUserLabel());
-						}else {
-							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
-									CFW.L("cfw_core_error_usernotfound",
-										  "The user '{0}' could not be found.",
-										  credentials.sharedWithUsers().get(id))
-							);
-						}
-						
-					}
-					credentials.sharedWithUsers(resolvedViewers);
-				}
-				
-				//-----------------------------
-				// Resolve Editors
-				if(credentials.editors() != null) {
-					LinkedHashMap<String, String> resolvedEditors = new LinkedHashMap<String, String>();
-					for(String id : credentials.editors().keySet()) {
-						User user = CFW.DB.Users.selectByID(Integer.parseInt(id));
-						if(user != null) {
-							resolvedEditors.put(""+user.id(), user.username());
-						}else {
-							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
-									CFW.L("cfw_core_error_usernotfound",
-										  "The  user '{0}' could not be found.",
-										  credentials.editors().get(id))
-							);
-						}
-					}
-					credentials.editors(resolvedEditors);
-				}
-				
-				//-----------------------------
-				// Resolve Shared Roles
-				if(credentials.sharedWithGroups() != null) {
-					LinkedHashMap<String, String> resolvedSharedRoles = new LinkedHashMap<String, String>();
-					for(String id : credentials.sharedWithGroups().keySet()) {
-						Role role = CFW.DB.Roles.selectByID(Integer.parseInt(id));
-						if(role != null) {
-							resolvedSharedRoles.put(""+role.id(), role.name());
-						}else {
-							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
-									CFW.L("cfw_core_error_rolenotfound",
-										  "The  role '{0}' could not be found.",
-										  credentials.sharedWithGroups().get(id))
-							);
-						}
-					}
-					credentials.sharedWithGroups(resolvedSharedRoles);
-				}
-				
-				//-----------------------------
-				// Resolve Editor Roles
-				if(credentials.editorGroups() != null) {
-					LinkedHashMap<String, String> resolvedEditorRoles = new LinkedHashMap<String, String>();
-					for(String id : credentials.editorGroups().keySet()) {
-						Role role = CFW.DB.Roles.selectByID(Integer.parseInt(id));
-						if(role != null) {
-							resolvedEditorRoles.put(""+role.id(), role.name());
-						}else {
-							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
-									CFW.L("cfw_core_error_rolenotfound",
-										  "The  role '{0}' could not be found.",
-										  credentials.editorGroups().get(id))
-							);
-						}
-					}
-					credentials.editorGroups(resolvedEditorRoles);
-				}
-				
-				//-----------------------------
-				// Create Credentials
-				Integer newCredentialsID = CFW.DB.Credentialss.createGetPrimaryKey(credentials);
-				if(newCredentialsID == null) {
-					new CFWLog(logger)
-						.severe("Credentials '"+credentials.name()+"' could not be imported.");
-					continue;
-				}
-				
-				credentials.saveSelectorFields();
-				
-				//-----------------------------
-				// Create Parameters
-				HashMap<Integer, Integer> oldNewParamIDs = new HashMap<>();
-				if(credentialsObject.has("parameters")) {
-					
-					//-----------------------------
-					// Check format
-					if(!credentialsObject.get("parameters").isJsonArray()) {
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
-						continue;
-					}
-					
-					//-----------------------------
-					// Create Parameters
-					JsonArray paramsArray = credentialsObject.get("parameters").getAsJsonArray();
-					for(JsonElement paramsElement : paramsArray) {
-						
-						if(paramsElement.isJsonObject()) {
-							
-							JsonObject paramsObject = paramsElement.getAsJsonObject();
-							//-----------------------------
-							// Map values
-							CFWParameter param = new CFWParameter();
-							param.mapJsonFields(paramsObject, true, true);
-							
-							//-----------------------------
-							// Reset IDs
-							Integer oldID = param.getPrimaryKeyValue();
-							param.id(null);
-							param.foreignKeyCredentials(newCredentialsID);
-							
-							//-----------------------------
-							// Create Parameter
-							
-							Integer newID = CFW.DB.Parameters.createGetPrimaryKey(param);
-							if(newID == null) {
-								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error creating imported parameter.");
-								continue;
-							}
-							
-							oldNewParamIDs.put(oldID, newID);
-							
-						}
-					}
-				}
-				
-				//-----------------------------
-				// Create Widgets
-				if(credentialsObject.has("widgets")) {
-					
-					//-----------------------------
-					// Check format
-					if(!credentialsObject.get("widgets").isJsonArray()) {
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
-						continue;
-					}
-					
-					//-----------------------------
-					// Create Widgets
-					JsonArray widgetsArray = credentialsObject.get("widgets").getAsJsonArray();
-					for(JsonElement widgetElement : widgetsArray) {
-						
-						if(widgetElement.isJsonObject()) {
-							
-							JsonObject widgetObject = widgetElement.getAsJsonObject();
-							//-----------------------------
-							// Map values
-							CredentialsWidget widget = new CredentialsWidget();
-							widget.mapJsonFields(widgetObject, true, true);
-							
-							//-----------------------------
-							// Reset Credentials ID and Owner
-							widget.id(null);
-							widget.foreignKeyCredentials(newCredentialsID);
-							
-							//-----------------------------
-							// Reset Parameter IDs of
-							// Parameter Widgets
-							if(widget.type().equals(WidgetParameter.WIDGET_TYPE)) {
-								JsonObject settings = CFW.JSON.fromJson(widget.settings()).getAsJsonObject();
-								
-								if(!settings.isJsonNull() 
-								&& settings.has("JSON_PARAMETERS")
-								&& settings.get("JSON_PARAMETERS").isJsonObject()) {
-									JsonObject paramsForWidget = settings.get("JSON_PARAMETERS").getAsJsonObject();
-									for(Entry<Integer, Integer> entry : oldNewParamIDs.entrySet()) {
-										String oldID = entry.getKey()+"";
-										if(paramsForWidget.has(oldID)) {
-											JsonElement value = paramsForWidget.get(oldID);
-											paramsForWidget.remove(oldID);
-											
-											String newID = entry.getValue()+"";
-											paramsForWidget.add(newID, value);
-											
-										}
-									}
-								}
-							}
-							
-							//-----------------------------
-							// Create Widget
-							if(!CFW.DB.CredentialsWidgets.create(widget)) {
-								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error creating imported widget.");
-							}
-							
-						}
-					}
-				}
-				
-			}else {
-				CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
-				continue;
-			}
-		}
-		
-		return true;
 	}
 	
 	/***************************************************************
@@ -901,35 +447,13 @@ public class CFWDBCredentials {
 		
 		return new CFWSQL(new CFWCredentials())
 				.queryCache()
-				.select(CredentialsFields.PK_ID)
-				.where(CredentialsFields.VERSION, 0)
-				.and(CredentialsFields.VERSION_GROUP, versionBoard.versionGroup())
+				.select(CFWCredentialsFields.PK_ID)
+				.where(CFWCredentialsFields.VERSION, 0)
+				.and(CFWCredentialsFields.VERSION_GROUP, versionBoard.versionGroup())
 				.getFirstAsInteger();
 		
 	}
-	
-	/***************************************************************
-	 * Create Versions for credentialss
-	 * 
-	 * @return true if successful
-	 ****************************************************************/
-	protected static void createAutomaticVersions(long beforeThisMillis) {
 		
-		ArrayList<CFWCredentials> boardList = new CFWSQL(new CFWCredentials())
-				.queryCache()
-				.select()
-				.where(CredentialsFields.VERSION, 0)
-				.and(CredentialsFields.IS_ARCHIVED, false)
-				.and().not().isNull(CredentialsFields.LAST_UPDATED)
-				.and().custom(CredentialsFields.LAST_UPDATED +" <= ? ", new Timestamp(beforeThisMillis) )
-				.getAsObjectListConvert(CFWCredentials.class);
-		
-		for(CFWCredentials board : boardList) {
-			createDuplicate(""+board.id(), true);
-			board.lastUpdated(null).update();
-		}
-	}
-	
 	
 	/***************************************************************
 	 * 
@@ -945,8 +469,8 @@ public class CFWDBCredentials {
 		
 		int count = new CFWSQL(new CFWCredentials())
 			.selectCount()
-			.where(CredentialsFields.PK_ID.toString(), credentialsID)
-			.and(CredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+			.where(CFWCredentialsFields.PK_ID.toString(), credentialsID)
+			.and(CFWCredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
 			.executeCount();
 		
 		return count > 0;
@@ -997,12 +521,12 @@ public class CFWDBCredentials {
 		//-----------------------------------
 		// Get Credentials 
 		CFWCredentials credentials = (CFWCredentials)new CFWSQL(new CFWCredentials())
-			.select(CredentialsFields.JSON_SHARE_WITH_GROUPS, CredentialsFields.JSON_EDITOR_GROUPS, CredentialsFields.IS_PUBLIC)
-			.where(CredentialsFields.PK_ID, credentialsID)
+			.select(CFWCredentialsFields.JSON_SHARE_WITH_GROUPS, CFWCredentialsFields.JSON_EDITOR_GROUPS, CFWCredentialsFields.IS_PUBLIC)
+			.where(CFWCredentialsFields.PK_ID, credentialsID)
 			.getFirstAsObject();
 		
 		//-----------------------------------
-		// Handle Public Credentialss
+		// Handle Public Credentials
 		if(isPublicServlet) {
 			if(credentials.isPublic() == true) {
 				return true;
@@ -1096,9 +620,9 @@ public class CFWDBCredentials {
 		ResultSet resultSet = new CFWCredentials()
 			.queryCache(CFWDBCredentials.class, "autocompleteCredentials")
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-			.select(CredentialsFields.PK_ID,
-					CredentialsFields.NAME)
-			.whereLike(CredentialsFields.NAME, "%"+searchValue+"%")
+			.select(CFWCredentialsFields.PK_ID,
+					CFWCredentialsFields.NAME)
+			.whereLike(CFWCredentialsFields.NAME, "%"+searchValue+"%")
 			.limit(maxResults)
 			.getResultSet();
 		
@@ -1116,7 +640,7 @@ public class CFWDBCredentials {
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)
-				.severe("Error while autocomplete credentialss.", new Throwable());
+				.severe("Error while autocomplete credentials.", new Throwable());
 		} finally {
 			CFWDB.close(resultSet);
 		}
@@ -1129,7 +653,7 @@ public class CFWDBCredentials {
 	//####################################################################################################
 	// CHECKS
 	//####################################################################################################
-	public static boolean checkExistsByName(String itemName) {	return CFWDBDefaultOperations.checkExistsBy(cfwObjectClass, CredentialsFields.NAME.toString(), itemName); }
+	public static boolean checkExistsByName(String itemName) {	return CFWDBDefaultOperations.checkExistsBy(cfwObjectClass, CFWCredentialsFields.NAME.toString(), itemName); }
 	public static boolean checkExistsByName(CFWCredentials item) {
 		if(item != null) {
 			return checkExistsByName(item.name());
@@ -1148,7 +672,7 @@ public class CFWDBCredentials {
 	 *****************************************************************/
 	public static boolean checkCanEdit(int credentialsID) {
 		
-		CFWCredentials credentials = CFW.DB.Credentialss.selectByID(credentialsID);
+		CFWCredentials credentials = CFW.DB.Credentials.selectByID(credentialsID);
 		return checkCanEdit(credentials);
 	}
 	
@@ -1159,7 +683,7 @@ public class CFWDBCredentials {
 		User user = CFW.Context.Request.getUser();
 		
 		//--------------------------------------
-		// if user is not logged in / public credentialss
+		// if user is not logged in / public credentials
 		if(user == null) { return false; }
 		
 		//--------------------------------------
@@ -1213,14 +737,6 @@ public class CFWDBCredentials {
 			success &= update(toVersion);
 			
 			//----------------------------
-			// Update Favorites
-			success &= CFW.DB.CredentialsFavorites.switchFavorites(originalID, toID);
-			
-			//----------------------------
-			// Delete Jobs
-			success &= deleteJobsForCredentials(credentialsID);
-					
-			//----------------------------
 			// Success Message
 			if(success) {
 				CFW.Messages.addSuccessMessage("Version successfully switched.");
@@ -1253,8 +769,8 @@ public class CFWDBCredentials {
 	
 	
 	/********************************************************************************************
-	 * Creates multiple Credentialss in the DB.
-	 * @param Credentialss with the values that should be inserted. ID will be set by the Database.
+	 * Creates multiple Credentials in the DB.
+	 * @param Credentials with the values that should be inserted. ID will be set by the Database.
 	 * @return 
 	 * @return nothing
 	 * 
@@ -1269,8 +785,8 @@ public class CFWDBCredentials {
 	}
 	
 	/********************************************************************************************
-	 * Creates multiple Credentialss in the DB.
-	 * @param Credentialss with the values that should be inserted. ID will be set by the Database.
+	 * Creates multiple Credentials in the DB.
+	 * @param Credentials with the values that should be inserted. ID will be set by the Database.
 	 * @return 
 	 * @return nothing
 	 * 
@@ -1282,19 +798,19 @@ public class CFWDBCredentials {
 	
 	/********************************************************************************************
 	 * Adds the tags to the cache for the specified credentials.
-	 * @param Credentialss with the tags.
+	 * @param Credentials with the tags.
 	 * @return nothing
 	 * 
 	 ********************************************************************************************/
-	public static void updateTags(CFWCredentials... credentialss) {
+	public static void updateTags(CFWCredentials... credentials) {
 		
-		for(CFWCredentials credentials : credentialss) {
+		for(CFWCredentials credentials : credentials) {
 			updateTags(credentials);
 		}
 	}
 	/********************************************************************************************
 	 * Adds the tags to the cache for the specified credentials.
-	 * @param Credentialss with the tags.
+	 * @param Credentials with the tags.
 	 * @return nothing
 	 * 
 	 ********************************************************************************************/
@@ -1321,7 +837,7 @@ public class CFWDBCredentials {
 		
 		ResultSet resultSet = new CFWSQL(new CFWCredentials())
 			.queryCache()
-			.select(CredentialsFields.TAGS.toString())
+			.select(CFWCredentialsFields.TAGS.toString())
 			.getResultSet();
 		
 		try {
@@ -1355,9 +871,9 @@ public class CFWDBCredentials {
 		
 		ResultSet resultSet = new CFWSQL(new CFWCredentials())
 			.queryCache()
-			.select(CredentialsFields.TAGS.toString())
-			.where(CredentialsFields.FK_ID_USER.toString(), userID)
-			.or(CredentialsFields.IS_SHARED.toString(), true)
+			.select(CFWCredentialsFields.TAGS.toString())
+			.where(CFWCredentialsFields.FK_ID_USER.toString(), userID)
+			.or(CFWCredentialsFields.IS_SHARED.toString(), true)
 			.getResultSet();
 		
 		try {
@@ -1397,7 +913,7 @@ public class CFWDBCredentials {
 	}
 	
 	/***************************************************************
-	 * Return a list of all user credentialss as json string.
+	 * Return a list of all user credentials as json string.
 	 * 
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/

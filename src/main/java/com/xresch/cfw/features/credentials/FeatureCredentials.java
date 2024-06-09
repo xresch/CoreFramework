@@ -115,12 +115,7 @@ public class FeatureCredentials extends CFWAppFeature {
     	// Register Audit
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCredentialsUserDirect());
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCredentialsUserGroups());
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorWidgetPermissions());
-		
-    	//----------------------------------
-    	// Register Job Tasks
-		CFW.Registry.Jobs.registerTask(new CFWJobTaskWidgetTaskExecutor());
-		
+				
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(
@@ -146,7 +141,7 @@ public class FeatureCredentials extends CFWAppFeature {
 					public ArrayList<HierarchicalHTMLItem> createDynamicItems() {
 						
 						ArrayList<HierarchicalHTMLItem> childitems = new ArrayList<HierarchicalHTMLItem>();
-						ArrayList<CFWCredentials> credentialsList = CFW.DB.Credentialss.getFavedCredentialsList();
+						ArrayList<CFWCredentials> credentialsList = CFW.DB.Credentials.getFavedCredentialsList();
 						
 						//-------------------------
 						// Handle no Faves
@@ -202,28 +197,28 @@ public class FeatureCredentials extends CFWAppFeature {
 		//============================================================
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_CREDENTIALS_VIEWER, FeatureUserManagement.CATEGORY_USER)
-					.description("Can view credentialss that other users have shared. Cannot create credentialss, but might edit when allowed by a credentials creator."),
+					.description("Can view credentials that other users have shared. Cannot create credentials, but might edit when allowed by a credentials creator."),
 					true,
 					false
 				);	
 		
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_CREDENTIALS_CREATOR, FeatureUserManagement.CATEGORY_USER)
-					.description("Can view and create credentialss and share them with other users."),
+					.description("Can view and create credentials and share them with other users."),
 					true,
 					false
 				);	
 		
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_CREDENTIALS_CREATOR_PUBLIC, FeatureUserManagement.CATEGORY_USER)
-					.description("Additional permission for credentials creators to allow making public links for credentialss."),
+					.description("Additional permission for credentials creators to allow making public links for credentials."),
 					true,
 					false
 				);	
 		
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_CREDENTIALS_ADMIN, FeatureUserManagement.CATEGORY_USER)
-					.description("View, Edit and Delete all credentialss of all users, regardless of the share settings of the credentialss."),
+					.description("View, Edit and Delete all credentials of all users, regardless of the share settings of the credentials."),
 					true,
 					false
 				);	
@@ -256,62 +251,7 @@ public class FeatureCredentials extends CFWAppFeature {
 				.value("false")
 		);
 		
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration(CONFIG_CATEGORY, CONFIG_AUTO_VERSIONS)
-				.description("Enable or disable the automatic creation of credentials versions.")
-				.type(FormFieldType.BOOLEAN)
-				.value("true")
-				);
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration(CONFIG_CATEGORY, CONFIG_AUTO_VERSIONS_AGE)
-				.description("The age of a credentials change in hours that will cause a credentials to get a new version.")
-				.type(FormFieldType.NUMBER)
-				.value("24")
-				);
-		
-		//============================================================
-		// EAV Entities
-		//============================================================
-		CFW.DB.EAVEntity.oneTimeCreate(
-				  FeatureCredentials.EAV_STATS_CATEGORY
-				, FeatureCredentials.EAV_STATS_PAGE_LOADS
-				, "Number of times the credentials was loaded as a page in the the browser"
-				);
-		
-		CFW.DB.EAVEntity.oneTimeCreate(
-				  FeatureCredentials.EAV_STATS_CATEGORY
-				, FeatureCredentials.EAV_STATS_PAGE_LOADS_AND_REFRESHES
-				, "Number of times the credentials was loaded as a page in the the browser plus the number of refreshes."
-				);
-		
-		CFW.DB.EAVEntity.oneTimeCreate(
-				FeatureCredentials.EAV_STATS_CATEGORY
-				, FeatureCredentials.EAV_STATS_WIDGET_LOADS_CACHED
-				, "Number of total widget data loads which have been loaded from the cache."
-				);
-		
-		CFW.DB.EAVEntity.oneTimeCreate(
-				FeatureCredentials.EAV_STATS_CATEGORY
-				, FeatureCredentials.EAV_STATS_WIDGET_LOADS_UNCACHED
-				, "Number of total widget data loads which have not been loaded from the cache."
-				);
-		
-		//-------------------------------
-		// Create Change Listener
-		ConfigChangeListener listener = new ConfigChangeListener(CONFIG_AUTO_VERSIONS_AGE) {
-			
-			@Override
-			public void onChange() {
-				startTasks();
-			}
-		};
-		CFW.DB.Config.addChangeListener(listener);
+
 	}
 
 	@Override
@@ -320,9 +260,7 @@ public class FeatureCredentials extends CFWAppFeature {
 		//----------------------------------
     	// Servlets
     	app.addAppServlet(ServletCredentialsList.class,  URI_DASHBOARD_LIST);
-    	app.addAppServlet(ServletCredentialsView.class,  URI_DASHBOARD_VIEW);
-    	app.addUnsecureServlet(ServletCredentialsViewPublic.class,  URI_DASHBOARD_VIEW_PUBLIC);
-    	
+
     	//----------------------------------
     	// Manual
 		createCredentialsManual();
@@ -331,24 +269,12 @@ public class FeatureCredentials extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
-
-		//----------------------------------------
-		// Task: Create
-		if(taskCreateVersions != null) {
-			taskCreateVersions.cancel(false);
-		}
-		boolean doAutoVersions = CFW.DB.Config.getConfigAsBoolean(FeatureCredentials.CONFIG_CATEGORY, FeatureCredentials.CONFIG_AUTO_VERSIONS);
-		
-		if(doAutoVersions) {
-			int millis = (int) CFWTimeUnit.m.toMillis(67); // take uneven minutes 
-			// millis = 5000;
-			taskCreateVersions = CFW.Schedule.runPeriodicallyMillis(millis, millis, new TaskCredentialsCreateVersions());
-		}
+		// nothing to do
 	}
 
 	@Override
 	public void stopFeature() {
-		// TODO Auto-generated method stub
+		// nothing to do
 		
 	}
 	
@@ -363,105 +289,6 @@ public class FeatureCredentials extends CFWAppFeature {
 					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
 					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_00_introduction.html")
-			);
-		
-		//----------------------------------
-		//
-		MANUAL_PAGE_ROOT.addChild(
-				new ManualPage("Creating Credentialss")
-					.faicon("fas fa-plus-circle")
-					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_creating_credentialss.html")
-			);
-		
-		//----------------------------------
-		//
-		MANUAL_PAGE_ROOT.addChild(
-				new ManualPage("Keyboard Shortcuts")
-					.faicon("fas fa-keyboard")
-					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_shortcuts.html")
-			);
-		
-		//----------------------------------
-		// Pages for each Widget
-		LinkedHashMap<String, WidgetDefinition> widgetList = CFW.Registry.Widgets.getWidgetDefinitions();
-		
-		
-		for(WidgetDefinition current : widgetList.values()) {
-			
-			ManualPageWidget widgetPage = new ManualPageWidget(current);
-			String path = MANUAL_PATH_WIDGETS;
-			String category = current.widgetCategory();
-			
-			if(category == FeatureCredentials.WIDGET_CATEGORY_EASTEREGGS) {
-				// skip these bastards
-				continue;
-			}
-			
-			if(category != null) {
-				path += "|" + category;
-			}
-			
-			CFW.Registry.Manual.addManualPage(path, widgetPage);
-			
-		}
-		
-		//----------------------------------
-		//
-//		ManualPage widgets = 
-//			new ManualPage("Widgets")
-//				.faicon("fas fa-th")
-//				.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-//				.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-//				.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-//				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_00.html");
-//		
-//		MANUAL_PAGE_ROOT.addChild(widgets );
-//		
-//		widgets.addChild(
-//				new ManualPage("Standard Widgets")
-//					.faicon("fas fa-th-large")
-//					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-//					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-//					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-//					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_staticwidgets.html")
-//			);
-//		
-//		widgets.addChild(
-//				new ManualPage("Timeframe Widgets")
-//					.faicon("fas fa-clock")
-//					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-//					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-//					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-//					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_timeframe.html")
-//			);
-//		
-		
-		//----------------------------------
-		//
-		MANUAL_PAGE_ROOT.addChild(
-				new ManualPage("Parameters")
-					.faicon("fas fa-sliders-h")
-					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_parameters.html")
-			);
-		
-		//----------------------------------
-		//
-		MANUAL_PAGE_ROOT.addChild(
-				new ManualPage("Tips and Tricks")
-					.faicon("fas fa-asterisk")
-					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_tips_tricks.html")
 			);
 		
 	}

@@ -14,7 +14,7 @@ public class UserAuditExecutorCredentialsUserDirect implements UserAuditExecutor
 	
 	@Override
 	public String description() {
-		return "Checks on which credentialss the users has direct access(not by being part of a group).";
+		return "Checks on which credentials the users has direct access(not by being part of a group).";
 	}
 	
 	@Override

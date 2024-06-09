@@ -1,9 +1,6 @@
 package com.xresch.cfw.features.credentials;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
@@ -23,9 +20,8 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.credentials.Credentials.CredentialsFields;
+import com.xresch.cfw.features.credentials.CFWCredentials.CFWCredentialsFields;
 import com.xresch.cfw.features.notifications.Notification;
-import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -125,66 +121,40 @@ public class ServletCredentialsList extends HttpServlet
 		
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-					case "mycredentialss": 		jsonResponse.getContent().append(CFW.DB.Credentialss.getUserCredentialsListAsJSON());
+					case "mycredentials": 		jsonResponse.getContent().append(CFW.DB.Credentials.getUserCredentialsListAsJSON());
 	  											break;
 	  											
-					case "myarchived":	 		jsonResponse.getContent().append(CFW.DB.Credentialss.getUserArchivedListAsJSON());
+					case "myarchived":	 		jsonResponse.getContent().append(CFW.DB.Credentials.getUserArchivedListAsJSON());
 												break;
 	  											
-					case "favedcredentialss": 	jsonResponse.getContent().append(CFW.DB.Credentialss.getFavedCredentialsListAsJSON());
+					case "favedcredentials": 	jsonResponse.getContent().append(CFW.DB.Credentials.getFavedCredentialsListAsJSON());
 												break;
 	  											
-					case "sharedcredentialss": 	jsonResponse.getContent().append(CFW.DB.Credentialss.getSharedCredentialsListAsJSON());
+					case "sharedcredentials": 	jsonResponse.getContent().append(CFW.DB.Credentials.getSharedCredentialsListAsJSON());
 												break;	
 												
-					case "admincredentialss": 	jsonResponse.getContent().append(CFW.DB.Credentialss.getAdminCredentialsListAsJSON());
+					case "admincredentials": 	jsonResponse.getContent().append(CFW.DB.Credentials.getAdminCredentialsListAsJSON());
 												break;	
 												
-					case "adminarchived": 		jsonResponse.getContent().append(CFW.DB.Credentialss.getAdminArchivedListAsJSON());
+					case "adminarchived": 		jsonResponse.getContent().append(CFW.DB.Credentials.getAdminArchivedListAsJSON());
 												break;	
 												
-					case "credentialsversions": 	jsonResponse.getContent().append(CFW.DB.Credentialss.getCredentialsVersionsListAsJSON(ID));
+					case "credentialsversions": 	jsonResponse.getContent().append(CFW.DB.Credentials.getCredentialsVersionsListAsJSON(ID));
 												break;	
 												
-					case "credentialsstats": 		String timeframeString = request.getParameter("timeframe");
+					case "credentialstats": 		String timeframeString = request.getParameter("timeframe");
 												CFWTimeframe time = new CFWTimeframe(timeframeString);
-												jsonResponse.setPayload(CFW.DB.Credentialss.getEAVStats(ID, time.getEarliest(), time.getLatest()));
-												break;	
-					
-					case "export": 				jsonResponse.getContent().append(CFW.DB.Credentialss.getJsonArrayForExport(ID));
+												jsonResponse.setPayload(CFW.DB.Credentials.getEAVStats(ID, time.getEarliest(), time.getLatest()));
 												break;									
 																										
 					default: 					CFW.Messages.itemNotSupported(item);
 												break;
 				}
 				break;
-			
-			case "duplicate": 			
-				switch(item.toLowerCase()) {
-
-					case "credentials": 		duplicateCredentials(jsonResponse, ID, false);
-											break;  
-										
-					case "createversion": 	duplicateCredentials(jsonResponse, ID, true);
-											break;  
-					
-					default: 				CFW.Messages.itemNotSupported(item);
-											break;
-				}
-				break;	
 				
 			case "update": 			
 				switch(item.toLowerCase()) {
 
-					case "favorite": 	Integer userID = CFW.Context.Request.getUserID();
-										String credentialsID = request.getParameter("listitemid");
-										jsonResponse.setSuccess(CFW.DB.CredentialsFavorites.toogleCredentialsInUserFavs(credentialsID, ""+userID));
-										break;
-										
-					case "switchversion": String dashID = ID;
-										String versionID = request.getParameter("versionid");
-										jsonResponse.setSuccess(CFW.DB.Credentialss.switchToVersion(dashID, versionID));
-										break;
 					case "isarchived":	String isArchived = request.getParameter("isarchived");
 										jsonResponse.setSuccess(archiveCredentials(ID,isArchived));
 					break;
@@ -205,18 +175,6 @@ public class ServletCredentialsList extends HttpServlet
 				}
 				break;	
 				
-			case "import": 			
-				switch(item.toLowerCase()) {
-
-					case "credentialss": 	String jsonString = request.getParameter("jsonString");
-										CFW.DB.Credentialss.importByJson(jsonString, false);
-										CFW.Context.Request.addAlertMessage(MessageType.INFO, "Import finished!");
-										break;  
-										
-					default: 			CFW.Messages.itemNotSupported(item);
-										break;
-				}
-				break;	
 				
 			case "getform": 			
 				switch(item.toLowerCase()) {
@@ -241,8 +199,8 @@ public class ServletCredentialsList extends HttpServlet
 	private boolean archiveCredentials(String ID, String isArchived) {
 		// TODO Auto-generated method stub
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)
-		|| CFW.DB.Credentialss.isCredentialsOfCurrentUser(ID)) {
-			return CFW.DB.Credentialss.updateIsArchived(ID, Boolean.parseBoolean(isArchived) );
+		|| CFW.DB.Credentials.isCredentialsOfCurrentUser(ID)) {
+			return CFW.DB.Credentials.updateIsArchived(ID, Boolean.parseBoolean(isArchived) );
 		}
 		
 		return false;
@@ -254,38 +212,12 @@ public class ServletCredentialsList extends HttpServlet
 	private void deleteCredentials(JSONResponse jsonResponse, String ID) {
 		// TODO Auto-generated method stub
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
-			jsonResponse.setSuccess(CFW.DB.Credentialss.deleteByID(ID));
+			jsonResponse.setSuccess(CFW.DB.Credentials.deleteByID(ID));
 		}else {
-			jsonResponse.setSuccess(CFW.DB.Credentialss.deleteByIDForCurrentUser(ID));
+			jsonResponse.setSuccess(CFW.DB.Credentials.deleteByIDForCurrentUser(ID));
 		}
 	}
 	
-	
-	/******************************************************************
-	 *
-	 ******************************************************************/
-	private void duplicateCredentials(JSONResponse jsonResponse, String credentialsID, boolean newVersion) {
-		// TODO Auto-generated method stub
-		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)
-		|| (
-			   CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_CREATOR)
-			&& CFW.DB.Credentialss.checkCanEdit(credentialsID) 
-			) 
-		) {
-			
-			Integer newID = CFW.DB.Credentialss.createDuplicate(credentialsID, newVersion);
-			
-			if(newID != null) {
-				jsonResponse.setSuccess(true);
-			}else {
-				jsonResponse.setSuccess(false);
-			}
-			
-		}else {
-			jsonResponse.setSuccess(false);
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient permissions to duplicate the credentials.");
-		}
-	}
 
 	/******************************************************************
 	 *
@@ -313,7 +245,7 @@ public class ServletCredentialsList extends HttpServlet
 						CFWCredentials credentials = (CFWCredentials)origin;
 						credentials.foreignKeyOwner(CFW.Context.Request.getUser().id());
 						
-						Integer newID = CFW.DB.Credentialss.createGetPrimaryKey(credentials);
+						Integer newID = CFW.DB.Credentials.createGetPrimaryKey(credentials);
 						
 						if( newID != null ) {
 							credentials.id(newID);
@@ -336,7 +268,7 @@ public class ServletCredentialsList extends HttpServlet
 		
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_CREATOR)
 		|| CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
-			CFWCredentials credentials = CFW.DB.Credentialss.selectByID(Integer.parseInt(ID));
+			CFWCredentials credentials = CFW.DB.Credentials.selectByID(Integer.parseInt(ID));
 			
 			if(credentials != null) {
 				
@@ -356,7 +288,7 @@ public class ServletCredentialsList extends HttpServlet
 						
 						CFWCredentials credentials = (CFWCredentials)origin;
 						if(origin.mapRequestParameters(request) 
-						&& CFW.DB.Credentialss.update(credentials)) {
+						&& CFW.DB.Credentials.update(credentials)) {
 							
 							
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
@@ -384,9 +316,9 @@ public class ServletCredentialsList extends HttpServlet
 	 ******************************************************************/
 	private void createChangeCredentialsOwnerForm(JSONResponse json, String ID) {
 		
-		if( CFW.DB.Credentialss.isCredentialsOfCurrentUser(ID)
+		if( CFW.DB.Credentials.isCredentialsOfCurrentUser(ID)
 		||	CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
-			CFWCredentials credentials = CFW.DB.Credentialss.selectByID(Integer.parseInt(ID));
+			CFWCredentials credentials = CFW.DB.Credentials.selectByID(Integer.parseInt(ID));
 			
 			final String NEW_OWNER = "JSON_NEW_OWNER";
 			if(credentials != null) {

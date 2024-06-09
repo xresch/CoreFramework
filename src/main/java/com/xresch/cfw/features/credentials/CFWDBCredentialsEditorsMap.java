@@ -10,8 +10,8 @@ import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
-import com.xresch.cfw.features.credentials.Credentials.CredentialsFields;
-import com.xresch.cfw.features.credentials.CredentialsEditorsMap.CredentialsEditorsMapFields;
+import com.xresch.cfw.features.credentials.CFWCredentials.CFWCredentialsFields;
+import com.xresch.cfw.features.credentials.CFWCredentialsEditorsMap.CFWCredentialsEditorsMapFields;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -158,7 +158,7 @@ public class CFWDBCredentialsEditorsMap {
 			return false;
 		}
 		
-		CFWCredentials credentials = CFW.DB.Credentialss.selectByID(credentialsID);
+		CFWCredentials credentials = CFW.DB.Credentials.selectByID(credentialsID);
 		User user = CFW.DB.Users.selectByID(userID);
 		
 		return assignUserToCredentials(user, credentials);
@@ -259,7 +259,7 @@ public class CFWDBCredentialsEditorsMap {
 			return false;
 		}
 				
-		CFWCredentials credentials = CFW.DB.Credentialss.selectByID(credentialsID);
+		CFWCredentials credentials = CFW.DB.Credentials.selectByID(credentialsID);
 		User user = CFW.DB.Users.selectByID(userID);
 		return removeUserFromCredentials(user, credentials);
 
@@ -301,7 +301,7 @@ public class CFWDBCredentialsEditorsMap {
 	}
 
 //	/***************************************************************
-//	 * Retrieve the credentialss for a user as key/labels.
+//	 * Retrieve the credentials for a user as key/labels.
 //	 * Useful for autocomplete.
 //	 * @param credentials
 //	 * @return ResultSet

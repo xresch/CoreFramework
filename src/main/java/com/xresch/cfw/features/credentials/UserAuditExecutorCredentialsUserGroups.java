@@ -14,7 +14,7 @@ public class UserAuditExecutorCredentialsUserGroups implements UserAuditExecutor
 	
 	@Override
 	public String description() {
-		return "Checks on which credentialss the users has access by being part of a group.";
+		return "Checks on which credentials the users has access by being part of a group.";
 	}
 	
 	@Override
