@@ -30,6 +30,11 @@ import com.xresch.cfw.features.contextsettings.FeatureContextSettings;
 import com.xresch.cfw.features.core.CFWLocalization;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.core.ServletHierarchy;
+import com.xresch.cfw.features.credentials.CFWDBCredentials;
+import com.xresch.cfw.features.credentials.CFWDBCredentialsEditorGroupsMap;
+import com.xresch.cfw.features.credentials.CFWDBCredentialsEditorsMap;
+import com.xresch.cfw.features.credentials.CFWDBCredentialsSharedGroupsMap;
+import com.xresch.cfw.features.credentials.CFWDBCredentialsSharedUserMap;
 import com.xresch.cfw.features.dashboard.CFWDBDashboard;
 import com.xresch.cfw.features.dashboard.CFWDBDashboardEditorGroupsMap;
 import com.xresch.cfw.features.dashboard.CFWDBDashboardEditorsMap;
@@ -126,14 +131,22 @@ public class CFW {
 	public static class DB extends CFWDB {
 		public static class Config extends CFWDBConfig{};
 		public static class ContextSettings extends CFWDBContextSettings{};
+		
+		public static class Credentials extends CFWDBCredentials{};
+		public static class CredentialsEditors extends CFWDBCredentialsEditorsMap{};
+		public static class CredentialsEditorGroups extends CFWDBCredentialsEditorGroupsMap{};
+		public static class CredentialsSharedGroups extends CFWDBCredentialsSharedGroupsMap{};
+		public static class CredentialsSharedUsers extends CFWDBCredentialsSharedUserMap{};
+		
 		public static class Dashboards extends CFWDBDashboard{};
-		public static class Date extends CFWDBDate{};
 		public static class DashboardWidgets extends CFWDBDashboardWidget{};
 		public static class DashboardFavorites extends CFWDBDashboardFavoriteMap{};
 		public static class DashboardEditors extends CFWDBDashboardEditorsMap{};
 		public static class DashboardEditorGroups extends CFWDBDashboardEditorGroupsMap{};
 		public static class DashboardSharedGroups extends CFWDBDashboardSharedGroupsMap{};
 		public static class DashboardSharedUsers extends CFWDBDashboardSharedUserMap{};
+		
+		public static class Date extends CFWDBDate{};
 		public static class EAVEntity extends CFWDBEAVEntity{};
 		public static class EAVAttribute extends CFWDBEAVAttribute{};
 		public static class EAVValue extends CFWDBEAVValue{};
