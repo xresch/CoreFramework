@@ -34,10 +34,6 @@ function cfw_credentialslist_createTabs(){
 		
 		
 		//--------------------------------
-		// Faved Credentials Tab	
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-favedcredentials" data-toggle="pill" href="#" role="tab" onclick="cfw_credentialslist_draw({tab: \'favedcredentials\'})"><i class="fas fa-star mr-2"></i>Favorites</a></li>');
-		
-		//--------------------------------
 		// Archived Credentials Tab	
 		if( CFW.hasPermission('Credentials: Creator') ){
 			list.append('<li class="nav-item"><a class="nav-link" id="tab-myarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_credentialslist_draw({tab: \'myarchived\'})"><i class="fas fa-folder-open mr-2"></i>Archive</a></li>');
@@ -168,15 +164,13 @@ function cfw_credentials_editCredentials(id, callbackJSOrFunc){
 
 	list.append(
 		'<li class="nav-item"><a class="nav-link active" id="credentialsSettingsTab" data-toggle="pill" href="#credentialsSettingsContent" role="tab" ><i class="fas fa-tools mr-2"></i>Settings</a></li>'
-	  + '<li class="nav-item"><a class="nav-link" id="credentialsStatisticsTab" data-toggle="pill" href="#credentialsStatisticsContent" role="tab" onclick="cfw_credentialscommon_showStatistics('+id+')" ><i class="fas fa-chart-bar"></i>&nbsp;Statistics</a></li>'
-	  + '<li class="nav-item"><a class="nav-link" id="credentialsVersionsTab" data-toggle="pill" href="#credentialsVersionsContent" role="tab" onclick="cfw_credentialscommon_showVersions('+id+')" ><i class="fas fa-code-branch"></i>&nbsp;Versions</a></li>'
+	 // + '<li class="nav-item"><a class="nav-link" id="credentialsStatisticsTab" data-toggle="pill" href="#credentialsStatisticsContent" role="tab" onclick="cfw_credentialscommon_showStatistics('+id+')" ><i class="fas fa-chart-bar"></i>&nbsp;Statistics</a></li>'
 	);
 	
 	compositeDiv.append(list);
 	compositeDiv.append('<div id="settingsTabContent" class="tab-content">'
 			  +'<div class="tab-pane fade show active" id="credentialsSettingsContent" role="tabpanel" aria-labelledby="credentialsSettingsTab"></div>'
-			  +'<div class="tab-pane fade" id="credentialsStatisticsContent" role="tabpanel" aria-labelledby="credentialsStatisticsTab"></div>'
-			  +'<div class="tab-pane fade" id="credentialsVersionsContent" role="tabpanel" aria-labelledby="credentialsVersionsTab"></div>'
+			 // +'<div class="tab-pane fade" id="credentialsStatisticsContent" role="tabpanel" aria-labelledby="credentialsStatisticsTab"></div>'
 		+'</div>' );	
 
 	//-----------------------------------
@@ -329,13 +323,7 @@ function cfw_credentialslist_printCredentials(data, type){
 					   + '</button>');
 	
 		parent.append(createButton);
-		
-		var importButton = $('<button id="button-import" class="btn btn-sm btn-success m-1" onclick="cfw_credentialslist_importCredentials()">'
-				+ '<i class="fas fa-upload"></i> '+ CFWL('cfw_core_import', 'Import')
-		   + '</button>');
-
-		parent.append(importButton);
-		
+				
 	}
 	
 	//--------------------------------
@@ -353,13 +341,13 @@ function cfw_credentialslist_printCredentials(data, type){
 		var showFields = [];
 		if(type == 'mycredentials' 
 		|| type == 'myarchived'){
-			showFields = ['NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
+			showFields = ['NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
 		}else if ( type == 'sharedcredentials'
 				|| type == 'favedcredentials'){
-			showFields = ['OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
+			showFields = ['OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS'];
 		}else if (type == 'admincredentials'
 				||type == 'adminarchived' ){
-			showFields = ['PK_ID', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
+			showFields = ['PK_ID', 'OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
 		}
 		
 		//======================================
@@ -432,27 +420,6 @@ function cfw_credentialslist_printCredentials(data, type){
 		}
 		
 		//-------------------------
-		// Export Button
-		if(type == 'mycredentials'
-		|| type == 'admincredentials'
-		|| type == 'favedcredentials'){
-
-			actionButtons.push(
-				function (record, id){
-					if(JSDATA.userid == record.FK_ID_OWNER 
-					|| type == 'admincredentials'){
-						return '<a class="btn btn-warning btn-sm text-white" target="_blank" alt="Export" title="Export" '
-							+' href="'+CFW_CREDENTIALSLIST_URL+'?action=fetch&item=export&id='+id+'" download="'+record.NAME.replaceAll(' ', '_')+'_export.json">'
-							+'<i class="fa fa-download"></i>'
-							+ '</a>';
-					}else{
-						return '&nbsp;';
-					}
-					
-				});
-		}
-
-		//-------------------------
 		// Archive / Restore Button
 		actionButtons.push(
 			function (record, id){
@@ -463,16 +430,18 @@ function cfw_credentialslist_printCredentials(data, type){
 				){
 					let isArchived = record.IS_ARCHIVED;
 					let confirmMessage = "Do you want to archive the credentials";
+					let title = "Archive";
 					let icon = "fa-folder-open";
 					let color =  "btn-danger";
 					
 					if(isArchived){
 						confirmMessage = "Do you want to restore the credentials";
+						title = "Restore";
 						icon = "fa-trash-restore" ;
 						color = "btn-success";
 					}
 					
-					htmlString += '<button class="btn '+color+' btn-sm" alt="Archive" title="Archive" '
+					htmlString += '<button class="btn '+color+' btn-sm" alt="'+title+'" title="'+title+'" '
 						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Do it!\', \'cfw_credentialslist_archive('+id+', '+!isArchived+');\')">'
 						+ '<i class="fa '+icon+'"></i>'
 						+ '</button>';

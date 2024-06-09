@@ -106,7 +106,7 @@ public class FeatureCredentials extends CFWAppFeature {
 					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
 					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
 					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-					.href("/app/credentials/list")
+					.href(URI_CREDENTIALS_LIST)
 					.addAttribute("id", "cfwMenuTools-Credentials")
 				, null);
 		

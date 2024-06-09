@@ -4,7 +4,7 @@ import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
@@ -38,7 +38,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class CFWDBCredentials {
 	
 	private static final String EAV_ATTRIBUTE_USERID = "userid";
-	private static final String EAV_ATTRIBUTE_DASHBOARDID = "credentialsid";
+	private static final String EAV_ATTRIBUTE_CREDENTIALSID = "credentialsid";
 	private static final String SQL_SUBQUERY_OWNER = "SELECT USERNAME FROM CFW_USER U WHERE U.PK_ID = T.FK_ID_OWNER";
 
 	private static Class<CFWCredentials> cfwObjectClass = CFWCredentials.class;
@@ -95,6 +95,58 @@ public class CFWDBCredentials {
 	public static Integer createGetPrimaryKey(CFWCredentials item) { 
 		updateTags(item); 
 		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item);
+	}
+	
+	/**********************************************************************************
+	 * 
+	 * @param credentialsID¨the id of the credentials that should be duplicated.
+	 * @param forVersioning true if this duplicate should be for versioning
+	 * @return
+	 **********************************************************************************/
+	public static Integer createDuplicate(String credentialsID, boolean forVersioning) { 
+
+		CFWCredentials duplicate = CFW.DB.Credentials.selectByID(credentialsID);
+		duplicate.updateSelectorFields();
+		
+		//---------------------------------
+		// Make sure it has a version group 
+		duplicate.id(null);
+		duplicate.timeCreated( new Timestamp(new Date().getTime()) );
+		
+		// need to check if null for automatic versioning
+		Integer id =  CFW.Context.Request.getUserID();
+
+		duplicate.foreignKeyOwner(id);
+		duplicate.name(duplicate.name()+"(Copy)");
+		duplicate.isShared(false);
+		
+		CFW.DB.transactionStart();
+		
+		Integer newID = duplicate.insertGetPrimaryKey();
+		
+		if(newID != null) {
+			
+				duplicate.id(newID);
+				//-----------------------------------------
+				// Save Selector Fields
+				//-----------------------------------------
+				boolean success = true;
+				success &= duplicate.saveSelectorFields();
+				if(!success) {
+					CFW.DB.transactionRollback();
+					new CFWLog(logger).severe("Error while saving selector fields for duplicate.");
+					return null;
+				}
+
+			CFW.DB.transactionCommit();
+			
+			CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Credentials duplicated successfully.");
+		}
+			
+		
+		
+		return newID;
+
 	}
 	
 	
@@ -768,7 +820,7 @@ public class CFWDBCredentials {
 		String userIDString = (userID != null) ? ""+userID : null;
 		
 		LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-		attributes.put(EAV_ATTRIBUTE_DASHBOARDID, credentialsID);
+		attributes.put(EAV_ATTRIBUTE_CREDENTIALSID, credentialsID);
 		attributes.put(EAV_ATTRIBUTE_USERID, userIDString);
 		
 		CFW.DB.EAVStats.pushStatsCounter(FeatureCredentials.EAV_STATS_CATEGORY, entityName, attributes, value);
@@ -786,7 +838,7 @@ public class CFWDBCredentials {
 		String entity = "%";
 		
 		LinkedHashMap<String, String> values = new LinkedHashMap<>();
-		values.put(EAV_ATTRIBUTE_DASHBOARDID, boardID);
+		values.put(EAV_ATTRIBUTE_CREDENTIALSID, boardID);
 		
 		JsonArray array = CFWDBEAVStats.fetchStatsAsJsonArray(category, entity, values, earliest, latest);
 		

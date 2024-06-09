@@ -791,16 +791,18 @@ function cfw_dashboardlist_printDashboards(data, type){
 				){
 					let isArchived = record.IS_ARCHIVED;
 					let confirmMessage = "Do you want to archive the dashboard";
+					let title = "Archive";
 					let icon = "fa-folder-open";
 					let color =  "btn-danger";
 					
 					if(isArchived){
 						confirmMessage = "Do you want to restore the dashboard";
+						title = "Restore"
 						icon = "fa-trash-restore" ;
 						color = "btn-success";
 					}
 					
-					htmlString += '<button class="btn '+color+' btn-sm" alt="Archive" title="Archive" '
+					htmlString += '<button class="btn '+color+' btn-sm" alt="'+title+'" title="'+title+'" '
 						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Do it!\', \'cfw_dashboardlist_archive('+id+', '+!isArchived+');\')">'
 						+ '<i class="fa '+icon+'"></i>'
 						+ '</button>';

@@ -21,6 +21,7 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.credentials.CFWCredentials.CFWCredentialsFields;
+import com.xresch.cfw.features.credentials.FeatureCredentials;
 import com.xresch.cfw.features.notifications.Notification;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
@@ -172,6 +173,18 @@ public class ServletCredentialsList extends HttpServlet
 				}
 				break;	
 				
+			case "duplicate": 			
+				switch(item.toLowerCase()) {
+
+					case "credentials": 	duplicateCredentials(jsonResponse, ID, false);
+											break;  
+					
+					default: 				CFW.Messages.itemNotSupported(item);
+											break;
+				}
+				break;	
+				
+				
 				
 			case "getform": 			
 				switch(item.toLowerCase()) {
@@ -212,6 +225,32 @@ public class ServletCredentialsList extends HttpServlet
 			jsonResponse.setSuccess(CFW.DB.Credentials.deleteByID(ID));
 		}else {
 			jsonResponse.setSuccess(CFW.DB.Credentials.deleteByIDForCurrentUser(ID));
+		}
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void duplicateCredentials(JSONResponse jsonResponse, String credentialsID, boolean newVersion) {
+		// TODO Auto-generated method stub
+		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)
+		|| (
+			   CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_CREATOR)
+			&& CFW.DB.Credentials.checkCanEdit(credentialsID) 
+			) 
+		) {
+			
+			Integer newID = CFW.DB.Credentials.createDuplicate(credentialsID, newVersion);
+			
+			if(newID != null) {
+				jsonResponse.setSuccess(true);
+			}else {
+				jsonResponse.setSuccess(false);
+			}
+			
+		}else {
+			jsonResponse.setSuccess(false);
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient permissions to duplicate the credentials.");
 		}
 	}
 	
