@@ -1,348 +1,15 @@
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
 
+var CFW_CREDENTIALSLIST_URL = "/app/credentials";
 var URI_DASHBOARD_VIEW_PUBLIC = "/public/credentials/view";
 var CFW_DASHBOARDLIST_LAST_OPTIONS = null;
 
-/******************************************************************
- * Reset the view.
- ******************************************************************/
-function cfw_credentialslist_tutorialsRegister(){
-	cfw_credentialslist_tutorialsMyCredentialss();
-	cfw_credentialslist_tutorialsFavedCredentialss();
-}
 
-/*************************************************************************************
- * 
- *************************************************************************************/
-function cfw_credentialslist_tutorialsMyCredentialss(){
-		
-	//===================================================
-	// Check has Tab
-	if($("#tab-mycredentials").length == 0){
-		return;
-	}
-	
-	//===================================================
-	// Tutorial: My Credentialss
-	var DASHBOARD_NAME = 'A Nice Tutorial Credentials';
-	
-	cfw_tutorial_bundleStart($("#tab-mycredentials"));
-	
-		//----------------------------------
-		// Tab MyCredentials
-		cfw_tutorial_addStep({
-			  selector: "#tab-mycredentials"
-			, clickable: false
-			, text: "In this tab you can create, view and manage your own credentials."
-			, drawDelay: 500
-			, beforeDraw: null
-		});
-		
-		//----------------------------------
-		// Create Button
-		cfw_tutorial_addStep({
-			  selector: "#button-add-credentials"
-			, clickable: false
-			, text: "Using this button allows you to add a new credentials."
-			, drawDelay: 500
-			, beforeDraw: function(){
-				$("#tab-mycredentials").click();
-			}
-		});	
-
-		//----------------------------------
-		// Enter Name
-		cfw_tutorial_addStep({
-			  selector: 'input#NAME'
-			, clickable: false
-			, text: "We have to give the credentials a name."
-			, drawDelay: 1000
-			, beforeDraw: function(){
-				$("#button-add-credentials").click();
-				CFW.ui.waitForAppear('input#NAME').then(function(){
-					
-					$('#cfw-default-modal').addClass('cfw-tuts-highlight').css('z-index', "1055");
-					$('input#NAME').val(DASHBOARD_NAME);
-				})
-			}
-		});	
-		
-		//----------------------------------
-		// Enter Description
-		cfw_tutorial_addStep({
-			  selector: "textarea#DESCRIPTION"
-			, clickable: false
-			, text: "We can enter a description for the credentials."
-			, drawDelay: 500
-			, beforeDraw: function(){
-				$('textarea#DESCRIPTION').val("Credentials showing cute cats blocking someones keyboard.");
-			}
-		});	
-		
-		//----------------------------------
-		// Enter TAGS
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-tagsparent"
-			, clickable: false
-			, text: "Lets add some tags too...."
-			, drawDelay: 500
-			, beforeDraw: function(){
-				$('input#TAGS-tagsinput').parent().addClass('tutorial0-tagsparent');
-				
-				$('input#TAGS').tagsinput('add', 'cute');
-				$('input#TAGS').tagsinput('add', 'cats');
-				$('input#TAGS').tagsinput('add', 'keyboard');
-				$('input#TAGS').tagsinput('add', 'siege');
-				
-			}
-		});	
-		
-		//----------------------------------
-		// Click Submit Button
-		cfw_tutorial_addStep({
-			  selector: "#cfwCreateCredentialsForm-submitButton"
-			, clickable: false
-			, text: "With a click on create the credentials will be added to your list."
-			, drawDelay: 500
-			, beforeDraw: null
-		});	
-		
-		//----------------------------------
-		// Close Button
-		cfw_tutorial_addStep({
-			  selector: "#cfw-default-modal-closebutton"
-			, clickable: false
-			, text: "After we created the credentials we can close the modal."
-			, drawDelay: 500
-			, beforeDraw: function(){
-				$("#cfwCreateCredentialsForm-submitButton").click();
-				
-			}
-		});		
-		
-		//----------------------------------
-		// Set Display as
-		cfw_tutorial_addStep({
-			  selector: "select.dataviewer-displayas"
-			, clickable: false
-			, text: "Here we can choose how to display the records. Let me make sure it is set to table so the tutorial will work properly."
-			, drawDelay: 1000
-			, beforeDraw: function(){
-				$("#cfw-default-modal-closebutton").click();
-				$("select.dataviewer-displayas").val(0);
-				
-			}
-		});	
-		
-		//----------------------------------
-		// Set Filter
-		cfw_tutorial_addStep({
-			  selector: "input.dataviewer-filterquery"
-			, clickable: false
-			, text: "Now let this automated tutorial set a filter to find that credentials we just created."
-			, drawDelay: 1000
-			, beforeDraw: function(){
-				
-				window.setTimeout(function(){
-					$("input.dataviewer-filterquery").val(DASHBOARD_NAME);
-				}, 1000);
-			}
-		});	
-		
-		//----------------------------------
-		// First Row
-		cfw_tutorial_addStep({
-			  selector: ".cfwRecordContainer"
-			, clickable: false
-			, text: "Now we have the list filtered for our credentials."
-			, drawDelay: 500
-			, beforeDraw: function(){
-				$("input.dataviewer-filterquery").trigger('change');
-				
-			}
-		});	
-		
-		//----------------------------------
-		// Explain Favorite
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-cell-0"
-			, clickable: false
-			, text: "Clicking the star will add the credentials to your favorites."
-			, drawDelay: 500
-			, beforeDraw: function(){
-				
-				//add IDs to cells
-				$(".cfwRecordContainer:first td").each(function(index){
-					$(this).addClass('tutorial0-cell-'+index);
-				});
-				
-			}
-		});	
-		
-		//----------------------------------
-		// Explain Name
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-cell-1"
-			, clickable: false
-			, text: "Clicking the title will open your credentials."
-			, drawDelay: 500
-			, beforeDraw: function(){					
-			}
-		});		
-		
-		//----------------------------------
-		// Explain Description
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-cell-2"
-			, clickable: false
-			, text: "Here is the description, as precise as ever."
-			, drawDelay: 500
-			, beforeDraw: function(){					
-			}
-		});		
-		
-		//----------------------------------
-		// Explain Tags
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-cell-3"
-			, clickable: false
-			, text: "Tags can be useful to filter and find the credentials you search for faster."
-			, drawDelay: 500
-			, beforeDraw: function(){					
-			}
-		});	
-		
-		//----------------------------------
-		// Explain Shared
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-cell-4"
-			, clickable: false
-			, text: "Here you can see if the credentials is shared with others."
-			, drawDelay: 500
-			, beforeDraw: function(){				
-			}
-		});		
-		
-		//----------------------------------
-		// Explain View Button
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-cell-6"
-			, clickable: false
-			, text: "Clicking this button opens the credentials, same as clicking on the name of the credentials."
-			, drawDelay: 500
-			, beforeDraw: function(){				
-			}
-		});		
-		
-		//----------------------------------
-		// Explain Edit Button
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-cell-7"
-			, clickable: false
-			, text: "The edit button opens a modal to edit the settings of the credentials."
-			, drawDelay: 500
-			, beforeDraw: function(){				
-			}
-		});		
-				
-		//----------------------------------
-		// Explain Duplicate Button
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-cell-8"
-			, clickable: false
-			, text: "This will create a copy of the credentials."
-			, drawDelay: 500
-			, beforeDraw: function(){				
-			}
-		});		
-		
-		//----------------------------------
-		// Explain Export Button
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-cell-9"
-			, clickable: false
-			, text: "Here you can export your credentials to store it to a file. Can be useful to create backups."
-			, drawDelay: 500
-			, beforeDraw: function(){				
-			}
-		});	
-				
-		//----------------------------------
-		// Explain Delete Button
-		cfw_tutorial_addStep({
-			  selector: ".tutorial0-cell-10"
-			, clickable: false
-			, text: "To delete a credentials use this button."
-			, drawDelay: 500
-			, beforeDraw: function(){				
-			}
-		});	
-		
-		//----------------------------------
-		// Explain Import Button
-		cfw_tutorial_addStep({
-			  selector: "#button-import"
-			, clickable: false
-			, text: "Oh... not to forget what to do with your exports. Here you can import them when needed."
-			, drawDelay: 500
-			, beforeDraw: function(){				
-			}
-		});	
-			
-	cfw_tutorial_bundleEnd();
-	
-}
-
-/*************************************************************************************
- * 
- *************************************************************************************/
-function cfw_credentialslist_tutorialsFavedCredentialss(){
-	
-	//===================================================
-	// Check has Tab
-	if($("#tab-favedcredentials").length == 0){
-		return;
-	}
-	
-	//===================================================
-	// Tutorial: Faved Credentialss
-	cfw_tutorial_bundleStart($("#tab-favedcredentials"));
-	
-		//----------------------------------
-		// Favorite Tab	
-		cfw_tutorial_addStep({
-				  selector: "#tab-favedcredentials"
-				, clickable: false
-				, text: "Here you can find all the credentials you have marked as favorite."
-				, drawDelay: 500
-				, beforeDraw: function(){				
-					}
-			});
-		
-		//----------------------------------
-		// Explain favorites
-		
-		cfw_tutorial_addStep({
-			  selector: null
-			, clickable: false
-			, text: 'The favorites tab lists all the credentials you have marked as favorite.'
-					+'<br/>Else the functioniality is similar to the My Credentialss tab.'
-					+''
-			, drawDelay: 500
-			, beforeDraw: function(){
-				$("#tab-favedcredentials").click();
-				
-			}
-		});
-		
-					
-	cfw_tutorial_bundleEnd();
-}
 /******************************************************************
  * Reset the view.
  ******************************************************************/
@@ -358,7 +25,7 @@ function cfw_credentialslist_createTabs(){
 		if(CFW.hasPermission('Credentials Creator') 
 		|| CFW.hasPermission('Credentials Admin')){
 			list.append(
-				'<li class="nav-item"><a class="nav-link" id="tab-mycredentials" data-toggle="pill" href="#" role="tab" onclick="cfw_credentialslist_draw({tab: \'mycredentials\'})"><i class="fas fa-user-circle mr-2"></i>My Credentialss</a></li>'
+				'<li class="nav-item"><a class="nav-link" id="tab-mycredentials" data-toggle="pill" href="#" role="tab" onclick="cfw_credentialslist_draw({tab: \'mycredentials\'})"><i class="fas fa-user-circle mr-2"></i>My Credentials</a></li>'
 			);
 		}
 		
@@ -452,26 +119,13 @@ function cfw_credentialslist_importCredentialsExecute(){
 		  var fileString = evt.target.result;
 		  
 			var params = {action: "import", item: "credentials", jsonString: fileString};
-			CFW.http.postJSON(CFW_DASHBOARDLIST_URL, params, 
+			CFW.http.postJSON(CFW_CREDENTIALSLIST_URL, params, 
 				function(data) {
 					//do nothing
 				}
 			);
 
 		}
-}
-
-
-/******************************************************************
- * Show Public Link
- ******************************************************************/
-function cfw_credentialslist_showPublicLink(id){
-	var link = CFW.http.getHostURL() + URI_DASHBOARD_VIEW_PUBLIC + "?id=" + id;
-	var linkDiv = $('<div id="cfw-credentials-publiclink">');
-	
-	linkDiv.append('<p>Public Link: <a target="blank" href="'+link+'">'+link+'</a></p>');
-	
-	CFW.ui.showModalMedium("Public Link", linkDiv);
 }
 
 /******************************************************************
@@ -494,7 +148,7 @@ function cfw_credentialslist_changeCredentialsOwner(id){
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	CFW.http.createForm(CFW_DASHBOARDLIST_URL, {action: "getform", item: "changeowner", id: id}, formDiv);
+	CFW.http.createForm(CFW_CREDENTIALSLIST_URL, {action: "getform", item: "changeowner", id: id}, formDiv);
 	
 }
 
@@ -504,7 +158,7 @@ function cfw_credentialslist_changeCredentialsOwner(id){
 function cfw_credentialslist_delete(id){
 	
 	var params = {action: "delete", item: "credentials", id: id};
-	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
+	CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, params, 
 		function(data) {
 			if(data.success){
 				cfw_credentialslist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS);
@@ -520,7 +174,7 @@ function cfw_credentialslist_delete(id){
 function cfw_credentialslist_archive(id, isarchived){
 	
 	var params = {action: "update", item: "isarchived", id: id, isarchived: isarchived};
-	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
+	CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, params, 
 		function(data) {
 			if(data.success){
 				cfw_credentialslist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS);
@@ -536,7 +190,7 @@ function cfw_credentialslist_archive(id, isarchived){
 function cfw_credentialslist_duplicate(id){
 	
 	var params = {action: "duplicate", item: "credentials", id: id};
-	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
+	CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, params, 
 		function(data) {
 			if(data.success){
 				cfw_credentialslist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS);
@@ -547,44 +201,44 @@ function cfw_credentialslist_duplicate(id){
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_credentialslist_printMyCredentialss(data){
-	cfw_credentialslist_printCredentialss(data, 'mycredentials');
+function cfw_credentialslist_printMyCredentials(data){
+	cfw_credentialslist_printCredentials(data, 'mycredentials');
 }
 
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_credentialslist_printFavedCredentialss(data){
-	cfw_credentialslist_printCredentialss(data, 'favedcredentials');
+function cfw_credentialslist_printFavedCredentials(data){
+	cfw_credentialslist_printCredentials(data, 'favedcredentials');
 }
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_credentialslist_printSharedCredentialss(data){
-	cfw_credentialslist_printCredentialss(data, 'sharedcredentials');
+function cfw_credentialslist_printSharedCredentials(data){
+	cfw_credentialslist_printCredentials(data, 'sharedcredentials');
 }
 
 /******************************************************************
  * 
  ******************************************************************/
 function cfw_credentialslist_printMyArchived(data){
-	cfw_credentialslist_printCredentialss(data, 'myarchived');
+	cfw_credentialslist_printCredentials(data, 'myarchived');
 }
 
 /******************************************************************
  * 
  ******************************************************************/
 function cfw_credentialslist_printAdminArchived(data){
-	cfw_credentialslist_printCredentialss(data, 'adminarchived');
+	cfw_credentialslist_printCredentials(data, 'adminarchived');
 }
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_credentialslist_printAdminCredentialss(data){
-	cfw_credentialslist_printCredentialss(data, 'admincredentials');
+function cfw_credentialslist_printAdminCredentials(data){
+	cfw_credentialslist_printCredentials(data, 'admincredentials');
 }
 
 
@@ -594,7 +248,7 @@ function cfw_credentialslist_printAdminCredentialss(data){
  * @param data as returned by CFW.http.getJSON()
  * @return 
  ******************************************************************/
-function cfw_credentialslist_printCredentialss(data, type){
+function cfw_credentialslist_printCredentials(data, type){
 	
 	var parent = $("#tab-content");
 	
@@ -654,36 +308,19 @@ function cfw_credentialslist_printCredentialss(data, type){
 		var showFields = [];
 		if(type == 'mycredentials' 
 		|| type == 'myarchived'){
-			showFields = ['IS_FAVED', 'NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
+			showFields = ['NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
 		}else if ( type == 'sharedcredentials'
 				|| type == 'favedcredentials'){
-			showFields = ['IS_FAVED', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
+			showFields = ['OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
 		}else if (type == 'admincredentials'
 				||type == 'adminarchived' ){
-			showFields = ['IS_FAVED', 'PK_ID', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
+			showFields = ['PK_ID', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
 		}
-		
 		
 		//======================================
 		// Prepare actions
 		
-		var actionButtons = [ ];
-		//-------------------------
-		// Public Link Button
-		actionButtons.push(
-			function (record, id){ 
-				var htmlString = '';
-				if(record.IS_PUBLIC){
-					htmlString += '<button class="btn btn-primary btn-sm" title="Show Public Link"'
-						+'onclick="cfw_credentialslist_showPublicLink('+id+');">'
-						+ '<i class="fa fa-link"></i>'
-						+ '</button>';
-				}else{
-					htmlString += '&nbsp;';
-				}
-				return htmlString;
-			});
-		
+		var actionButtons = [ ];		
 		
 		//-------------------------
 		// View Button
@@ -770,7 +407,7 @@ function cfw_credentialslist_printCredentialss(data, type){
 					if(JSDATA.userid == record.FK_ID_USER 
 					|| type == 'admincredentials'){
 						return '<a class="btn btn-warning btn-sm text-white" target="_blank" alt="Export" title="Export" '
-							+' href="'+CFW_DASHBOARDLIST_URL+'?action=fetch&item=export&id='+id+'" download="'+record.NAME.replaceAll(' ', '_')+'_export.json">'
+							+' href="'+CFW_CREDENTIALSLIST_URL+'?action=fetch&item=export&id='+id+'" download="'+record.NAME.replaceAll(' ', '_')+'_export.json">'
 							+'<i class="fa fa-download"></i>'
 							+ '</a>';
 					}else{
@@ -837,7 +474,7 @@ function cfw_credentialslist_printCredentialss(data, type){
 					label: 'Sharing Details',
 					name: 'table',
 					renderdef: {
-						visiblefields: ["IS_FAVED", "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
+						visiblefields: [ "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
 						labels: {
 					 		PK_ID: "ID",
 					 		IS_SHARED: 'Shared',
@@ -882,20 +519,10 @@ function cfw_credentialslist_printCredentialss(data, type){
 			 	titleformat: null,
 			 	visiblefields: showFields,
 			 	labels: {
-			 		IS_FAVED: "Favorite",
 			 		PK_ID: "ID",
 			 		IS_SHARED: 'Shared'
 			 	},
 			 	customizers: {
-					IS_FAVED: function(record, value) { 
-						
-						var isFaved = value;
-						//Toggle Button
-						var params = {action: "update", item: 'favorite', listitemid: record.PK_ID};
-						var cfwToggleButton = CFW.ui.createToggleButton(CFW_DASHBOARDLIST_URL, params, isFaved, "fave");
-						
-						return cfwToggleButton.getButton();
-			 		},
 						
 			 		NAME: function(record, value, rendererName) { 
 			 			
@@ -943,7 +570,6 @@ function cfw_credentialslist_printCredentialss(data, type){
 								name: 'table',
 								renderdef: {
 									labels: {
-		 								IS_FAVED: "&nbsp;",
 										PK_ID: "ID",
 			 							IS_SHARED: 'Shared'
 									},
@@ -957,7 +583,6 @@ function cfw_credentialslist_printCredentialss(data, type){
 								name: 'table',
 								renderdef: {
 									labels: {
-		 								IS_FAVED: "&nbsp;",
 										PK_ID: "ID",
 			 							IS_SHARED: 'Shared'
 									},
@@ -1040,11 +665,6 @@ function cfw_credentialslist_initialDraw(){
 	// Create Tabs
 	cfw_credentialslist_createTabs();
 	
-	//-------------------------------------------
-	// Register Tutorials
-	cfw_credentialslist_tutorialsRegister()
-	
-
 	
 	var tabToDisplay = CFW.cache.retrieveValueForPage("credentialslist-lasttab", "mycredentials");
 	
@@ -1074,17 +694,15 @@ function cfw_credentialslist_draw(options){
 	function(){
 		
 		switch(options.tab){
-			case "mycredentials":		CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "mycredentials"}, cfw_credentialslist_printMyCredentialss);
+			case "mycredentials":		CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, {action: "fetch", item: "mycredentials"}, cfw_credentialslist_printMyCredentials);
 										break;	
-			case "favedcredentials":		CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "favedcredentials"}, cfw_credentialslist_printFavedCredentialss);
-										break;	
-			case "sharedcredentials":	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "sharedcredentials"}, cfw_credentialslist_printSharedCredentialss);
+			case "sharedcredentials":	CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, {action: "fetch", item: "sharedcredentials"}, cfw_credentialslist_printSharedCredentials);
 										break;
-			case "myarchived":			CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "myarchived"}, cfw_credentialslist_printMyArchived);
+			case "myarchived":			CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, {action: "fetch", item: "myarchived"}, cfw_credentialslist_printMyArchived);
 										break;	
-			case "adminarchived":		CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "adminarchived"}, cfw_credentialslist_printAdminArchived);
+			case "adminarchived":		CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, {action: "fetch", item: "adminarchived"}, cfw_credentialslist_printAdminArchived);
 										break;	
-			case "admincredentials":		CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "admincredentials"}, cfw_credentialslist_printAdminCredentialss);
+			case "admincredentials":		CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, {action: "fetch", item: "admincredentials"}, cfw_credentialslist_printAdminCredentials);
 										break;						
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);
 		}

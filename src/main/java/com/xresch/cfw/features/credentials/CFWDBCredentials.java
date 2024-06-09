@@ -192,7 +192,7 @@ public class CFWDBCredentials {
 		return new CFWCredentials()
 				.queryCache(CFWDBCredentials.class, "getUserCredentialsList")
 				.select()
-				.where(CFWCredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getResultSet();
 		
@@ -210,7 +210,7 @@ public class CFWDBCredentials {
 				.queryCache(CFWDBCredentials.class, "getUserCredentialsListAsJSON")
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
-				.where(CFWCredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, false)
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
@@ -227,7 +227,7 @@ public class CFWDBCredentials {
 				.queryCache()
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
-				.where(CFWCredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, true)
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
@@ -406,7 +406,7 @@ public class CFWDBCredentials {
 		int count = new CFWSQL(new CFWCredentials())
 			.selectCount()
 			.where(CFWCredentialsFields.PK_ID.toString(), credentialsID)
-			.and(CFWCredentialsFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+			.and(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 			.executeCount();
 		
 		return count > 0;
@@ -740,7 +740,7 @@ public class CFWDBCredentials {
 		ResultSet resultSet = new CFWSQL(new CFWCredentials())
 			.queryCache()
 			.select(CFWCredentialsFields.TAGS.toString())
-			.where(CFWCredentialsFields.FK_ID_USER.toString(), userID)
+			.where(CFWCredentialsFields.FK_ID_OWNER.toString(), userID)
 			.or(CFWCredentialsFields.IS_SHARED.toString(), true)
 			.getResultSet();
 		

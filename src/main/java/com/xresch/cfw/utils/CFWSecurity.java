@@ -1,10 +1,15 @@
 package com.xresch.cfw.utils;
 
 import java.math.BigInteger;
+import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Random;
 import java.util.logging.Logger;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
@@ -17,6 +22,12 @@ import com.xresch.cfw.logging.CFWLog;
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0
  *          International
  **************************************************************************************************************/
+
+//--------------------------------------------------
+// Encryption Constants
+// IMPORTANT!!! Do not change these values, you will
+// break any application already using this mechanism.
+
 public class CFWSecurity {
 
 	// internal salt to make it even more complicated to recreate a password
@@ -32,6 +43,9 @@ public class CFWSecurity {
 			.allowAttributes("href").onElements("a").allowAttributes("size").onElements("font")
 			.allowAttributes("class", "style").globally().toFactory();
 
+	private static String ENCRYPT_PREFIX = "cfwsecenc:";
+	private static String ENCRYPT_ALGORITHM = "AES";
+	
 	private static final String[][] htmlEscapes = new String[][] { 
 		{ "&", "&amp;" }, 
 		{ "<", "&lt;" }, 
@@ -188,5 +202,68 @@ public class CFWSecurity {
 		return htmlPolicy.sanitize(htmlString);
 
 	}
+	
+	
+	/******************************************************************************************************
+	 * Returns the value encrypted.
+	 ******************************************************************************************************/
+	public static String encryptValue(String value, String encryptionSalt) {
+		if(encryptionSalt == null 
+		|| value == null ) {
+			return value;
+		}else {
+			String encryptedValue = null;
+			try { 
+				//---------------------------
+				// Prepare Cipher
+				Key key = new SecretKeySpec(encryptionSalt.getBytes(), ENCRYPT_ALGORITHM);
+		        Cipher cipher = Cipher.getInstance(ENCRYPT_ALGORITHM);
+		        cipher.init(Cipher.ENCRYPT_MODE, key);
+		      
+		        //---------------------------
+		      	// Encode Value
+		        byte[] encodedBytes = cipher.doFinal(value.toString().getBytes());
+		        encryptedValue = Base64.getEncoder().encodeToString(encodedBytes);
+		        encryptedValue = ENCRYPT_PREFIX + encryptedValue;
+		       
+			}catch (Exception e) {
+				new CFWLog(logger)
+					.severe("Could not encrypt the value.", e);
+			}
+			
+			return encryptedValue;
+		}
+    }
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	public static String decryptValue(String value, String encryptionSalt) {
+		if(encryptionSalt == null 
+		|| value == null
+		|| !value.toString().startsWith(ENCRYPT_PREFIX)) {
+			return value;
+		}else {
+			String decryptedValue = null;
+			try {
+				Key key = new SecretKeySpec(encryptionSalt.getBytes(), ENCRYPT_ALGORITHM);
+		        Cipher cipher;
+	
+					cipher = Cipher.getInstance(ENCRYPT_ALGORITHM);
+	
+		        cipher.init(Cipher.DECRYPT_MODE, key);
+		        String encryptedValue = value.toString().replaceFirst(ENCRYPT_PREFIX, "");
+		        byte[] decryptedBytes = Base64.getDecoder().decode(encryptedValue);
+		        byte[] decodedValue = cipher.doFinal(decryptedBytes);
+		        decryptedValue = new String(decodedValue);
+		        
+			} catch (Exception e) {
+				new CFWLog(logger)
+					.severe("Could not decrypt value.", e);
+			}
+			
+			return decryptedValue;
+		}
+    }
 
 }

@@ -6,7 +6,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,15 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
@@ -35,6 +31,9 @@ import com.xresch.cfw.validation.LengthValidator;
  **************************************************************************************************************/
 public class CFWCredentials extends CFWObject {
 	
+	// !!! IMPORTANT !!! never change this salt-string! 
+	private static final String CREDENTIALS_PW_SALT = "CredentialsPW-Default-Salt"; 
+
 	public static final String TABLE_NAME = "CFW_CREDENTIALS";
 	
 	public static final String FIELDNAME_SHARE_WITH_USERS = "JSON_SHARE_WITH_USERS";
@@ -51,9 +50,17 @@ public class CFWCredentials extends CFWObject {
 	
 	public enum CFWCredentialsFields{
 		PK_ID
-		, FK_ID_USER
+		, FK_ID_OWNER
 		, NAME
 		, DESCRIPTION
+		, USERNAME
+		, PASSWORD
+		, DOMAIN
+		, HOSTNAME
+		, URL
+		, DATA
+		, CUSTOM
+		, SALT
 		, TAGS
 		, IS_SHARED
 		// About these fields:
@@ -79,7 +86,7 @@ public class CFWCredentials extends CFWObject {
 			.apiFieldType(FormFieldType.NUMBER)
 			;
 	
-	private CFWField<Integer> foreignKeyOwner = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsFields.FK_ID_USER)
+	private CFWField<Integer> foreignKeyOwner = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsFields.FK_ID_OWNER)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
 			.setDescription("The user id of the owner of the credentials.")
 			.apiFieldType(FormFieldType.NUMBER)
@@ -87,21 +94,45 @@ public class CFWCredentials extends CFWObject {
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.NAME)
 			.setColumnDefinition("VARCHAR(255)")
-			.setDescription("The name of the credentials.")
+			.setDescription("The name used to identify the credentials.")
 			.addValidator(new LengthValidator(1, 255))
-			.setChangeHandler(new CFWFieldChangeHandler<String>() {
-				public boolean handle(String oldValue, String newValue) {
-					if(name.isDisabled()) { 
-						new CFWLog(logger)
-						.severe("The name cannot be changed as the field is disabled.");
-						return false; 
-					}
-					return true;
-				}
-			});
+			;
+	
+	private CFWField<String> username = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.USERNAME)
+			.setDescription("(Optional)The username of the credentials.")
+			;
+	
+	private CFWField<String> password = CFWField.newString(FormFieldType.PASSWORD, CFWCredentialsFields.PASSWORD)
+			.setDescription("(Optional)The password of the credentials.")
+			.enableEncryption(CREDENTIALS_PW_SALT) // !!! IMPORTANT !!! never change this string! 
+			;
+	
+	private CFWField<String> salt = CFWField.newString(FormFieldType.NONE, CFWCredentialsFields.SALT)
+			.setDescription("The salt for the encrypting the password.")
+			.setValue(CFW.Random.randomStringAlphaNumSpecial(32))
+			;
+	
+	private CFWField<String> domain = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.DOMAIN)
+			.setDescription("(Optional)The domain of the credentials.")
+			;
+	
+	private CFWField<String> hostname = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.HOSTNAME)
+			.setDescription("(Optional)The hostname of the credentials.")
+			;
+	
+	private CFWField<String> url = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.URL)
+			.setDescription("(Optional)The URL of the credentials.")
+			;
+	
+	private CFWField<String> data = CFWField.newString(FormFieldType.TEXTAREA, CFWCredentialsFields.DATA)
+			.setDescription("(Optional)Te data for the credentials.")
+			;
+	
+	private CFWField<String> custom = CFWField.newString(FormFieldType.TEXTAREA, CFWCredentialsFields.CUSTOM)
+			.setDescription("(Optional)A custom value for the credentials.")
+			;
 	
 	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, CFWCredentialsFields.DESCRIPTION)
-			.setColumnDefinition("CLOB")
 			.setDescription("The description of the credentials.")
 			.addValidator(new LengthValidator(-1, 2000000));
 	
@@ -178,6 +209,14 @@ public class CFWCredentials extends CFWObject {
 				, foreignKeyOwner
 				, name
 				, description
+				, username
+				, password
+				, salt
+				, domain
+				, hostname
+				, url
+				, data
+				, custom
 				, tags
 				, isShared
 				, shareWithUsers
@@ -195,67 +234,6 @@ public class CFWCredentials extends CFWObject {
 	 * 
 	 **************************************************************************************/
 	@Override
-	public void migrateTable() {
-		//----------------------------------------
-		// Migration from v3.0.0 to next version
-		//new CFWLog(logger).off("Migration: Rename Columns of DB table CFW_CREDENTIALS.");
-		//new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_SHARE_WITH_ROLES", CredentialsFields.JSON_SHARE_WITH_GROUPS.toString());
-		//new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_EDITOR_ROLES", CredentialsFields.JSON_EDITOR_GROUPS.toString());
-	
-	}
-	
-	/**************************************************************************************
-	 * 
-	 **************************************************************************************/
-	@Override
-	public void updateTable() {
-								
-		//---------------------------
-		// Change Description Data Type
-		new CFWLog(logger).off("Migration: Change type of database column CFW_CREDENTIALS.NAME to VARCHAR_IGNORECASE.");
-		new CFWSQL(this)
-			.custom("ALTER TABLE IF EXISTS CFW_CREDENTIALS ALTER COLUMN IF EXISTS NAME SET DATA TYPE VARCHAR_IGNORECASE;")
-			.execute();
-		
-		//----------------------------------------
-		// Migration from v7.0.0 to next version
-		String MIGRATION_KEY = "CFW-Migration-SharedEditors_isMigrated";
-		
-		Boolean isMigrated = CFW.DB.KeyValuePairs.getValueAsBoolean(MIGRATION_KEY);
-
-		if(isMigrated == null || !isMigrated) {
-		
-			new CFWLog(logger).off("Migration: CFW_CREDENTIALS - Move sharing columns to separate tables.");
-			
-			ArrayList<CFWCredentials> credentialsList = new CFWSQL(new CFWCredentials())
-				.select()
-				.getAsObjectListConvert(CFWCredentials.class);
-		
-			CFW.DB.transactionStart();
-			
-				boolean isSuccess = true;
-				for(CFWCredentials board : credentialsList) {
-					isSuccess &= CFWDBCredentialsSharedUserMap.migrateOldStructure(board);
-					isSuccess &= CFWDBCredentialsSharedGroupsMap.migrateOldStructure(board);
-					isSuccess &= CFWDBCredentialsEditorsMap.migrateOldStructure(board);
-					isSuccess &= CFWDBCredentialsEditorGroupsMap.migrateOldStructure(board);
-				}
-			
-				new CFWLog(logger).off("Migration Result: "+isSuccess);
-				
-			CFW.DB.transactionEnd(isSuccess);
-			
-			CFW.DB.KeyValuePairs.setValue(
-					KeyValuePair.CATEGORY_MIGRATION
-					, MIGRATION_KEY
-					, ""+isSuccess
-				);
-		}
-	}
-	/**************************************************************************************
-	 * 
-	 **************************************************************************************/
-	@Override
 	public ArrayList<APIDefinition> getAPIDefinitions() {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
 		
@@ -269,7 +247,7 @@ public class CFWCredentials extends CFWObject {
 		String[] outputFields = 
 				new String[] {
 						CFWCredentialsFields.PK_ID.toString(), 
-						CFWCredentialsFields.FK_ID_USER.toString(),
+						CFWCredentialsFields.FK_ID_OWNER.toString(),
 						CFWCredentialsFields.NAME.toString(),
 						CFWCredentialsFields.DESCRIPTION.toString(),
 						CFWCredentialsFields.TAGS.toString(),
@@ -553,6 +531,20 @@ public class CFWCredentials extends CFWObject {
 		this.description.setValue(description);
 		return this;
 	}
+	
+	public String getPasswordDecrypted() {
+		String salt = this.salt.getValue();
+		String decryptedValue = CFW.Security.decryptValue(password.getValue(), salt);
+		return decryptedValue;
+	}
+	
+	public CFWCredentials setPasswordEncrypted(String value) {
+		String salt = this.salt.getValue();
+		String encryptedValue = CFW.Security.encryptValue(value, salt);
+		this.password.setValue(encryptedValue);
+		return this;
+	}
+	
 
 	public ArrayList<String> tags() {
 		return tags.getValue();

@@ -347,7 +347,7 @@ public class ServletCredentialsList extends HttpServlet
 								Integer oldOwner = credentials.foreignKeyOwner();
 								credentials.foreignKeyOwner(Integer.parseInt(newOwner));
 								
-								if(credentials.update(CFWCredentialsFields.FK_ID_USER)) {
+								if(credentials.update(CFWCredentialsFields.FK_ID_OWNER)) {
 									CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
 									
 									User currentUser = CFW.Context.Request.getUser();

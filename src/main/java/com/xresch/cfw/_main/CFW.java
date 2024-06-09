@@ -35,6 +35,7 @@ import com.xresch.cfw.features.credentials.CFWDBCredentialsEditorGroupsMap;
 import com.xresch.cfw.features.credentials.CFWDBCredentialsEditorsMap;
 import com.xresch.cfw.features.credentials.CFWDBCredentialsSharedGroupsMap;
 import com.xresch.cfw.features.credentials.CFWDBCredentialsSharedUserMap;
+import com.xresch.cfw.features.credentials.FeatureCredentials;
 import com.xresch.cfw.features.dashboard.CFWDBDashboard;
 import com.xresch.cfw.features.dashboard.CFWDBDashboardEditorGroupsMap;
 import com.xresch.cfw.features.dashboard.CFWDBDashboardEditorsMap;
@@ -490,6 +491,7 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureManual.class);	
 		CFW.Registry.Features.addFeature(FeatureNotifications.class);	
 		CFW.Registry.Features.addFeature(FeatureParameter.class);	
+		CFW.Registry.Features.addFeature(FeatureCredentials.class);
 		
 		if(CFW.AppSettings.isDashboardingEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureDashboard.class);	

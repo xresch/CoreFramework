@@ -1,27 +1,20 @@
 package com.xresch.cfw.features.credentials;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.concurrent.ScheduledFuture;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.response.bootstrap.DynamicItemCreator;
-import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 /**************************************************************************************************************
  * 
@@ -30,16 +23,14 @@ import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
  **************************************************************************************************************/
 public class FeatureCredentials extends CFWAppFeature {
 	
-	public static final String URI_DASHBOARD_LIST = "/app/credentials/list";
-	public static final String URI_DASHBOARD_VIEW = "/app/credentials/view";
-	public static final String URI_DASHBOARD_VIEW_PUBLIC = "/public/credentials/view";
+	public static final String URI_CREDENTIALS_LIST = "/app/credentials";
 	
 	public static final String PERMISSION_CREDENTIALS_VIEWER = "Credentials: Viewer";
 	public static final String PERMISSION_CREDENTIALS_CREATOR = "Credentials: Creator";
 	public static final String PERMISSION_CREDENTIALS_ADMIN = "Credentials: Admin";
 	
 	public static final String CONFIG_CATEGORY = "Credentials";
-	public static final String CONFIG_DEFAULT_IS_SHARED = "Default Is Shared";
+	public static final String CONFIG_DEFAULT_IS_SHARED = "Is Shared Default";
 
 	
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.credentials.resources";
@@ -51,17 +42,13 @@ public class FeatureCredentials extends CFWAppFeature {
 	public static final String EAV_STATS_WIDGET_LOADS_CACHED = "Widget Loads Cached";
 	public static final String EAV_STATS_WIDGET_LOADS_UNCACHED = "Widget Loads Not Cached";
 	
-	public static final String WIDGET_CATEGORY_ADVANCED = "Advanced";
-	public static final String WIDGET_CATEGORY_EASTEREGGS = "Eastereggs";
-	public static final String WIDGET_CATEGORY_STANDARD = "Standard";
-	
-	public static final String MANUAL_NAME_DASHBOARD = "Credentials";
+	public static final String MANUAL_NAME_CREDENTIALS = "Credentials";
 	public static final String MANUAL_NAME_WIDGETS = "Widgets";
-	public static final String MANUAL_PATH_WIDGETS = MANUAL_NAME_DASHBOARD+"|"+MANUAL_NAME_WIDGETS;
+	public static final String MANUAL_PATH_WIDGETS = MANUAL_NAME_CREDENTIALS+"|"+MANUAL_NAME_WIDGETS;
 	
 	public static final ManualPage MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
-					new ManualPage(MANUAL_NAME_DASHBOARD)
-						.faicon("fas fa-tachometer-alt")
+					new ManualPage(MANUAL_NAME_CREDENTIALS)
+						.faicon("fas fa-key")
 						.addPermission(PERMISSION_CREDENTIALS_VIEWER)
 						.addPermission(PERMISSION_CREDENTIALS_CREATOR)
 						.addPermission(PERMISSION_CREDENTIALS_ADMIN)
@@ -114,13 +101,13 @@ public class FeatureCredentials extends CFWAppFeature {
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(
-				(MenuItem)new MenuItem("Credentialss")
-					.faicon("fas fa-tachometer-alt")
+				(MenuItem)new MenuItem("Credentials")
+					.faicon("fas fa-key")
 					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
 					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
 					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
 					.href("/app/credentials/list")
-					.addAttribute("id", "cfwMenuTools-Credentialss")
+					.addAttribute("id", "cfwMenuTools-Credentials")
 				, null);
 		
 		
@@ -140,7 +127,6 @@ public class FeatureCredentials extends CFWAppFeature {
 		}
 		
 		CFW.Localization.registerLocaleFile(locale, "/app/credentials", definition);
-		CFW.Localization.registerLocaleFile(locale, URI_DASHBOARD_VIEW_PUBLIC, definition);
 		CFW.Localization.registerLocaleFile(locale, FeatureParameter.URI_PARAMETER, definition);
 		CFW.Localization.registerLocaleFile(locale, FeatureManual.URI_MANUAL, definition);
 	}
@@ -196,7 +182,7 @@ public class FeatureCredentials extends CFWAppFeature {
 		
 		//----------------------------------
     	// Servlets
-    	app.addAppServlet(ServletCredentialsList.class,  URI_DASHBOARD_LIST);
+    	app.addAppServlet(ServletCredentialsList.class,  URI_CREDENTIALS_LIST);
 
     	//----------------------------------
     	// Manual
@@ -228,34 +214,6 @@ public class FeatureCredentials extends CFWAppFeature {
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_00_introduction.html")
 			);
 		
-	}
-	
-	/*******************************************************************
-	 * Returns the URL for the given Credentials ID or null if the
-	 * servername was not defined in the cfw.properties
-	 * @param credentialsID
-	 *******************************************************************/
-	public static String createURLForCredentials(int credentialsID) {
-		return createURLForCredentials(""+credentialsID);
-	}
-	
-	/*******************************************************************
-	 * Returns the URL for the given Credentials ID or null if the
-	 * servername was not defined in the cfw.properties
-	 * @param credentialsID
-	 *******************************************************************/
-	public static String createURLForCredentials(String credentialsID) {
-		
-		if(CFW.Properties.APPLICATION_URL == null) {
-			return null;
-		}
-		
-		String appURL = CFW.Properties.APPLICATION_URL;
-		if(appURL.endsWith("/")) {
-			appURL = appURL.substring(0, appURL.length()-1);
-		}
-		
-		return appURL + URI_DASHBOARD_VIEW + "?id="+credentialsID;
 	}
 	
 }
