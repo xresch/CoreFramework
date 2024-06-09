@@ -6,8 +6,7 @@
  **************************************************************************************************************/
 
 var CFW_CREDENTIALSLIST_URL = "/app/credentials";
-var URI_DASHBOARD_VIEW_PUBLIC = "/public/credentials/view";
-var CFW_DASHBOARDLIST_LAST_OPTIONS = null;
+var CFW_CREDENTIALSLIST_LAST_OPTIONS = null;
 
 
 /******************************************************************
@@ -22,8 +21,8 @@ function cfw_credentialslist_createTabs(){
 		
 		//--------------------------------
 		// My Credentials Tab
-		if(CFW.hasPermission('Credentials Creator') 
-		|| CFW.hasPermission('Credentials Admin')){
+		if(CFW.hasPermission('Credentials: Creator') 
+		|| CFW.hasPermission('Credentials: Admin')){
 			list.append(
 				'<li class="nav-item"><a class="nav-link" id="tab-mycredentials" data-toggle="pill" href="#" role="tab" onclick="cfw_credentialslist_draw({tab: \'mycredentials\'})"><i class="fas fa-user-circle mr-2"></i>My Credentials</a></li>'
 			);
@@ -40,13 +39,13 @@ function cfw_credentialslist_createTabs(){
 		
 		//--------------------------------
 		// Archived Credentials Tab	
-		if( CFW.hasPermission('Credentials Creator') ){
+		if( CFW.hasPermission('Credentials: Creator') ){
 			list.append('<li class="nav-item"><a class="nav-link" id="tab-myarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_credentialslist_draw({tab: \'myarchived\'})"><i class="fas fa-folder-open mr-2"></i>Archive</a></li>');
 		}
 		
 		//--------------------------------
 		// Admin Credentials Tab	
-		if(CFW.hasPermission('Credentials Admin')){
+		if(CFW.hasPermission('Credentials: Admin')){
 			list.append(
 				'<li class="nav-item"><a class="nav-link" id="tab-adminarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_credentialslist_draw({tab: \'adminarchived\'})"><i class="fas fa-folder-open mr-2"></i>Admin Archive</a></li>'
 				+'<li class="nav-item"><a class="nav-link" id="tab-admincredentials" data-toggle="pill" href="#" role="tab" onclick="cfw_credentialslist_draw({tab: \'admincredentials\'})"><i class="fas fa-tools mr-2"></i>Admin</a></li>'
@@ -65,7 +64,7 @@ function cfw_credentialslist_createTabs(){
  ******************************************************************/
 function cfw_credentialslist_editCredentials(id){
 	
-	cfw_credentialscommon_editCredentials(id, "cfw_credentialslist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)");
+	cfw_credentials_editCredentials(id, "cfw_credentialslist_draw(CFW_CREDENTIALSLIST_LAST_OPTIONS)");
 	 
 }
 
@@ -80,7 +79,7 @@ function cfw_credentialslist_createCredentials(){
 	
 	CFW.ui.showModalMedium(CFWL('cfw_credentialslist_createCredentials', 
 			CFWL("cfw_credentialslist_createCredentials", "Create Credentials")), 
-			html, "cfw_credentialslist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)");
+			html, "cfw_credentialslist_draw(CFW_CREDENTIALSLIST_LAST_OPTIONS)");
 	
 }
 
@@ -100,7 +99,7 @@ function cfw_credentialslist_importCredentials(){
 	CFW.ui.showModalMedium(
 			"Import Credentials", 
 			uploadHTML,
-			"cfw_credentialslist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)");
+			"cfw_credentialslist_draw(CFW_CREDENTIALSLIST_LAST_OPTIONS)");
 }
 
 /******************************************************************
@@ -140,9 +139,9 @@ function cfw_credentialslist_changeCredentialsOwner(id){
 
 	
 	CFW.ui.showModalMedium(
-			CFWL("cfw_credentialscommon_editCredentials","Edit Credentials"), 
+			CFWL("cfw_credentials_editCredentials","Edit Credentials"), 
 			formDiv, 
-			"cfw_credentialslist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)"
+			"cfw_credentialslist_draw(CFW_CREDENTIALSLIST_LAST_OPTIONS)"
 	);
 	
 	//-----------------------------------
@@ -150,6 +149,54 @@ function cfw_credentialslist_changeCredentialsOwner(id){
 	//-----------------------------------
 	CFW.http.createForm(CFW_CREDENTIALSLIST_URL, {action: "getform", item: "changeowner", id: id}, formDiv);
 	
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_credentials_editCredentials(id, callbackJSOrFunc){
+	
+
+	// ##################################################
+	// Create and show Modal
+	// ##################################################
+	var compositeDiv = $('<div id="editCredentialsSettingsComposite">');
+	
+	// ----------------------------------
+	// Create Pill Navigation
+	var list = $('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">');
+
+	list.append(
+		'<li class="nav-item"><a class="nav-link active" id="credentialsSettingsTab" data-toggle="pill" href="#credentialsSettingsContent" role="tab" ><i class="fas fa-tools mr-2"></i>Settings</a></li>'
+	  + '<li class="nav-item"><a class="nav-link" id="credentialsStatisticsTab" data-toggle="pill" href="#credentialsStatisticsContent" role="tab" onclick="cfw_credentialscommon_showStatistics('+id+')" ><i class="fas fa-chart-bar"></i>&nbsp;Statistics</a></li>'
+	  + '<li class="nav-item"><a class="nav-link" id="credentialsVersionsTab" data-toggle="pill" href="#credentialsVersionsContent" role="tab" onclick="cfw_credentialscommon_showVersions('+id+')" ><i class="fas fa-code-branch"></i>&nbsp;Versions</a></li>'
+	);
+	
+	compositeDiv.append(list);
+	compositeDiv.append('<div id="settingsTabContent" class="tab-content">'
+			  +'<div class="tab-pane fade show active" id="credentialsSettingsContent" role="tabpanel" aria-labelledby="credentialsSettingsTab"></div>'
+			  +'<div class="tab-pane fade" id="credentialsStatisticsContent" role="tabpanel" aria-labelledby="credentialsStatisticsTab"></div>'
+			  +'<div class="tab-pane fade" id="credentialsVersionsContent" role="tabpanel" aria-labelledby="credentialsVersionsTab"></div>'
+		+'</div>' );	
+
+	//-----------------------------------
+	// Role Details
+	//-----------------------------------
+	
+	CFW.ui.showModalMedium(
+			CFWL('cfw_core_settings', 'Settings'), 
+			compositeDiv, 
+			callbackJSOrFunc,
+			true
+	);
+	
+	//-----------------------------------
+	// Load Form
+	//-----------------------------------
+	var elTargeto = compositeDiv.find('#credentialsSettingsContent');
+	CFW.http.createForm(CFW_CREDENTIALSLIST_URL, {action: "getform", item: "editcredentials", id: id}, elTargeto );
+
+	$('#editCredentialsSettingsComposite [data-toggle="tooltip"]').tooltip();		
 }
 
 /******************************************************************
@@ -161,7 +208,7 @@ function cfw_credentialslist_delete(id){
 	CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, params, 
 		function(data) {
 			if(data.success){
-				cfw_credentialslist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS);
+				cfw_credentialslist_draw(CFW_CREDENTIALSLIST_LAST_OPTIONS);
 			}else{
 				CFW.ui.showModalSmall("Error!", '<span>The selected credentials could <b style="color: red">NOT</b> be deleted.</span>');
 			}
@@ -177,7 +224,7 @@ function cfw_credentialslist_archive(id, isarchived){
 	CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, params, 
 		function(data) {
 			if(data.success){
-				cfw_credentialslist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS);
+				cfw_credentialslist_draw(CFW_CREDENTIALSLIST_LAST_OPTIONS);
 			}else{
 				CFW.ui.showModalSmall("Error!", '<span>The selected credentials could <b style="color: red">NOT</b> be deleted.</span>');
 			}
@@ -193,7 +240,7 @@ function cfw_credentialslist_duplicate(id){
 	CFW.http.getJSON(CFW_CREDENTIALSLIST_URL, params, 
 		function(data) {
 			if(data.success){
-				cfw_credentialslist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS);
+				cfw_credentialslist_draw(CFW_CREDENTIALSLIST_LAST_OPTIONS);
 			}
 	});
 }
@@ -265,12 +312,10 @@ function cfw_credentialslist_printCredentials(data, type){
 		case "sharedcredentials":	parent.append('<p>This list contains all the credentials that are shared by others and by you.</p>')
 									break;
 									
-		case "favedcredentials":		parent.append('<p>Here you can find all the credentials you have faved. If you unfave a credentials here it will vanish from the list the next time the tab or page gets refreshed.</p>')
-									break;	
-									
 		case "adminarchived":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin archive. The list contains all archived credentials of all users.</b></p>')
 									break;	
-		case "admincredentials":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all credentials of all users.</b></p>')
+									
+		case "admincredentials":	parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all credentials of all users.</b></p>')
 									break;	
 														
 		default:					break;
@@ -280,7 +325,7 @@ function cfw_credentialslist_printCredentials(data, type){
 	//  Create Button
 	if(type == 'mycredentials'){
 		var createButton = $('<button id="button-add-credentials" class="btn btn-sm btn-success m-1" onclick="cfw_credentialslist_createCredentials()">'
-							+ '<i class="fas fa-plus-circle"></i> '+ CFWL('cfw_credentialslist_createCredentials')
+							+ '<i class="fas fa-plus-circle"></i> '+ CFWL('cfw_core_add')
 					   + '</button>');
 	
 		parent.append(createButton);
@@ -323,21 +368,11 @@ function cfw_credentialslist_printCredentials(data, type){
 		var actionButtons = [ ];		
 		
 		//-------------------------
-		// View Button
-		actionButtons.push(
-			function (record, id){ 
-				return '<a class="btn btn-success btn-sm" role="button" href="/app/credentials/view?id='+id+'&title='+encodeURIComponent(record.NAME)+'" alt="View" title="View" >'
-				+ '<i class="fa fa-eye"></i>'
-				+ '</a>';
-			}
-		);
-
-		//-------------------------
 		// Edit Button
 		actionButtons.push(
 			function (record, id){ 
 				var htmlString = '';
-				if(JSDATA.userid == record.FK_ID_USER 
+				if(JSDATA.userid == record.FK_ID_OWNER 
 				|| type == 'admincredentials'
 				|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
 					htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
@@ -371,8 +406,8 @@ function cfw_credentialslist_printCredentials(data, type){
 		// Duplicate Button
 		if( (type != 'myarchived' && type != 'adminarchived' )
 			&& (
-			   CFW.hasPermission('Credentials Creator')
-			|| CFW.hasPermission('Credentials Admin')
+			   CFW.hasPermission('Credentials: Creator')
+			|| CFW.hasPermission('Credentials: Admin')
 			)
 		){
 			actionButtons.push(
@@ -381,8 +416,8 @@ function cfw_credentialslist_printCredentials(data, type){
 					// IMPORTANT: Do only allow duplicate if the user can edit the credentials,
 					// else this would create a security issue.
 					var htmlString = '';
-					if(JSDATA.userid == record.FK_ID_USER 
-					|| CFW.hasPermission('Credentials Admin')
+					if(JSDATA.userid == record.FK_ID_OWNER 
+					|| CFW.hasPermission('Credentials: Admin')
 					|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
 						htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
 							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong> and add it to your credentials.\', \'Do it!\', \'cfw_credentialslist_duplicate('+id+');\')">'
@@ -404,7 +439,7 @@ function cfw_credentialslist_printCredentials(data, type){
 
 			actionButtons.push(
 				function (record, id){
-					if(JSDATA.userid == record.FK_ID_USER 
+					if(JSDATA.userid == record.FK_ID_OWNER 
 					|| type == 'admincredentials'){
 						return '<a class="btn btn-warning btn-sm text-white" target="_blank" alt="Export" title="Export" '
 							+' href="'+CFW_CREDENTIALSLIST_URL+'?action=fetch&item=export&id='+id+'" download="'+record.NAME.replaceAll(' ', '_')+'_export.json">'
@@ -422,7 +457,7 @@ function cfw_credentialslist_printCredentials(data, type){
 		actionButtons.push(
 			function (record, id){
 				var htmlString = '';
-				if(JSDATA.userid == record.FK_ID_USER 
+				if(JSDATA.userid == record.FK_ID_OWNER 
 				|| type == 'adminarchived'
 				|| type == 'admincredentials'
 				){
@@ -668,9 +703,9 @@ function cfw_credentialslist_initialDraw(){
 	
 	var tabToDisplay = CFW.cache.retrieveValueForPage("credentialslist-lasttab", "mycredentials");
 	
-	if(CFW.hasPermission('Credentials Viewer') 
-	&& !CFW.hasPermission('Credentials Creator') 
-	&& !CFW.hasPermission('Credentials Admin')){
+	if(CFW.hasPermission('Credentials: Viewer') 
+	&& !CFW.hasPermission('Credentials: Creator') 
+	&& !CFW.hasPermission('Credentials: Admin')){
 		tabToDisplay = "sharedcredentials";
 	}
 	
@@ -683,7 +718,7 @@ function cfw_credentialslist_initialDraw(){
 }
 
 function cfw_credentialslist_draw(options){
-	CFW_DASHBOARDLIST_LAST_OPTIONS = options;
+	CFW_CREDENTIALSLIST_LAST_OPTIONS = options;
 	
 	CFW.cache.storeValueForPage("credentialslist-lasttab", options.tab);
 	$("#tab-content").html("");

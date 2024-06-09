@@ -229,7 +229,7 @@ public class ServletCredentialsList extends HttpServlet
 			CFWCredentials newBoard = new CFWCredentials();
 			newBoard.updateSelectorFields();
 			
-			CFWForm createCredentialsForm = newBoard.toForm("cfwCreateCredentialsForm", "{!cfw_credentials_create!}");
+			CFWForm createCredentialsForm = newBoard.toForm("cfwCreateCredentialsForm", "{!cfw_core_create!}");
 			
 			createCredentialsForm.setFormHandler(new CFWFormHandler() {
 				

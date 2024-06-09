@@ -53,7 +53,7 @@ public class CFWCredentials extends CFWObject {
 		, FK_ID_OWNER
 		, NAME
 		, DESCRIPTION
-		, USERNAME
+		, ACCOUNT
 		, PASSWORD
 		, DOMAIN
 		, HOSTNAME
@@ -98,8 +98,8 @@ public class CFWCredentials extends CFWObject {
 			.addValidator(new LengthValidator(1, 255))
 			;
 	
-	private CFWField<String> username = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.USERNAME)
-			.setDescription("(Optional)The username of the credentials.")
+	private CFWField<String> account = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.ACCOUNT)
+			.setDescription("(Optional)The account or username of the credentials.")
 			;
 	
 	private CFWField<String> password = CFWField.newString(FormFieldType.PASSWORD, CFWCredentialsFields.PASSWORD)
@@ -209,7 +209,7 @@ public class CFWCredentials extends CFWObject {
 				, foreignKeyOwner
 				, name
 				, description
-				, username
+				, account
 				, password
 				, salt
 				, domain

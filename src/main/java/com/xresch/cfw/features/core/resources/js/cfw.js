@@ -3848,7 +3848,9 @@ function cfw_ui_addToast(toastTitle, toastBody, style, delay){
 		if(toastTitle.length > 500){
 			toastTitle = toastTitle.substring(0, 500) + "... (truncated)";
 		}
-		toast.find('.toast-header').text(toastTitle);	
+		toast.find('.toast-header strong').append(toastTitle);	
+	}else{
+		toast.find('.toast-header').remove();
 	}
 	//-------------------------------------
 	// Handle Body
@@ -3858,6 +3860,8 @@ function cfw_ui_addToast(toastTitle, toastBody, style, delay){
 			toastBody = toastBody.substring(0, 500) + "... (truncated)";
 		}
 		toast.find('.toast-body').text(toastBody);	
+	}else{
+		toast.find('.toast-body').remove();
 	}
 	
 	toastDiv.append(toast);

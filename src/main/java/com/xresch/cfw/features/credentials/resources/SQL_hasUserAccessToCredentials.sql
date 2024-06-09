@@ -4,7 +4,7 @@ FROM
 WHERE
 	PK_ID = ?
 	AND (
-		FK_ID_USER = ?
+		FK_ID_OWNER = ?
 		OR (
 		  IS_SHARED = TRUE
 		  AND ( JSON_SHARE_WITH_USERS IS NULL

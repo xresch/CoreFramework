@@ -587,7 +587,7 @@ public  class CFWDBDefaultOperations {
 								.and().not().is(object.getPrimaryKeyFieldname(), object.getPrimaryKeyValue())
 								.limit(1)
 								.executeCount();
-				
+
 				return (count > 0);
 			}else {
 				return checkExistsBy(object.getClass(), column, value );

@@ -39,8 +39,7 @@ public class CFWDBCredentials {
 	
 	private static final String EAV_ATTRIBUTE_USERID = "userid";
 	private static final String EAV_ATTRIBUTE_DASHBOARDID = "credentialsid";
-	private static final String SQL_SUBQUERY_OWNER = "SELECT USERNAME FROM CFW_USER U WHERE U.PK_ID = T.FK_ID_USER";
-	private static final String SQL_SUBQUERY_ISFAVED = "(SELECT COUNT(*) FROM CFW_DASHBOARD_FAVORITE_MAP M WHERE M.FK_ID_USER = ? AND M.FK_ID_DASHBOARD = T.PK_ID) > 0";
+	private static final String SQL_SUBQUERY_OWNER = "SELECT USERNAME FROM CFW_USER U WHERE U.PK_ID = T.FK_ID_OWNER";
 
 	private static Class<CFWCredentials> cfwObjectClass = CFWCredentials.class;
 	
@@ -68,6 +67,7 @@ public class CFWDBCredentials {
 			}
 			
 			if(!checkCanSaveWithName(credentials)) {
+				CFW.Messages.addWarningMessage("The name '"+credentials.name()+"' is already in use.");
 				return false;
 			}
 
@@ -208,7 +208,6 @@ public class CFWDBCredentials {
 		
 		return new CFWCredentials()
 				.queryCache(CFWDBCredentials.class, "getUserCredentialsListAsJSON")
-				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, false)
@@ -225,7 +224,6 @@ public class CFWDBCredentials {
 		
 		return new CFWSQL(new CFWCredentials())
 				.queryCache()
-				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, true)
@@ -293,7 +291,6 @@ public class CFWDBCredentials {
 			.loadSQLResource(FeatureCredentials.PACKAGE_RESOURCES, "SQL_getSharedCredentialsListAsJSON.sql", 
 					userID,
 					userID,
-					userID,
 					sharedUserslikeID,
 					sharedUserslikeID);
 			
@@ -302,7 +299,6 @@ public class CFWDBCredentials {
 		// Union with Shared Groups
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-			.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, userID)
 			.select(CFWCredentialsFields.PK_ID
 				  , CFWCredentialsFields.NAME
 				  , CFWCredentialsFields.DESCRIPTION
@@ -328,7 +324,6 @@ public class CFWDBCredentials {
 		// Union with Editor Roles
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-			.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, userID)
 			.select(CFWCredentialsFields.PK_ID
 					, CFWCredentialsFields.NAME
 					, CFWCredentialsFields.DESCRIPTION
@@ -584,7 +579,7 @@ public class CFWDBCredentials {
 	}
 	
 	public static boolean checkCanSaveWithName(CFWCredentials credentials) {	
-		return CFWDBDefaultOperations.checkExistsByIgnoreSelf(credentials, CFWCredentialsFields.NAME.toString(), credentials.name());
+		return !CFWDBDefaultOperations.checkExistsByIgnoreSelf(credentials, CFWCredentialsFields.NAME.toString(), credentials.name());
 	}
 	
 	/*****************************************************************
