@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -484,6 +485,27 @@ public class CFWCredentials extends CFWObject {
 		
 		return success;
 	}
+	
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public JsonObject createJsonObject() {
+		
+		JsonObject result = new JsonObject();
+		
+		result.addProperty("name", name.getValue());
+		result.addProperty("account", account.getValue());
+		result.addProperty("password", password.getValue());
+		result.addProperty("domain", domain.getValue());
+		result.addProperty("hostname", hostname.getValue());
+		result.addProperty("url", url.getValue());
+		result.addProperty("data", data.getValue());
+		result.addProperty("custom", custom.getValue());
+		
+		return result;
+	}
+	
 	
 
 	public Integer id() {

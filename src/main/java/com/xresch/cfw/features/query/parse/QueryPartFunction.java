@@ -64,6 +64,10 @@ public class QueryPartFunction extends QueryPart {
 		
 		ArrayList<QueryPart> partsArray = paramGroup.getQueryPartsArray();
 
+		if(! this.internalfunctionInstance.validateQueryParts(partsArray)) {
+			return;
+		}
+		
 		for(QueryPart part : partsArray) {
 			if(part instanceof QueryPartArray) {
 				QueryPartArray array = (QueryPartArray)part;
@@ -77,6 +81,7 @@ public class QueryPartFunction extends QueryPart {
 			}	
 		}
 	}
+	
 	
 	/******************************************************************************************************
 	 * Returns the number of elements in the group.

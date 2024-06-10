@@ -1,0 +1,30 @@
+
+<p>
+	The query language supports the creation and use of objects.
+	This can be helpful in use cases like  fetching data from sources returning JSON structures, 
+	or when using the API to execute queries and structuring the returned result.
+</p>
+
+<h2>Using Emojis in Queries</h2>
+<p>You can use emojis in queries. Following displays the status of records as emojis:
+</p>
+<pre><code class="language-cfwquery">| source random records = 100
+| set
+	emoji = case( 
+				(VALUE &lt; 20), "😍"
+				(VALUE &lt; 40), "😃"
+				(VALUE &lt; 60), "🤨"
+				(VALUE &lt; 80), "😱"
+				true, "💩"
+			)
+| sort VALUE
+| display 
+	as=tiles 
+	titlefields=[emoji] 
+	visiblefields=[]
+	menu = false</code></pre>
+	
+	
+
+
+

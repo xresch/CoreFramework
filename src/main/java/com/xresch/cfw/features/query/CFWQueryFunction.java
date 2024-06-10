@@ -1,9 +1,11 @@
 package com.xresch.cfw.features.query;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
+import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -77,6 +79,17 @@ public abstract class CFWQueryFunction{
 	 *************************************************************************/
 	public abstract void aggregate(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters);
 	
+	
+	/*************************************************************************
+	 * Override this method to validate if only QueryParts of a certain type
+	 * are passed to this method.
+	 * For example only allowing literal string values.
+	 * This method is responsible to throw a ParseException in case something
+	 * is not right.
+	 *************************************************************************/
+	public boolean validateQueryParts(ArrayList<QueryPart> partsArray) throws ParseException {
+		return true;
+	}
 	
 	/*************************************************************************
 	 * Override this method and return true to not replace strings matching
