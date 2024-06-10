@@ -632,6 +632,7 @@ public class CFWDBCredentials {
 		CFWCredentials credentials = CFW.DB.Credentials.selectByID(credentialsID);
 		return checkCanEdit(credentials);
 	}
+
 	
 	/*****************************************************************
 	 * Checks if the current user can edit the credentials.

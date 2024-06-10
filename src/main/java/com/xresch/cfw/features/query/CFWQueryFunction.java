@@ -86,8 +86,13 @@ public abstract class CFWQueryFunction{
 	 * For example only allowing literal string values.
 	 * This method is responsible to throw a ParseException in case something
 	 * is not right.
+	 * 
+	 * @param partsArray the queryParts passed to this function
+	 * @param doCheckPermissions toggle if permissions should be checked if
+	 * the user has the required permissions to execute the function with the 
+	 * given parameters.
 	 *************************************************************************/
-	public boolean validateQueryParts(ArrayList<QueryPart> partsArray) throws ParseException {
+	public boolean validateQueryParts(ArrayList<QueryPart> partsArray, boolean doCheckPermissions) throws ParseException {
 		return true;
 	}
 	

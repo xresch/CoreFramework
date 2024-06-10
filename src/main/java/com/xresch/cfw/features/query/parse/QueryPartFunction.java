@@ -64,21 +64,20 @@ public class QueryPartFunction extends QueryPart {
 		
 		ArrayList<QueryPart> partsArray = paramGroup.getQueryPartsArray();
 
-		if(! this.internalfunctionInstance.validateQueryParts(partsArray)) {
-			return;
-		}
+		if(this.internalfunctionInstance.validateQueryParts(partsArray, context.checkPermissions())) {
 		
-		for(QueryPart part : partsArray) {
-			if(part instanceof QueryPartArray) {
-				QueryPartArray array = (QueryPartArray)part;
-				if(!array.isEmbracedArray()) {
-					functionParameters.addAll( ((QueryPartArray)part).getAsParts() );
+			for(QueryPart part : partsArray) {
+				if(part instanceof QueryPartArray) {
+					QueryPartArray array = (QueryPartArray)part;
+					if(!array.isEmbracedArray()) {
+						functionParameters.addAll( ((QueryPartArray)part).getAsParts() );
+					}else {
+						functionParameters.add(array);
+					}
 				}else {
-					functionParameters.add(array);
-				}
-			}else {
-				this.add(part);
-			}	
+					this.add(part);
+				}	
+			}
 		}
 	}
 	

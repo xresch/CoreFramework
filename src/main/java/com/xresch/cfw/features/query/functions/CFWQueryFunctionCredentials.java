@@ -108,12 +108,44 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 	 * For example only allowing literal string values.
 	 * This method is responsible to throw a ParseException in case something
 	 * is not right.
+	 *  
+	 * @param partsArray the queryParts passed to this function
+	 * @param doCheckPermissions toggle if permissions should be checked if
+	 * the user has the required permissions to execute the function with the 
+	 * given parameters.
 	 *************************************************************************/
-	public boolean validateQueryParts(ArrayList<QueryPart> partsArray) throws ParseException {
+	@Override
+	public boolean validateQueryParts(ArrayList<QueryPart> partsArray, boolean doCheckPermissions) throws ParseException {
 		
+		//-------------------------------------------------
+		// Check Params are a static value and not dynamic
 		for(QueryPart current : partsArray) {
 			if( !(current instanceof QueryPartValue) ) {
-				throw new ParseException("function credentials(): For security reasons, parameter must be a literal(hardcoded) string.", current.position());
+				throw new ParseException("function credentials(): For security reasons, parameter must be a static value and cannot be dynamic.", current.position());
+			}
+		}
+		
+		//-------------------------------------------------
+		// Check Params are a static value and not dynamic
+		if(doCheckPermissions) {
+			
+			if(partsArray.size() > 0){
+				QueryPart first = partsArray.get(0);
+				QueryPartValue value = first.determineValue(null);
+				String name = value.getAsString();
+				
+				//----------------------------------
+				// Check Exists
+				if(CFW.DB.Credentials.checkExistsByName(name)) {
+					CFWCredentials credentials = CFW.DB.Credentials.selectFirstByName(name);
+					if( !CFW.DB.Credentials.hasUserAccessToCredentials(credentials.id()) ){
+						throw new ParseException("function credentials(): You do not have permission to use the credentials '"+name+"'.", first.position());
+					}
+				}else {
+					throw new ParseException("function credentials(): The credentials '"+name+"' do not exist.", first.position());
+				}
+				
+	
 			}
 		}
 		
