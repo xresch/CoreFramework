@@ -163,7 +163,6 @@ The following query uses the unbox command to keep some of the original fields(f
 		
 		
 		
-		
 <h2>Parse As HTML</h2>
 <p>Following is an example how to fetch data and parse the response as HTML. The response will be a flat table containing all elements from the HTML tree:</p>
 <pre><code class="language-cfwquery">| source web 
@@ -176,6 +175,8 @@ The following query uses the unbox command to keep some of the original fields(f
 | unbox 
 	attributes.id
 	attributes.class</code></pre>	
+
+
 
 <h2>Parse As HTML with Structure</h2>
 <p>Using 'as=htmltree'  will also parse as HTML, but retains the tree structure of the elements:</p>
