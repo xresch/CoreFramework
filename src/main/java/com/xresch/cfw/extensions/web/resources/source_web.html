@@ -176,7 +176,8 @@ The following query uses the unbox command to keep some of the original fields(f
 | unbox 
 	attributes.id
 	attributes.class</code></pre>	
-	
+
+<h2>Parse As HTML with Structure</h2>
 <p>Using 'as=htmltree'  will also parse as HTML, but retains the tree structure of the elements:</p>
 <pre><code class="language-cfwquery">| source web 
 	as="htmltree"
@@ -185,9 +186,19 @@ The following query uses the unbox command to keep some of the original fields(f
 | unbox children
 | unbox children
 | unbox children
-| sort key 
-	</code></pre>	
+| sort key </code></pre>	
 
+
+<h2>Parse As HTML and Extract Tables</h2>
+<p>Using 'as=htmltables' will parse as HTML and extract all the tables from the response:</p>
+<pre><code class="language-cfwquery">| source web 
+	as="htmltables"
+	method="GET"
+	url="https://en.wikipedia.org/wiki/List_of_animal_names"
+| filter 
+	tableindex > 0
+	length(data) > 0
+| unbox data replace = true</code></pre>	
 
 
 
@@ -206,6 +217,8 @@ The following query uses the unbox command to keep some of the original fields(f
 	&lt;/record> */
 | sort key</code></pre>	
 
+
+<h2>Parse As XML with Structure</h2>
 <p>Using 'as=xmltree' will also parse as XML, but retains the tree structure of the elements:</p>
 <pre><code class="language-cfwquery">| source web 
 	as="xmltree"
