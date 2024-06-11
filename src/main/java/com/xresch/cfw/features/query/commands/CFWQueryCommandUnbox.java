@@ -36,6 +36,7 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	
 	private QueryPartArray unboxFields;
 	
+	private boolean firstExecution = true;
 	private boolean doReplaceOriginal = false;
 	private ArrayList<QueryPart> parts;
 	/***********************************************************************************************
@@ -160,6 +161,16 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
+		//------------------------------------
+		// Clear fields if do replace
+		if(firstExecution 
+		&& doReplaceOriginal) {
+			firstExecution = false;
+			this.fieldnameClearAll();
+		}
+		
+		//------------------------------------
+		// Iterate Data
 		while(keepPolling()) {
 			
 			ArrayList<EnhancedJsonObject> newRecordsArray = new ArrayList<EnhancedJsonObject>();
@@ -170,7 +181,6 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 			if(!doReplaceOriginal) {
 				newRecordsArray.add(originalRecord);
 			}else {
-				this.fieldnameClearAll();
 				newRecordsArray.add(new EnhancedJsonObject());
 			}
 			

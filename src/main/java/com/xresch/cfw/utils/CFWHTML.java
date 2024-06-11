@@ -41,6 +41,69 @@ public class CFWHTML {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/		
+	public static JsonArray extractTablesAsJsonArray(Document doc) {
+		
+		
+		JsonArray result = new JsonArray();
+		
+		if(doc != null) {
+			Elements tableElements = doc.getElementsByTag("table");
+			
+			int tableIndex = 0;
+			for(Element table : tableElements) {
+				
+				//---------------------------
+				// Extract headers
+				ArrayList<String> headers = new ArrayList<>();
+				for(Element headerCell : table.getElementsByTag("th")) {
+					headers.add(headerCell.text());
+				}
+				
+				
+				//-----------------------------
+				// Attributes
+				JsonObject attributesObject = new JsonObject();
+				for(Attribute attribute : table.attributes()) {
+					attributesObject.addProperty(attribute.getKey(), attribute.getValue());
+				}
+				
+				//-----------------------------
+				// Extract Data
+				for(Element row : table.select("tr")) {
+					JsonObject record = new JsonObject();
+					JsonObject data = new JsonObject();
+					record.addProperty("tableindex", tableIndex);
+					record.add("attributes", attributesObject);
+					record.add("data", data);
+					
+					
+					int columnIndex = 0;
+					for(Element cell : row.select("td") ) {
+						
+						String columnName = "column-"+columnIndex;
+						if(columnIndex < headers.size()) {
+							columnName = headers.get(columnIndex);
+						}
+						
+						data.addProperty(columnName, cell.text());
+						
+						columnIndex++;
+					}
+					
+					result.add(record);
+				}
+				
+				
+				tableIndex++;
+			}
+		}
+
+		return result;
+	}
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/		
 	public static JsonArray convertDocumentToJson(Document doc, String prefix, boolean doFlat) {
 		
 		
@@ -53,6 +116,7 @@ public class CFWHTML {
 
 		return result;
 	}
+	
 	
 	/**************************************************************************************
 	 * Transforms the elements to a flat JsonArray with JsonObjects.

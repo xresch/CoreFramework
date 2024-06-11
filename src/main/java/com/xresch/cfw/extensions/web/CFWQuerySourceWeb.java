@@ -59,6 +59,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 
 		  json("Parse the response into a json object or array.")
 		, html("Parse the response as HTML and convert it into a flat table.")
+		, htmltables("Parse the response as HTML and extracts all table data found in the HTML.")
 		, htmltree("Parse the response as HTML and convert it into a json structure.")
 		, xml("Parse the response as XML and convert it into a flat table.")
 		, xmltree("Parse the response as XML and convert it into a json structure.")
@@ -376,14 +377,15 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		
 		switch(type) {
 			
-			case json:		parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;	
-			case html:		parseAsHTML(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case htmltree:	parseAsHTMLTree(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case xml:		parseAsXML(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case xmltree:	parseAsXMLTree(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case plain:		parseAsPlain(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case http:		parseAsHTTP(outQueue, limit, response, timefield, timerangeChecker); 	break;
-			case lines:		parseAsLines(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case json:			parseAsJson(outQueue, limit, response, timefield, timerangeChecker); 	break;	
+			case html:			parseAsHTML(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case htmltables:	parseAsHTMLTables(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case htmltree:		parseAsHTMLTree(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case xml:			parseAsXML(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case xmltree:		parseAsXMLTree(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case plain:			parseAsPlain(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case http:			parseAsHTTP(outQueue, limit, response, timefield, timerangeChecker); 	break;
+			case lines:			parseAsLines(outQueue, limit, response, timefield, timerangeChecker); 	break;
 
 		}
 		
@@ -575,6 +577,41 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 			
 			org.jsoup.nodes.Document document = CFW.HTML.parseToDocument(data);
 			JsonArray array = CFW.HTML.convertDocumentToJson(document, "", false);
+			
+			for(JsonElement element : array) {
+				EnhancedJsonObject object = new EnhancedJsonObject(element.getAsJsonObject());
+				outQueue.add( object );
+			}
+			
+		}catch(Exception e) {
+			
+			//------------------------------------
+			// Create Error Response
+			createExceptionResponse(outQueue, response, data, e);
+			return;
+		}
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void parseAsHTMLTables(
+				LinkedBlockingQueue<EnhancedJsonObject> outQueue
+				, int limit
+				, CFWHttpResponse response
+				, String timefield
+				, JsonTimerangeChecker timerangeChecker
+				) throws ParseException {
+		
+		String data = response.getResponseBody();
+		
+		//------------------------------------
+		// Parse Data
+		try {
+			
+			org.jsoup.nodes.Document document = CFW.HTML.parseToDocument(data);
+			JsonArray array = CFW.HTML.extractTablesAsJsonArray(document);
 			
 			for(JsonElement element : array) {
 				EnhancedJsonObject object = new EnhancedJsonObject(element.getAsJsonObject());
