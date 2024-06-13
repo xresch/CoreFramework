@@ -18,6 +18,7 @@ import com.xresch.cfw.extensions.databases.generic.FeatureDBExtensionsGenericJDB
 import com.xresch.cfw.extensions.databases.mssql.FeatureDBExtensionsMSSQL;
 import com.xresch.cfw.extensions.databases.mysql.FeatureDBExtensionsMySQL;
 import com.xresch.cfw.extensions.databases.oracle.FeatureDBExtensionsOracle;
+import com.xresch.cfw.extensions.influxdb.FeatureInfluxDB;
 import com.xresch.cfw.extensions.web.FeatureWebExtensions;
 import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.api.CFWRegistryAPI;
@@ -512,6 +513,7 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureDBExtensionsMSSQL.class);
 		CFW.Registry.Features.addFeature(FeatureDBExtensionsOracle.class);
 		CFW.Registry.Features.addFeature(FeatureDBExtensionsGenericJDBC.class);
+		CFW.Registry.Features.addFeature(FeatureInfluxDB.class);
 		CFW.Registry.Features.addFeature(FeatureWebExtensions.class);
 		
 		//---------------------------
