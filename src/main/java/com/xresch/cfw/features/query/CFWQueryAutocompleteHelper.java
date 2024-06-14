@@ -1,12 +1,17 @@
 package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonObject;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteItem;
+import com.xresch.cfw.features.core.AutocompleteList;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.FeatureQuery.CFWQueryComponentType;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
@@ -236,6 +241,46 @@ public class CFWQueryAutocompleteHelper {
 				+ " onclick=\"cfw_query_editor_getManualPage('"
 						+ type
 						+ "', '"+componentName+"' )\">Open Manual</span>";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public void autocompleteContextSettingsForSource(String settingsType, AutocompleteResult result) {
+		if( this.getCommandTokenCount() >= 2 ) {
+			
+			HashMap<Integer, Object> environmentMap = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(settingsType);
+			
+			AutocompleteList list = new AutocompleteList();
+			result.addList(list);
+			int i = 0;
+			for (Object envID : environmentMap.keySet() ) {
+
+				Object envName = environmentMap.get(envID);
+				
+				JsonObject envJson = new JsonObject();
+				envJson.addProperty("id", Integer.parseInt(envID.toString()));
+				envJson.addProperty("name", envName.toString());
+				String envJsonString = "environment="+CFW.JSON.toJSON(envJson)+" ";
+				
+				list.addItem(
+					this.createAutocompleteItem(
+						""
+					  , envJsonString
+					  , "Environment: "+envName
+					  , envJsonString
+					)
+				);
+				
+				i++;
+				
+				if((i % 10) == 0) {
+					list = new AutocompleteList();
+					result.addList(list);
+				}
+				if(i == 50) { break; }
+			}
+		}
 	}
 	
 	

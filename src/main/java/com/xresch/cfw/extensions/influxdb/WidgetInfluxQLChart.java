@@ -194,7 +194,7 @@ public class WidgetInfluxQLChart extends WidgetDefinition {
 	 ************************************************************/
 	@Override
 	public boolean hasPermission(User user) {
-		return user.hasPermission(FeatureInfluxDB.PERMISSION_WIDGETS_INFLUXDB);
+		return user.hasPermission(FeatureInfluxDB.PERMISSION_INFLUXDB);
 	}
 
 }

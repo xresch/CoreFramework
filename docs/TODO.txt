@@ -161,7 +161,8 @@ DONE
 ====
 
 ------- current -------
-- NEW FEARTURE: Credentials Management to not have credentials in queries
+- NEW FEATURE: Credentials Management to not have credentials in queries
+- NEW FEATURE: InfluxDB Extension (moved from EMP to CFW)
 - Groups: Added a List of all groups with owner and editors, to simplify finding someone that can add you to a group
 - Alerting: Do not send mails to inactive users.
 - Dashboard: Fixed versions showing up in shared list
@@ -175,6 +176,10 @@ DONE
 - Query: Editor - Autocomplete works better when using $xxx$-placeholders for parameters
 - Query: Source web - returns details on exception, plus some bug fixes
 - Query: Source web - supports additional parameter "as" to select how the data should be parsed, options: ["html","htmltables","htmltree","http","json","lines","plain","xml","xmltree"]
+
+- Query: Added sources:
+	- influxql
+	
 - Query: Added Commands:
 	- displayfields (plus alias formatdisplay)
 	- formatcss

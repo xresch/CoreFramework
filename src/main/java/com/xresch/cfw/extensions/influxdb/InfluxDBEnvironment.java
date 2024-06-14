@@ -208,11 +208,125 @@ public class InfluxDBEnvironment extends AbstractContextSettings {
 	/************************************************************************************
 	 * 
 	 ************************************************************************************/
+	public JsonArray queryRangeInfluxQLAsJsonArray(String database, String influxdbQuery,  long earliestMillis, long latestMillis) {
+		
+		JsonArray jsonArray = new JsonArray();
+		JsonObject object = queryRangeInfluxQL(database, influxdbQuery,  earliestMillis, latestMillis);
+		
+		//========== EXPECTED RESPONSE STRUCTURE =============
+		//	{"results": [{"statement_id": 0,"series": [
+		//	{
+		//		"name": "databases",
+		//		"columns": [
+		//			"name"
+		//		],
+		//		"values": [
+		//			[
+		//				"_internal"
+		//			],
+		//			[...]
+		//		]
+		//====================================================
+		
+		//-------------------------------
+		// Check Data
+		JsonElement resultsElement = object.get("results");
+		if(resultsElement == null  || resultsElement.isJsonNull()) {
+			CFW.Messages.addWarningMessage("InfluxDB - Unexpected Result: "+CFW.JSON.toJSON(object));
+			return jsonArray;
+		}
+		
+		if(!resultsElement.isJsonArray()) {
+			CFW.Messages.addWarningMessage("InfluxDB - Results was not a JsonArray.");
+			return jsonArray;
+		}
+		
+		//--------------------------------
+		// Iterate Results
+		for(JsonElement result : resultsElement.getAsJsonArray()) {
+			
+			if(result == null || result.isJsonNull() ) { continue; }
+			JsonObject resultObject = result.getAsJsonObject();
+			
+			JsonElement seriesElement = resultObject.get("series");
+			if(seriesElement == null || seriesElement.isJsonNull() ) { continue; }
+			
+			//--------------------------------
+			// Iterate Series
+			for(JsonElement series : seriesElement.getAsJsonArray()) {
+				
+				if(series == null || series.isJsonNull() ) { continue; }
+				JsonObject seriesObject = series.getAsJsonObject();
+				
+				//--------------------------------
+				// Get Series Name
+				JsonElement namesElement = seriesObject.get("name");
+				String seriesName = "n/a";
+				if(namesElement != null && namesElement.isJsonPrimitive() ) { 
+					seriesName = namesElement.getAsString();
+				}
+				
+				//--------------------------------
+				// Get Series Tags
+				JsonElement tagsElement = seriesObject.get("tags");
+				JsonObject tagsObject = null;
+				if(tagsElement != null && tagsElement.isJsonObject() ) { 
+					tagsObject = tagsElement.getAsJsonObject();
+				}
+				
+				
+				//--------------------------------
+				// Get Column Names
+				JsonElement columnsElement = seriesObject.get("columns");
+				if(columnsElement == null || columnsElement.isJsonNull() ) { continue; }
+				JsonArray columnsArray = columnsElement.getAsJsonArray();
+				String[] columnNames = new String[columnsArray.size()];
+				
+				// improve performance
+				for(int i = 0; i < columnsArray.size(); i++) {
+					columnNames[i] = columnsArray.get(i).getAsString();
+				}
+				
+				//--------------------------------
+				// Get Values Array
+				JsonElement valuesElement = seriesObject.get("values");
+				if(valuesElement == null || valuesElement.isJsonNull() ) { continue; }
+				JsonArray valuesArray = valuesElement.getAsJsonArray();
+				
+
+				//--------------------------------
+				// Iterate Values
+				for(JsonElement value : valuesArray) {
+					JsonArray valueArray = value.getAsJsonArray();
+					JsonObject record = new JsonObject();
+					record.addProperty("seriesname", seriesName);
+					if(tagsObject != null) {
+						record.add("tags", tagsObject);
+					}
+					
+					for(int i=0; i < columnNames.length; i++) {
+						record.add(
+								columnNames[i]
+								, valueArray.get(i)
+							);
+					}
+					jsonArray.add(record);
+				}
+
+			}
+		}
+				
+		return jsonArray;
+	}
+	
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	public JsonObject queryRangeInfluxQL(String database, String influxdbQuery,  long earliestMillis, long latestMillis) {
 		
 		//---------------------------
 		// Prepare Query
-		String interval = CFW.Time.calculateDatapointInterval(earliestMillis, latestMillis, 100, "");
+		String interval = CFW.Time.calculateDatapointInterval(earliestMillis, latestMillis, 200, "");
 		
 		influxdbQuery = influxdbQuery.replace("[interval]", interval )
 									 .replace("$interval$", interval )

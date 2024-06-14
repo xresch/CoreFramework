@@ -4,6 +4,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.extensions.databases.FeatureDBExtensions;
+import com.xresch.cfw.extensions.influxdb.query.CFWQuerySourceInfluxQL;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
@@ -20,7 +21,7 @@ public class FeatureInfluxDB extends CFWAppFeature {
 	public static final String PACKAGE_MANUAL   = "com.xresch.cfw.extensions.influxdb.manual";
 	public static final String PACKAGE_RESOURCE = "com.xresch.cfw.extensions.influxdb.resources";
 	
-	public static final String PERMISSION_WIDGETS_INFLUXDB = "Database: InfluxDB";
+	public static final String PERMISSION_INFLUXDB = "Database: InfluxDB";
 	public static final String WIDGET_CATEGORY_INFFLUXDB = FeatureDBExtensions.WIDGET_CATEGORY_DATABASE + " | InfluxDB"; 
 	
 	/************************************************************************************
@@ -59,6 +60,10 @@ public class FeatureInfluxDB extends CFWAppFeature {
 		CFW.Registry.ContextSettings.register(InfluxDBEnvironment.SETTINGS_TYPE, InfluxDBEnvironment.class);
     
 		//----------------------------------
+		// Register Sources
+		CFW.Registry.Query.registerSource(new CFWQuerySourceInfluxQL(null));
+		
+		//----------------------------------
 		// Register Widgets
 		CFW.Registry.Widgets.add(new WidgetInfluxQLChart());
 		CFW.Registry.Widgets.add(new WidgetInfluxQLThreshold());
@@ -83,7 +88,7 @@ public class FeatureInfluxDB extends CFWAppFeature {
 		//----------------------------------
 		// Permissions
 		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_WIDGETS_INFLUXDB, FeatureUserManagement.CATEGORY_USER)
+				new Permission(PERMISSION_INFLUXDB, FeatureUserManagement.CATEGORY_USER)
 					.description("Create and Edit InfluxDB Widgets."),
 				true,
 				true);
