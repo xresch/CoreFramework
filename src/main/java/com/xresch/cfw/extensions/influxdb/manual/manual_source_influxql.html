@@ -1,0 +1,62 @@
+
+<p>
+This source allows you to execute InfluxQL queries(SQL-like syntax) to fetch data from an InfluxDB. 
+</p>
+
+<p>Following is a simple example how to execute and influxDB query:</p>
+<pre><code class="language-cfwquery">| source influxql 
+	environment={"id":4,"name":"InfluxDB v1.8"} 
+	query=`show databases`</code></pre>	
+
+
+<p>To specify a database, use the db-parameter. Here an example how to list the measurements for a specific database:</p>
+<pre><code class="language-cfwquery">| source influxql 
+	environment={"id":4,"name":"InfluxDB v1.8"} 
+	db="waterdb"
+	query=`show measurements`</code></pre>	
+	
+	
+<p>Lets fetch some simple statistics from the waterdb:</p>
+<pre><code class="language-cfwquery">| source influxql 
+	environment={"id":4,"name":"InfluxDB v1.8"} 
+	db="waterdb"
+	query=`
+	SELECT 
+		  count("water_level") AS count 
+		, min("water_level") AS min
+		, mean("water_level") AS mean
+		, max("water_level") AS max
+	FROM "h2o_feet" 
+	`</code></pre>	
+	
+	
+<p>Here is how you can filter by the time selected by the timeframe picker.
+The part "interval()+intervalunit()" will auto adjust the time grouping based on the selected time frame:</p>
+
+<pre><code class="language-cfwquery">| execute # for testing, set the earliest and latest to a time where we have NOAA water data
+	earliestset(timeparse("yyyy-MM-dd HH:mm:ss", "2019-08-18 00:00:00") )
+	latestset(timeparse("yyyy-MM-dd HH:mm:ss", "2019-08-19 00:00:00") )
+| source influxql 
+	environment={"id":4,"name":"InfluxDB v1.8"} 
+	db="waterdb"
+	query=`
+	SELECT 
+		  count("water_level") AS count 
+		, min("water_level") AS min
+		, mean("water_level") AS mean
+		, max("water_level") AS max
+		, stddev("water_level") as stddev
+	FROM "h2o_feet" 
+	WHERE time >= `+earliest()+`ms 
+	  AND time &lt;= `+latest()+`ms 
+	GROUP BY time(`+interval()+intervalunit()+`) , "location"
+	` 
+#| unbox tags | remove tags # if you want tags as fields
+| formatfield
+	tags = list
+	[min, mean, max, stddev] = ['decimals', 2]</code></pre>	
+	
+
+
+
+

@@ -71,7 +71,7 @@ public class CFWQuerySourceInfluxQL extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureInfluxDB.PACKAGE_RESOURCE, "manual_source_influxql.html");
+		return CFW.Files.readPackageResource(FeatureInfluxDB.PACKAGE_MANUAL, "manual_source_influxql.html");
 	}
 	
 	/******************************************************************
