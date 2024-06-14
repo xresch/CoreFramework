@@ -1,8 +1,10 @@
 
 <p>
 This source allows you to execute InfluxQL queries(SQL-like syntax) to fetch data from an InfluxDB. 
+<br/> The examples given here use the InfluxDB sample data from the "NOAA_data.txt" that you can get from the InfluxDB website. 
 </p>
 
+<h2>Basic Queries</h2>
 <p>Following is a simple example how to execute and influxDB query:</p>
 <pre><code class="language-cfwquery">| source influxql 
 	environment={"id":4,"name":"InfluxDB v1.8"} 
@@ -16,6 +18,7 @@ This source allows you to execute InfluxQL queries(SQL-like syntax) to fetch dat
 	query=`show measurements`</code></pre>	
 	
 	
+<h2>Creating Statistics</h2>	
 <p>Lets fetch some simple statistics from the waterdb:</p>
 <pre><code class="language-cfwquery">| source influxql 
 	environment={"id":4,"name":"InfluxDB v1.8"} 
@@ -29,7 +32,8 @@ This source allows you to execute InfluxQL queries(SQL-like syntax) to fetch dat
 	FROM "h2o_feet" 
 	`</code></pre>	
 	
-	
+
+<h2>Using the Selected Time frame</h2>	
 <p>Here is how you can filter by the time selected by the timeframe picker.
 The part "interval()+intervalunit()" will auto adjust the time grouping based on the selected time frame:</p>
 
@@ -55,6 +59,48 @@ The part "interval()+intervalunit()" will auto adjust the time grouping based on
 | formatfield
 	tags = list
 	[min, mean, max, stddev] = ['decimals', 2]</code></pre>	
+
+
+<h2>Simple Chart</h2>	
+<p>Here a basic example how to make a simple chart with time series:</p>
+
+<pre><code class="language-cfwquery">| source influxql 
+	environment={"id":4,"name":"InfluxDB v1.8"} 
+	db="waterdb"
+	query=`
+	SELECT *
+	FROM "h2o_feet" 
+	WHERE time >= `+earliest()+`ms 
+	  AND time &lt;= `+latest()+`ms 
+	`
+| chart
+	by=["location", "level description"]
+	type="line"
+	x="time"
+	y="water_level"
+	stacked=false</code></pre>	
+	
+<h2>Stacked Chart</h2>	
+<p>With stacked charts we have to make sure the time values align properly(down to the milliseconds).
+To do so we can use the function timeround() to round the time to the next 5 minutes:</p>
+
+<pre><code class="language-cfwquery">| source influxql 
+	environment={"id":4,"name":"InfluxDB v1.8"} 
+	db="waterdb"
+	query=`
+	SELECT *
+	FROM "h2o_feet" 
+	WHERE time >= `+earliest()+`ms 
+	  AND time &lt;= `+latest()+`ms 
+	` 
+| set
+	time = timeround(time, 5, "m") # rounds the time to the next 5 minutes
+| chart
+	by=["location", "level description"]
+	type="bar"
+	x="time"
+	y="water_level"
+	stacked=true</code></pre>	
 	
 
 

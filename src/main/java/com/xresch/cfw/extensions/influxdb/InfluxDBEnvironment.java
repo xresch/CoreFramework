@@ -187,14 +187,14 @@ public class InfluxDBEnvironment extends AbstractContextSettings {
 		 CFWHttpResponse queryResult = builder.send();
 		//CFWHttpResponse queryResult = CFW.HTTP.sendPOSTRequest(queryURL, params, null);
 		
-		System.out.println("=========== TEST =========");
+		//System.out.println("=========== TEST =========");
 		
 		if(queryResult != null) {
 			JsonElement jsonElement = CFW.JSON.fromJson(queryResult.getResponseBody());
 			
 			JsonObject json = jsonElement.getAsJsonObject();
 			
-			System.out.println(queryResult.getResponseBody());
+			//System.out.println(queryResult.getResponseBody());
 //			if(json.get("error") != null) {
 //				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "InfluxDB Error: "+json.get("error").getAsString());
 //				return null;
@@ -334,9 +334,9 @@ public class InfluxDBEnvironment extends AbstractContextSettings {
 									 .replace("$earliest$", ""+earliestMillis*1000000)
 									 .replace("[latest]", ""+latestMillis*1000000)
 									 .replace("$latest$", ""+latestMillis*1000000)
-									 .replace("\r\n", " ")
-									 .replace('\n', ' ')
-									 .replace('\r', ' ')
+									 //.replace("\r\n", " ")
+									 //.replace('\n', ' ')
+									 //.replace('\r', ' ')
 									 ;
 
 		return queryInfluxQL(database, influxdbQuery);
