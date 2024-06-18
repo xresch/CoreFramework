@@ -1,0 +1,47 @@
+
+<p>This command is used to join two results together. This works in a similar way is with SQL joins.
+This can become very handy if you cannot use SQL joins. 
+For example, if you want to join data from different data sources.
+</p>
+
+<p>Following example maps categories to records using an inner join:
+</p>
+<pre><code class="language-cfwquery">| globals
+	multidisplay=3
+| record
+	[ID, CATEGORY]
+	[1, "A"]
+	#[2, "B"]
+	#[3, "C"]
+	[4, "D"]
+	[5, "E"]
+;
+| source random records = 1000
+| keep FIRSTNAME
+| set CATEGORY_ID = randomfrom([3,4,5])
+;
+| meta title=true name="testabc" 
+| resultjoin
+	on=(ID == CATEGORY_ID)
+	join="inner"</code></pre>
+	
+	
+<p>:
+</p>
+<pre><code class="language-cfwquery">| globals
+	multidisplay=3
+| source random records = 1000
+| keep INDEX, FIRSTNAME, LIKES_TIRAMISU
+;
+| source random records = 1000
+| keep INDEX, LASTNAME, LIKES_TIRAMISU
+| filter (INDEX % 2) == 0
+;
+| meta title=true name="Joined Result" 
+| resultjoin
+	on=(
+		INDEX == INDEX 
+		AND LIKES_TIRAMISU == LIKES_TIRAMISU
+	)</code></pre>
+
+

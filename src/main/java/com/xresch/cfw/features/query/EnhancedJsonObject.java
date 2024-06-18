@@ -25,7 +25,7 @@ public class EnhancedJsonObject {
 	
 	// custom properties to add metadata etc.. to a record 
 	// only initialized if used
-	private Properties metadata;
+	protected Properties metadata;
 
 	public EnhancedJsonObject() {
 		this.internal = new SoftReference<>(new JsonObject());
@@ -145,6 +145,21 @@ public class EnhancedJsonObject {
 	 *************************************************************************************************/
 	public JsonObject deepCopy() {
 		return getWrappedObject().deepCopy();
+	}
+	
+	/*************************************************************************************************
+	 * Creates a deep copy of this element and all its children
+	 *************************************************************************************************/
+	public EnhancedJsonObject clone() {
+		EnhancedJsonObject clone = new EnhancedJsonObject( getWrappedObject().deepCopy() );
+		
+		if(metadata != null) {
+			for(Entry<Object, Object> entry : metadata.entrySet()) {
+				clone.addMetadata(entry.getKey().toString(), entry.getValue());
+			}
+		}
+		
+		return clone;
 	}
 	
 	/*************************************************************************************************

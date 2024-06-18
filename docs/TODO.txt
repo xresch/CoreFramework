@@ -183,6 +183,7 @@ DONE
 - Query: Added Commands:
 	- displayfields (plus alias formatdisplay)
 	- formatcss
+	- resultjoin
 	
 - Query: Added Functions:
 	- credentials
