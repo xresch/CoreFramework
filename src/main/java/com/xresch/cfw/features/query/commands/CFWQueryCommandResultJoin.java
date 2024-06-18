@@ -3,10 +3,10 @@ package com.xresch.cfw.features.query.commands;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -21,7 +21,9 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.LeftRightEvaluatable;
 import com.xresch.cfw.features.query.parse.QueryPart;
+import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
+import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
@@ -32,6 +34,8 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  ************************************************************************************************************/
 public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 	
+	private static final String METADATA_ISMATCHED = "ResultJoin-matched";
+
 	public static final String COMMAND_NAME = "resultjoin";
 
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
@@ -40,7 +44,12 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 	
 	CFWQuerySource source = null;
 	
-	private LeftRightEvaluatable onCondition = null;
+	private LeftRightEvaluatable onConditionSlow = null;
+	private String onConditionFastLeft = null;
+	private String onConditionFastRight = null;
+	private boolean remove = true;
+	
+	
 	private CFWQueryCommandResultJoinType joinType = CFWQueryCommandResultJoinType.left;
 	private String leftName = null;
 	private String rightName = null;
@@ -123,7 +132,7 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" on=<onCondition> [join=<joinType>] [left=<resultNameLeft>] [right=<resultNameRight>]";
+		return COMMAND_NAME+" on=<onCondition> [join=<joinType>] [remove=<doRemove>] [left=<resultNameLeft>] [right=<resultNameRight>]";
 	}
 	
 	/***********************************************************************************************
@@ -133,7 +142,8 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 	public String descriptionSyntaxDetailsHTML() {
 		return  "<ul>"
 				+"<li><b>onCondition:&nbsp;</b>The condition, if evaluates to true, the records are joined together.</li>"
-				+"<li><b>Join Type:&nbsp;</b>(Optional) The type of the join, either, 'inner', 'left' or 'right'. </li>"
+				+"<li><b>joinType:&nbsp;</b>(Optional) The type of the join, either, 'inner', 'left' or 'right'. </li>"
+				+"<li><b>remove:&nbsp;</b>(Optional) Toggle if the the original results should be removed. (Default: true) </li>"
 				+"<li><b>resultNameLeft:&nbsp;</b>(Optional) The name of the left result. If this is omitted, the second last result will be used.</li>"
 				+"<li><b>resultNameRight:&nbsp;</b>(Optional) The name of the right result. If this is omitted, the last result will be used.</li>"
 				+"</ul>"
@@ -198,14 +208,29 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 					
 					assignmentName = assignmentName.trim().toLowerCase();
 					switch(assignmentName) {
+					
+						//-------------------------------------
+						// 
+						//-------------------------------------
 						case "on":
-							if(assignmentValuePart instanceof LeftRightEvaluatable) {
-								onCondition = (LeftRightEvaluatable)assignmentValuePart; 
+							if(assignmentValuePart instanceof QueryPartValue ) {
+								onConditionFastLeft =  assignmentValuePart.determineValue(null).getAsString();
+								onConditionFastRight = onConditionFastLeft;
+							}else if(assignmentValuePart instanceof QueryPartArray ) {
+								QueryPartArray arrayPart = (QueryPartArray)assignmentValuePart;
+								ArrayList<QueryPart> array = arrayPart.getAsParts();
+								if(array.size() > 0) {  onConditionFastLeft =  array.get(0).determineValue(null).getAsString(); }
+								if(array.size() > 1) {  onConditionFastRight =  array.get(1).determineValue(null).getAsString(); }
+							}else if(assignmentValuePart instanceof LeftRightEvaluatable) {
+								onConditionSlow = (LeftRightEvaluatable)assignmentValuePart; 
 							}else {
-								throw new ParseException(COMMAND_NAME+": value for on-parameter must be an expression.", -1);
+								throw new ParseException(COMMAND_NAME+": value for on-parameter must be an array or expression.", -1);
 							}
 							break;
 						
+						//-------------------------------------
+						// 
+						//-------------------------------------
 						case "join":
 							String join = currentPart.determineValue(null).getAsString(); 
 							if(join == null) { join = "left"; }
@@ -220,13 +245,26 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 										, -1);
 							}
 							break;
-							
+						
+						//-------------------------------------
+						// 
+						//-------------------------------------
 						case "left":
 							leftName = currentPart.determineValue(null).getAsString(); 
 							break;
-							
+						
+						//-------------------------------------
+						// 
+						//-------------------------------------	
 						case "right":
 							rightName = currentPart.determineValue(null).getAsString(); 
+							break;
+							
+							//-------------------------------------
+							// 
+							//-------------------------------------	
+						case "remove":
+							remove = currentPart.determineValue(null).getAsBoolean(); 
 							break;
 						
 						default:
@@ -240,6 +278,14 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 			}else {
 				throw new ParseException(COMMAND_NAME+": Only assignment expressions(key=value) allowed.", -1);
 			}
+		}
+		
+		//-------------------------------------
+		// 
+		//-------------------------------------
+		if(onConditionSlow == null
+		&& onConditionFastLeft == null) {
+			throw new ParseException(COMMAND_NAME+": Please provide a valid value for the on-parameter.", -1);
 		}
 	}
 		
@@ -296,70 +342,160 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 			this.fieldnameAddAll(left.getDetectedFields());	
 			this.fieldnameAddAll(right.getDetectedFields());	
 			
-			
-			ArrayList<EnhancedJsonObject> baseRecords = left.getRecords();
-			ArrayList<EnhancedJsonObject> matchingRecords = right.getRecords();
-			if(CFWQueryCommandResultJoinType.right.equals(joinType) ) {
-				baseRecords = right.getRecords();
-				matchingRecords = left.getRecords();
-			}
-			for(int i = 0; i < baseRecords.size() ; i++) {
-				
-				EnhancedJsonObject baseObject = baseRecords.get(i);
-				
-				//----------------------------
-				// Iterate Results
-				boolean hasMatched = false;
-				
-				for(int k = 0; k < matchingRecords.size() ; k++) {
-					
-					EnhancedJsonObject matchObject = matchingRecords.get(k);
-					boolean evalResult = false;
-					switch(joinType) {
-						case inner:
-						case left:	evalResult = onCondition.evaluateLeftRightValues(baseObject, matchObject).getAsBoolean();
-									break;
-						
-						case right: evalResult = onCondition.evaluateLeftRightValues(matchObject, baseObject).getAsBoolean();
-									break;
-						
-						default:	break;
-					}
-
-					if(evalResult) {
-						
-						hasMatched = true;
-						
-						EnhancedJsonObject clone = baseObject.clone();
-						clone.addAll(matchObject); 
-						outQueue.add(clone);
-
-					}
-
-				}
-				
-				if( !hasMatched
-				&& !CFWQueryCommandResultJoinType.inner.equals(joinType)) {
-					outQueue.add(baseObject);
-				}
-				
+			if(onConditionSlow == null) {
+				doJoinFast(left, right);
+			}else {
+				doJoinSlow(left, right);
 			}
 			
 			//----------------------------
 			// Remove Merged Results
-//			CFWQueryResultList previousResults = this.getQueryContext().getResultList();
-//			
-//			// use a clone to avoid ConcurrentModificationException
-//			ArrayList<CFWQueryResult> clonedList = new ArrayList<>(); 
-//			clonedList.addAll(resultsToCopy.getResultList());
-//			
-//			for(CFWQueryResult result : clonedList) {
-//				 previousResults.removeResult(result);
-//			}
-//			
+			
+			if(remove) {
+				results.removeResult(right);
+				results.removeResult(left);
+			}
+		
 			this.setDone();
 		}
 		
+	}
+	
+	/***********************************************************************************************
+	 * Joins records by evaluating the condition, using a HashMap to find respective values.
+	 ***********************************************************************************************/
+	private void doJoinFast(CFWQueryResult left, CFWQueryResult right) throws Exception {
+		
+		//-------------------------------------------
+		// Make sure we have both left and right Condition
+		if(onConditionFastRight == null) {
+			onConditionFastRight = onConditionFastLeft;
+		}
+		
+		//-------------------------------------------
+		// Base And Matching
+		ArrayList<EnhancedJsonObject> baseRecords = left.getRecords();
+		ArrayList<EnhancedJsonObject> matchingRecords = right.getRecords();
+		String keyNameBase = onConditionFastLeft;
+		String KeyNameMatching = onConditionFastRight;
+		
+		if(CFWQueryCommandResultJoinType.right.equals(joinType) ) {
+			baseRecords = right.getRecords();
+			matchingRecords = left.getRecords();
+			keyNameBase = onConditionFastRight;
+			KeyNameMatching = onConditionFastLeft;
+		}
+
+		//----------------------------
+		// Create Base Map
+		LinkedHashMap<String, ArrayList<EnhancedJsonObject> > baseMap = new LinkedHashMap<>();
+		for(int i = 0; i < baseRecords.size() ; i++) {
+			
+			EnhancedJsonObject baseObject = baseRecords.get(i);		
+			String key = CFW.JSON.toString( baseObject.get(keyNameBase) );
+			
+			if(!baseMap.containsKey(key)) {
+				baseMap.put(key, new ArrayList<EnhancedJsonObject>() );
+			}
+			
+			baseMap.get(key).add(baseObject);
+		}
+		
+		//----------------------------
+		// Iterate Matching
+		for(int k = 0; k < matchingRecords.size() ; k++) {
+			
+			EnhancedJsonObject matchObject = matchingRecords.get(k);
+			String keyMatch = CFW.JSON.toString( matchObject.get(KeyNameMatching) );
+			
+			if(baseMap.containsKey(keyMatch)) {
+				for(EnhancedJsonObject current : baseMap.get(keyMatch)) {
+					
+					current.addMetadata(METADATA_ISMATCHED, true);
+					
+					EnhancedJsonObject clone = current.clone();
+					clone.addAll(matchObject); 
+					
+					outQueue.add(clone);
+				}
+			}
+		}
+		
+		//----------------------------
+		// Handle non Matching Records
+		if( !CFWQueryCommandResultJoinType.inner.equals(joinType) ) {
+			
+			for(ArrayList<EnhancedJsonObject> currentArray : baseMap.values()) {
+				
+				for(EnhancedJsonObject currentObject : currentArray) {
+					
+					Object hasMatched = currentObject.getMetadata(METADATA_ISMATCHED);
+
+					if(hasMatched == null) {
+						outQueue.add(currentObject);
+					}
+				}
+			}
+		}
+			
+		
+	}
+
+	/***********************************************************************************************
+	 * Joins records by evaluating the condition, each record against any other record.
+	 ***********************************************************************************************/
+	private void doJoinSlow(CFWQueryResult left, CFWQueryResult right) throws Exception {
+		
+		ArrayList<EnhancedJsonObject> baseRecords = left.getRecords();
+		ArrayList<EnhancedJsonObject> matchingRecords = right.getRecords();
+		if(CFWQueryCommandResultJoinType.right.equals(joinType) ) {
+			baseRecords = right.getRecords();
+			matchingRecords = left.getRecords();
+		}
+		
+		//----------------------------
+		// Iterate Base
+		for(int i = 0; i < baseRecords.size() ; i++) {
+			
+			EnhancedJsonObject baseObject = baseRecords.get(i);
+			
+			//----------------------------
+			// Iterate Matching
+			boolean hasMatched = false;
+			
+			for(int k = 0; k < matchingRecords.size() ; k++) {
+				
+				EnhancedJsonObject matchObject = matchingRecords.get(k);
+				boolean evalResult = false;
+				switch(joinType) {
+					case inner:
+					case left:	evalResult = onConditionSlow.evaluateLeftRightValues(baseObject, matchObject).getAsBoolean();
+								break;
+					
+					case right: evalResult = onConditionSlow.evaluateLeftRightValues(matchObject, baseObject).getAsBoolean();
+								break;
+					
+					default:	break;
+				}
+
+				if(evalResult) {
+					
+					hasMatched = true;
+					
+					EnhancedJsonObject clone = baseObject.clone();
+					clone.addAll(matchObject); 
+					outQueue.add(clone);
+
+				}
+
+			}
+			
+			if( !hasMatched
+			&& !CFWQueryCommandResultJoinType.inner.equals(joinType)) {
+				outQueue.add(baseObject);
+			}
+			
+		}
 	}
 
 }

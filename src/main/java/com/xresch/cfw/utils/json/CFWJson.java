@@ -200,7 +200,8 @@ public class CFWJson {
 	}
 	
 	/*************************************************************************************
-	 * Makes a string from an element, without the nasty quotes
+	 * Makes a string from an element, without the nasty quotes.
+	 * @return value as string, null will be represented as "null"
 	 *************************************************************************************/
 	public static String toString(JsonElement element) {
 		

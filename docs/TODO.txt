@@ -100,6 +100,7 @@ Potential TODOs
 	- command if, else, end
 	- command formatcss
 	- command formatdisplay
+	- command resultjoin
 	- metadata template
 	- function array
 	- function distinct

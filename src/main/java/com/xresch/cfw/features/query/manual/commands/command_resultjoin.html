@@ -4,10 +4,25 @@ This can become very handy if you cannot use SQL joins.
 For example, if you want to join data from different data sources.
 </p>
 
+<h2>Left Join</h2>
+<p>Following query does a simple left join on the :
+</p>
+<pre><code class="language-cfwquery">| source random records = 10000 | keep INDEX, FIRSTNAME # this will be the "left" result
+;
+| source random records = 10000 | keep INDEX, LASTNAME # this will be the "right" result
+| filter (INDEX % 2) == 0
+;
+| meta title=true name="Joined Result" 
+| resultjoin
+	on=INDEX # join records where the fields "INDEX" are equals
+	join=left # do a left join, this is actually the default on not really needed here
+| sort INDEX # sort by INDEX</code></pre>
+
+
+<h2>Inner Join</h2>
 <p>Following example maps categories to records using an inner join:
 </p>
-<pre><code class="language-cfwquery">| globals
-	multidisplay=3
+<pre><code class="language-cfwquery">| globals multidisplay=3
 | record
 	[ID, CATEGORY]
 	[1, "A"]
@@ -20,28 +35,26 @@ For example, if you want to join data from different data sources.
 | keep FIRSTNAME
 | set CATEGORY_ID = randomfrom([3,4,5])
 ;
-| meta title=true name="testabc" 
+| meta title=true name="Joined" 
 | resultjoin
-	on=(ID == CATEGORY_ID)
-	join="inner"</code></pre>
-	
-	
-<p>:
+	on=[ID, CATEGORY_ID]
+	join="inner"
+	remove=false # do not remove the original results</code></pre>
+
+
+<h2>Expensive Joins with Expressions</h2>
+<p>Now this command allows you to use custom expressions to join results. 
+However, this can get very expensive and slow, as every record has to be evaluated against every other record. 
+Below query evaluates 2 conditions x 1000 records x 1000 records, that totals to 2'000'000 evaluations.
+It his highly recommended to set the limit parameter on your sources when using custom expressions.
 </p>
-<pre><code class="language-cfwquery">| globals
-	multidisplay=3
-| source random records = 1000
+<pre><code class="language-cfwquery">| source random records = 1000 limit=2000
 | keep INDEX, FIRSTNAME, LIKES_TIRAMISU
 ;
-| source random records = 1000
+| source random records = 1000 limit=2000
 | keep INDEX, LASTNAME, LIKES_TIRAMISU
 | filter (INDEX % 2) == 0
 ;
 | meta title=true name="Joined Result" 
 | resultjoin
-	on=(
-		INDEX == INDEX 
-		AND LIKES_TIRAMISU == LIKES_TIRAMISU
-	)</code></pre>
-
-
+	on=( INDEX == INDEX AND LIKES_TIRAMISU == LIKES_TIRAMISU)</code></pre>
