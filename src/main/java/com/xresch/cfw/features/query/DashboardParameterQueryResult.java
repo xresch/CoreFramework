@@ -100,7 +100,7 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 			
 			//---------------------------------
 			// Validate Has Results
-			JsonArray results = firstResult.getRecords();
+			JsonArray results = firstResult.getRecordsAsJsonArray();
 			if(results.size() == 0) {
 				return settingsField;
 			}

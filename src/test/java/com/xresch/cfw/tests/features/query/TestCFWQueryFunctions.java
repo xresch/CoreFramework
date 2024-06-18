@@ -74,7 +74,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(-33, record.get("NEGATIV").getAsInt());
 		Assertions.assertEquals(33, record.get("ABSOLUTE").getAsInt());
 		Assertions.assertEquals(0, record.get("ZERO").getAsInt());
@@ -128,7 +128,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("2.500", record.get("AVG_ARRAY").toString());
 		Assertions.assertEquals(2, record.get("AVG_ARRAY_NULLS").getAsInt());
 		Assertions.assertEquals("2.500", record.get("AVG_OBJECT").toString());
@@ -175,7 +175,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("2.500", record.get("AVG").toString());
 		Assertions.assertEquals(2, record.get("AVG_NONULL").getAsInt());
 		Assertions.assertEquals("1.500", record.get("AVG_NULLS").toString());
@@ -240,7 +240,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("One beer for Franky!",  record.get("SIMPLE_A").getAsString());
 		Assertions.assertEquals(1,  record.get("SIMPLE_B").getAsInt());
 		Assertions.assertEquals(2,  record.get("SIMPLE_C").getAsInt());
@@ -281,7 +281,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(125, record.get("POSITIVE").getAsInt());
 		Assertions.assertEquals(-42, record.get("NEGATIVE").getAsInt());
 		
@@ -316,7 +316,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		JsonArray arrayClone =  record.get("ARRAY_CLONE").getAsJsonArray();
 		JsonObject objectClone =  record.get("OBJECT_CLONE").getAsJsonObject();
 		
@@ -373,7 +373,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("Aurora", record.get("FIRSTNAME").getAsString());
 		
 		Assertions.assertEquals(false, 	record.get("S1").getAsBoolean());
@@ -437,7 +437,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(42, record.get("NUMBER").getAsInt());
 		
 		Assertions.assertEquals(true, 	record.get("N1").getAsBoolean());
@@ -501,7 +501,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(true, record.get("BOOLEAN").getAsBoolean());
 		
 		Assertions.assertEquals(true, 	record.get("B1").getAsBoolean());
@@ -575,7 +575,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 
 		Assertions.assertEquals(true, 	record.get("S1").getAsBoolean());
 		Assertions.assertEquals(true, 	record.get("S2").getAsBoolean());
@@ -651,7 +651,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(true, 	record.get("S1").getAsBoolean());
 		Assertions.assertEquals(false, 	record.get("S2").getAsBoolean());
@@ -714,7 +714,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(true, 	record.get("A1").isJsonNull());
 		Assertions.assertEquals(true, 	record.get("A2").isJsonNull());
@@ -765,7 +765,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("0.872665", record.get("RADIANS").getAsString());
 		Assertions.assertEquals(50, record.get("DEGREES").getAsInt());
 		Assertions.assertEquals("0.643", record.get("COS_RADIANS").getAsString());
@@ -807,7 +807,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(10, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(0, record.get("INDEX").getAsInt());
 		Assertions.assertEquals(4, record.get("COUNT_ARRAY").getAsInt());
 		Assertions.assertEquals(4, record.get("COUNT_OBJECT").getAsInt());
@@ -818,7 +818,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 		//------------------------------
 		// Check 2nd Query Result
-		JsonObject secondRecord = queryResults.getRecord(1);
+		JsonObject secondRecord = queryResults.getRecordAsObject(1);
 		Assertions.assertEquals(1, secondRecord.get("INDEX").getAsInt());
 	}
 	
@@ -855,7 +855,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(4, record.get("ALL").getAsInt());
 		Assertions.assertEquals(3, record.get("COUNT_NONULL").getAsInt());
 		Assertions.assertEquals(4,  record.get("COUNT_NULLS").getAsInt());
@@ -896,26 +896,26 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(index);
 		Assertions.assertEquals(4, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(1, record.get("ALL").getAsInt());
 		Assertions.assertEquals(0, record.get("COUNT_BIG").getAsInt());
 
 		
 		//------------------------------
 		// Check 2nd Query Result
-		record = queryResults.getRecord(++index);
+		record = queryResults.getRecordAsObject(++index);
 		Assertions.assertEquals(2, record.get("ALL").getAsInt());
 		Assertions.assertEquals(0, record.get("COUNT_BIG").getAsInt());
 		
 		//------------------------------
 		// Check 3rd Query Result
-		record = queryResults.getRecord(++index);
+		record = queryResults.getRecordAsObject(++index);
 		Assertions.assertEquals(3, record.get("ALL").getAsInt());
 		Assertions.assertEquals(1, record.get("COUNT_BIG").getAsInt());
 		
 		//------------------------------
 		// Check 4th Query Result
-		record = queryResults.getRecord(++index);
+		record = queryResults.getRecordAsObject(++index);
 		Assertions.assertEquals(4, record.get("ALL").getAsInt());
 		Assertions.assertEquals(2, record.get("COUNT_BIG").getAsInt());
 	}
@@ -955,7 +955,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(4, record.get("ALL").getAsInt());
 		Assertions.assertEquals(4, record.get("COUNT_TRUE").getAsInt());
 		Assertions.assertEquals(2,  record.get("COUNT_BIG").getAsInt());
@@ -1000,7 +1000,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(2, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(1, record.get("COUNT_IS_ONE").getAsInt());
 		Assertions.assertEquals(0, record.get("NULLS_IN_ARRAY").getAsInt());
 		Assertions.assertEquals(0, record.get("NULLS_IN_OBJECT").getAsInt());
@@ -1011,7 +1011,7 @@ source json data=`
 		
 		//------------------------------
 		// Check 2nd Query Result
-		JsonObject secondRecord = queryResults.getRecord(1);
+		JsonObject secondRecord = queryResults.getRecordAsObject(1);
 		Assertions.assertEquals(1, secondRecord.get("COUNT_IS_ONE").getAsInt());
 		Assertions.assertEquals(4, secondRecord.get("NULLS_IN_ARRAY").getAsInt());
 		Assertions.assertEquals(2, secondRecord.get("NULLS_IN_OBJECT").getAsInt());
@@ -1054,7 +1054,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(4, record.get("ALL").getAsInt());
 		Assertions.assertEquals(1, record.get("COUNT_NULLS").getAsInt());
 		Assertions.assertEquals(2,  record.get("COUNT_NULLS_FLOAT").getAsInt());
@@ -1091,7 +1091,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(original, record.get("DECODED").getAsString());
 		
 	}
@@ -1131,7 +1131,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("1693223296188", record.get("epoch").getAsString());
 		Assertions.assertEquals("1693223296188", record.get("epochNull").getAsString());
 		Assertions.assertEquals("2023-08-28T11:48:16", record.get("formatted").getAsString());
@@ -1174,7 +1174,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(encoded, record.get("ENCODED").getAsString());
 		
 	}
@@ -1207,7 +1207,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 					
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("8b7b-437c", record.get("MIDDLE").getAsString());
 		Assertions.assertEquals("double-u-double-u-double-u", record.get("HOST").getAsString());
 		Assertions.assertEquals("282c65a0-8b7b-437c-904", record.get("ID_FROM_URL").getAsString());
@@ -1245,7 +1245,7 @@ source json data=`
 		// ALL_FIELDS = fields() #["A","B","C","ALL_FIELDS","FILTERED_FIELDS"] - contains all as command detects fieldnames before executing 
 		// FILTERED_FIELDS = fields([FILTERED_FIELDS, ALL_FIELDS, B]) #["A","C"]
 						
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("[\"A\",\"B\",\"C\",\"ALL_FIELDS\",\"FILTERED_FIELDS\"]", record.get("ALL_FIELDS").toString());
 		Assertions.assertEquals("[\"A\",\"C\"]", record.get("FILTERED_FIELDS").toString());
 
@@ -1275,7 +1275,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(124, record.get("POSITIVE").getAsInt());
 		Assertions.assertEquals(-43, record.get("NEGATIVE").getAsInt());
 		
@@ -1313,7 +1313,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(22, record.get("ID").getAsInt());
 		Assertions.assertEquals("Jane", record.get("NAME").getAsString());
 		
@@ -1322,7 +1322,7 @@ source json data=`
 		queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		record = queryResults.getRecord(0);
+		record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(22, record.get("ID").getAsInt());
 		Assertions.assertEquals("Jane", record.get("NAME").getAsString());
 		
@@ -1362,7 +1362,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 
 		Assertions.assertEquals("Tiramisu", record.get("SERVE").getAsString());
 		Assertions.assertEquals("", record.get("EMPTY_STRING").getAsString());
@@ -1413,7 +1413,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals("The unicorn is the national animal of Scotland.", record.get("FUN_FACT").getAsString());
 		Assertions.assertEquals(-1, record.get("S0").getAsInt());
@@ -1461,7 +1461,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(-1, record.get("N0").getAsInt());
 		Assertions.assertEquals(3, record.get("N1").getAsInt());
@@ -1505,7 +1505,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(-1, 	record.get("B0").getAsInt());
 		Assertions.assertEquals(0, 		record.get("B1").getAsInt());
@@ -1547,7 +1547,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(-1, 	record.get("A0").getAsInt());
 		Assertions.assertEquals(1, 		record.get("A1").getAsInt());
@@ -1591,7 +1591,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(true, 	record.get("J0").isJsonNull());
 		Assertions.assertEquals("y", 	record.get("J1").getAsString());
@@ -1633,7 +1633,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
 		Assertions.assertEquals(false, record.get("NULL").getAsBoolean());
@@ -1679,7 +1679,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
 		Assertions.assertEquals(false, record.get("NULL").getAsBoolean());
@@ -1722,7 +1722,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 
 		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
 		Assertions.assertEquals(true, record.get("ISNULL").getAsBoolean());
@@ -1762,7 +1762,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
 		Assertions.assertEquals(true, record.get("ISNULL").getAsBoolean());
@@ -1804,7 +1804,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
 		Assertions.assertEquals(false, record.get("NULL").getAsBoolean());
@@ -1849,7 +1849,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
 		Assertions.assertEquals(false, record.get("NULL").getAsBoolean());
@@ -1893,7 +1893,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
 		Assertions.assertEquals(false, record.get("NULL").getAsBoolean());
@@ -1931,7 +1931,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(false, record.get("EVAL_VALUE").getAsBoolean());
 		Assertions.assertEquals(true, record.get("EVAL_LOCATION").getAsBoolean());
@@ -1975,7 +1975,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 					
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("1651212296155", record.get("epoch").getAsString());
 		Assertions.assertEquals("1651212296155", record.get("epochNull").getAsString());
 		Assertions.assertEquals("2022-04-29T06:04:56", record.get("formatted").getAsString());
@@ -2022,7 +2022,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(0, record.get("LENGTH_NOPARAM").getAsInt());
 		Assertions.assertEquals(true, record.get("LENGTH_NULL").isJsonNull());
 		Assertions.assertEquals(3, record.get("LENGTH_ARRAY").getAsInt());
@@ -2062,7 +2062,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("Aurorania", record.get("NAME").getAsString());
 		Assertions.assertEquals("Aurorania", record.get("FIELDVALUE").getAsString());
 		Assertions.assertEquals("NAME", record.get("LITERAL").getAsString());
@@ -2107,7 +2107,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(4, record.get("MAX_ARRAY").getAsInt());
 		Assertions.assertEquals(33, record.get("MAX_OBJECT").getAsInt());
 		Assertions.assertEquals(77, record.get("MAX_NUMBER").getAsInt());
@@ -2151,7 +2151,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(4, record.get("MAX").getAsInt());
 		Assertions.assertEquals(6, record.get("MAX_VALUE").getAsInt());
 		Assertions.assertEquals("99.123456", record.get("MAX_FLOAT").toString());
@@ -2195,7 +2195,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("2.5", record.get("MEDIAN_ARRAY").toString());
 		Assertions.assertEquals(2, record.get("MEDIAN_ARRAY_NULLS").getAsInt());
 		Assertions.assertEquals("3", record.get("MEDIAN_OBJECT").toString());
@@ -2244,7 +2244,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("3", record.get("MEDIAN").toString());
 		Assertions.assertEquals("7.5", record.get("MEDIAN_NONULL").toString());
 		Assertions.assertEquals("6.5", record.get("MEDIAN_NULLS").toString());
@@ -2287,7 +2287,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(true, record.get("LIGHTS_ON").getAsBoolean());
 		Assertions.assertEquals("Jane", record.get("LOVELY_PERSON").getAsString());
 		Assertions.assertEquals(42, record.get("THE_WINNER_IS").getAsInt());
@@ -2335,7 +2335,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(1, record.get("MIN_ARRAY").getAsInt());
 		Assertions.assertEquals(0, record.get("MIN_OBJECT").getAsInt());
 		Assertions.assertEquals(77, record.get("MIN_NUMBER").getAsInt());
@@ -2379,7 +2379,7 @@ source json data=`
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(1, record.get("MIN").getAsInt());
 		Assertions.assertEquals(4, record.get("MIN_VALUE").getAsInt());
 		Assertions.assertEquals("1.33333333", record.get("MIN_FLOAT").toString());
@@ -2420,7 +2420,7 @@ source json data=`
 		String dateFormatted = CFW.Time.formatDate(zonedTime, "YYYY-MM-dd", queryResults.getQueryContext().getTimezoneOffsetMinutes());
 		String message = "If the assertion failed, the test might have executed exactly on the minute.";
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(presentTime, CFWTimeUnit.m.truncate( record.get("NOW").getAsLong()), message );
 		Assertions.assertEquals(presentTimeOffset, CFWTimeUnit.m.truncate( record.get("NOW_OFFSET").getAsLong()), message);
 		Assertions.assertEquals(dateFormatted, record.get("NOW_FORMAT").getAsString(), message);
@@ -2459,7 +2459,7 @@ STAYS_NULL = null
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(dangerZone, record.get("EMPTY").getAsString() );
 		Assertions.assertEquals(theQueriesID, record.get("THE_QUERIES_ID").getAsString() );
 		Assertions.assertEquals(dangerZone, record.get("NULL_AGAIN").getAsString() );
@@ -2503,7 +2503,7 @@ STAYS_NULL = null
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("default", record.get("TEXT_VALUE").getAsString());
 		Assertions.assertEquals("hello world", record.get("HELLO_VALUE").getAsString());
 		Assertions.assertTrue(record.get("UNDEF").isJsonNull());
@@ -2560,7 +2560,7 @@ STAYS_NULL = null
 		
 		//------------------------------
 		// Check First Query Result
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(5, record.get("50Perc").getAsInt());
 		Assertions.assertEquals(9, record.get("90Perc").getAsInt());
 		Assertions.assertEquals(9, record.get("90PercNulls").getAsInt());
@@ -2575,7 +2575,7 @@ STAYS_NULL = null
 		
 		//------------------------------
 		// Check Second Query Result
-		record = queryResults.getRecord(1);
+		record = queryResults.getRecordAsObject(1);
 		Assertions.assertEquals(5, record.get("50Perc").getAsInt());
 		Assertions.assertEquals(9, record.get("90Perc").getAsInt());
 		Assertions.assertEquals(8, record.get("90PercNulls").getAsInt());
@@ -2585,7 +2585,7 @@ STAYS_NULL = null
 		
 		//------------------------------
 		// Check Third Query Result
-		record = queryResults.getRecord(2);
+		record = queryResults.getRecordAsObject(2);
 		Assertions.assertEquals(5, record.get("50Perc").getAsInt());
 		Assertions.assertEquals(9, record.get("90Perc").getAsInt());
 		Assertions.assertEquals(9, record.get("90PercNulls").getAsInt());
@@ -2635,7 +2635,7 @@ STAYS_NULL = null
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(8, record.get("PERC").getAsInt());
 		Assertions.assertEquals(4, record.get("PERC_NONULL").getAsInt());
 		Assertions.assertEquals(3, record.get("PERC_NULLS").getAsInt());
@@ -2673,7 +2673,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		Assertions.assertEquals(100, queryResults.getRecordCount());
 		
 		for(int i = 0; i < queryResults.getRecordCount(); i++) {
-			JsonObject record = queryResults.getRecord(0);
+			JsonObject record = queryResults.getRecordAsObject(0);
 			CFWTestUtils.assertIsBetween(0, 100, record.get("PERCENT").getAsInt() );
 			CFWTestUtils.assertIsBetween(0, 1, record.get("ZERO_ONE").getAsInt() );
 			Assertions.assertEquals(1, record.get("ONE").getAsInt() );
@@ -2713,7 +2713,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		Assertions.assertEquals(100, queryResults.getRecordCount());
 		
 		for(int i = 0; i < queryResults.getRecordCount(); i++) {
-			JsonObject record = queryResults.getRecord(0);
+			JsonObject record = queryResults.getRecordAsObject(0);
 			CFWTestUtils.assertIsBetween(0, 1, record.get("PERCENT").getAsFloat() );
 			CFWTestUtils.assertIsBetween(0, 55, record.get("ZERO_FIFTY").getAsFloat() );
 			Assertions.assertEquals(1, record.get("ONE").getAsFloat() );
@@ -2752,7 +2752,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		Assertions.assertEquals(100, queryResults.getRecordCount());
 		
 		for(int i = 0; i < queryResults.getRecordCount(); i++) {
-			JsonObject record = queryResults.getRecord(0);
+			JsonObject record = queryResults.getRecordAsObject(0);
 			Assertions.assertEquals(true, record.get("NULL").isJsonNull() );
 			CFWTestUtils.assertIsEither(record.get("A_OR_B").getAsString(), "A", "B" );
 			Assertions.assertEquals(1, record.get("ONE").getAsInt() );
@@ -2793,7 +2793,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 				
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(true, record.get("NULL").isJsonNull());
 		Assertions.assertEquals("Alejandra 1234 #!<>?=() 1234", record.get("SAME").getAsString());
 		Assertions.assertEquals("Alejandra #!<>?=()", record.get("REMOVE").getAsString());
@@ -2831,7 +2831,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 					
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("0", record.get("ZERO").getAsString());
 		Assertions.assertEquals("42", record.get("INT_DOWN").getAsString());
 		Assertions.assertEquals("43", record.get("INT_UP").getAsString());
@@ -2872,7 +2872,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("0.872665", record.get("RADIANS").getAsString());
 		Assertions.assertEquals(50, record.get("DEGREES").getAsInt());
 		Assertions.assertEquals("0.766", record.get("SIN_RADIANS").getAsString());
@@ -2910,7 +2910,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(10, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(true, record.get("NULL_A").isJsonNull());
 		Assertions.assertEquals(true, record.get("NULL_B").isJsonNull());
 		Assertions.assertEquals(true, record.get("NULL_C").isJsonNull());
@@ -2952,7 +2952,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("0", record.get("SUM_ZERO").getAsString());
 		Assertions.assertEquals("10", record.get("SUM_ALL").getAsString());
 		Assertions.assertEquals("6", record.get("SUM_NONULL").getAsString());
@@ -2994,7 +2994,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("0.872665", record.get("RADIANS").getAsString());
 		Assertions.assertEquals(50, record.get("DEGREES").getAsInt());
 		Assertions.assertEquals("1.192", record.get("TAN_RADIANS").getAsString());
@@ -3045,7 +3045,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("2023-09-04T12:15:01", record.get("formatted").getAsString());
 		Assertions.assertEquals("2023-09-04", record.get("yearDayMonth").getAsString());
 		Assertions.assertEquals("12:15:01", record.get("utcTime").getAsString());
@@ -3140,7 +3140,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("2022-07-26 21:17:03", record.get("TIME").getAsString());
 		Assertions.assertEquals("2022-07-26 21:17:00", record.get("ONE_MIN").getAsString());
 		Assertions.assertEquals("2022-07-26 21:15:00", record.get("FIVE_MIN").getAsString());
@@ -3189,7 +3189,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("2023-04-20 18:50:52.888", record.get("TIME").getAsString());
 		Assertions.assertEquals("2023-04-20 18:50:52.000", record.get("SEC").getAsString());
 		Assertions.assertEquals("2023-04-20 18:50:00", record.get("MIN").getAsString());
@@ -3248,7 +3248,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals(true, record.get("currentuser").isJsonObject());
 		System.out.println(CFW.JSON.toJSON(record.get("currentuser")));
 		Assertions.assertEquals(true, record.get("byUsername").isJsonObject());

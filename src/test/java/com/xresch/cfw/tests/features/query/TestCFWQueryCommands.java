@@ -107,7 +107,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// Check Aurora Records
 		for(int i = 0; i < 3; i++) {
-			JsonObject record = queryResults.getRecord(i);
+			JsonObject record = queryResults.getRecordAsObject(i);
 					
 			Assertions.assertEquals("Aurora", record.get("FIRSTNAME").getAsString());
 			Assertions.assertEquals(3, record.get("count()").getAsInt());
@@ -121,7 +121,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// Check Aurora Records
 		for(int i = 3; i < 7; i++) {
-			JsonObject record = queryResults.getRecord(i);
+			JsonObject record = queryResults.getRecordAsObject(i);
 					
 			Assertions.assertEquals("Hera", record.get("FIRSTNAME").getAsString());
 			Assertions.assertEquals(4, record.get("count()").getAsInt());
@@ -174,7 +174,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// Check All Records
 		for(int i = 0; i < 7; i++) {
-			JsonObject record = queryResults.getRecord(i);
+			JsonObject record = queryResults.getRecordAsObject(i);
 					
 			Assertions.assertEquals(7, record.get("count()").getAsInt());
 			Assertions.assertEquals(308, record.get("SUM").getAsInt());
@@ -271,7 +271,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1000, queryResults.getRecordCount());
-		Assertions.assertEquals("0 - 10", queryResults.getRecord(0).get("NUM").getAsString());
+		Assertions.assertEquals("0 - 10", queryResults.getRecordAsObject(0).get("NUM").getAsString());
 				
 		//--------------------------------
 		// Test type=alpha
@@ -284,7 +284,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		queryResults = resultArray.get(0);
 		Assertions.assertEquals(1000, queryResults.getRecordCount());
-		Assertions.assertEquals("A - C", queryResults.getRecord(0).get("ALPHA").getAsString());
+		Assertions.assertEquals("A - C", queryResults.getRecordAsObject(0).get("ALPHA").getAsString());
 		
 		//--------------------------------
 		// Test type=time
@@ -298,7 +298,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		queryResults = resultArray.get(0);
 		Assertions.assertEquals(1000, queryResults.getRecordCount());
 		for(int i = 0; i < 100 && i < queryResults.getRecordCount(); i++) {
-			long roundedTime = queryResults.getRecord(0).get("TIMEROUNDED").getAsLong();
+			long roundedTime = queryResults.getRecordAsObject(0).get("TIMEROUNDED").getAsLong();
 			
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(roundedTime);
@@ -329,11 +329,11 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		queryResults = resultArray.get(0);
 		Assertions.assertEquals(5, queryResults.getRecordCount());
-		Assertions.assertEquals("0 - 10", queryResults.getRecord(0).get("CRATE").getAsString());
-		Assertions.assertEquals("11 - 20", queryResults.getRecord(1).get("CRATE").getAsString());
-		Assertions.assertEquals("21 - 40", queryResults.getRecord(2).get("CRATE").getAsString());
-		Assertions.assertEquals("41 - 80", queryResults.getRecord(3).get("CRATE").getAsString());
-		Assertions.assertEquals("81 - 160", queryResults.getRecord(4).get("CRATE").getAsString());
+		Assertions.assertEquals("0 - 10", queryResults.getRecordAsObject(0).get("CRATE").getAsString());
+		Assertions.assertEquals("11 - 20", queryResults.getRecordAsObject(1).get("CRATE").getAsString());
+		Assertions.assertEquals("21 - 40", queryResults.getRecordAsObject(2).get("CRATE").getAsString());
+		Assertions.assertEquals("41 - 80", queryResults.getRecordAsObject(3).get("CRATE").getAsString());
+		Assertions.assertEquals("81 - 160", queryResults.getRecordAsObject(4).get("CRATE").getAsString());
 			
 	}
 	
@@ -728,7 +728,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//-----------------------------------
 		// Assert record
-		JsonObject object = result.getRecord(0);
+		JsonObject object = result.getRecordAsObject(0);
 		
 		Assertions.assertEquals(""" 
 				{"format":"link","label":"Aurora","url":"http://example.aurora.com","newtab":false,"style":"color: white;"}""", object.get("NAME").toString() );
@@ -771,7 +771,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(100, queryResults.getRecordCount());
 		for(int i = 0; i < 100 && i < queryResults.getRecordCount(); i++) {
-			JsonObject current = queryResults.getRecord(i);
+			JsonObject current = queryResults.getRecordAsObject(i);
 			
 			if(!current.get("FIRSTNAME").isJsonNull()
 			&& current.get("FIRSTNAME").getAsString().startsWith("He")) {
@@ -862,7 +862,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject result = queryResults.getRecord(0);
+		JsonObject result = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(3, result.size(), "Record has only tree fields");
 		Assertions.assertTrue(result.has("INDEX"), "Record has field INDEX");
@@ -987,7 +987,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 			//------------------------------
 			// Second Record
-			JsonObject record = queryResults.getRecord(0);
+			JsonObject record = queryResults.getRecordAsObject(0);
 			
 			Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
 			Assertions.assertEquals(99, record.get("VALUE").getAsInt());
@@ -1036,14 +1036,14 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 			//------------------------------
 			// First Record
-			JsonObject record = queryResults.getRecord(0);
+			JsonObject record = queryResults.getRecordAsObject(0);
 				
 			Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
 			Assertions.assertEquals(77, record.get("VALUE").getAsInt());
 			
 			//------------------------------
 			// Second Record
-			record = queryResults.getRecord(1);
+			record = queryResults.getRecordAsObject(1);
 			
 			Assertions.assertEquals("Raurova", record.get("NAME").getAsString());
 			Assertions.assertEquals(44, record.get("VALUE").getAsInt());
@@ -1088,14 +1088,14 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 			//------------------------------
 			// First Record
-			JsonObject record = queryResults.getRecord(0);
+			JsonObject record = queryResults.getRecordAsObject(0);
 				
 			Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
 			Assertions.assertEquals(8008, record.get("VALUE").getAsInt());
 			
 			//------------------------------
 			// Second Record
-			record = queryResults.getRecord(1);
+			record = queryResults.getRecordAsObject(1);
 			
 			Assertions.assertEquals("Raurova", record.get("NAME").getAsString());
 			Assertions.assertEquals(44, record.get("VALUE").getAsInt());
@@ -1147,14 +1147,14 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//------------------------------
 		// First Record
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals("Hana", record.get("NAME").getAsString());
 		Assertions.assertEquals(42, record.get("VALUE").getAsInt());
 		
 		//------------------------------
 		// Second Record
-		record = queryResults.getRecord(1);
+		record = queryResults.getRecordAsObject(1);
 		
 		Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
 		Assertions.assertEquals(88, record.get("VALUE").getAsInt());
@@ -1201,7 +1201,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 			//------------------------------
 			// First Record
-			JsonObject record = queryResults.getRecord(0);
+			JsonObject record = queryResults.getRecordAsObject(0);
 			
 			Assertions.assertEquals("Hana", record.get("NAME").getAsString());
 			Assertions.assertEquals(42, record.get("VALUE").getAsInt());
@@ -1254,14 +1254,14 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 			//------------------------------
 			// First Record
-			JsonObject record = queryResults.getRecord(0);
+			JsonObject record = queryResults.getRecordAsObject(0);
 				
 			Assertions.assertEquals("Hana", record.get("NAME").getAsString());
 			Assertions.assertEquals(42, record.get("VALUE").getAsInt());
 			
 			//------------------------------
 			// Second Record
-			record = queryResults.getRecord(1);
+			record = queryResults.getRecordAsObject(1);
 			
 			Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
 			Assertions.assertEquals(88, record.get("VALUE").getAsInt());
@@ -1292,7 +1292,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(10, queryResults.getRecordCount());
 		
-		JsonObject firstRecord = queryResults.getRecord(0);
+		JsonObject firstRecord = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertTrue(firstRecord.get("UUID").isJsonNull(), "Field UUID is null");
 		Assertions.assertEquals("n/a", firstRecord.get("ALWAYS_NULL").getAsString(), "Field ALWAYS_NULL is n/a");
@@ -1334,7 +1334,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("default", record.get("TEXT_VALUE").getAsString());
 		Assertions.assertEquals("hello world", record.get("HELLO_VALUE").getAsString());
 		Assertions.assertTrue(record.get("UNDEF").isJsonNull());
@@ -1376,7 +1376,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//------------------------------------
 		// Check 1st  Record
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 			
 		Assertions.assertEquals("Aurora", record.get("FIRSTNAME").getAsString());
 		Assertions.assertEquals(11, record.get("VALUE").getAsInt());
@@ -1385,7 +1385,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 
 		//------------------------------------
 		// Check 2nd  Record
-		record = queryResults.getRecord(1);
+		record = queryResults.getRecordAsObject(1);
 			
 		Assertions.assertEquals("Alejandra", record.get("FIRSTNAME").getAsString());
 		Assertions.assertEquals(true, record.get("VALUE").isJsonArray());
@@ -1394,7 +1394,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//------------------------------------
 		// Check 3rd  Record
-		record = queryResults.getRecord(2);
+		record = queryResults.getRecordAsObject(2);
 			
 		Assertions.assertEquals("Roberto", record.get("FIRSTNAME").getAsString());
 		Assertions.assertEquals(true, record.get("VALUE").isJsonObject());
@@ -1403,7 +1403,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//------------------------------------
 		// Check 4th  Record
-		record = queryResults.getRecord(3);
+		record = queryResults.getRecordAsObject(3);
 			
 		Assertions.assertEquals("Hera", record.get("FIRSTNAME").getAsString());
 		Assertions.assertEquals(8008, record.get("VALUE").getAsInt());
@@ -1442,21 +1442,21 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//------------------------------------
 		// Check 1st  Record
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals("Hejdi", record.get("FIRSTNAME").getAsString());
 		Assertions.assertEquals("8.8008", record.get("VALUE").getAsString());
 		
 		//------------------------------------
 		// Check 2nd  Record
-		record = queryResults.getRecord(1);
+		record = queryResults.getRecordAsObject(1);
 		
 		Assertions.assertEquals("Laura", record.get("FIRSTNAME").getAsString());
 		Assertions.assertEquals(42, record.get("VALUE").getAsInt());
 		
 		//------------------------------------
 		// Check 3rd  Record
-		record = queryResults.getRecord(2);
+		record = queryResults.getRecordAsObject(2);
 		
 		Assertions.assertEquals("Victora", record.get("FIRSTNAME").getAsString());
 		Assertions.assertEquals(99, record.get("VALUE").getAsInt());
@@ -1486,7 +1486,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject result = queryResults.getRecord(0);
+		JsonObject result = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(8, result.size(), "Record has only tree fields");
 		Assertions.assertFalse(result.has("INDEX"), "Record has field INDEX");
@@ -1518,7 +1518,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject result = queryResults.getRecord(0);
+		JsonObject result = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals(11, result.size(), "Record has only tree fields");
 		Assertions.assertFalse(result.has("INDEX"), "Record has field INDEX");
@@ -1555,7 +1555,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject firstRecord = queryResults.getRecord(0);
+		JsonObject firstRecord = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertTrue(firstRecord.has("FIRSTNAME"));
 		Assertions.assertTrue(firstRecord.has("COUNT_A"));
@@ -1649,8 +1649,8 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//------------------------------
 		// Compare
-		JsonObject firstObject = firstQueryResults.getRecord(0);
-		JsonObject secondObject = secondQueryResults.getRecord(0);
+		JsonObject firstObject = firstQueryResults.getRecordAsObject(0);
+		JsonObject secondObject = secondQueryResults.getRecordAsObject(0);
 		Assertions.assertEquals(
 				firstObject.get("FIRSTNAME").getAsString(), 
 				secondObject.get("FIRSTNAME").getAsString(),
@@ -1736,7 +1736,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(10, queryResults.getRecordCount());
 		
-		JsonObject firstRecord = queryResults.getRecord(0);
+		JsonObject firstRecord = queryResults.getRecordAsObject(0);
 		
 		//------------------------------
 		// Check fields are set
@@ -1777,10 +1777,10 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertEquals(4, queryResults.getRecordCount());
 		
 		int i=-1;
-		Assertions.assertEquals(1, queryResults.getRecord(++i).get("val").getAsInt());
-		Assertions.assertEquals(22, queryResults.getRecord(++i).get("val").getAsInt());
-		Assertions.assertEquals(333, queryResults.getRecord(++i).get("val").getAsInt());
-		Assertions.assertEquals(4444, queryResults.getRecord(++i).get("val").getAsInt());
+		Assertions.assertEquals(1, queryResults.getRecordAsObject(++i).get("val").getAsInt());
+		Assertions.assertEquals(22, queryResults.getRecordAsObject(++i).get("val").getAsInt());
+		Assertions.assertEquals(333, queryResults.getRecordAsObject(++i).get("val").getAsInt());
+		Assertions.assertEquals(4444, queryResults.getRecordAsObject(++i).get("val").getAsInt());
 		
 	}
 	
@@ -1806,7 +1806,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertTrue(record.has("ID"), "Record has field ID");
 		Assertions.assertTrue(record.has("TIME"), "Record has field TIME");
@@ -1856,7 +1856,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(4, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertTrue(record.has("ITEM"), "Record has field");
 		Assertions.assertTrue(record.has("CLASS"), "Record has field");
@@ -1935,7 +1935,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(6, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		System.out.println(record.toString());
 		Assertions.assertTrue(record.has("product"), "Record has field");
 		Assertions.assertTrue(record.has("count"), "Record has field");
@@ -1977,14 +1977,14 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// last returns 123 results
 		CFWQueryResult queryResults = resultArray.get(0);
-		JsonArray queryResultsArray = queryResults.getRecords();
+		JsonArray queryResultsArray = queryResults.getRecordsAsJsonArray();
 		Assertions.assertEquals(123, queryResultsArray.size());
 		Assertions.assertEquals(999-122, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(999, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
 		
 		// tail returns 321 results 
 		queryResults = resultArray.get(1);
-		queryResultsArray = queryResults.getRecords();
+		queryResultsArray = queryResults.getRecordsAsJsonArray();
 		Assertions.assertEquals(321, queryResultsArray.size());
 		Assertions.assertEquals(999-320, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(999, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
@@ -2012,14 +2012,14 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// First returns 123 results
 		CFWQueryResult queryResults = resultArray.get(0);
-		JsonArray queryResultsArray = queryResults.getRecords();
+		JsonArray queryResultsArray = queryResults.getRecordsAsJsonArray();
 		Assertions.assertEquals(123, queryResultsArray.size());
 		Assertions.assertEquals(0, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(122, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
 		
 		// top returns 321 results
 		queryResults = resultArray.get(1);
-		queryResultsArray = queryResults.getRecords();
+		queryResultsArray = queryResults.getRecordsAsJsonArray();
 		Assertions.assertEquals(321, queryResultsArray.size());
 		Assertions.assertEquals(0, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(320, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
@@ -2054,7 +2054,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//------------------------------
 		// First Record
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals("Marketa", record.get("NAME").getAsString());
 		Assertions.assertEquals("n/a", record.get("VALUE").getAsString());
@@ -2062,7 +2062,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//------------------------------
 		// Second Record
-		record = queryResults.getRecord(1);
+		record = queryResults.getRecordAsObject(1);
 		Assertions.assertEquals("Hera", record.get("NAME").getAsString());
 		Assertions.assertEquals("2", record.get("VALUE").getAsString());
 		Assertions.assertEquals("a", record.get("VALUE_B").getAsString());
@@ -2097,7 +2097,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//------------------------------
 		// First Record
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		
 		Assertions.assertEquals("Marketa", record.get("NAME").getAsString());
 		Assertions.assertEquals(false, record.has("VALUE"));
@@ -2105,7 +2105,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//------------------------------
 		// Second Record
-		record = queryResults.getRecord(1);
+		record = queryResults.getRecordAsObject(1);
 		Assertions.assertEquals("Hera", record.get("NAME").getAsString());
 		Assertions.assertEquals(true, record.get("VALUE").isJsonNull());
 		Assertions.assertEquals("a", record.get("VALUE_B").getAsString());

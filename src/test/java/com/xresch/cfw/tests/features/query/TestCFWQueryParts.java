@@ -466,7 +466,7 @@ public class TestCFWQueryParts extends DBTestMaster {
 		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject record = queryResults.getRecord(0);
+		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("hello", record.get("OBJECT").getAsString());
 		Assertions.assertEquals("hello", record.get("OBJECT_B").getAsString());
 		Assertions.assertEquals("hello", record.get("OBJECT_C").getAsString());

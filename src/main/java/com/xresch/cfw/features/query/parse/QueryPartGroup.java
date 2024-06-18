@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query.parse;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
@@ -23,7 +24,7 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
  * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
  **************************************************************************************************************/
-public class QueryPartGroup extends QueryPart {
+public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 	
 	private CFWQueryContext context;
 	private ArrayList<QueryPart> partsGroup;
@@ -158,6 +159,32 @@ public class QueryPartGroup extends QueryPart {
 		
 	}
 	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public QueryPartValue evaluateLeftRightValues(EnhancedJsonObject leftObject
+										 , EnhancedJsonObject rightObject) 
+										throws Exception {
+		
+		if(partsGroup.size() == 1) {
+			//---------------------------------------
+			// Evaluate as Binary
+			QueryPart singlePart = partsGroup.get(0);
+			if( singlePart instanceof LeftRightEvaluatable ) {
+				return ((LeftRightEvaluatable)singlePart).evaluateLeftRightValues(leftObject, rightObject);
+			}else {
+				throw new ParseException("Group can only contain a binary expression.", this.position());
+			}
+			
+				
+		}else {
+			throw new ParseException("Group can only contain a binary expression.", this.position());
+		}
+	
+	}
+
+	
 
 	/******************************************************************************************************
 	 * Returns the values as JsonArray.
@@ -272,11 +299,5 @@ public class QueryPartGroup extends QueryPart {
 		
 		return debugObject;
 	}
-
 	
-	
-	
-	
-	
-
 }

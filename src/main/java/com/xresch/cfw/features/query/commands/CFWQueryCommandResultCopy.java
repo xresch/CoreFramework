@@ -187,13 +187,11 @@ public class CFWQueryCommandResultCopy extends CFWQueryCommand {
 				
 				//----------------------------
 				// Iterate Results
-				current.getRecords().forEach(new Consumer<JsonElement>() {
+				current.getRecords().forEach(new Consumer<EnhancedJsonObject>() {
 
 					@Override
-					public void accept(JsonElement e) {
-						outQueue.add(
-								new EnhancedJsonObject(e.getAsJsonObject())
-							);
+					public void accept(EnhancedJsonObject e) {
+						outQueue.add(e);
 					}
 				});
 				

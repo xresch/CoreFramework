@@ -262,7 +262,8 @@ public class CFWQueryExecutor {
 			
 			//--------------------------------
 			// Add Result Sink
-			JsonArray results = new JsonArray();
+			//JsonArray results = new JsonArray();
+			ArrayList<EnhancedJsonObject> results = new ArrayList<>();
 			CFWQueryContext queryContext = query.getContext();
 
 			query.add(new PipelineAction<EnhancedJsonObject, EnhancedJsonObject>() {
@@ -273,10 +274,9 @@ public class CFWQueryExecutor {
 					
 					while(!inQueue.isEmpty()) {
 						EnhancedJsonObject enhancedObject = inQueue.poll();
-						JsonObject object = enhancedObject.getWrappedObject();
-						if(object != null) {
+						if(enhancedObject != null) {
 							if(resultQueue == null) {
-								results.add(object);
+								results.add(enhancedObject);
 							}else {
 								resultQueue.add(enhancedObject);
 							}

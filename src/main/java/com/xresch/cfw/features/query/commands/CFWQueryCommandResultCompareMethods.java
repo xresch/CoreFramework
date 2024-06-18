@@ -177,8 +177,8 @@ public class CFWQueryCommandResultCompareMethods {
 	 *                       the comparison
 	 ***********************************************************************************************/
 	public CFWQueryResult compareQueryResults(CFWQueryResult olderResult, CFWQueryResult youngerResult){
-		JsonArray olderArray = olderResult.getRecords();
-		JsonArray youngerArray = youngerResult.getRecords();
+		JsonArray olderArray = olderResult.getRecordsAsJsonArray();
+		JsonArray youngerArray = youngerResult.getRecordsAsJsonArray();
 		JsonArray comparison = compareJsonObjectArrays(olderArray, youngerArray);
 		CFWQueryResult comparedResult = 
 				new CFWQueryResult(youngerResult.getQueryContext())

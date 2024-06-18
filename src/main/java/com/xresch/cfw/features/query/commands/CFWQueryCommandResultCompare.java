@@ -224,13 +224,12 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 					olderResult = previousResults.get(previousResults.size()-1);
 				}
 				
-				JsonArray queueResultArray = new JsonArray();
-				for (EnhancedJsonObject object : inQueue) {
-					queueResultArray.add(object.getWrappedObject());
-				}
+				//JsonArray queueResultArray = new JsonArray();
+				ArrayList<EnhancedJsonObject> resultArray = new ArrayList<>();
+				resultArray.addAll(inQueue);
 				
 				youngerResult = new CFWQueryResult(queryContext);
-				youngerResult.setRecords(queueResultArray);
+				youngerResult.setRecords(resultArray);
 			}
 			
 			//------------------------------
@@ -278,8 +277,8 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 			
 			//----------------------------
 			// Add to Queue
-			for(JsonElement record : compared.getRecords()) {
-				outQueue.add(new EnhancedJsonObject(record.getAsJsonObject()));
+			for(EnhancedJsonObject record : compared.getRecords()) {
+				outQueue.add(record);
 			}
 			
 			this.setDone();

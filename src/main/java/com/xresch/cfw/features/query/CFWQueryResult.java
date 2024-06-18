@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import com.google.gson.JsonArray;
@@ -20,6 +21,8 @@ public class CFWQueryResult {
 	private  CFWQueryContext context;
 	private JsonObject object = new JsonObject();
 	
+	ArrayList<EnhancedJsonObject> enhancedRecords = new ArrayList<>();
+	
 	/****************************************************
 	 * 
 	 ****************************************************/
@@ -36,7 +39,6 @@ public class CFWQueryResult {
 		//------------------------
 		// Set Default Values
 		this.setExecTimeMillis(-1);
-		this.setRecords(new JsonArray());
 		
 	}
 	
@@ -44,7 +46,16 @@ public class CFWQueryResult {
 	 * 
 	 ****************************************************/
 	public JsonObject toJson() {
+		
+		JsonArray array = new JsonArray();
+		
+		for(EnhancedJsonObject record : enhancedRecords) {
+			array.add(record.getWrappedObject());
+		}
+		
+		object.add(RESULTFIELDS_RESULTS, array);
 		this.updateResultCount();
+		
 		return object;
 	}
 	
@@ -183,27 +194,71 @@ public class CFWQueryResult {
 	/****************************************************
 	 * 
 	 ****************************************************/
-	public CFWQueryResult setRecords(JsonArray value) {
+	public CFWQueryResult setRecords(ArrayList<EnhancedJsonObject> value) {
 		if(value == null) {
 			return this;
 		}
 		
-		object.add(RESULTFIELDS_RESULTS, value);
-		this.updateResultCount();
+		this.enhancedRecords = value;
+		
 		return this;
 	}
 	
 	/****************************************************
 	 * 
 	 ****************************************************/
-	public JsonArray getRecords() {
-		return object.get(RESULTFIELDS_RESULTS).getAsJsonArray();
+	public CFWQueryResult setRecords(JsonArray array) {
+		
+		
+		if(array == null) {
+			return this;
+		}
+		
+		ArrayList<EnhancedJsonObject> newRecords = new ArrayList<>();
+		for(JsonElement e : array) {
+			
+			if(e.isJsonObject()) {
+				newRecords.add(new EnhancedJsonObject(e.getAsJsonObject()) );
+			}
+		}
+		
+		enhancedRecords = newRecords;
+		return this;
 	}
+	
 	/****************************************************
 	 * 
 	 ****************************************************/
-	public JsonObject getRecord(int index) {
-		return object.get(RESULTFIELDS_RESULTS).getAsJsonArray().get(index).getAsJsonObject();
+	public JsonArray getRecordsAsJsonArray() {
+		
+		JsonArray array = new JsonArray();
+		
+		for(EnhancedJsonObject record : enhancedRecords) {
+			array.add(record.getWrappedObject());
+		}
+		
+		return array;
+	}
+	
+	/****************************************************
+	 * 
+	 ****************************************************/
+	public ArrayList<EnhancedJsonObject> getRecords() {
+		return enhancedRecords;
+	}
+	
+	/****************************************************
+	 * 
+	 ****************************************************/
+	public EnhancedJsonObject getRecord(int index) {
+		return enhancedRecords.get(index);
+	}
+	
+	/****************************************************
+	 * 
+	 ****************************************************/
+	public JsonObject getRecordAsObject(int index) {
+		return enhancedRecords.get(index).getWrappedObject();
 	}
 
 

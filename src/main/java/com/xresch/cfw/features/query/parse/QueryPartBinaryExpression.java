@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.parse;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
 import java.util.regex.Pattern;
 
 import com.google.gson.JsonElement;
@@ -18,7 +19,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
  **************************************************************************************************************/
-public class QueryPartBinaryExpression extends QueryPart {
+public class QueryPartBinaryExpression extends QueryPart implements LeftRightEvaluatable {
 	
 	private QueryPart leftside;
 	private CFWQueryTokenType type;
@@ -107,6 +108,55 @@ public class QueryPartBinaryExpression extends QueryPart {
 		QueryPartValue evaluatedExpression = evaluateBinaryExpression(context, leftValue, rightValue);	
 		
 		return evaluatedExpression;
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public QueryPartValue evaluateLeftRightValues(EnhancedJsonObject leftObject
+										 , EnhancedJsonObject rightObject) 
+										 throws Exception {
+		
+		//-----------------------------------------
+		// Evaluate Left Side
+		QueryPartValue leftValue;
+		if(leftside != null) { 
+			if(leftside instanceof LeftRightEvaluatable) {
+				leftValue = ((LeftRightEvaluatable)leftside).evaluateLeftRightValues(leftObject, rightObject);
+			}else {
+				leftValue = leftside.determineValue(leftObject);
+			}
+		}else {
+			leftValue = QueryPartValue.newNull();
+		}
+		
+		//-----------------------------------------
+		// Evaluate Right Side
+		QueryPartValue rightValue;
+		if(rightside != null) { 
+			if(rightside instanceof LeftRightEvaluatable) {
+				rightValue = ((LeftRightEvaluatable)rightside).evaluateLeftRightValues(leftObject, rightObject);
+			}else {
+				rightValue = rightside.determineValue(rightObject);
+			}
+		}else {
+			rightValue = QueryPartValue.newNull();
+		}
+
+		
+		//-----------------------------------------
+		// Leftside get value from object 
+		leftValue = leftValue.convertFieldnameToFieldvalue(leftObject);
+
+		//-----------------------------------------
+		// Rightside get value from object 
+		rightValue = rightValue.convertFieldnameToFieldvalue(rightObject);
+				
+		QueryPartValue evaluatedExpression = evaluateBinaryExpression(context, leftValue, rightValue);	
+		
+		return evaluatedExpression;
+	
 	}
 	
 	/******************************************************************************************************

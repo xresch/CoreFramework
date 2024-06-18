@@ -38,14 +38,14 @@ public class CFWQueryResultList {
 	}
 	
 	/****************************************************
-	 * 
+	 * Returns an array of recrods
 	 ****************************************************/
 	public JsonArray toJsonRecords() {
 		
 		JsonArray array = new JsonArray();
 		
 		for(CFWQueryResult result : resultList) {
-			array.addAll(result.getRecords());
+			array.addAll(result.getRecordsAsJsonArray());
 		}
 		return array;
 	}
@@ -63,6 +63,7 @@ public class CFWQueryResultList {
 	public CFWQueryResult get(int index) {
 		return resultList.get(index);
 	}
+	
 	/****************************************************
 	 * 
 	 ****************************************************/
