@@ -16,6 +16,7 @@ import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.CFWQueryResultList;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
@@ -1661,6 +1662,163 @@ public class TestCFWQueryCommands extends DBTestMaster{
 				secondObject.get("VALUE").getAsBoolean(),
 				"VALUE is equal"
 			);
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testResultJoin_Inner() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| record
+	[ID, NAME]
+	[1, "Zeus"]
+	[2, "Aurora"]
+	[3, "Hera"]
+;
+| record
+	[ID, CATEGORY]
+	[2, "A"]
+	[3, "H"]
+	[4, "X"]
+;
+| meta title=true name="Joined" 
+| resultjoin
+	on=ID
+	join="inner"
+						""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResult = resultArray.get(0);
+		Assertions.assertEquals(2, queryResult.getRecordCount());
+		
+		EnhancedJsonObject record = queryResult.getRecord(0);
+		Assertions.assertEquals("2", record.get("ID").getAsString());
+		Assertions.assertEquals("Aurora", record.get("NAME").getAsString());
+		Assertions.assertEquals("A", record.get("CATEGORY").getAsString());
+		
+		record = queryResult.getRecord(1);
+		Assertions.assertEquals("3", record.get("ID").getAsString());
+		Assertions.assertEquals("Hera", record.get("NAME").getAsString());
+		Assertions.assertEquals("H", record.get("CATEGORY").getAsString());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testResultJoin_Left() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+				| record
+	[ID, NAME]
+	[1, "Zeus"]
+	[2, "Aurora"]
+	[3, "Hera"]
+	;
+	| record
+	[ID_RIGHT, CATEGORY]
+	[2, "A"]
+	[3, "H"]
+	[4, "X"]
+	;
+	| meta title=true name="Joined" 
+	| resultjoin
+	on=[ID, ID_RIGHT]
+	join="left"
+						""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResult = resultArray.get(0);
+		Assertions.assertEquals(3, queryResult.getRecordCount());
+		
+		EnhancedJsonObject record = queryResult.getRecord(0);
+		Assertions.assertEquals("2", record.get("ID").getAsString());
+		Assertions.assertEquals("Aurora", record.get("NAME").getAsString());
+		Assertions.assertEquals("A", record.get("CATEGORY").getAsString());
+		
+		record = queryResult.getRecord(1);
+		Assertions.assertEquals("3", record.get("ID").getAsString());
+		Assertions.assertEquals("Hera", record.get("NAME").getAsString());
+		Assertions.assertEquals("H", record.get("CATEGORY").getAsString());
+		
+		record = queryResult.getRecord(2);
+		Assertions.assertEquals("1", record.get("ID").getAsString());
+		Assertions.assertEquals("Zeus", record.get("NAME").getAsString());
+		Assertions.assertEquals(null, record.get("CATEGORY"));
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testResultJoin_Right() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| record
+	[ID, NAME]
+	[1, "Zeus"]
+	[2, "Aurora"]
+	[3, "Hera"]
+;
+| record
+	[ID, CATEGORY]
+	[2, "A"]
+	[3, "H"]
+	[4, "X"]
+;
+| meta title=true name="Joined" 
+| resultjoin
+	on=(ID == ID)
+	join="right"
+		""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResult = resultArray.get(0);
+		Assertions.assertEquals(3, queryResult.getRecordCount());
+		
+		EnhancedJsonObject record = queryResult.getRecord(0);
+		Assertions.assertEquals("2", record.get("ID").getAsString());
+		Assertions.assertEquals("Aurora", record.get("NAME").getAsString());
+		Assertions.assertEquals("A", record.get("CATEGORY").getAsString());
+		
+		record = queryResult.getRecord(1);
+		Assertions.assertEquals("3", record.get("ID").getAsString());
+		Assertions.assertEquals("Hera", record.get("NAME").getAsString());
+		Assertions.assertEquals("H", record.get("CATEGORY").getAsString());
+		
+		record = queryResult.getRecord(2);
+		Assertions.assertEquals("4", record.get("ID").getAsString());
+		Assertions.assertEquals(null, record.get("NAME"));
+		Assertions.assertEquals("X", record.get("CATEGORY").getAsString());
 		
 	}
 	

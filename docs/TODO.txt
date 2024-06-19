@@ -87,7 +87,6 @@ Potential TODOs
 - Query: function: isString()
 - Query: arrayify (needed for subquery results)
 - Query: Command hide (to hide fields, or make prefix "_" to hide fields)
-- Query: Command resultmerge (merge columns by identifiers)
 - Query: Command resultdelete (delete by name)
 - Query: Command statsx (pivot)
 - Query: Command formatfield - sparkline format (or new command)
@@ -100,7 +99,6 @@ Potential TODOs
 	- command if, else, end
 	- command formatcss
 	- command formatdisplay
-	- command resultjoin
 	- metadata template
 	- function array
 	- function distinct
