@@ -920,6 +920,7 @@ public class CFWHttp {
 		
 		private Logger responseLogger = CFWLog.getLogger(CFWHttpResponse.class.getName());
 		
+		private URL url;
 		private String body;
 		private int status = 500;
 		private Map<String, List<String>> headers;
@@ -932,7 +933,7 @@ public class CFWHttp {
 			StringBuilder builder = new StringBuilder();
 			int responseCode = -1;
 			try{
-				
+				url = conn.getURL();
 				//------------------------------
 				// connect if not already done
 				conn.connect();
@@ -988,8 +989,14 @@ public class CFWHttp {
 		}
 		
 		/******************************************************************************************************
+		 * 
+		 ******************************************************************************************************/
+		public URL getURL() {
+			return url;
+		}
+		
+		/******************************************************************************************************
 		 * Get the body content of the response.
-		 * @param url used for the request.
 		 * @return String or null on error
 		 ******************************************************************************************************/
 		public String getResponseBody() {

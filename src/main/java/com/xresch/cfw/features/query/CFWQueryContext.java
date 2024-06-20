@@ -8,6 +8,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 
@@ -228,7 +229,7 @@ public class CFWQueryContext{
 	}
 	
 	/***********************************************************************************************
-	 * Returns the object containing the metadata of the query.
+	 * Add the object containing the metadata of the query.
 	 ***********************************************************************************************/
 	public void addMetaObject(Object key, Object value) {
 		metaObjects.put(key, value);
@@ -249,6 +250,15 @@ public class CFWQueryContext{
 	}
 	
 	/***********************************************************************************************
+	 * Returns the object containing the metadata of the query.
+	 ***********************************************************************************************/
+	public void addMetadata(String propertyName, QueryPartValue value) {
+		if(value != null) {
+			value.addToJsonObject(propertyName, metadata);
+		}
+	}
+	
+	/***********************************************************************************************
 	 * Returns the object containing the globals defined by this query.
 	 ***********************************************************************************************/
 	public JsonObject getGlobals() {
@@ -260,6 +270,15 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public void addGlobal(String propertyName, String value) {
 		globals.addProperty(propertyName, value);
+	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the metadata of the query.
+	 ***********************************************************************************************/
+	public void addGlobal(String propertyName, QueryPartValue value) {
+		if(value != null) {
+			value.addToJsonObject(propertyName, globals);
+		}
 	}
 	
 	/***********************************************************************************************

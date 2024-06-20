@@ -8,6 +8,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWContextAwareExecutor;
 import com.xresch.cfw.datahandling.CFWField;
@@ -56,11 +58,13 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	private static TreeMap<String, CFWQuerySource> sourceMapCached;
 
 	private CFWQuerySource source = null;
-	private CFWObject paramsForSource = null;
+
+	JsonArray eachParameter;
 	
 	private CFWContextAwareExecutor sourceExecutor = CFWContextAwareExecutor.createExecutor("QuerySource", 1, 2, 500, TimeUnit.MILLISECONDS);
 	
 	private ArrayList<QueryPart> parts;
+	private ArrayList<QueryPartAssignment> assignmentsArray = new ArrayList<>();
 
 	/***********************************************************************************************
 	 * 
@@ -90,7 +94,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" <sourcename> [limit=<integer>] [param1=abc param2=xyz ...]";
+		return COMMAND_NAME+" <sourcename> [limit=<integer>] [each=<array>] [param1=abc param2=xyz ...]";
 	}
 	
 	/***********************************************************************************************
@@ -101,6 +105,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		return 	"<ul>"
 					+"<li><b>source:&nbsp;</b> The query source to fetch the data from</li>"
 					+"<li><b>limit:&nbsp;</b> The max number of records to fetch from the source. The default and max limit is configured by your administrator.</li>"
+					+"<li><b>each:&nbsp;</b>An array of values the source should be called for. Values are retrieved with the meta-function.</li>"
 					+"<li><b>param1, param2 ...:&nbsp;</b> The parameters that are specific to the source you choose.</li>"
 				+"</ul>";
 	}
@@ -298,8 +303,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 
 		//------------------------------------------
 		// Get Parameters
-		EnhancedJsonObject parameters = new EnhancedJsonObject();
-		
 		for(int i = 1; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
@@ -309,9 +312,11 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				
 				String paramName = assignment.getLeftSideAsString(null);
 				
+				if(paramName == null) { continue; }
+				
 				//------------------------------------
 				// Handle parameters for this command
-				if(paramName != null && paramName.equals("limit")) {
+				if(paramName.equals("limit")) {
 					QueryPartValue limitValue = assignment.getRightSide().determineValue(null);
 					if(limitValue.isInteger()) {
 						int newLimit = limitValue.getAsInteger();
@@ -319,43 +324,29 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 						if(newLimit <= maxLimit) {
 							this.fetchLimit = newLimit;
 						}else {
-							throw new ParseException("The value chosen for limit exceeds the maximum of "+maxLimit+".", assignment.position());
+							throw new ParseException(COMMAND_NAME+":The value chosen for limit exceeds the maximum of "+maxLimit+".", assignment.position());
 						}
+					}
+					continue;
+				}else if(paramName.equals("each")) {
+					QueryPartValue eachValue = assignment.getRightSide().determineValue(null);
+					if(eachValue.isJsonArray()) {
+						eachParameter = eachValue.getAsJsonArray();
+					}else {
+						throw new ParseException(COMMAND_NAME+": The value specified for the each-parameter must be an array.", assignment.position());
 					}
 					continue;
 				}
 				
 				//------------------------------------
 				// Other params for the chosen source
-				assignment.assignToJsonObject(parameters);		
+				assignmentsArray.add(assignment);
+					
 			}else {
-				throw new ParseException(COMMAND_NAME+": Only source name and parameters(key=value) are allowed)", -1);
+				throw new ParseException(COMMAND_NAME+": Only source name and parameters(key=value) are allowed.", -1);
 			}
 		}
 			
-		//------------------------------------------
-		// Map to Parameters Object
-		this.paramsForSource = source.getParameters();
-
-		if(!paramsForSource.mapJsonFields(parameters.getWrappedObject(), true, true)) {
-			
-			for(CFWField field : paramsForSource.getFields().values()) {
-				ArrayList<String> invalidMessages = field.getInvalidationMessages();
-				if(!invalidMessages.isEmpty()) {
-					throw new ParseException(invalidMessages.get(0), -1);
-				}
-			}
-			
-			throw new ParseException("Unknown error for source command '"+this.uniqueNameAndAliases()+"'", -1);
-		}
-		
-		
-		//------------------------------------------
-		// Check User can use parameter values
-		if(this.parent.getContext().checkPermissions()) {
-			this.source.parametersPermissionCheck(paramsForSource);
-		}
-				
 		//-------------------------------------------------
 		// Add listener either to the next Source, the 
 		// last command or to self.
@@ -388,6 +379,37 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			}
 		});		
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private CFWObject prepareParamsForSource() throws ParseException {
+		EnhancedJsonObject parameters = new EnhancedJsonObject();
+		for(QueryPartAssignment assignment : assignmentsArray) {
+			assignment.assignToJsonObject(parameters);	
+		}
+		CFWObject paramsForSource = source.getParameters();
+
+		if(!paramsForSource.mapJsonFields(parameters.getWrappedObject(), true, true)) {
+			
+			for(CFWField field : paramsForSource.getFields().values()) {
+				ArrayList<String> invalidMessages = field.getInvalidationMessages();
+				if(!invalidMessages.isEmpty()) {
+					throw new ParseException(invalidMessages.get(0), -1);
+				}
+			}
+			
+			throw new ParseException("Unknown error for source command '"+this.uniqueNameAndAliases()+"'", -1);
+		}
+		
+		//------------------------------------------
+		// Check User can use parameter values
+		if(this.parent.getContext().checkPermissions()) {
+			this.source.parametersPermissionCheck(paramsForSource);
+		}
+		
+		return paramsForSource;
+	}
 
 	/***********************************************************************************************
 	 * 
@@ -395,8 +417,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 
-		new CFWLog(logger).finest("source "+source.uniqueName()+" params: "+paramsForSource.toJSON());
-		
 		long earliestMillis = parent.getContext().getEarliestMillis();
 		long latestMillis = parent.getContext().getLatestMillis();
 		//------------------------------------------
@@ -411,7 +431,18 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				@Override
 				public void run() {
 					try {
-						source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
+						if(eachParameter == null) {
+							CFWObject paramsForSource = prepareParamsForSource();
+							source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
+						}else {
+							for(JsonElement element : eachParameter) {
+								QueryPartValue value = QueryPartValue.newFromJsonElement(element);
+								source.getParent().getContext().addMetadata("each", value);
+								
+								CFWObject paramsForSource = prepareParamsForSource();
+								source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
+							}
+						}
 					} catch (Exception e) {
 						new CFWLog(logger).severe("Error while reading from source '"+source.uniqueName()+"': "+e.getMessage(), e);						
 					}
@@ -455,7 +486,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			//------------------------------------------
 			// Read inQueue and put it to outQueue
 			
-
+			EnhancedJsonObject item = null;
 			while(!localQueue.isEmpty() && !isSourceCommandInterrupted()) {
 				recordCounter++;
 				
@@ -469,27 +500,26 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				
 				//------------------------------------------
 				// Poll next item
-				EnhancedJsonObject item = localQueue.poll();
+				item = localQueue.poll();
 				
 				//------------------------------------------
-				//Sample Fieldnames, first 512 and every 256th
-				if( recordCounter % 256 == 0 || recordCounter <= 256 ) {
+				//Sample Fieldnames, first 512 and every 51th
+				if( recordCounter % 256 == 0 || recordCounter <= 51 ) {
 					fieldnameManager.addSourceFieldnames(item.keySet());
 				}
-				
-				//------------------------------------------
-				// Add Source Field
-				if(!item.has("_source")) {
-					item.addProperty("_source", this.source.uniqueName());
-				}
-				
-
-				
+								
 				//------------------------------------------
 				// Throw to queue of next Command
 				outQueue.add(item);
 
 			}
+			
+			//------------------------------------------
+			//Sample Fieldnames from last record
+			if(item != null) {
+				fieldnameManager.addSourceFieldnames(item.keySet());
+			}
+			
 
 			//---------------------------
 			// Wait for more input

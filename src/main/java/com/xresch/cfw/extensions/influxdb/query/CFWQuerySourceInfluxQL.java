@@ -240,8 +240,6 @@ public class CFWQuerySourceInfluxQL extends CFWQuerySource {
 			return;
 		}
 
-		
-
 	}
 
 }

@@ -1243,7 +1243,7 @@ pre {
     padding: 0.25em 0.4em;
     line-height: 1;
     white-space: nowrap;
-    vertical-align: baseline;
+    vertical-align: text-top;
 }
      
  /*************************************************************************

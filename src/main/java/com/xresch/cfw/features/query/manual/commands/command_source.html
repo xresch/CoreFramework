@@ -9,7 +9,7 @@ Here a small example of using the command with the source 'random':</p>
 <pre><code>source random</code></pre>
 
 
-<h3>Source Parameters</h3>
+<h2>Source Parameters</h2>
 <p>A source can have additional parameters, which are given to the command as key=value pairs. 
 The 'random' source provides the optional parameter 'records' to specify how many random records should be generated.
 </p>
@@ -17,7 +17,7 @@ The 'random' source provides the optional parameter 'records' to specify how man
 
 
 
-<h3>Fetch Limit</h3>
+<h2>Fetch Limit</h2>
 <p>The source command itself also has its own parameter called 'limit'. This parameter defined the maximum records that are fetched from the source.
 The default and maximum values for this parameter are set by your system administrator to reduce the performance impact of the queries.
 </p>
@@ -27,8 +27,7 @@ The default and maximum values for this parameter are set by your system adminis
 <pre><code class="language-cfwquery">source random records=100000 limit=100000</code></pre>
 
 
-<h3>Chain Multiple Sources</h3>
-
+<h2>Chain Multiple Sources</h2>
 <p>To combine data from multiple sources, you can use this command multiple times in the same query.
 The sources are read in order. First all data from the first source is read, then all data from the second and so forth. </p>
 
@@ -45,12 +44,40 @@ The sources are read in order. First all data from the first source is read, the
 | source random records=42</code></pre>
 
 
-<p>Be aware that other commands still work the same. They will process the recors in the order they are passed through the whole command chain. 
+<p>Be aware that other commands still work the same. They will process the records in the order they are passed through the whole command chain. 
 The following top command will take all 10 records from the first source, and the first 2 from the second source:</p>
 
 <pre><code class="language-cfwquery">| source random records=10
 | source random records=20
 | top 12
 </code></pre>
+
+
+
+
+<h2>Fetch For Each</h2>
+<p>With the each parameter, you can define a list of values, for which you want to execute the same source.
+The value swill be set in the metadata and can be retrieved by using the meta-function. </p>
+
+<p>The following example executes the source "web" for each of the defined url:</p>
+
+<pre><code class="language-cfwquery">| source web 
+	as="http"
+	method="GET"
+	each=["https://www.xresch.com"
+		,"https://github.com/xresch"
+		,"https://www.google.com" ]
+	url=meta('each') # here the URL will be taken 
+| keep status, url, headers
+| set each=meta("each") # after the source, 'each' will always be the last element: 'https://www.google.com'
+| formatfield headers = list
+| formatrecord 	
+    [(status == null), "cfw-gray"] 
+	[(status == 200), "cfw-green"] 
+	[(status &lt; 300), "cfw-limegreen"] 
+	[(status &lt; 400), "cfw-yellow"] 
+	[true, "cfw-red"] 
+| display as=panels menu=false titlefields=[url]</code></pre>
+
 
 

@@ -715,6 +715,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		try {
 			
 			EnhancedJsonObject object = new EnhancedJsonObject();
+			object.addProperty("url", response.getURL().toString());
 			object.addProperty("status", response.getStatus());
 			object.add("headers", response.getHeadersAsJson());
 			object.addProperty("body", data);
@@ -742,7 +743,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		outQueue.add( exceptionObject );
 		
 		exceptionObject = new EnhancedJsonObject();
-		exceptionObject.addProperty("Key", "HTTPStatus" );
+		exceptionObject.addProperty("Key", "Status" );
 		exceptionObject.addProperty("Value", response.getStatus() );
 		outQueue.add( exceptionObject );
 		exceptionObject = new EnhancedJsonObject();
