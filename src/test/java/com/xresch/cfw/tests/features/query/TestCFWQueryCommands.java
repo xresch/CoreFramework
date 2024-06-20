@@ -1826,6 +1826,67 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testResultJoin_NamedAndRemoveFalse() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| meta name="myLeft"
+| record
+	[ID, NAME]
+	[1, "Zeus"]
+	[2, "Aurora"]
+	[3, "Hera"]
+;
+| meta name="myRight"
+| record
+	[ID, CATEGORY]
+	[2, "A"]
+	[3, "H"]
+	[4, "X"]
+;
+| source random records=1
+;
+| meta title=true name="Joined" 
+| resultjoin 
+	left="myLeft" 
+	right="myRight"
+	on=ID
+	join="left"
+	remove=false
+	""";
+		
+		CFWQueryResultList resultList = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(4, resultList.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResult = resultList.get(3);
+		Assertions.assertEquals(3, queryResult.getRecordCount());
+		
+		EnhancedJsonObject record = queryResult.getRecord(0);
+		Assertions.assertEquals("2", record.get("ID").getAsString());
+		Assertions.assertEquals("Aurora", record.get("NAME").getAsString());
+		Assertions.assertEquals("A", record.get("CATEGORY").getAsString());
+		
+		record = queryResult.getRecord(1);
+		Assertions.assertEquals("3", record.get("ID").getAsString());
+		Assertions.assertEquals("Hera", record.get("NAME").getAsString());
+		Assertions.assertEquals("H", record.get("CATEGORY").getAsString());
+		
+		record = queryResult.getRecord(2);
+		Assertions.assertEquals("1", record.get("ID").getAsString());
+		Assertions.assertEquals("Zeus", record.get("NAME").getAsString());
+		Assertions.assertEquals(null, record.get("CATEGORY"));
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testResultRemove() throws IOException {
 		
 		//---------------------------------
