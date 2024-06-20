@@ -57,10 +57,18 @@ The following top command will take all 10 records from the first source, and th
 
 <h2>Fetch For Each</h2>
 <p>With the each parameter, you can define a list of values, for which you want to execute the same source.
-The value swill be set in the metadata and can be retrieved by using the meta-function. </p>
+The values will be set in the metadata and can be retrieved by using the meta-function like "meta('each')". </p>
+
+<p>The following example executes the source "text" and creates a hello message to greet the beautiful ladies:</p>
+<pre><code class="language-cfwquery">| source text 
+	each=["Freya"
+		,"Hera"
+		,"Eclypsia"
+	]
+	text="Hello "+meta('each')</code></pre>
+
 
 <p>The following example executes the source "web" for each of the defined url:</p>
-
 <pre><code class="language-cfwquery">| source web 
 	as="http"
 	method="GET"

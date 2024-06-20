@@ -2032,6 +2032,43 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertTrue(record.has("FIRSTNAME"), "Record has field FIRSTNAME");
 
 	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testSource_Text_Each() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				"""
+| source text 
+	each=["Freya"
+		,"Hera"
+		,"Eclypsia" ]
+	text="Hello "+meta('each')
+				"""
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(3, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		Assertions.assertEquals("Hello Freya", record.get("part").getAsString());
+		
+		record = queryResults.getRecordAsObject(1);
+		Assertions.assertEquals("Hello Hera", record.get("part").getAsString());
+		
+		record = queryResults.getRecordAsObject(2);
+		Assertions.assertEquals("Hello Eclypsia", record.get("part").getAsString());
+	}
 	
 	
 	/****************************************************************
