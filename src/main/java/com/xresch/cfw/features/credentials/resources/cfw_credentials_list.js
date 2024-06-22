@@ -528,15 +528,6 @@ function cfw_credentialslist_printCredentials(data, type){
 			 	},
 			 	customizers: {
 						
-			 		NAME: function(record, value, rendererName) { 
-			 			
-			 			if(rendererName == 'table'){
-								return '<a href="#" style="color: inherit;" alt="Edit" title="Edit" '
-										+'onclick="cfw_credentialslist_editCredentials('+record.PK_ID+')");">'+record.NAME+'</a>';
-						}else{
-							return value;
-						} 
-			 		},
 					IS_SHARED: function(record, value) { 
 			 			var isShared = value;
 			 			if(isShared){

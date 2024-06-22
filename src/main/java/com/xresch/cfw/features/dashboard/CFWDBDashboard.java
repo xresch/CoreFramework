@@ -997,7 +997,12 @@ public class CFWDBDashboard {
 		//-----------------------------------
 		// Get Dashboard 
 		Dashboard dashboard = (Dashboard)new CFWSQL(new Dashboard())
-			.select(DashboardFields.JSON_SHARE_WITH_GROUPS, DashboardFields.JSON_EDITOR_GROUPS, DashboardFields.IS_PUBLIC)
+			.select(
+					DashboardFields.JSON_SHARE_WITH_GROUPS
+					, DashboardFields.JSON_EDITOR_GROUPS
+					, DashboardFields.IS_PUBLIC
+					, DashboardFields.IS_SHARED
+					)
 			.where(DashboardFields.PK_ID, dashboardID)
 			.getFirstAsObject();
 		
@@ -1013,12 +1018,14 @@ public class CFWDBDashboard {
 		
 		//-----------------------------------
 		// Check User has Shared Role
-		LinkedHashMap<String, String> sharedRoles = dashboard.sharedWithGroups();
-		
-		if(sharedRoles != null && sharedRoles.size() > 0) {
-			for(String roleID : sharedRoles.keySet()) {
-				if(CFW.Context.Request.hasRole(Integer.parseInt(roleID)) ) {
-					return true;
+		if(dashboard.isShared()) {
+			LinkedHashMap<String, String> sharedRoles = dashboard.sharedWithGroups();
+			
+			if(sharedRoles != null && sharedRoles.size() > 0) {
+				for(String roleID : sharedRoles.keySet()) {
+					if(CFW.Context.Request.hasRole(Integer.parseInt(roleID)) ) {
+						return true;
+					}
 				}
 			}
 		}

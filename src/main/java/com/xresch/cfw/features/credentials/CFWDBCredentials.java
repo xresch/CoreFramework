@@ -455,64 +455,67 @@ public class CFWDBCredentials {
 	 ***************************************************************/
 	public static boolean hasUserAccessToCredentials(String credentialsID) {
 
+		// -----------------------------------
+		// Check User is Admin
+		if (CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+			return true;
+		}
+
+		// -----------------------------------
+		// Check User is Shared/Editor
+
+		int userID = CFW.Context.Request.getUser().id();
+		String likeID = "%\"" + userID + "\":%";
+
+		int count = new CFWSQL(new CFWCredentials())
+				.loadSQLResource(FeatureCredentials.PACKAGE_RESOURCES
+						,"SQL_hasUserAccessToCredentials.sql"
+						, credentialsID
+						, userID
+						, likeID
+						, likeID)
+				.executeCount();
+
+		if (count > 0) {
+			return true;
+		}
 
 		//-----------------------------------
-		// Check User is Admin
-		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
-			return true;
-		}
-		
-		//-----------------------------------
-		// Check User is Shared/Editor
-		
-		int userID = CFW.Context.Request.getUser().id();
-		String likeID = "%\""+userID+"\":%";
-		
-		int count = new CFWSQL(new CFWCredentials())
-			.loadSQLResource(FeatureCredentials.PACKAGE_RESOURCES, "SQL_hasUserAccessToCredentials.sql", 
-					credentialsID, 
-					userID, 
-					likeID,
-					likeID)
-			.executeCount();
-		
-		if( count > 0) {
-			return true;
-		}
-		
-		
-		//-----------------------------------
-		// Get Credentials 
-		CFWCredentials credentials = (CFWCredentials)new CFWSQL(new CFWCredentials())
-			.select(CFWCredentialsFields.JSON_SHARE_WITH_GROUPS, CFWCredentialsFields.JSON_EDITOR_GROUPS)
-			.where(CFWCredentialsFields.PK_ID, credentialsID)
-			.getFirstAsObject();
-		
+		// Get Credentials
+		CFWCredentials credentials = (CFWCredentials) new CFWSQL(new CFWCredentials())
+				.select(CFWCredentialsFields.IS_SHARED
+						, CFWCredentialsFields.JSON_SHARE_WITH_GROUPS
+						, CFWCredentialsFields.JSON_EDITOR_GROUPS
+					)
+				.where(CFWCredentialsFields.PK_ID, credentialsID).getFirstAsObject();
+
 		//-----------------------------------
 		// Check User has Shared Role
-		LinkedHashMap<String, String> sharedRoles = credentials.sharedWithGroups();
-		
-		if(sharedRoles != null && sharedRoles.size() > 0) {
-			for(String roleID : sharedRoles.keySet()) {
-				if(CFW.Context.Request.hasRole(Integer.parseInt(roleID)) ) {
-					return true;
+		if(credentials.isShared()) {
+			LinkedHashMap<String, String> sharedRoles = credentials.sharedWithGroups();
+
+			if(sharedRoles != null && sharedRoles.size() > 0) {
+				for (String roleID : sharedRoles.keySet()) {
+					if (CFW.Context.Request.hasRole(Integer.parseInt(roleID))) {
+						return true;
+					}
 				}
 			}
 		}
-		
+
 		//-----------------------------------
 		// Check User has Editor Role
 		LinkedHashMap<String, String> editorRoles = credentials.editorGroups();
-		
+
 		if(editorRoles != null && editorRoles.size() > 0) {
-			for(String roleID : editorRoles.keySet()) {
-				if(CFW.Context.Request.hasRole(Integer.parseInt(roleID)) ) {
-					
+			for (String roleID : editorRoles.keySet()) {
+				if (CFW.Context.Request.hasRole(Integer.parseInt(roleID))) {
+
 					return true;
 				}
 			}
 		}
-		
+
 		return false;
 	}
 	

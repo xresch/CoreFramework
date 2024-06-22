@@ -172,7 +172,7 @@ pre {
 .table-hover .table-cfw-black:hover td
 {
     color: #fff;
-    background-color: var(--primary)!important; 
+    background-color: color-mix(in srgb, var(--primary) 25%, transparent) !important; 
 }
 
 /* default selection color is blue, what is not really visible when bg is blue on hover*/

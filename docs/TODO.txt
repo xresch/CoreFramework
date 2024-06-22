@@ -160,7 +160,7 @@ DONE
 ====
 
 ------- current -------
-
+- Dashboard: Sharing - fixed bug where a user in a shared group could access a dashboard even if it was not set to shared=true
 
 ------- v.9.0.0 -------
 - NEW FEATURE: Credentials Management to not have credentials in queries
