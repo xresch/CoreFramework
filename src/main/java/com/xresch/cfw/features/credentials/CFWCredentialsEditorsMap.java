@@ -20,12 +20,12 @@ import com.xresch.cfw.features.usermgmt.User.UserFields;
  **************************************************************************************************************/
 public class CFWCredentialsEditorsMap extends CFWObject {
 	
-	public static final String TABLE_NAME = "CFW_DASHBOARD_EDITORS_MAP";
+	public static final String TABLE_NAME = "CFW_CREDENTIALS_EDITORS_MAP";
 	
 	enum CFWCredentialsEditorsMapFields{
 		  PK_ID 
 		, FK_ID_USER
-		, FK_ID_DASHBOARD
+		, FK_ID_CREDENTIALS
 	}
 
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsEditorsMapFields.PK_ID)
@@ -34,7 +34,7 @@ public class CFWCredentialsEditorsMap extends CFWObject {
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 			
-	private CFWField<Integer> foreignCredentials = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsEditorsMapFields.FK_ID_DASHBOARD)
+	private CFWField<Integer> foreignCredentials = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsEditorsMapFields.FK_ID_CREDENTIALS)
 			.setForeignKeyCascade(this, CFWCredentials.class, CFWCredentialsFields.PK_ID)
 			.setDescription("The id of the credentials.")
 			.apiFieldType(FormFieldType.NUMBER)
@@ -72,14 +72,14 @@ public class CFWCredentialsEditorsMap extends CFWObject {
 				new String[] {
 						CFWCredentialsEditorsMapFields.PK_ID.toString(), 
 						CFWCredentialsEditorsMapFields.FK_ID_USER.toString(),
-						CFWCredentialsEditorsMapFields.FK_ID_DASHBOARD.toString(),
+						CFWCredentialsEditorsMapFields.FK_ID_CREDENTIALS.toString(),
 				};
 		
 		String[] outputFields = 
 				new String[] {
 						CFWCredentialsEditorsMapFields.PK_ID.toString(), 
 						CFWCredentialsEditorsMapFields.FK_ID_USER.toString(),
-						CFWCredentialsEditorsMapFields.FK_ID_DASHBOARD.toString(),
+						CFWCredentialsEditorsMapFields.FK_ID_CREDENTIALS.toString(),
 				};
 
 		//----------------------------------

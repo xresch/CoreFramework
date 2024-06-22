@@ -20,12 +20,12 @@ import com.xresch.cfw.features.usermgmt.User.UserFields;
  **************************************************************************************************************/
 public class CFWCredentialsSharedUserMap extends CFWObject {
 	
-	public static final String TABLE_NAME = "CFW_DASHBOARD_SHAREDUSER_MAP";
+	public static final String TABLE_NAME = "CFW_CREDENTIALS_SHAREDUSER_MAP";
 	
 	enum CFWCredentialsSharedUserMapFields{
 		  PK_ID 
 		, FK_ID_USER
-		, FK_ID_DASHBOARD
+		, FK_ID_CREDENTIALS
 	}
 
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsSharedUserMapFields.PK_ID)
@@ -34,7 +34,7 @@ public class CFWCredentialsSharedUserMap extends CFWObject {
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 		
-	private CFWField<Integer> foreignCredentials = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsSharedUserMapFields.FK_ID_DASHBOARD)
+	private CFWField<Integer> foreignCredentials = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsSharedUserMapFields.FK_ID_CREDENTIALS)
 			.setForeignKeyCascade(this, CFWCredentials.class, CFWCredentialsFields.PK_ID)
 			.setDescription("The id of the credentials.")
 			.apiFieldType(FormFieldType.NUMBER)
@@ -72,14 +72,14 @@ public class CFWCredentialsSharedUserMap extends CFWObject {
 				new String[] {
 						CFWCredentialsSharedUserMapFields.PK_ID.toString(), 
 						CFWCredentialsSharedUserMapFields.FK_ID_USER.toString(),
-						CFWCredentialsSharedUserMapFields.FK_ID_DASHBOARD.toString(),
+						CFWCredentialsSharedUserMapFields.FK_ID_CREDENTIALS.toString(),
 				};
 		
 		String[] outputFields = 
 				new String[] {
 						CFWCredentialsSharedUserMapFields.PK_ID.toString(), 
 						CFWCredentialsSharedUserMapFields.FK_ID_USER.toString(),
-						CFWCredentialsSharedUserMapFields.FK_ID_DASHBOARD.toString(),
+						CFWCredentialsSharedUserMapFields.FK_ID_CREDENTIALS.toString(),
 				};
 
 		//----------------------------------

@@ -118,7 +118,7 @@ public class CFWDBCredentialsEditorsMap {
 		
 		String insertUserSQL = "INSERT INTO "+TABLE_NAME+" ("
 				  + CFWCredentialsEditorsMapFields.FK_ID_USER +", "
-				  + CFWCredentialsEditorsMapFields.FK_ID_DASHBOARD
+				  + CFWCredentialsEditorsMapFields.FK_ID_CREDENTIALS
 				  + ") VALUES (?,?);";
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWCredentialsEditorsMap.class, "Add User to Credentials: "+credentials.name()+", User: "+user.username());
@@ -182,7 +182,7 @@ public class CFWDBCredentialsEditorsMap {
 			// only returns true if anything was updated. Therefore cannot include in check.
 			boolean hasCleared = new CFWSQL(new CFWCredentialsEditorsMap())
 						.delete()
-						.where(CFWCredentialsEditorsMapFields.FK_ID_DASHBOARD, credentials.id())
+						.where(CFWCredentialsEditorsMapFields.FK_ID_CREDENTIALS, credentials.id())
 						.executeDelete();
 			
 			if(hasCleared) {
@@ -232,7 +232,7 @@ public class CFWDBCredentialsEditorsMap {
 				+" WHERE "
 				  + CFWCredentialsEditorsMapFields.FK_ID_USER +" = ? "
 				  + " AND "
-				  + CFWCredentialsEditorsMapFields.FK_ID_DASHBOARD +" = ? "
+				  + CFWCredentialsEditorsMapFields.FK_ID_CREDENTIALS +" = ? "
 				  + ";";
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWCredentialsEditorsMap.class, "Remove User from Credentials: "+credentials.name()+", User: "+user.username());
@@ -295,7 +295,7 @@ public class CFWDBCredentialsEditorsMap {
 			.queryCache()
 			.selectCount()
 			.where(CFWCredentialsEditorsMapFields.FK_ID_USER.toString(), userid)
-			.and(CFWCredentialsEditorsMapFields.FK_ID_DASHBOARD.toString(), credentialsid)
+			.and(CFWCredentialsEditorsMapFields.FK_ID_CREDENTIALS.toString(), credentialsid)
 			.executeCount();
 
 	}
@@ -316,7 +316,7 @@ public class CFWDBCredentialsEditorsMap {
 				"SELECT U.PK_ID, U.USERNAME, U.FIRSTNAME, U.LASTNAME "  
 				+ " FROM "+User.TABLE_NAME+" U " 
 				+ " LEFT JOIN "+CFWCredentialsEditorsMap.TABLE_NAME+" M ON M.FK_ID_USER = U.PK_ID\r\n"
-				+ " WHERE M.FK_ID_DASHBOARD = ? " 
+				+ " WHERE M.FK_ID_CREDENTIALS = ? " 
 				+ " ORDER BY LOWER(U.USERNAME) "
 				;
 		

@@ -117,7 +117,7 @@ public class CFWDBCredentialsSharedGroupsMap {
 		
 		String insertRoleSQL = "INSERT INTO "+TABLE_NAME+" ("
 				  + CFWCredentialsSharedGroupsMapFields.FK_ID_ROLE +", "
-				  + CFWCredentialsSharedGroupsMapFields.FK_ID_DASHBOARD
+				  + CFWCredentialsSharedGroupsMapFields.FK_ID_CREDENTIALS
 				  + ") VALUES (?,?);";
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWCredentialsSharedGroupsMap.class, "Add Role to Credentials: "+credentials.name()+", Role: "+role.name());
@@ -187,7 +187,7 @@ public class CFWDBCredentialsSharedGroupsMap {
 			// only returns true if anything was updated. Therefore cannot include in check.
 			boolean hasCleared = new CFWSQL(new CFWCredentialsSharedGroupsMap())
 						.delete()
-						.where(CFWCredentialsSharedGroupsMapFields.FK_ID_DASHBOARD, credentials.id())
+						.where(CFWCredentialsSharedGroupsMapFields.FK_ID_CREDENTIALS, credentials.id())
 						.executeDelete();
 			
 			if(hasCleared) {
@@ -237,7 +237,7 @@ public class CFWDBCredentialsSharedGroupsMap {
 				+" WHERE "
 				  + CFWCredentialsSharedGroupsMapFields.FK_ID_ROLE +" = ? "
 				  + " AND "
-				  + CFWCredentialsSharedGroupsMapFields.FK_ID_DASHBOARD +" = ? "
+				  + CFWCredentialsSharedGroupsMapFields.FK_ID_CREDENTIALS +" = ? "
 				  + ";";
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWCredentialsSharedGroupsMap.class, "Remove Role from Credentials: "+credentials.name()+", Role: "+role.name());
@@ -299,7 +299,7 @@ public class CFWDBCredentialsSharedGroupsMap {
 			.queryCache()
 			.selectCount()
 			.where(CFWCredentialsSharedGroupsMapFields.FK_ID_ROLE.toString(), roleid)
-			.and(CFWCredentialsSharedGroupsMapFields.FK_ID_DASHBOARD.toString(), credentialsid)
+			.and(CFWCredentialsSharedGroupsMapFields.FK_ID_CREDENTIALS.toString(), credentialsid)
 			.executeCount();
 
 	}
@@ -320,7 +320,7 @@ public class CFWDBCredentialsSharedGroupsMap {
 				"SELECT U.PK_ID, U.NAME"  
 				+ " FROM "+Role.TABLE_NAME+" U " 
 				+ " LEFT JOIN "+CFWCredentialsSharedGroupsMap.TABLE_NAME+" M ON M.FK_ID_ROLE = U.PK_ID\r\n"
-				+ " WHERE M.FK_ID_DASHBOARD = ? " 
+				+ " WHERE M.FK_ID_CREDENTIALS = ? " 
 				+ " ORDER BY LOWER(U.NAME) "
 				;
 		

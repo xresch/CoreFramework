@@ -272,14 +272,14 @@ public class FeatureDashboard extends CFWAppFeature {
 				new Permission(PERMISSION_DASHBOARD_VIEWER, FeatureUserManagement.CATEGORY_USER)
 					.description("Can view dashboards that other users have shared. Cannot create dashboards, but might edit when allowed by a dashboard creator."),
 					true,
-					false
+					true
 				);	
 		
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_DASHBOARD_CREATOR, FeatureUserManagement.CATEGORY_USER)
 					.description("Can view and create dashboards and share them with other users."),
 					true,
-					false
+					true
 				);	
 		
 		CFW.DB.Permissions.oneTimeCreate(

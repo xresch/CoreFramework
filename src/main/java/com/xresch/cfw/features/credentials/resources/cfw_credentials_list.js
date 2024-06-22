@@ -531,7 +531,8 @@ function cfw_credentialslist_printCredentials(data, type){
 			 		NAME: function(record, value, rendererName) { 
 			 			
 			 			if(rendererName == 'table'){
-								return '<a href="/app/credentials/view?id='+record.PK_ID+'" style="color: inherit;">'+record.NAME+'</a>';
+								return '<a href="#" style="color: inherit;" alt="Edit" title="Edit" '
+										+'onclick="cfw_credentialslist_editCredentials('+record.PK_ID+')");">'+record.NAME+'</a>';
 						}else{
 							return value;
 						} 

@@ -20,12 +20,12 @@ import com.xresch.cfw.features.usermgmt.Role.RoleFields;
  **************************************************************************************************************/
 public class CFWCredentialsEditorGroupsMap extends CFWObject {
 	
-	public static final String TABLE_NAME = "CFW_DASHBOARD_EDITORGROUPS_MAP";
+	public static final String TABLE_NAME = "CFW_CREDENTIALS_EDITORGROUPS_MAP";
 	
 	enum CFWCredentialsEditorGroupsMapFields{
 		  PK_ID 
 		, FK_ID_ROLE
-		, FK_ID_DASHBOARD
+		, FK_ID_CREDENTIALS
 	}
 
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsEditorGroupsMapFields.PK_ID)
@@ -34,7 +34,7 @@ public class CFWCredentialsEditorGroupsMap extends CFWObject {
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 		
-	private CFWField<Integer> foreignCredentials = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsEditorGroupsMapFields.FK_ID_DASHBOARD)
+	private CFWField<Integer> foreignCredentials = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsEditorGroupsMapFields.FK_ID_CREDENTIALS)
 			.setForeignKeyCascade(this, CFWCredentials.class, CFWCredentialsFields.PK_ID)
 			.setDescription("The id of the credentials.")
 			.apiFieldType(FormFieldType.NUMBER)
@@ -72,14 +72,14 @@ public class CFWCredentialsEditorGroupsMap extends CFWObject {
 				new String[] {
 						CFWCredentialsEditorGroupsMapFields.PK_ID.toString(), 
 						CFWCredentialsEditorGroupsMapFields.FK_ID_ROLE.toString(),
-						CFWCredentialsEditorGroupsMapFields.FK_ID_DASHBOARD.toString(),
+						CFWCredentialsEditorGroupsMapFields.FK_ID_CREDENTIALS.toString(),
 				};
 		
 		String[] outputFields = 
 				new String[] {
 						CFWCredentialsEditorGroupsMapFields.PK_ID.toString(), 
 						CFWCredentialsEditorGroupsMapFields.FK_ID_ROLE.toString(),
-						CFWCredentialsEditorGroupsMapFields.FK_ID_DASHBOARD.toString(),
+						CFWCredentialsEditorGroupsMapFields.FK_ID_CREDENTIALS.toString(),
 				};
 
 		//----------------------------------

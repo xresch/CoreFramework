@@ -117,7 +117,7 @@ public class CFWDBCredentialsSharedUserMap {
 		
 		String insertUserSQL = "INSERT INTO "+TABLE_NAME+" ("
 				  + CFWCredentialsSharedUserMapFields.FK_ID_USER +", "
-				  + CFWCredentialsSharedUserMapFields.FK_ID_DASHBOARD
+				  + CFWCredentialsSharedUserMapFields.FK_ID_CREDENTIALS
 				  + ") VALUES (?,?);";
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWCredentialsSharedUserMap.class, "Add User to Credentials: "+credentials.name()+", User: "+user.username());
@@ -184,7 +184,7 @@ public class CFWDBCredentialsSharedUserMap {
 			// only returns true if anything was updated. Therefore cannot include in check.
 			boolean hasCleared = new CFWSQL(new CFWCredentialsSharedUserMap())
 						.delete()
-						.where(CFWCredentialsSharedUserMapFields.FK_ID_DASHBOARD, credentials.id())
+						.where(CFWCredentialsSharedUserMapFields.FK_ID_CREDENTIALS, credentials.id())
 						.executeDelete();
 			
 			if(hasCleared) {
@@ -234,7 +234,7 @@ public class CFWDBCredentialsSharedUserMap {
 				+" WHERE "
 				  + CFWCredentialsSharedUserMapFields.FK_ID_USER +" = ? "
 				  + " AND "
-				  + CFWCredentialsSharedUserMapFields.FK_ID_DASHBOARD +" = ? "
+				  + CFWCredentialsSharedUserMapFields.FK_ID_CREDENTIALS +" = ? "
 				  + ";";
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWCredentialsSharedUserMap.class, "Remove User from Credentials: "+credentials.name()+", User: "+user.username());
@@ -297,7 +297,7 @@ public class CFWDBCredentialsSharedUserMap {
 			.queryCache()
 			.selectCount()
 			.where(CFWCredentialsSharedUserMapFields.FK_ID_USER.toString(), userid)
-			.and(CFWCredentialsSharedUserMapFields.FK_ID_DASHBOARD.toString(), credentialsid)
+			.and(CFWCredentialsSharedUserMapFields.FK_ID_CREDENTIALS.toString(), credentialsid)
 			.executeCount();
 
 	}
@@ -318,7 +318,7 @@ public class CFWDBCredentialsSharedUserMap {
 				"SELECT U.PK_ID, U.USERNAME, U.FIRSTNAME, U.LASTNAME "  
 				+ " FROM "+User.TABLE_NAME+" U " 
 				+ " LEFT JOIN "+CFWCredentialsSharedUserMap.TABLE_NAME+" M ON M.FK_ID_USER = U.PK_ID\r\n"
-				+ " WHERE M.FK_ID_DASHBOARD = ? " 
+				+ " WHERE M.FK_ID_CREDENTIALS = ? " 
 				+ " ORDER BY LOWER(U.USERNAME) "
 				;
 		
