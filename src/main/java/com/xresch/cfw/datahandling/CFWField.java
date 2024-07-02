@@ -33,6 +33,7 @@ import org.quartz.JobExecutionContext;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -760,7 +761,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 ***********************************************************************************/
 	private void createSelect(StringBuilder html, String cssClasses) {
 		
-		this.removeAttribute("value");
+		String id = this.getAttributeValue("id");
 		
 		//-----------------------------------
 		// Set Selected Value
@@ -769,35 +770,80 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			selectedValue = value.toString();
 		}else if (valueLabelOptions != null && !valueLabelOptions.isEmpty()) {
 			selectedValue = valueLabelOptions.keySet().toArray()[0].toString();
-		}						
+		}	
+		
+		this.addAttribute("value", selectedValue);
 		
 		//-----------------------------------
-		// Create Select 
-		html.append("<select class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+" >");
-
+		// Create Options Array
+		JsonArray optionsArray = new JsonArray();
 		if(valueLabelOptions != null) {
 			
 			for(Object optionValue : valueLabelOptions.keySet()) {
-				
 				String currentLabel = valueLabelOptions.get(optionValue).toString();
 				String stringValue = (optionValue == null) ? "" : optionValue.toString();
-				String stringValueNoQuotes = stringValue.replaceAll("\"", "&quot;");
 				
-				if(stringValue.equals(selectedValue)) {
-					
-					html.append("<option value=\""+stringValueNoQuotes +"\" selected>")
-						.append(currentLabel)
-					.append("</option>");
-				}else {
-					html.append("<option value=\""+stringValueNoQuotes+"\">")
-						.append(currentLabel)
-					.append("</option>");
-				}
+				JsonObject object = new JsonObject();
+				object.addProperty("value", stringValue);
+				object.addProperty("label", currentLabel);
+				optionsArray.add(object);
 			}
 		}
 		
-		html.append("</select>");
+		//-----------------------------------
+		// Create Select 
+		html.append("<input class=\""+cssClasses+"\" "+this.getAttributesString()+" >");
+		if(this.parent instanceof CFWForm) {
+			String arrayString = CFW.JSON.toJSON(optionsArray);
+
+			((CFWForm)this.parent).javascript.append("cfw_initializeSelect('"+id+"', "+arrayString+", true);\r\n");
+		}
+		
 	}
+	
+//	/***********************************************************************************
+//	 * Create Select
+//	 ***********************************************************************************/
+//	private void createSelect(StringBuilder html, String cssClasses) {
+//		
+//		this.removeAttribute("value");
+//		
+//		//-----------------------------------
+//		// Set Selected Value
+//		String selectedValue = "";
+//		if(value != null) {
+//			selectedValue = value.toString();
+//		}else if (valueLabelOptions != null && !valueLabelOptions.isEmpty()) {
+//			selectedValue = valueLabelOptions.keySet().toArray()[0].toString();
+//		}						
+//		
+//		//-----------------------------------
+//		// Create Select 
+//		html.append("<select class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+" >");
+//		
+//		if(valueLabelOptions != null) {
+//			
+//			for(Object optionValue : valueLabelOptions.keySet()) {
+//				
+//				String currentLabel = valueLabelOptions.get(optionValue).toString();
+//				String stringValue = (optionValue == null) ? "" : optionValue.toString();
+//				String stringValueNoQuotes = stringValue.replaceAll("\"", "&quot;");
+//				
+//				if(stringValue.equals(selectedValue)) {
+//					
+//					html.append("<option value=\""+stringValueNoQuotes +"\" selected>")
+//					.append(currentLabel)
+//					.append("</option>");
+//				}else {
+//					html.append("<option value=\""+stringValueNoQuotes+"\">")
+//					.append(currentLabel)
+//					.append("</option>");
+//				}
+//			}
+//		}
+//		
+//		html.append("</select>");
+//	}
 	
 	/***********************************************************************************
 	 * Create Select

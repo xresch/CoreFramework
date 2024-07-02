@@ -1248,9 +1248,10 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 		titleLinkAlignClass = ' align-self-'+merged.TITLE_ALIGN;
 	}
 	
-	
+	let styleBody = 'font-size: '+merged.CONTENT_FONTSIZE+'px;';
+		
 	var htmlString =
-		'<div class="grid-stack-item-content card d-flex '+titleposClass+'">'
+		'<div class="grid-stack-item-content card d-flex '+titleposClass+'" data-type="'+widgetObject.TYPE+'">'
 		+'	<div role="button" class="cfw-dashboard-widget-actionicons text-cfw-lightgray show-on-edit">'
 		+'		<div role="button" class="actionicon-delete '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_remove(\''+merged.guid+'\')"><i class="fas fa-times"></i></div>'
 		+'		<div role="button" class="actionicon-duplicate '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_duplicate(\''+merged.guid+'\')"><i class="fas fa-clone"></i></div>'
@@ -1281,7 +1282,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	if(merged.widgetBody != null && merged.widgetBody != ''
 	|| merged.FOOTER != null && merged.FOOTER != ''){
 		htmlString += 
-			'<div class="cfw-dashboard-widget-body" style="font-size: '+merged.CONTENT_FONTSIZE+'px;">';
+			'<div class="cfw-dashboard-widget-body" style="'+styleBody+'">';
 				if(merged.FOOTER != null && merged.FOOTER != ''){
 					htmlString +=
 					'		 <div class="cfw-dashboard-widget-footer border-top '+borderClass+'">'

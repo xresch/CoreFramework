@@ -608,11 +608,14 @@ function cfw_colors_getSplitThresholdStyle(
  * The items that should be filtered(based on their HTML content) have to be found with
  * the itemSelector.
  * 
+ * Example Usage:
+ * CFW.utils.filterItems('#menu-content', inputField, '.filterable');
+ * 
  *@param context the JQuery selector for the element containing the items which should be filtered.
  *@param searchField the searchField of the field containing the search string.
  *@param itemSelector the JQuery selector for the object which should be filtered.
  *************************************************************************************/
-function cfw_filterItems(context, searchField, itemSelector){
+function cfw_utils_filterItems(context, searchField, itemSelector){
 
 	var filterContext = $(context);
 	var input = $(searchField);
@@ -623,12 +626,14 @@ function cfw_filterItems(context, searchField, itemSelector){
 		  var current = $(this);
 
 		  if (current.html().toUpperCase().indexOf(filter) > -1) {
+			  
 			  current.css("display", "");
+			  
 			  current.parents()
-					 .css("display", "")
 					 .filter(".collapse")
 					 .removeClass('hide')
-					 .addClass('show');
+					 .addClass('show')
+					 ;
 
 		  } else {
 			  current.css("display", "none")
@@ -821,7 +826,7 @@ function cfw_initializeQueryEditor(fieldID){
 	new CFWQueryEditor(textarea, {});
 
 }
-/**************************************************************************************
+/*************************************************************************************
  * 
  *************************************************************************************/
 function cfw_initializeExpandableTextareaField(fieldID){
@@ -834,6 +839,130 @@ function cfw_initializeExpandableTextareaField(fieldID){
 	textarea.before(wrapper);
 	wrapper.append(textarea);	
 
+}
+
+/*************************************************************************************
+ * Create a filterable select.
+ * @param fieldID id of the input field. The value of the field 
+ *        will be used as the selected value.
+ * @param valueLabelOptions an object of objects containing values and
+ *        labels, e.g. [ { value: 1, label: MyLabel}, ... ]
+ * @param filterable true if a the select should have a filter, false otherwise
+ * 
+ *************************************************************************************/
+function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
+	
+	var id = '#'+fieldID;
+
+	var originalField = $(id);
+	var selectedValue = originalField.val();
+	originalField.css('display', 'none');
+	
+	//--------------------------
+	// Create Wrapper
+	var wrapper = $('<div id="'+fieldID+'-cfw-select" class="cfw-select w-100">');
+	wrapper.data('options', valueLabelOptions);
+	originalField.before(wrapper);
+	wrapper.append(originalField);	
+		
+	//--------------------------
+	// Create Dropdown
+	var classes = originalField.attr('class');
+	var dropdownHTML = `<div class="dropdown">
+			<button id="${id}-dropdownMenuButton" class="form-control mb-2 dropdown-toggle dropdown-toggle-wide ${classes}" style="text-align: start;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			   &nbsp;
+			</button>
+			<div class="dropdown-menu dropdown-scroll w-100" aria-labelledby="${id}-dropdownMenuButton">
+		`
+		;
+	
+	//--------------------------
+	// Create Options
+	if(valueLabelOptions != null){
+		for(let i = 0; i < valueLabelOptions.length; i++){
+			let currentOption = valueLabelOptions[i];
+			
+			let label = '&nbsp;';
+			if( !CFW.utils.isNullOrEmpty(currentOption.label) ) {
+					label = currentOption.label
+			}
+			
+			dropdownHTML += ' <a class="dropdown-item filterable" onclick="cfw_setSelectValue(\''+fieldID+'\', \''+currentOption.value+'\')">'+label+'</a>';
+		}
+	}
+	
+	dropdownHTML += '</div> </div>';
+	
+
+	//--------------------------------
+	// Finishing Touch
+	wrapper.append(dropdownHTML);
+
+	cfw_setSelectValue(fieldID, selectedValue);
+	
+	//--------------------------------
+	// Add Filter
+	let menu = wrapper.find('.dropdown-menu');
+	let filterField = $('<input type="text" class="form-control-sm w-fill ml-1 mr-1"'
+								+' placeholder="Filter..."'
+								+' onkeyup="cfw_filterSelect(this, event, \''+fieldID+'\')">');
+	
+	menu.prepend(filterField);
+	
+	
+}
+
+
+/*************************************************************************************
+ * Filter ze select options.
+ * @param filterField the field that filters
+ * @param event 
+ * @param fieldID of the the originalFieldID
+ * 
+ *************************************************************************************/
+function cfw_filterSelect(filterField, event, fieldID){
+	
+	event.preventDefault();
+	event.stopPropagation();
+		
+	CFW.utils.filterItems('#'+fieldID+'-cfw-select', filterField, '.filterable');
+}
+
+/*************************************************************************************
+ * Set ze selected value.
+ * @param optionElement the originalID of the field
+ * @param valueToSelect an object of objects containing values and
+ *        labels, e.g. [ { value: 1, label: MyLabel}, ... ]
+ * @param filterable true if a the select should have a filter, false otherwise
+ * 
+ *************************************************************************************/
+function cfw_setSelectValue(fieldID, valueToSelect){
+	
+	var inputField = $('#'+fieldID);
+	var wrapper = inputField.closest('.cfw-select');
+	var options = wrapper.data('options');
+	
+	var button = wrapper.find('button');
+	
+	if(options != null){
+		for(var i = 0; i < options.length; i++){
+			
+			var currentOption = options[i];
+			if(currentOption.value == valueToSelect){
+
+				inputField.val(currentOption.value);
+				
+				if( !CFW.utils.isNullOrEmpty(currentOption.label) ) {
+					button.text(currentOption.label);
+				}else{
+					button.html("&nbsp;");
+				}
+				
+			}
+			
+		}
+	}
+	
 }
 
 /**************************************************************************************
@@ -1634,7 +1763,7 @@ function cfw_initializeColorPickerField(fieldID, colorOrClass){
  * 
  *************************************************************************************/
 function cfw_internal_updateColorPickerValueCustom(fieldID){
-	console.log("cfw_internal_updateColorPickerValueCustom")
+
 	let selector = "#"+fieldID; 
 	
 	let colorOrClass = $(selector+"-CUSTOMCOLOR").val();
@@ -3874,7 +4003,7 @@ function cfw_ui_addToast(toastTitle, toastBody, style, delay){
  * @param modalBody the body of the modal
  * @param jsCode to execute on modal close
  * @param size 'small', 'regular', 'large'
- * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
+ * @param keepOnOutsideClick (obsolete, now default true)
  * @return nothing
  *************************************************************************************/
 function cfw_ui_showModal(modalTitle
@@ -3904,10 +4033,10 @@ function cfw_ui_showModal(modalTitle
 		modalDialogClass = 'modal-xxl-cfw';
 	}
 	
-	if(keepOnOutsideClick){
-		modalSettings.backdrop = 'static';
-		modalSettings.keyboard = false;
-	}
+	//if(keepOnOutsideClick){
+	modalSettings.backdrop = 'static';
+	modalSettings.keyboard = false;
+
 	
 	CFW.global.lastOpenedModal = modalID;
 	var modal = $("#"+modalID);
@@ -5534,7 +5663,7 @@ var CFW = {
 	},
 	utils: {
 		executeCodeOrFunction: cfw_utils_executeCodeOrFunction,
-		filterItems: cfw_filterItems,
+		filterItems: cfw_utils_filterItems,
 		randomString: cfw_utils_randomString,
 		chainedOnload: cfw_utils_chainedOnload,
 		isNullOrEmpty: cfw_utils_isNullOrEmpty,
