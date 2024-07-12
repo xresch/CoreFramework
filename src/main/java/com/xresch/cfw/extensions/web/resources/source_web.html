@@ -271,17 +271,18 @@ The following query uses the unbox command to keep some of the original fields(f
     id="ID" 
     key="KEY"
     self="URL"
-| unbox fields.parent.id 				| rename id="PARENT_ID"
-| unbox fields.parent.key 				| rename key="PARENT_KEY"
-| unbox fields.parent.self 				| rename self="PARENT_URL"
-| unbox fields.summary 					| rename summary="TITLE"
-| unbox fields.assignee.name 			| rename name="ASSIGNEE"
-| unbox fields.assignee.emailAddress 	| rename emailAddress ="ASSIGNEE_EMAIL"
-| unbox fields.reporter.name 			| rename name="REPORTER"
-| unbox fields.reporter.emailAddress 	| rename emailAddress ="REPORTER_EMAIL"
-| unbox fields.status.name 				| rename name ="STATUS"
-| unbox fields.created 					| rename created ="CREATED"
-| unbox fields.updated 					| rename updated ="UPDATED"
+| set 
+	"PARENT_ID" = fields.parent.id
+	"PARENT_KEY" = fields.parent.key 
+	"PARENT_URL" = fields.parent.self 	
+	"TITLE" = fields.summary					
+ 	"ASSIGNEE" = fields.assignee.name 			
+ 	"ASSIGNEE_EMAIL" = fields.assignee.emailAddress 	
+ 	"REPORTER" = fields.reporter.name
+ 	"REPORTER_EMAIL" = fields.reporter.emailAddress 
+  	"STATUS" = fields.status.name 
+	"CREATED" = fields.created
+	"UPDATED" = fields.updated
 | remove expand, fields
 | set
     CREATED = timeparse("yyyy-MM-dd'T'HH:mm:ss.SSSZ", CREATED)
