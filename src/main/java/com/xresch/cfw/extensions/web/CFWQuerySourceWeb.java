@@ -1,13 +1,10 @@
 package com.xresch.cfw.extensions.web;
 
 import java.text.ParseException;
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.w3c.dom.Document;
 
@@ -29,7 +26,6 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 import com.xresch.cfw.validation.CustomValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
@@ -717,6 +713,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 			EnhancedJsonObject object = new EnhancedJsonObject();
 			object.addProperty("url", response.getURL().toString());
 			object.addProperty("status", response.getStatus());
+			object.addProperty("duration", response.getDuration());
 			object.add("headers", response.getHeadersAsJson());
 			object.addProperty("body", data);
 			outQueue.add( object );

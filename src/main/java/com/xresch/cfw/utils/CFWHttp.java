@@ -923,6 +923,7 @@ public class CFWHttp {
 		private URL url;
 		private String body;
 		private int status = 500;
+		private long duration = -1;
 		private Map<String, List<String>> headers;
 		
 		private boolean errorOccured = false;
@@ -932,8 +933,11 @@ public class CFWHttp {
 			BufferedReader in = null;
 			StringBuilder builder = new StringBuilder();
 			int responseCode = -1;
+			
+			long startMillis = System.currentTimeMillis();
 			try{
 				url = conn.getURL();
+				
 				//------------------------------
 				// connect if not already done
 				conn.connect();
@@ -962,8 +966,7 @@ public class CFWHttp {
 		        }
 		        
 		        body = builder.toString();
-		        
-		        
+
 			}catch(Exception e) {
 				new CFWLog(responseLogger)
 					.severe("Exception occured while accessing URL: Type=\""+e.getClass().getSimpleName()
@@ -972,6 +975,10 @@ public class CFWHttp {
 							, e);
 				errorOccured = true;
 			}finally {
+				
+				long endMillis = System.currentTimeMillis();
+		        duration = endMillis - startMillis;
+		        
 				if(in != null) {
 					try {
 						conn.disconnect();
@@ -1124,6 +1131,13 @@ public class CFWHttp {
 			return status;
 		}
 
+		/******************************************************************************************************
+		 * Returns the approximate duration that was needed for executing and reading the request.
+		 ******************************************************************************************************/
+		public long getDuration() {
+			return duration;
+		}
+		
 		/******************************************************************************************************
 		 * 
 		 ******************************************************************************************************/
