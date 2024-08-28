@@ -892,6 +892,25 @@ public class DBInterface {
 				password);
 		
 	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	public static DBInterface createDBInterfacePostgres(String uniqueNamePrefix, String servername, int port, String dbName, String username, String password) {
+		
+		String urlPart = servername+":"+port+"/"+dbName;
+		String uniqueName = uniqueNamePrefix+"MySQL:"+servername+":"+port;
+		String connectionURL = "jdbc:postgresql://"+urlPart;
+		String driverClass = "org.postgresql.Driver";
+
+		return createDBInterface(
+				uniqueName, 
+				driverClass, 
+				connectionURL, 
+				username, 
+				password);
+		
+	}
 
 
 	/************************************************************************
