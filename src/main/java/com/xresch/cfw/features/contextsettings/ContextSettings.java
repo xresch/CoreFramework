@@ -63,6 +63,7 @@ public class ContextSettings extends CFWObject {
 			.setColumnDefinition("BOOLEAN DEFAULT TRUE")
 			.setLabel("Active")
 			.setDescription("Activate or deactive this setting.")
+			.setValue(true)
 			;
 	
 	private CFWField<LinkedHashMap<String,String>> restrictedToUsers = CFWField.newTagsSelector(ContextSettingsFields.JSON_RESTRICTED_TO_USERS)

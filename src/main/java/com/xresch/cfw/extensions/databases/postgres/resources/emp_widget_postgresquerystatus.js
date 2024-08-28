@@ -5,4 +5,4 @@
 			createDatabaseQueryStatusWidget(CFWL('emp_widget_postgresquerystatus', "Postgres Query Status")) 
 		);
 	
-})();;
+})();
