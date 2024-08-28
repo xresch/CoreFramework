@@ -40,7 +40,7 @@ public class InfluxDBEnvironmentManagement {
 			}
 			
 			@Override
-			public void onDelete(AbstractContextSettings typeSettings) {
+			public void onDeleteOrDeactivate(AbstractContextSettings typeSettings) {
 				environments.remove(typeSettings.getDefaultObject().id());
 			}
 		};
@@ -58,7 +58,7 @@ public class InfluxDBEnvironmentManagement {
 		// Clear environments
 		environments = new HashMap<Integer, InfluxDBEnvironment>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(InfluxDBEnvironment.SETTINGS_TYPE);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(InfluxDBEnvironment.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			InfluxDBEnvironment current = (InfluxDBEnvironment)settings;

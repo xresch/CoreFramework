@@ -34,7 +34,7 @@ public class MySQLEnvironmentManagement {
 			}
 
 			@Override
-			public void onDelete(AbstractContextSettings typeSettings) {
+			public void onDeleteOrDeactivate(AbstractContextSettings typeSettings) {
 				environmentsWithDB.remove(typeSettings.getDefaultObject().id());
 			}
 		};
@@ -49,7 +49,7 @@ public class MySQLEnvironmentManagement {
 		// Clear environments
 		environmentsWithDB = new HashMap<Integer, MySQLEnvironment>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(MySQLEnvironment.SETTINGS_TYPE);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(MySQLEnvironment.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			MySQLEnvironment current = (MySQLEnvironment)settings;

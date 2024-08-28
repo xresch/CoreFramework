@@ -32,6 +32,7 @@ public class ContextSettings extends CFWObject {
 		CFW_CTXSETTINGS_TYPE,
 		CFW_CTXSETTINGS_NAME,
 		CFW_CTXSETTINGS_DESCRIPTION,
+		CFW_CTXSETTINGS_ISACTIVE,
 		JSON_RESTRICTED_TO_USERS,
 		JSON_RESTRICTED_TO_GROUPS,
 		JSON_CTXSETTINGS
@@ -48,7 +49,7 @@ public class ContextSettings extends CFWObject {
 			.addValidator(new LengthValidator(1, 255));
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, ContextSettingsFields.CFW_CTXSETTINGS_NAME.toString())
-			.setLabel("Name")
+			.setLabel("Is ")
 			.setColumnDefinition("VARCHAR(255)")
 			.setDescription("The name of the context setting.")
 			.addValidator(new LengthValidator(1, 255));
@@ -57,6 +58,12 @@ public class ContextSettings extends CFWObject {
 			.setLabel("Description")
 			.setDescription("The description of the context setting.")
 			.addValidator(new LengthValidator(-1, 200000));
+	
+	private CFWField<Boolean> isActive = CFWField.newBoolean(FormFieldType.BOOLEAN, ContextSettingsFields.CFW_CTXSETTINGS_ISACTIVE)
+			.setColumnDefinition("BOOLEAN DEFAULT TRUE")
+			.setLabel("Active")
+			.setDescription("Activate or deactive this setting.")
+			;
 	
 	private CFWField<LinkedHashMap<String,String>> restrictedToUsers = CFWField.newTagsSelector(ContextSettingsFields.JSON_RESTRICTED_TO_USERS)
 			.setLabel("Restricted to Users")
@@ -93,7 +100,7 @@ public class ContextSettings extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, type, name, description, restrictedToUsers, restrictedToGroups, settings);
+		this.addFields(id, type, name, description, isActive, restrictedToUsers, restrictedToGroups, settings);
 	}
 		
 	public void migrateTable(){
@@ -111,6 +118,7 @@ public class ContextSettings extends CFWObject {
 				new String[] {
 						ContextSettingsFields.PK_ID.toString(), 
 						ContextSettingsFields.CFW_CTXSETTINGS_NAME.toString(),
+						ContextSettingsFields.CFW_CTXSETTINGS_ISACTIVE.toString()
 				};
 		
 		String[] outputFields = 
@@ -119,6 +127,7 @@ public class ContextSettings extends CFWObject {
 						ContextSettingsFields.CFW_CTXSETTINGS_TYPE.toString(),
 						ContextSettingsFields.CFW_CTXSETTINGS_NAME.toString(),
 						ContextSettingsFields.CFW_CTXSETTINGS_DESCRIPTION.toString(),	
+						ContextSettingsFields.CFW_CTXSETTINGS_ISACTIVE.toString(),	
 						ContextSettingsFields.JSON_RESTRICTED_TO_USERS.toString(),	
 						ContextSettingsFields.JSON_RESTRICTED_TO_GROUPS.toString(),	
 						ContextSettingsFields.JSON_CTXSETTINGS.toString()
@@ -172,6 +181,15 @@ public class ContextSettings extends CFWObject {
 
 	public ContextSettings description(String description) {
 		this.description.setValue(description);
+		return this;
+	}
+	
+	public Boolean isActive() {
+		return isActive.getValue();
+	}
+	
+	public ContextSettings isActive(Boolean isActive) {
+		this.isActive.setValue(isActive);
 		return this;
 	}
 	

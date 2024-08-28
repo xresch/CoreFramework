@@ -201,14 +201,17 @@ function cfw_contextsettings_printContextSettings(data){
 			 	textstylefield: null,
 			 	titlefields: ['CFW_CTXSETTINGS_NAME'],
 			 	titleformat: '{0}',
-			 	visiblefields: ['PK_ID','CFW_CTXSETTINGS_TYPE', 'CFW_CTXSETTINGS_NAME', 'CFW_CTXSETTINGS_DESCRIPTION'],
+			 	visiblefields: ['PK_ID','CFW_CTXSETTINGS_TYPE', 'CFW_CTXSETTINGS_NAME', 'CFW_CTXSETTINGS_DESCRIPTION', 'CFW_CTXSETTINGS_ISACTIVE'],
 			 	labels: {
 			 		PK_ID: "ID",
 			 		CFW_CTXSETTINGS_TYPE: CFWL('cfw_core_type', 'Type'),
 			 		CFW_CTXSETTINGS_NAME: CFWL('cfw_core_name', 'Name'),
-			 		CFW_CTXSETTINGS_DESCRIPTION: CFWL('cfw_core_description', 'Description')
+			 		CFW_CTXSETTINGS_DESCRIPTION: CFWL('cfw_core_description', 'Description'),
+			 		CFW_CTXSETTINGS_ISACTIVE: CFWL('cfw_core_active', 'Active')
 			 	},
-			 	customizers: {},
+			 	customizers: {
+					 CFW_CTXSETTINGS_ISACTIVE: CFW.customizer.booleanFormat
+				 },
 				actions: actionButtons,
 //				bulkActions: {
 //					"Edit": function (elements, records, values){ alert('Edit records '+values.join(',')+'!'); },

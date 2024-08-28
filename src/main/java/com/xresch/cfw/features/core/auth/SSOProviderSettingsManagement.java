@@ -87,7 +87,7 @@ public class SSOProviderSettingsManagement {
 				}
 				
 				@Override
-				public void onDelete(AbstractContextSettings typeSettings) {
+				public void onDeleteOrDeactivate(AbstractContextSettings typeSettings) {
 					environments.remove(typeSettings.getDefaultObject().id());
 				}
 			};
@@ -112,7 +112,7 @@ public class SSOProviderSettingsManagement {
 		
 		for(SSOProviderSettings settingsInstance : getSSOProviderSettingsInstances()) {
 
-			ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(settingsInstance.getSettingsType());
+			ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(settingsInstance.getSettingsType(), true);
 			
 			for(AbstractContextSettings settings : settingsArray) {
 				SSOProviderSettings current = (SSOProviderSettings)settings;

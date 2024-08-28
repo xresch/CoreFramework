@@ -28,5 +28,5 @@ public abstract class ContextSettingsChangeListener {
 	 * Will be triggered for every context setting that is deleted.
 	 * 
 	 ***********************************************************/
-	public abstract void onDelete(AbstractContextSettings typeSettings);
+	public abstract void onDeleteOrDeactivate(AbstractContextSettings typeSettings);
 }

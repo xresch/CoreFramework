@@ -154,10 +154,22 @@ public class CFWDBContextSettings {
 		typeSettings.mapJsonFields(item.settings(), true, true);
 		typeSettings.setWrapper(item);
 		
-		for(ContextSettingsChangeListener listener : changeListeners) {
-			
-			if(listener.listensOnType(item.type())) {
-				listener.onChange(typeSettings, false);
+		//------------------------------------
+		// If Active, Trigger Change, else Trigger Deactivate
+		//------------------------------------
+		if(item.isActive()) {
+			for(ContextSettingsChangeListener listener : changeListeners) {
+				
+				if(listener.listensOnType(item.type())) {
+					listener.onChange(typeSettings, false);
+				}
+			}
+		}else {
+			for(ContextSettingsChangeListener listener : changeListeners) {
+				
+				if(listener.listensOnType(item.type())) {
+					listener.onDeleteOrDeactivate(typeSettings);
+				}
 			}
 		}
 		
@@ -186,7 +198,7 @@ public class CFWDBContextSettings {
 			for(ContextSettingsChangeListener listener : changeListeners) {
 				
 				if(listener.listensOnType(item.type())) {
-					listener.onDelete(typeSettings);
+					listener.onDeleteOrDeactivate(typeSettings);
 				}
 			}
 		}
@@ -226,10 +238,11 @@ public class CFWDBContextSettings {
 	
 	/***************************************************************
 	 * Select a dashboard by it's ID and return it as JSON string.
+	 * @param activeOnly TODO
 	 * @param id of the dashboard
 	 * @return Returns a dashboard or null if not found or in case of exception.
 	 ****************************************************************/
-	public static ArrayList<AbstractContextSettings> getContextSettingsForType(String type) {
+	public static ArrayList<AbstractContextSettings> getContextSettingsForType(String type, boolean activeOnly) {
 		
 		if(settingsCache.containsKey(type)) {
 			return settingsCache.get(type);
@@ -245,11 +258,14 @@ public class CFWDBContextSettings {
 		
 		for(CFWObject object : objects) {
 			ContextSettings current = (ContextSettings)object;
-			AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(current.type());
 			
-			typeSettings.mapJsonFields(current.settings(), true, true);
-			typeSettings.setWrapper(current);
-			settingsArray.add(typeSettings);
+			if( !activeOnly || current.isActive()) {
+				AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(current.type());
+				
+				typeSettings.mapJsonFields(current.settings(), true, true);
+				typeSettings.setWrapper(current);
+				settingsArray.add(typeSettings);
+			}
 		}
 		
 		settingsCache.put(type, settingsArray);

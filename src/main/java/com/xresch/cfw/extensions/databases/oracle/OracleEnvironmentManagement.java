@@ -35,7 +35,7 @@ public class OracleEnvironmentManagement {
 			}
 
 			@Override
-			public void onDelete(AbstractContextSettings typeSettings) {
+			public void onDeleteOrDeactivate(AbstractContextSettings typeSettings) {
 				environmentsWithDB.remove(typeSettings.getDefaultObject().id());
 			}
 		};
@@ -50,7 +50,7 @@ public class OracleEnvironmentManagement {
 		// Clear environments
 		environmentsWithDB = new HashMap<Integer, OracleEnvironment>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(OracleEnvironment.SETTINGS_TYPE);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(OracleEnvironment.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			OracleEnvironment current = (OracleEnvironment)settings;

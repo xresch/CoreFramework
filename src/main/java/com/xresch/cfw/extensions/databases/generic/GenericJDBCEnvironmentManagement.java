@@ -34,7 +34,7 @@ public class GenericJDBCEnvironmentManagement {
 			}
 
 			@Override
-			public void onDelete(AbstractContextSettings typeSettings) {
+			public void onDeleteOrDeactivate(AbstractContextSettings typeSettings) {
 				environmentsWithDB.remove(typeSettings.getDefaultObject().id());
 			}
 		};
@@ -49,7 +49,7 @@ public class GenericJDBCEnvironmentManagement {
 		// Clear environments
 		environmentsWithDB = new HashMap<Integer, GenericJDBCEnvironment>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(GenericJDBCEnvironment.SETTINGS_TYPE);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(GenericJDBCEnvironment.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			GenericJDBCEnvironment current = (GenericJDBCEnvironment)settings;

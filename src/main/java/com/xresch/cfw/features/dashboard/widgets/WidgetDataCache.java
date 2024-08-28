@@ -52,7 +52,7 @@ public class WidgetDataCache {
 			}
 
 			@Override
-			public void onDelete(AbstractContextSettings typeSettings) {
+			public void onDeleteOrDeactivate(AbstractContextSettings typeSettings) {
 				CACHE.invalidateAll();
 			}
 		};

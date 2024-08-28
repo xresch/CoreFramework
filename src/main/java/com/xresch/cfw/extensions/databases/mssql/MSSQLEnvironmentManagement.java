@@ -34,7 +34,7 @@ public class MSSQLEnvironmentManagement {
 			}
 
 			@Override
-			public void onDelete(AbstractContextSettings typeSettings) {
+			public void onDeleteOrDeactivate(AbstractContextSettings typeSettings) {
 				environmentsWithDB.remove(typeSettings.getDefaultObject().id());
 			}
 		};
@@ -49,7 +49,7 @@ public class MSSQLEnvironmentManagement {
 		// Clear environments
 		environmentsWithDB = new HashMap<Integer, MSSQLEnvironment>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(MSSQLEnvironment.SETTINGS_TYPE);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(MSSQLEnvironment.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			MSSQLEnvironment current = (MSSQLEnvironment)settings;
