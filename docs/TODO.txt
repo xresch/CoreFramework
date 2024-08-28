@@ -161,6 +161,7 @@ DONE
 
 ------- current -------
 - Dashboard: Sharing - fixed bug where a user in a shared group could access a dashboard even if it was not set to shared=true
+- Dashboard Widgets: Improved hierarchy of database widgets.
 - Select: Added filter to all select boxes
 - Query: source web: as=http will now also give you the duration. 
 

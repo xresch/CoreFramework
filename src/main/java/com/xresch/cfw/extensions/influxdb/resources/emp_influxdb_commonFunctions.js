@@ -2,8 +2,8 @@
 	/******************************************************************
 	 * 
 	 ******************************************************************/
-	var CATEGORY_INFLUXDB = "Database | InfluxDB";
-	CFW.dashboard.registerCategory("fas fa-database", CATEGORY_INFLUXDB);
+	//var CATEGORY_INFLUXDB = "Database | InfluxDB";
+	//CFW.dashboard.registerCategory("fas fa-database", CATEGORY_INFLUXDB);
 
 	/******************************************************************
 	 *

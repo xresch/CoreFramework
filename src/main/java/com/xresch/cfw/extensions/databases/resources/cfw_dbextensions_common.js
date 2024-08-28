@@ -1,14 +1,19 @@
 /******************************************************************
  * 
  ******************************************************************/
+CFW.dashboard.global.categoryDBChart = "Database | Chart";
+CFW.dashboard.global.categoryDBStatus = "Database | Status";
+
 CFW.dashboard.registerCategory("fas fa-database", "Database");
+CFW.dashboard.registerCategory("fas fa-chart-bar", CFW.dashboard.global.categoryDBChart);
+CFW.dashboard.registerCategory("fas fa-thermometer-half", CFW.dashboard.global.categoryDBStatus);
 	
 /******************************************************************
  * 
  ******************************************************************/
 function createDatabaseQueryStatusWidget(widgetMenuLabel){
 	return {
-		category: "Database",
+		category: "Database | Status",
 		menuicon: "fas fa-thermometer-half",
 		menulabel: widgetMenuLabel,
 		description: CFWL('emp_widget_database_status_desc', "Executes a database query and displays the data. Records can be colored by applying a threshhold against the value of a column. Can have tasks that alerts when specific threasholds are reached."), 
@@ -136,7 +141,7 @@ function createDatabaseQueryStatusWidget(widgetMenuLabel){
  ******************************************************************/
 function createDatabaseQueryChartWidget(widgetMenuLabel){
 	return {
-		category: "Database",
+		category: "Database | Chart",
 		menuicon: "fas fa-chart-bar",
 		menulabel: widgetMenuLabel,
 		description: CFWL('emp_widget_database_chart_desc', "Executes a database query and displays the data as a chart."), 
