@@ -168,7 +168,7 @@ DONE
 - Context Settings: Now have a property to be enabled and disabled 
 - Select: Added filter to all select boxes
 - Query: source web: as=http will now also give you the duration. 
-
+- Query: source eav: attributes are not returned as uppercase fields
 
 ------- v.9.0.0 -------
 - NEW FEATURE: Credentials Management to not have credentials in queries
