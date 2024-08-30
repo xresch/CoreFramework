@@ -14,7 +14,11 @@ import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
 import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.usermgmt.User;
-
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
 public class CFWJobTaskPostgresQueryStatus extends CFWJobTask {
 	
 	private WidgetPostgresQueryStatus widget = new WidgetPostgresQueryStatus();

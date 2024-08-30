@@ -10,6 +10,11 @@ import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
 import com.xresch.cfw.features.contextsettings.ContextSettingsChangeListener;
 import com.xresch.cfw.logging.CFWLog;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
 public class PostgresEnvironmentManagement {
 	private static Logger logger = CFWLog.getLogger(PostgresEnvironmentManagement.class.getName());
 	

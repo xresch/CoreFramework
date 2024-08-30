@@ -111,6 +111,12 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 					.setDescription("The attributes to filter by.")
 					.addValidator(new NotNullOrEmptyValidator())
 					)
+			.addField(
+					CFWField.newBoolean(FormFieldType.BOOLEAN, "detailed")
+					.setDescription("If set to true, fetch all attributes and not only the ones used in the filtering. (Default: false)")
+					.addValidator(new NotNullOrEmptyValidator())
+					.setValue(false)
+					)
 		;
 	}
 	
@@ -132,6 +138,7 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 		String category = (String)parameters.getField("category").getValue();
 		String entity = (String)parameters.getField("entity").getValue();
 		String attributesString = (String)parameters.getField("attributes").getValue();
+		Boolean detailed = (Boolean)parameters.getField("detailed").getValue();
 
 		LinkedHashMap<String, String> attributes = CFW.JSON.fromJsonLinkedHashMap(attributesString);
 		
@@ -139,7 +146,14 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 			attributes = new LinkedHashMap<>();
 		}
 		
-		JsonArray array = CFWDBEAVStats.fetchStatsAsJsonArray(category, entity, attributes, earliestMillis, latestMillis);
+		JsonArray array = CFWDBEAVStats.fetchStatsAsJsonArray(
+									category
+									, entity
+									, attributes
+									, earliestMillis
+									, latestMillis
+									, detailed
+									);
 		
 		for(int i = 0; i < array.size(); i++) {
 			

@@ -887,7 +887,7 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
 					label = currentOption.label
 			}
 			
-			dropdownHTML += ' <a class="dropdown-item filterable" onclick="cfw_setSelectValue(\''+fieldID+'\', \''+currentOption.value+'\')">'+label+'</a>';
+			dropdownHTML += ' <a class="dropdown-item filterable" onclick="cfw_setSelectValue(\''+fieldID+'\', \''+currentOption.value.replaceAll('"', '&quot;')+'\')">'+label+'</a>';
 		}
 	}
 	

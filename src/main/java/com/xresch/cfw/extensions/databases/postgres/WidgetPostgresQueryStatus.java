@@ -12,11 +12,15 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.db.DBInterface;
 import com.xresch.cfw.extensions.databases.FeatureDBExtensions;
 import com.xresch.cfw.extensions.databases.WidgetBaseSQLQueryStatus;
-import com.xresch.cfw.extensions.databases.oracle.FeatureDBExtensionsOracle;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
 public class WidgetPostgresQueryStatus extends WidgetBaseSQLQueryStatus {
 
 	

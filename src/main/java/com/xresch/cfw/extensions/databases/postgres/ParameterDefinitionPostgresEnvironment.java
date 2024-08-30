@@ -7,9 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWTimeframe;
-import com.xresch.cfw.extensions.databases.oracle.FeatureDBExtensionsOracle;
 import com.xresch.cfw.features.parameter.ParameterDefinition;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
 public class ParameterDefinitionPostgresEnvironment extends ParameterDefinition {
 
 	public static final String LABEL = "Postgres Environment";

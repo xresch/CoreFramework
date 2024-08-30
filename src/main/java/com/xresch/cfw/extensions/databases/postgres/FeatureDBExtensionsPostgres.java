@@ -8,7 +8,7 @@ import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
 public class FeatureDBExtensionsPostgres extends CFWAppFeature {

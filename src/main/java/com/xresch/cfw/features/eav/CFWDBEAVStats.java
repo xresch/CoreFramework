@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,7 +27,6 @@ import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.datetime.CFWDate;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsFields;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsType;
-import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
@@ -198,8 +198,21 @@ public class CFWDBEAVStats {
 			, LinkedHashMap<String,String> attributes
 			, long earliest
 			, long latest
+		) {
+		return fetchStatsAsJsonArray(category, entityName, attributes, earliest, latest, false);
+	}
+		/********************************************************************************************
+		 * 
+		 ********************************************************************************************/
+		public static JsonArray fetchStatsAsJsonArray(
+				String category
+				, String entityName
+				, LinkedHashMap<String,String> attributes
+				, long earliest
+				, long latest
+				, boolean fetchAllAttributes
 			) {
-		
+			
 		JsonArray resultAll = new JsonArray();
 		
 		ArrayList<EAVEntity> entityList = CFW.DB.EAVEntity.selectLike(category, entityName);
@@ -271,7 +284,7 @@ public class CFWDBEAVStats {
 			// Note: Done like this to allow flexible number
 			// of attributes. No easy solution found to do this
 			// in DB directly.
-			result = unnestValuesAndGroupBy(result, attributes.keySet());
+			result = unnestValuesAndGroupBy(result, attributes.keySet(), fetchAllAttributes);
 			
 			resultAll.addAll(result);
 			
@@ -283,9 +296,10 @@ public class CFWDBEAVStats {
 	/********************************************************************************************
 	 * Get the values for the specified valueIDs.
 	 * @param groupByAttributes the attributes grouped by
+	 * @param fetchAllAttributes TODO
 	 * 
 	 ********************************************************************************************/
-	private static JsonArray unnestValuesAndGroupBy(JsonArray result, Set<String> groupByAttributes) {
+	private static JsonArray unnestValuesAndGroupBy(JsonArray result, Set<String> groupByAttributes, boolean fetchAllAttributes) {
 		
 		JsonArray groupedResults = new JsonArray();
 		LinkedHashMap<String, ArrayList<JsonObject>> groupsMap = new LinkedHashMap<>();
@@ -311,15 +325,16 @@ public class CFWDBEAVStats {
 			
 			//---------------------------------------
 			// Get Values and add to Record
-			JsonObject attributesList = new JsonObject();
+			Set<String> finalGroupByAttributes = new HashSet<>();
 			
 			for(int k = 0; k < fkidValues.size(); k++) {
 				int valueID = fkidValues.get(k).getAsInt();
 				EAVValue eavValue = CFW.DB.EAVValue.selectByID(valueID);
 				EAVAttribute attribute = CFW.DB.EAVAttribute.selectByID(eavValue.foreignKeyAttribute());
 				
-				if(groupByAttributes.contains(attribute.name())) {
-					current.addProperty(attribute.name().toUpperCase(), eavValue.value());
+				if(fetchAllAttributes || groupByAttributes.contains(attribute.name())) {
+					finalGroupByAttributes.add(attribute.name());
+					current.addProperty(attribute.name(), eavValue.value());
 				}
 				
 				//attributesList.addProperty(attribute.name(), eavValue.value());
@@ -331,18 +346,16 @@ public class CFWDBEAVStats {
 			//---------------------------------------
 			// Create Groups
 			String groupKey = fkidEntity+"_"+current.get(EAVStatsFields.TIME.toString()).getAsLong();
-			
-			for(String name : groupByAttributes) {
+			for(String name : finalGroupByAttributes) {
 				JsonElement attributeElement = current.get(name);
 				groupKey += "_";
-				if(attributeElement != null) {
-					if(!attributeElement.isJsonNull()) {
-						groupKey += attributeElement.getAsString();
-					}else {
-						groupKey += "cfwnullPlaceholder";
-					}
+				if(attributeElement != null && !attributeElement.isJsonNull()) {
+					groupKey += attributeElement.getAsString();
+				}else {
+					groupKey += "cfwnullPlaceholder";
 				}
 			}
+
 			ArrayList<JsonObject> existingGroup = groupsMap.get(groupKey);
 			if(existingGroup == null) {
 				existingGroup = new ArrayList<JsonObject>();

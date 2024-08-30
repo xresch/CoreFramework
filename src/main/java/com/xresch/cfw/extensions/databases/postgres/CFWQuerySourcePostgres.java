@@ -7,7 +7,7 @@ import com.xresch.cfw.features.usermgmt.User;
 	
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWQuerySourcePostgres extends CFWQuerySourceDatabase {

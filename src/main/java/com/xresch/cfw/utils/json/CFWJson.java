@@ -349,6 +349,16 @@ public class CFWJson {
 		return clonedMap;
 	}
 	
+	/*************************************************************************************
+	 * Converts a json string to a LinkedHashMap 
+	 *************************************************************************************/
+	public static LinkedHashMap<String,String> fromJsonLinkedHashMap(JsonObject zeObject) {
+
+		Type type = new TypeToken<LinkedHashMap<String,String>>(){}.getType();
+		LinkedHashMap<String,String> zeMap = gsonInstance.fromJson(zeObject, type); 
+		return zeMap;
+	}
+	
 	
 	/*************************************************************************************
 	 * 
