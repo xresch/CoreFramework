@@ -19,7 +19,7 @@ public class APIEAVPushStatsFields extends CFWObject {
 		
 		this.addField(
 				CFWField.newString(FormFieldType.TEXTAREA, APIEAVPushStats.FIELDNAME_VALUES)
-					.setDescription("The query that should be executed.")
+					.setDescription("The values that should be pushed.")
 					.addAttribute("rows", "15")
 					.setValue("""
 						[

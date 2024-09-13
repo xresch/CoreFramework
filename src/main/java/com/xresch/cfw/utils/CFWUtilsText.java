@@ -43,6 +43,44 @@ public class CFWUtilsText {
 	}
 	
 	/*******************************************************************
+	 * 
+	 *******************************************************************/
+	public static ArrayList<String> arrayToUppercase(ArrayList<String> list){
+		ArrayList<String> lower = new ArrayList<String>();
+		
+		for(String entry : list ) {
+			
+			if(entry != null) {
+				lower.add(entry.toUpperCase());
+			}else {
+				lower.add(null);
+			}
+			
+		}
+		
+		return lower;
+	}
+	
+	/*******************************************************************
+	 * 
+	 *******************************************************************/
+	public static ArrayList<String> arrayToLowercase(ArrayList<String> list){
+		ArrayList<String> lower = new ArrayList<String>();
+		
+		for(String entry : list ) {
+			
+			if(entry != null) {
+				lower.add(entry.toLowerCase());
+			}else {
+				lower.add(null);
+			}
+			
+		}
+		
+		return lower;
+	}
+	
+	/*******************************************************************
 	 * Splits a row of a CSV record while being aware of quotes.
 	 * 
 	 * @param csvRecord a single line of CSV data
@@ -113,7 +151,7 @@ public class CFWUtilsText {
 
 				if(current == separatorFirstChar
 				&& csvRecord.substring(cursor).startsWith(separator)) {
-					result.add(csvRecord.substring(startPos, cursor));
+					result.add(csvRecord.substring(startPos, cursor).trim());
 					cursor++;
 					break;
 				}
@@ -124,7 +162,7 @@ public class CFWUtilsText {
 			//----------------------------
 			// Grab Last
 			if(cursor >= csvRecord.length() ) {
-				result.add(csvRecord.substring(startPos, cursor));
+				result.add(csvRecord.substring(startPos, cursor).trim());
 				break;
 			}
 		}

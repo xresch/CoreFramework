@@ -196,7 +196,6 @@ public class CFWDBEAVStats {
 			, String entityName
 			, LinkedHashMap<String,String> attributes
 			, int count
-			, BigDecimal val
 			, BigDecimal min
 			, BigDecimal avg
 			, BigDecimal max
@@ -228,7 +227,6 @@ public class CFWDBEAVStats {
 				stats = eavStatsToBeStored.get(storeKey);
 				stats.addStatistics(
 						  count
-						, val
 						, min
 						, avg
 						, max
@@ -240,7 +238,6 @@ public class CFWDBEAVStats {
 				stats = new EAVStats(entity.id(), valueIDs, EAVStatsType.CUSTOM)
 						.setStatistics(
 							  count
-							, val
 							, min
 							, avg
 							, max
@@ -503,7 +500,9 @@ public class CFWDBEAVStats {
 				
 				stats.granularity(granularityMinutes)
 					.time(currentTimeRounded)
-					.calculateStatistics();
+					.sanitizeValues()
+					.calculateStatistics()
+					;
 				
 				createGetPrimaryKey(stats);
 

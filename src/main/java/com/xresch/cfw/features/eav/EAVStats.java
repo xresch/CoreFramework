@@ -212,12 +212,21 @@ public class EAVStats extends CFWObject {
 		return time.getValue();
 	}
 	
+	
 	public EAVStats time(long millis) {
 		time.setValue(new Timestamp(millis));
 		foreignKeyDate.setValue(CFWDate.newDate(millis).id());
 		return this;
 	}
 
+	public EAVStatsType type() {
+		return type;
+	}
+	
+	public EAVStats type(EAVStatsType value) {
+		type = value;
+		return this;
+	}	
 	
 	public Integer foreignKeyEntity() {
 		return foreignKeyEntity.getValue();
@@ -226,6 +235,7 @@ public class EAVStats extends CFWObject {
 	public EAVStats foreignKeyEntity(String value) {
 		return foreignKeyEntity(value);
 	}	
+	
 	public EAVStats foreignKeyEntity(Integer value) {
 		this.foreignKeyEntity.setValue(value);
 		return this;
@@ -274,7 +284,7 @@ public class EAVStats extends CFWObject {
 	/****************************************************************
 	 * Sanitizes values and replaces nulls with zeros for putting it in the database.
 	 ****************************************************************/
-	public void sanitizeValues() {
+	public EAVStats sanitizeValues() {
 
 		if(this.count.getValue() == null) { this.count.setValue(0); }
 		if(this.min.getValue() == null) { this.min.setValue(BigDecimal.ZERO); }
@@ -284,6 +294,8 @@ public class EAVStats extends CFWObject {
 		if(this.val.getValue() == null) { this.val.setValue(BigDecimal.ZERO); }
 		if(this.p50.getValue() == null) { this.p50.setValue(BigDecimal.ZERO); }
 		if(this.p95.getValue() == null) { this.p95.setValue(BigDecimal.ZERO); }
+		
+		return this;
 	}
 	
 	/****************************************************************
@@ -291,7 +303,6 @@ public class EAVStats extends CFWObject {
 	 ****************************************************************/
 	public EAVStats setStatistics(
 			  int count
-			, BigDecimal val
 			, BigDecimal min
 			, BigDecimal avg
 			, BigDecimal max
@@ -300,13 +311,11 @@ public class EAVStats extends CFWObject {
 			, BigDecimal p95
 		) {
 		
-		
 		this.count.setValue(count);
 		this.min.setValue(min);
 		this.avg.setValue(avg);
 		this.max.setValue(max);
 		this.sum.setValue(sum);
-		this.val.setValue(val);
 		this.p50.setValue(p50);
 		this.p95.setValue(p95);
 		
@@ -319,7 +328,6 @@ public class EAVStats extends CFWObject {
 	 ****************************************************************/
 	public EAVStats addStatistics(
 			  int count
-			, BigDecimal val
 			, BigDecimal min
 			, BigDecimal avg
 			, BigDecimal max
@@ -441,6 +449,16 @@ public class EAVStats extends CFWObject {
 			this.p95.setValue(bigCount);
 			return this;
 		}
+		
+		//--------------------------------
+		// Handle Type CUSTOM
+		if(this.type == EAVStatsType.CUSTOM) {
+			BigDecimal sum = this.sum.getValue();
+			this.val.setValue(sum.divide(bigGranularity, RoundingMode.HALF_UP));
+
+			return this;
+		}
+		
 
 		//--------------------------------
 		//Handle Empty Array

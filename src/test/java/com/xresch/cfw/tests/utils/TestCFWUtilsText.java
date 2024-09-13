@@ -29,6 +29,19 @@ public class TestCFWUtilsText {
 		Assertions.assertEquals("c", splitted.get(++i));
 		
 		//---------------------------------
+		// Blanks
+		//---------------------------------
+		splitted = CFW.Utils.Text.splitCSVQuotesAware(",", " a ,\" b \", c ");
+		
+		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
+		
+		i=-1;
+		Assertions.assertEquals(3, splitted.size());
+		Assertions.assertEquals("a", splitted.get(++i));
+		Assertions.assertEquals(" b ", splitted.get(++i));
+		Assertions.assertEquals("c", splitted.get(++i));
+		
+		//---------------------------------
 		// Multiple Chars
 		//---------------------------------
 		splitted = CFW.Utils.Text.splitCSVQuotesAware(";", "abc;d;xyz;1234");
@@ -91,6 +104,7 @@ public class TestCFWUtilsText {
 		Assertions.assertEquals("xyz", splitted.get(++i));
 		Assertions.assertEquals("12\"34", splitted.get(++i));
 		Assertions.assertEquals("@@@", splitted.get(++i));
+	
 	}
 	
 	
