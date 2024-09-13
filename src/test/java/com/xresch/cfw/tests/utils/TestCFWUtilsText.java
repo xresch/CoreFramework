@@ -42,6 +42,22 @@ public class TestCFWUtilsText {
 		Assertions.assertEquals("c", splitted.get(++i));
 		
 		//---------------------------------
+		// Skipped Value
+		//---------------------------------
+		splitted = CFW.Utils.Text.splitCSVQuotesAware("#", "a# #b##c");
+		
+		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
+		
+		i=-1;
+		Assertions.assertEquals(5, splitted.size());
+		Assertions.assertEquals("a", splitted.get(++i));
+		Assertions.assertEquals(null, splitted.get(++i));
+		Assertions.assertEquals("b", splitted.get(++i));
+		Assertions.assertEquals(null, splitted.get(++i));
+		Assertions.assertEquals("c", splitted.get(++i));
+		
+		
+		//---------------------------------
 		// Multiple Chars
 		//---------------------------------
 		splitted = CFW.Utils.Text.splitCSVQuotesAware(";", "abc;d;xyz;1234");

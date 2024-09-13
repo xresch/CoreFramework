@@ -82,6 +82,9 @@ public class CFWUtilsText {
 	
 	/*******************************************************************
 	 * Splits a row of a CSV record while being aware of quotes.
+	 * Blanks are between separators and values are ignored/trimmed.
+	 * When a separator follows another separator the value is considered
+	 * skipped and will be represented with a null value.
 	 * 
 	 * @param csvRecord a single line of CSV data
 	 * @param separator the separator, can be multiple characters, does not support regex
@@ -97,16 +100,22 @@ public class CFWUtilsText {
 		char separatorFirstChar = separator.charAt(0);
 		int cursor = 0;
 		int startPos = -1;
+		boolean separatorSkipped = false; // used to detect subsequent separators
 		
 		outer:
 		while( cursor < csvRecord.length() ) {
 			
 			if(cursor > 0) { previous = csvRecord.charAt(cursor-1); }
 			current = csvRecord.charAt(cursor);
+
+			//----------------------------
+			// Skip Blanks
+			while(current == ' ') { current = csvRecord.charAt(++cursor); }
 			
 			//----------------------------
 			// Grab Quoted Text
 			if(current == '"') {
+				separatorSkipped = false;
 				startPos = cursor;
 				
 				inner:
@@ -131,7 +140,9 @@ public class CFWUtilsText {
 				}
 			}
 			
-			
+			//----------------------------
+			// Skip Blanks
+			while(current == ' ') { current = csvRecord.charAt(++cursor); }
 			
 			//----------------------------
 			// Skip Separator
@@ -139,12 +150,20 @@ public class CFWUtilsText {
 			if(current == separatorFirstChar
 			&& csvRecord.substring(cursor).startsWith(separator) ) {
 				cursor += separator.length();
+				if(separatorSkipped) {
+					result.add(null);
+				}
+				separatorSkipped = true;
+				continue; 
+			}else {
+				separatorSkipped = false;
 			}
 			
 			//----------------------------
 			// Grab Separated Text
 			startPos = cursor;
 			while(cursor < csvRecord.length() ) {
+				separatorSkipped = false;
 				current = csvRecord.charAt(cursor);
 				
 				if(current == '"' ) { break; } // break and go let quotes section do the work
@@ -152,7 +171,7 @@ public class CFWUtilsText {
 				if(current == separatorFirstChar
 				&& csvRecord.substring(cursor).startsWith(separator)) {
 					result.add(csvRecord.substring(startPos, cursor).trim());
-					cursor++;
+					//cursor++;
 					break;
 				}
 				
