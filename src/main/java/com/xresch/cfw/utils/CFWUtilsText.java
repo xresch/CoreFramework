@@ -1,5 +1,6 @@
 package com.xresch.cfw.utils;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 /**************************************************************************************************************
@@ -39,6 +40,96 @@ public class CFWUtilsText {
 		}
 		
 		return result.toString();
+	}
+	
+	/*******************************************************************
+	 * Splits a row of a CSV record while being aware of quotes.
+	 * 
+	 * @param csvRecord a single line of CSV data
+	 * @param separator the separator, can be multiple characters, does not support regex
+	 *******************************************************************/
+	public static ArrayList<String> splitCSVQuotesAware(String separator, String csvRecord){
+		
+		ArrayList<String> result = new ArrayList<>();
+		
+		csvRecord = csvRecord.trim();
+		
+		char previous = '#'; // random character, only used to check for escaping with '\'
+		char current;
+		char separatorFirstChar = separator.charAt(0);
+		int cursor = 0;
+		int startPos = -1;
+		
+		outer:
+		while( cursor < csvRecord.length() ) {
+			
+			if(cursor > 0) { previous = csvRecord.charAt(cursor-1); }
+			current = csvRecord.charAt(cursor);
+			
+			//----------------------------
+			// Grab Quoted Text
+			if(current == '"') {
+				startPos = cursor;
+				
+				inner:
+				while(cursor < csvRecord.length()-1 ) {
+					previous = current;
+					current = csvRecord.charAt(++cursor);
+
+					if(current == '"' 
+					&& previous != '\\'
+					) {
+						String potentialEscapedQuotes = csvRecord.substring(startPos+1, cursor);
+						String noEscapes = potentialEscapedQuotes.replace("\\\"", "\"");
+						result.add(noEscapes);
+						cursor++;
+						if(cursor < csvRecord.length() ) {
+							break inner;
+						}else {
+							break outer;
+						}
+					}
+					
+				}
+			}
+			
+			
+			
+			//----------------------------
+			// Skip Separator
+			current = csvRecord.charAt(cursor);
+			if(current == separatorFirstChar
+			&& csvRecord.substring(cursor).startsWith(separator) ) {
+				cursor += separator.length();
+			}
+			
+			//----------------------------
+			// Grab Separated Text
+			startPos = cursor;
+			while(cursor < csvRecord.length() ) {
+				current = csvRecord.charAt(cursor);
+				
+				if(current == '"' ) { break; } // break and go let quotes section do the work
+
+				if(current == separatorFirstChar
+				&& csvRecord.substring(cursor).startsWith(separator)) {
+					result.add(csvRecord.substring(startPos, cursor));
+					cursor++;
+					break;
+				}
+				
+				cursor++;
+			}
+			
+			//----------------------------
+			// Grab Last
+			if(cursor >= csvRecord.length() ) {
+				result.add(csvRecord.substring(startPos, cursor));
+				break;
+			}
+		}
+
+		return result;
 	}
 	
 	/*******************************************************************
