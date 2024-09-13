@@ -161,14 +161,17 @@ DONE
 
 ------- current -------
 - BREAKING CODE CHANGE: Refactoring of ContextSettingsChangeListener.onDelete() to ContextSettingsChangeListener.onDeleteOrDeactivate()
+- BREAKING CODE CHANGE: Refactoring of CFW.Math.bigPercentile(), changing order of parameters
 - NEW FEATURE: Postgres Extensions
 - API: Added Endpoint EAVStats.pushStats
 - Dashboard: Sharing - fixed bug where a user in a shared group could access a dashboard even if it was not set to shared=true
 - Dashboard Widgets: Improved hierarchy of database widgets.
 - Context Settings: Now have a property to be enabled and disabled 
 - Select: Added filter to all select boxes
-- Query: source web: as=http will now also give you the duration. 
-- Query: source eav: attributes are not returned as uppercase fields
+- EAVStats: Added P50 and P90 values (percentiles)
+- Query: source web - as=http will now also give you the duration. 
+- Query: source eav - attributes are not returned as uppercase fields
+
 
 ------- v.9.0.0 -------
 - NEW FEATURE: Credentials Management to not have credentials in queries

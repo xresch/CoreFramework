@@ -1,7 +1,9 @@
 package com.xresch.cfw.utils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CFWMath {
 
@@ -30,7 +32,7 @@ public class CFWMath {
 		if(percentilePosition > 0) {
 			BigDecimal resultValue = values.get(percentilePosition-1);
 			if(isEvenCount) {
-				return resultValue.add(values.get(percentilePosition)).divide(BIGDEC_TWO);
+				return resultValue.add(values.get(percentilePosition)).divide(BIGDEC_TWO, RoundingMode.HALF_UP);
 			}else {
 				return resultValue;
 			}
@@ -40,11 +42,24 @@ public class CFWMath {
 		
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 * @percentile a value between 0 and 100
+	 ***********************************************************************************************/
+	public static BigDecimal bigPercentile(int percentile, BigDecimal... values) {
+		
+		ArrayList<BigDecimal> valuesArray = new ArrayList<>();
+		
+		valuesArray.addAll(Arrays.asList(values));
+		return bigPercentile(percentile, valuesArray);
+		
+	}
 	
 	/***********************************************************************************************
 	 * 
+	 * @percentile a value between 0 and 100
 	 ***********************************************************************************************/
-	public static BigDecimal bigPercentile(ArrayList<BigDecimal> values, int percentile) {
+	public static BigDecimal bigPercentile(int percentile, ArrayList<BigDecimal> values) {
 		
 		int count = values.size();
 		

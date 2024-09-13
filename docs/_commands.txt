@@ -84,7 +84,15 @@ gpg --full-generate-key
 gpg --list-keys
 gpg --list-secret-keys
 
-##### Change Expiration #####
+
+##### set default key #####
+gpg --list-signatures
+echo 'default-key:0:"{keyid}' | gpgconf --change-options gpg
+
+
+gpg --list-signatures --keyid-format 0xshort
+
+##### Change Expiration (if needed) #####
 gpg --edit-key {key-id}
    command: list - show all keys
    command: key {index} select sub key to work on
@@ -92,7 +100,8 @@ gpg --edit-key {key-id}
    command: save
    
 ##### make key available #####
-gpg --keyserver hkp://pool.sks-keyservers.net --send-keys {key-id}
+gpg --keyserver keyserver.ubuntu.com --send-keys {key-id}
+For Example gpg --keyserver keyserver.ubuntu.com --send-keys F2281CEF06BA933DCD033CF2DEACA891B7455BC3
 
 ##### get key #####
 gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys {key-id}

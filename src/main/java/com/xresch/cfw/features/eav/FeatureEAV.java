@@ -181,7 +181,7 @@ public class FeatureEAV extends CFWAppFeature {
 		}
 		
 		int millisAgeOut = (int)(1000 * 60 * CFW.DB.Config.getConfigAsInt(CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_AGE_OUT_INTERVAL));
-		// for testing millisAgeOut = 10000;
+		//millisAgeOut = 10000; // for testing only
 		taskEavAgeOut = CFW.Schedule.runPeriodicallyMillis(60000, millisAgeOut, new TaskEAVStatsAgeOut());
 		
 	}

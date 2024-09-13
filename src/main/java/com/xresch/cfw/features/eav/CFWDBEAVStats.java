@@ -188,6 +188,73 @@ public class CFWDBEAVStats {
 		return result;
 	}
 	
+	/********************************************************************************************
+	 * Will combine all the stats given 
+	 ********************************************************************************************/
+	public static boolean pushStatsCustom(
+			  String category
+			, String entityName
+			, LinkedHashMap<String,String> attributes
+			, int count
+			, BigDecimal val
+			, BigDecimal min
+			, BigDecimal avg
+			, BigDecimal max
+			, BigDecimal sum
+			, BigDecimal p50
+			, BigDecimal p95
+		) {
+		
+		boolean result = true;
+		
+		EAVEntity entity = CFW.DB.EAVEntity.selecFirstBy(category, entityName, true);
+		
+		TreeSet<Integer> valueIDs = new TreeSet<>();
+		
+		for(Entry<String, String> current : attributes.entrySet()) {
+			String attributeName = current.getKey();
+			String attributeValue = current.getValue();
+			
+			EAVAttribute attribute = CFW.DB.EAVAttribute.selecFirstBy(entity.id(), attributeName, true);
+			EAVValue value = CFW.DB.EAVValue.selecFirstBy(entity.id(), attribute.id(), attributeValue, true); 
+			valueIDs.add(value.id());
+		}
+		
+		String storeKey = "CUSTOM_"+entity.id()+"_"+Joiner.on(",").join(valueIDs);
+
+		synchronized (eavStatsToBeStored) {
+			EAVStats stats;
+			if(eavStatsToBeStored.containsKey(storeKey)) {
+				stats = eavStatsToBeStored.get(storeKey);
+				stats.addStatistics(
+						  count
+						, val
+						, min
+						, avg
+						, max
+						, sum
+						, p50
+						, p95
+						);
+			}else {
+				stats = new EAVStats(entity.id(), valueIDs, EAVStatsType.CUSTOM)
+						.setStatistics(
+							  count
+							, val
+							, min
+							, avg
+							, max
+							, sum
+							, p50
+							, p95
+						);
+				eavStatsToBeStored.put(storeKey, stats);
+			}
+		}
+		
+		return result;
+	}
+	
 	
 	/********************************************************************************************
 	 * 
@@ -533,7 +600,7 @@ public class CFWDBEAVStats {
 				.custom("CREATE TEMP TABLE" + 
 						" IF NOT EXISTS " 
 						+ TEMP_TABLE_AGGREGATION 
-						+" (TIME TIMESTAMP, FK_ID_DATE INT, FK_ID_ENTITY INT, FK_ID_VALUES NUMERIC ARRAY, COUNT NUMERIC(64,6), MIN NUMERIC(64,6), AVG NUMERIC(64,6), MAX NUMERIC(64,6), SUM NUMERIC(64,6), VAL NUMERIC(64,6), GRANULARITY INT);")
+						+" (TIME TIMESTAMP, FK_ID_DATE INT, FK_ID_ENTITY INT, FK_ID_VALUES NUMERIC ARRAY, COUNT NUMERIC(64,6), MIN NUMERIC(64,6), AVG NUMERIC(64,6), MAX NUMERIC(64,6), SUM NUMERIC(64,6), VAL NUMERIC(64,6), P50 NUMERIC(64,6), P95 NUMERIC(64,6), GRANULARITY INT);")
 				.execute();
 		
 		//--------------------------------------------
@@ -593,7 +660,7 @@ public class CFWDBEAVStats {
 		// Move Temp Stats to EAVTable
 		success &=  new EAVStats()
 				.queryCache(CFWDBEAVStats.class, "aggregateStatistics"+(cacheCounter++))
-				.custom(" INSERT INTO CFW_EAV_STATS (TIME, FK_ID_DATE, FK_ID_ENTITY, FK_ID_VALUES, COUNT, MIN, AVG, MAX, SUM, VAL, GRANULARITY)" + 
+				.custom(" INSERT INTO CFW_EAV_STATS (TIME, FK_ID_DATE, FK_ID_ENTITY, FK_ID_VALUES, COUNT, MIN, AVG, MAX, SUM, VAL, P50, P95, GRANULARITY)" + 
 						" SELECT * FROM "+TEMP_TABLE_AGGREGATION+";")
 				.execute();
 		

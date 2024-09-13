@@ -116,7 +116,7 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 			percentile = 50;
 		}
 		
-		BigDecimal percentileValue = CFW.Math.bigPercentile(values, percentile);
+		BigDecimal percentileValue = CFW.Math.bigPercentile(percentile, values);
 		
 		//reset values
 		values = new ArrayList<>();
