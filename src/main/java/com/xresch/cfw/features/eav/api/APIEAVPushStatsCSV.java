@@ -27,7 +27,7 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 	static final String FIELDNAME_VALUES = "DATA";
 	static final String FIELDNAME_JSON_OBJECT = "JSON_OBJECT";
 
-	private static final String[] inputFieldnames = new String[] {FIELDNAME_VALUES};
+	private static final String[] inputFieldnames = new String[] {FIELDNAME_SEPARATOR, FIELDNAME_VALUES};
 	private static final String[] outputFieldnames = new String[] {FIELDNAME_JSON_OBJECT};
 	
 	
@@ -67,7 +67,7 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 				String separator = (String)fieldsObject.getField(FIELDNAME_SEPARATOR).getValue();
 
 				String csv = bodyContents;
-				
+
 				JsonArray csvArray = CFW.CSV.toJsonArray(csv, separator, true, true); 
 				
 
@@ -75,20 +75,27 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 					
 					JsonObject object = element.getAsJsonObject();
 					
-					String type = "custom";
 					String category = object.get("category").getAsString();
 					String entityName = object.get("entity").getAsString();
 					JsonObject attributesObject = object.get("attributes").getAsJsonObject();
 					LinkedHashMap<String,String> attributes = CFW.JSON.fromJsonLinkedHashMap(attributesObject);
 
-					int count = object.get("count").getAsInt();
-					BigDecimal min = object.get("min").getAsBigDecimal();
-					BigDecimal avg = object.get("avg").getAsBigDecimal();
-					BigDecimal max = object.get("max").getAsBigDecimal();
-					BigDecimal sum = object.get("sum").getAsBigDecimal();
-					BigDecimal p50 = object.get("p50").getAsBigDecimal();
-					BigDecimal p95 = object.get("p95").getAsBigDecimal();
+					int count = 0;
+					if(object.has("count")) { count = object.get("count").getAsInt(); }
 					
+					BigDecimal min = BigDecimal.ZERO;
+					BigDecimal avg = BigDecimal.ZERO;
+					BigDecimal max = BigDecimal.ZERO;
+					BigDecimal sum = BigDecimal.ZERO;
+					BigDecimal p50 = BigDecimal.ZERO;
+					BigDecimal p95 = BigDecimal.ZERO;
+					
+					if(object.has("min")) {  min = object.get("min").getAsBigDecimal(); }
+					if(object.has("avg")) {  avg = object.get("avg").getAsBigDecimal(); }
+					if(object.has("max")) {  max = object.get("max").getAsBigDecimal(); }
+					if(object.has("sum")) {  sum = object.get("sum").getAsBigDecimal(); }
+					if(object.has("p50")) {  p50 = object.get("p50").getAsBigDecimal(); }
+					if(object.has("p95")) {  p95 = object.get("p95").getAsBigDecimal(); }
 					
 					boolean success = CFW.DB.EAVStats.pushStatsCustom(
 								category

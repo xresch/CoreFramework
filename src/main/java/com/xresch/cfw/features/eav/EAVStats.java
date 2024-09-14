@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.TreeSet;
 
 import com.xresch.cfw._main.CFW;
@@ -31,6 +32,9 @@ public class EAVStats extends CFWObject {
 	public static final String TABLE_NAME = "CFW_EAV_STATS";
 	
 	private final ArrayList<BigDecimal> valuesArray = new ArrayList<>();
+	
+	//used to calculate custom Statistics
+	private HashMap<EAVStatsFields, ArrayList<BigDecimal>> statisticsCustomArray;
 	
 	enum EAVStatsFields{
 		PK_ID, 
@@ -113,13 +117,11 @@ public class EAVStats extends CFWObject {
 			.setValue(BigDecimal.ZERO);
 	
 	private CFWField<BigDecimal> p50 = CFWField.newBigDecimal(FormFieldType.NONE, EAVStatsFields.P50)
-			.setColumnDefinition("NUMERIC(64, 6) DEFAULT 0")
 			.setDescription("The 50th percentile of the values.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(BigDecimal.ZERO);
 	
 	private CFWField<BigDecimal> p95 = CFWField.newBigDecimal(FormFieldType.NONE, EAVStatsFields.P95)
-			.setColumnDefinition("NUMERIC(64, 6) DEFAULT 0")
 			.setDescription("The 95th percentile of the values.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(BigDecimal.ZERO);
@@ -285,25 +287,26 @@ public class EAVStats extends CFWObject {
 	
 	/****************************************************************
 	 * Sanitizes values and replaces nulls with zeros for putting it in the database.
+	 * 
 	 ****************************************************************/
-	public EAVStats sanitizeValues() {
-
-		if(this.count.getValue() == null) { this.count.setValue(0); }
-		if(this.min.getValue() == null) { this.min.setValue(BigDecimal.ZERO); }
-		if(this.avg.getValue() == null) { this.avg.setValue(BigDecimal.ZERO); }
-		if(this.max.getValue() == null) { this.max.setValue(BigDecimal.ZERO); }
-		if(this.sum.getValue() == null) { this.sum.setValue(BigDecimal.ZERO); }
-		if(this.val.getValue() == null) { this.val.setValue(BigDecimal.ZERO); }
-		if(this.p50.getValue() == null) { this.p50.setValue(BigDecimal.ZERO); }
-		if(this.p95.getValue() == null) { this.p95.setValue(BigDecimal.ZERO); }
-		
-		return this;
-	}
+//	public EAVStats sanitizeValues() {
+//
+//		if(this.count.getValue() == null) { this.count.setValue(0); }
+//		if(this.min.getValue() == null) { this.min.setValue(BigDecimal.ZERO); }
+//		if(this.avg.getValue() == null) { this.avg.setValue(BigDecimal.ZERO); }
+//		if(this.max.getValue() == null) { this.max.setValue(BigDecimal.ZERO); }
+//		if(this.sum.getValue() == null) { this.sum.setValue(BigDecimal.ZERO); }
+//		if(this.val.getValue() == null) { this.val.setValue(BigDecimal.ZERO); }
+//		if(this.p50.getValue() == null) { this.p50.setValue(BigDecimal.ZERO); }
+//		if(this.p95.getValue() == null) { this.p95.setValue(BigDecimal.ZERO); }
+//		
+//		return this;
+//	}
 	
 	/****************************************************************
 	 * Calculates the statistical values for putting it in the database.
 	 ****************************************************************/
-	public EAVStats setStatistics(
+	public EAVStats addStatisticsCustom(
 			  int count
 			, BigDecimal min
 			, BigDecimal avg
@@ -313,30 +316,15 @@ public class EAVStats extends CFWObject {
 			, BigDecimal p95
 		) {
 		
-		this.count.setValue(count);
-		this.min.setValue(min);
-		this.avg.setValue(avg);
-		this.max.setValue(max);
-		this.sum.setValue(sum);
-		this.p50.setValue(p50);
-		this.p95.setValue(p95);
-		
-		return this;
-		
-	}
-	
-	/****************************************************************
-	 * Calculates the statistical values for putting it in the database.
-	 ****************************************************************/
-	public EAVStats addStatistics(
-			  int count
-			, BigDecimal min
-			, BigDecimal avg
-			, BigDecimal max
-			, BigDecimal sum
-			, BigDecimal p50
-			, BigDecimal p95
-			) {
+		if(statisticsCustomArray == null) {
+			statisticsCustomArray = new HashMap<>();
+			statisticsCustomArray.put(EAVStatsFields.MIN, new ArrayList<>());
+			statisticsCustomArray.put(EAVStatsFields.AVG, new ArrayList<>());
+			statisticsCustomArray.put(EAVStatsFields.MAX, new ArrayList<>());
+			statisticsCustomArray.put(EAVStatsFields.SUM, new ArrayList<>());
+			statisticsCustomArray.put(EAVStatsFields.P50, new ArrayList<>());
+			statisticsCustomArray.put(EAVStatsFields.P95, new ArrayList<>());
+		}
 		
 		//-----------------------------------
 		// Count
@@ -344,87 +332,14 @@ public class EAVStats extends CFWObject {
 		int sureNumber = ( currentCount != null) ? currentCount : 0;
 		this.count.setValue(sureNumber + count);
 		
-		//-----------------------------------
-		// Min
-		if(min != null) { 
-			BigDecimal currentMin = this.min.getValue();
-			if(currentMin != null) {
-				if(min.compareTo(currentMin) < 0) { this.min.setValue(min); }
-			}else {
-				this.min.setValue(min);
-			}
-		}
 		
-		//-----------------------------------
-		// Max
-		if(max != null) { 
-			BigDecimal currentMax = this.max.getValue();
-			if(currentMax != null) {
-				if(max.compareTo(currentMax) > 0) { this.max.setValue(max); }
-			}else {
-				this.max.setValue(max);
-			}
-		}
-		
-		//-----------------------------------
-		// Sum
-		boolean sumIsNotNull = (this.sum.getValue() != null);
-		if(sum != null) { 
-			if(sumIsNotNull) {
-				BigDecimal currentSum = this.sum.getValue();
-				this.sum.setValue(currentSum.add(sum));
-			}else {
-				this.sum.setValue(sum);
-				sumIsNotNull = true;
-			}
-		}
-		
-		//-----------------------------------
-		// Avg
-		if(sumIsNotNull 
-		&& this.count.getValue() != null
-		&& this.count.getValue() > 0
-		) {
-			BigDecimal elCount = new BigDecimal(this.count.getValue());
-			this.avg.setValue(sum.divide(elCount, RoundingMode.HALF_UP));
-		}else {
-			
-			if(avg != null) { 
-				BigDecimal currentAvg = this.avg.getValue();
-				if(currentAvg != null) {
-					BigDecimal diff = currentAvg.subtract(avg);
-					BigDecimal halfDiff = diff.divide(CFW.Math.BIGDEC_TWO, RoundingMode.HALF_UP);
-					this.avg.setValue( currentAvg.subtract(halfDiff) );
-				}else {
-					this.avg.setValue(avg);
-				}
-			}
-		}
+		statisticsCustomArray.get(EAVStatsFields.MIN).add(min);
+		statisticsCustomArray.get(EAVStatsFields.AVG).add(avg);
+		statisticsCustomArray.get(EAVStatsFields.MAX).add(max);
+		statisticsCustomArray.get(EAVStatsFields.SUM).add(sum);
+		statisticsCustomArray.get(EAVStatsFields.P50).add(p50);
+		statisticsCustomArray.get(EAVStatsFields.P95).add(p95);
 
-		//-----------------------------------
-		// P50
-		if(p50 != null) { 
-			BigDecimal currentP50 = this.p50.getValue();
-			if(currentP50 != null) {
-				BigDecimal newP50 = CFW.Math.bigPercentile(50, p50, currentP50);
-				this.p50.setValue(newP50);
-			}else {
-				this.p50.setValue(p50);
-			}
-		}
-		
-		
-		//-----------------------------------
-		// P95
-		if(p95 != null) { 
-			BigDecimal currentP95 = this.p95.getValue();
-			if(currentP95 != null) {
-				BigDecimal newP95 = CFW.Math.bigPercentile(95, p95, currentP95);
-				this.p95.setValue(newP95);
-			}else {
-				this.p95.setValue(p95);
-			}
-		}
 		
 		return this;
 		
@@ -455,6 +370,15 @@ public class EAVStats extends CFWObject {
 		//--------------------------------
 		// Handle Type CUSTOM
 		if(this.type == EAVStatsType.CUSTOM) {
+			
+			// this.count is already calculated 
+			this.min.setValue( CFW.Math.bigMin( statisticsCustomArray.get(EAVStatsFields.MIN) ) );
+			this.avg.setValue( CFW.Math.bigAvg( statisticsCustomArray.get(EAVStatsFields.AVG) ) );
+			this.max.setValue( CFW.Math.bigMax( statisticsCustomArray.get(EAVStatsFields.MAX) ) );
+			this.sum.setValue( CFW.Math.bigSum( statisticsCustomArray.get(EAVStatsFields.SUM) ) );
+			this.p50.setValue( CFW.Math.bigSum( statisticsCustomArray.get(EAVStatsFields.P50) ) );
+			this.p95.setValue( CFW.Math.bigSum( statisticsCustomArray.get(EAVStatsFields.P95) ) );
+
 			BigDecimal sum = this.sum.getValue();
 			this.val.setValue(sum.divide(bigGranularity, RoundingMode.HALF_UP));
 

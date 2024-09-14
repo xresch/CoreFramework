@@ -18,8 +18,8 @@ public class APIEAVPushStatsCSVFields extends CFWObject {
 	public APIEAVPushStatsCSVFields() {
 		
 		this.addField(
-				CFWField.newString(FormFieldType.NONE, APIEAVPushStatsCSV.FIELDNAME_SEPARATOR)
-					.setDescription("The separator for the CSV data. (Default: ,)")
+				CFWField.newString(FormFieldType.TEXT, APIEAVPushStatsCSV.FIELDNAME_SEPARATOR)
+					.setDescription("The separator for the CSV data. (Default: ',')")
 					.setValue(",")
 			);
 		

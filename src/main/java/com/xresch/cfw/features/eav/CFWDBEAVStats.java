@@ -222,31 +222,24 @@ public class CFWDBEAVStats {
 		String storeKey = "CUSTOM_"+entity.id()+"_"+Joiner.on(",").join(valueIDs);
 
 		synchronized (eavStatsToBeStored) {
+			
 			EAVStats stats;
 			if(eavStatsToBeStored.containsKey(storeKey)) {
 				stats = eavStatsToBeStored.get(storeKey);
-				stats.addStatistics(
-						  count
-						, min
-						, avg
-						, max
-						, sum
-						, p50
-						, p95
-						);
 			}else {
-				stats = new EAVStats(entity.id(), valueIDs, EAVStatsType.CUSTOM)
-						.setStatistics(
-							  count
-							, min
-							, avg
-							, max
-							, sum
-							, p50
-							, p95
-						);
+				stats = new EAVStats(entity.id(), valueIDs, EAVStatsType.CUSTOM);		
 				eavStatsToBeStored.put(storeKey, stats);
 			}
+			
+			stats.addStatisticsCustom(
+					  count
+					, min
+					, avg
+					, max
+					, sum
+					, p50
+					, p95
+				);
 		}
 		
 		return result;
@@ -500,7 +493,6 @@ public class CFWDBEAVStats {
 				
 				stats.granularity(granularityMinutes)
 					.time(currentTimeRounded)
-					.sanitizeValues()
 					.calculateStatistics()
 					;
 				
