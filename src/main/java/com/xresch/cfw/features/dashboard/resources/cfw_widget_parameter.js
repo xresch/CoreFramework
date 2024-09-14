@@ -72,6 +72,14 @@
 								}
 								
 								//----------------------------------------------
+								// Select
+								else if (inputField.attr('cfwtype') == "SELECT"){
+									cfw_setSelectValue(
+										inputField.attr('id')
+										, viewerCustomValue);
+								}
+								
+								//----------------------------------------------
 								// Boolean Switches
 								else if (inputField.attr('cfwtype') == "BOOLEAN"){
 									cfw_internal_setBooleanSwitchValue(
