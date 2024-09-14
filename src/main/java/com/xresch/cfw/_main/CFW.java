@@ -104,6 +104,7 @@ import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.utils.CFWUtilsArray;
 import com.xresch.cfw.utils.CFWUtilsText;
 import com.xresch.cfw.utils.CFWXML;
+import com.xresch.cfw.utils.csv.CFWCSV;
 import com.xresch.cfw.utils.json.CFWJson;
 import com.xresch.cfw.validation.CFWValidation;
 
@@ -167,8 +168,9 @@ public class CFW {
 		public static class Spaces extends CFWDBSpace{};
 		public static class SpaceGroups extends CFWDBSpaceGroup{};
 	}
-	public static class Caching extends CFWCacheManagement {}
 	
+	public static class Caching extends CFWCacheManagement {}
+	public static class CLI extends CFWCommandLineInterface {}
 	public static class Conditions extends CFWState {}
 	
 	public static class Context {
@@ -177,7 +179,7 @@ public class CFW {
 		public static class Session extends CFWContextSession{};
 	}
 	
-	public static class CLI extends CFWCommandLineInterface {}
+	public static class CSV extends CFWCSV {}
 	public static class Dump extends CFWDump {}
 	public static class Files extends CFWFiles {}
 	public static class HTTP extends CFWHttp {}

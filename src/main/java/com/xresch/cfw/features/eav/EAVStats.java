@@ -19,6 +19,7 @@ import com.xresch.cfw.features.datetime.CFWDate;
 import com.xresch.cfw.features.datetime.CFWDate.CFWDateFields;
 import com.xresch.cfw.features.eav.EAVEntity.EAVEntityFields;
 import com.xresch.cfw.features.eav.api.APIEAVPushStats;
+import com.xresch.cfw.features.eav.api.APIEAVPushStatsCSV;
 
 /**************************************************************************************************************
  * 
@@ -198,6 +199,7 @@ public class EAVStats extends CFWObject {
 		
 		apis.add(fetchDataAPI);
 		apis.add(new APIEAVPushStats(this.getClass().getSimpleName(), "pushStats"));
+		apis.add(new APIEAVPushStatsCSV(this.getClass().getSimpleName(), "pushStatsCSV"));
 		
 		return apis;
 	}

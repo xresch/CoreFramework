@@ -5,11 +5,16 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.utils.csv.CFWCSV;
 
-public class TestCFWUtilsText {
+public class TestCFWCSV {
 	
-
+	/*****************************************************
+	 * 
+	 *****************************************************/
 	@Test
 	public void testSplitCSVQuotesAware() {
 		
@@ -18,7 +23,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Single Chars
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitCSVQuotesAware(",", "a,b,c");
+		splitted = CFW.CSV.splitCSVQuotesAware(",", "a,b,c");
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
 		
@@ -31,7 +36,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Blanks
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitCSVQuotesAware(",", " a ,\" b \", c ");
+		splitted = CFW.CSV.splitCSVQuotesAware(",", " a ,\" b \", c ");
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
 		
@@ -44,23 +49,25 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Skipped Value
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitCSVQuotesAware("#", "a# #b##c");
+		splitted = CFW.CSV.splitCSVQuotesAware("#", "#a# #b##c#");
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
 		
 		i=-1;
-		Assertions.assertEquals(5, splitted.size());
+		Assertions.assertEquals(7, splitted.size());
+		Assertions.assertEquals(null, splitted.get(++i));
 		Assertions.assertEquals("a", splitted.get(++i));
 		Assertions.assertEquals(null, splitted.get(++i));
 		Assertions.assertEquals("b", splitted.get(++i));
 		Assertions.assertEquals(null, splitted.get(++i));
 		Assertions.assertEquals("c", splitted.get(++i));
+		Assertions.assertEquals(null, splitted.get(++i));
 		
 		
 		//---------------------------------
 		// Multiple Chars
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitCSVQuotesAware(";", "abc;d;xyz;1234");
+		splitted = CFW.CSV.splitCSVQuotesAware(";", "abc;d;xyz;1234");
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
 		
@@ -74,7 +81,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// With Quotes
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitCSVQuotesAware(";", """
+		splitted = CFW.CSV.splitCSVQuotesAware(";", """
 				"abc";"d";"xyz";"1234"
 				""");
 		
@@ -90,7 +97,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Mixed Quotes and Multi-Char Separator
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitCSVQuotesAware("---", """
+		splitted = CFWCSV.splitCSVQuotesAware("---", """
 				"abc"---d---"xyz"---"1234"---@@@
 				""");
 		
@@ -107,7 +114,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Mixed Quotes, Escaped Quotes and Multi-Char Separator
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitCSVQuotesAware("---", """
+		splitted = CFW.CSV.splitCSVQuotesAware("---", """
 				"\\"abc\\""---d---"xyz"---"12\\"34"---@@@
 				""");
 		
@@ -122,6 +129,53 @@ public class TestCFWUtilsText {
 		Assertions.assertEquals("@@@", splitted.get(++i));
 	
 	}
+	
+	/*****************************************************
+	 * 
+	 *****************************************************/
+	@Test
+	public void testJsonFromCSV() {
+		
+		JsonObject object;
+				
+		JsonArray array = CFW.CSV.toJsonArray("""
+				category,entity,ATTributes,value
+				gatling,callAPI,{},123
+				gatling2,callURL,"{a: null, b: 1, c: true, d: \\"three\\" }",765
+				"""
+				, ","
+				, true
+				, true
+			);
+		
+		Assertions.assertEquals(array.size(), 2, "2 entries are found in array.");
+		
+		//---------------------------------
+		// 
+		//---------------------------------
+		object = array.get(0).getAsJsonObject(); 
+		
+		Assertions.assertEquals("gatling", object.get("category").getAsString());
+		Assertions.assertEquals("callAPI", object.get("entity").getAsString());
+		Assertions.assertEquals(true, object.get("attributes").isJsonObject());
+		Assertions.assertEquals("123", object.get("value").getAsString());
+		
+		//---------------------------------
+		// 
+		//---------------------------------
+		object = array.get(1).getAsJsonObject(); 
+		
+		Assertions.assertEquals("gatling2", object.get("category").getAsString());
+		Assertions.assertEquals("callURL", object.get("entity").getAsString());
+		Assertions.assertEquals(true, object.get("attributes").isJsonObject());
+		Assertions.assertEquals("765", object.get("value").getAsString());
+
+		Assertions.assertEquals(true, object.get("attributes").getAsJsonObject().get("a").isJsonNull());
+		Assertions.assertEquals(1, object.get("attributes").getAsJsonObject().get("b").getAsInt());
+		Assertions.assertEquals(true, object.get("attributes").getAsJsonObject().get("c").getAsBoolean());
+		Assertions.assertEquals("three", object.get("attributes").getAsJsonObject().get("d").getAsString());
+	}
+	
 	
 	
 }

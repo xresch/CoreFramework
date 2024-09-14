@@ -15,7 +15,6 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
@@ -51,7 +50,7 @@ import com.xresch.cfw.response.JSONResponse;
  **************************************************************************************************************/
 public class CFWJson {
 	
-	private static final Logger logger = CFWLog.getLogger(CFWJson.class.getName());
+	public static final Logger logger = CFWLog.getLogger(CFWJson.class.getName());
 	
 	private static Gson gsonInstance;
 	private static Gson gsonInstancePretty;
@@ -339,91 +338,6 @@ public class CFWJson {
 			return JsonNull.INSTANCE;
 		}
 	}
-	
-	/*************************************************************************************
-	 * Creates a JsonArray containing JsonObjects from a CSV string.
-	 * First line has to be a header with column names. Column names will be used as field names.
-	 * This method supports the use of quotes for field values and escaped quotes (\") 
-	 * inside of quotes.
-	 * If a CSV record has more columns than the header row the additional columns will 
-	 * be ignored.
-	 * 
-	 * @param csv the CSV multi-line string including a header
-	 * @param separator the separator, one or multiple characters, does not support regex
-	 * @param makeFieldsLowercase set to true to make fieldnames lowercase, useful to make 
-	 *        user input more save and stable to process.
-	 * @param parseJsonStrings if set to true, attempts to convert values starting with either 
-	 *       "{" or "[" to a JsonObject or JsonArray.
-	 *        
-	 *************************************************************************************/
-	public static JsonArray fromCSV(
-								  String csv
-								, String separator
-								, boolean makeFieldsLowercase
-								, boolean parseJsonStrings
-							) {
-	
-		JsonArray result = new JsonArray();
-		
-		Scanner scanner = new Scanner(csv);
-
-		//----------------------------
-		// Skip if Empty
-		if(!scanner.hasNext()) {
-			scanner.close();
-			return result;
-		}
-		
-		//----------------------------
-		// Get Headers
-		String header = scanner.nextLine();
-		
-		ArrayList<String> headerArray = CFW.Utils.Text.splitCSVQuotesAware(separator, header);
-		if(makeFieldsLowercase) {
-			headerArray = CFW.Utils.Text.arrayToLowercase(headerArray);
-		}
-		
-		//----------------------------
-		// Process Records
-		while(scanner.hasNext()) {
-			String csvRecord = scanner.nextLine();
-			ArrayList<String> valuesArray = CFW.Utils.Text.splitCSVQuotesAware(separator, csvRecord);
-			
-			JsonObject object = new JsonObject();
-			for(int i = 0 ; i < headerArray.size(); i++) {
-				String fieldname = headerArray.get(i);
-				
-				JsonElement value = JsonNull.INSTANCE;
-				
-				if(i < valuesArray.size()) {  
-					String valueString = valuesArray.get(i); 
-					value = new JsonPrimitive(valueString);
-					
-					if(parseJsonStrings
-					&& (  valueString.startsWith("{")
-					   || valueString.startsWith("[") 
-					   )
-					){
-						try {
-							value = fromJson(valueString);
-						}catch(Throwable e) {
-							new CFWLog(logger).warn("JSON from CSV: error while parsing: "+e.getMessage());
-						}
-					}
-				}
-				
-				object.add(fieldname, value);
-				
-			}
-			
-			result.add(object);
-		}
-
-		scanner.close();
-		return result;
-		
-	}
-	
 	
 	/*************************************************************************************
 	 * Converts a json string to a LinkedHashMap 

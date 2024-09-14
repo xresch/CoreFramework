@@ -163,7 +163,8 @@ DONE
 - BREAKING CODE CHANGE: Refactoring of ContextSettingsChangeListener.onDelete() to ContextSettingsChangeListener.onDeleteOrDeactivate()
 - BREAKING CODE CHANGE: Refactoring of CFW.Math.bigPercentile(), changing order of parameters
 - NEW FEATURE: Postgres Extensions
-- API: Added Endpoint EAVStats.pushStats
+- Utils: Created CFW.CSV to parse an convert CSV data.
+- API: Added Endpoint EAVStats.pushStats and EAVStats.pushStatsCSV
 - Dashboard: Sharing - fixed bug where a user in a shared group could access a dashboard even if it was not set to shared=true
 - Dashboard Widgets: Improved hierarchy of database widgets.
 - Context Settings: Now have a property to be enabled and disabled 

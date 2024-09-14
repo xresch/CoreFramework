@@ -913,7 +913,12 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	// Create Title				
 	if(queryResult.metadata.title == true){
 		let execSeconds = '';
-		if(queryResult.execTimeMillis != -1){
+		if( (
+			   queryResult.metadata.titleduration == null 
+			|| queryResult.metadata.titleduration == true
+			)
+		 &&  queryResult.execTimeMillis != -1
+		 ){
 			execSeconds = " ("+(queryResult.execTimeMillis / 1000).toFixed(3)+"s)";
 		}
 		let title = $('<p class="query-title">');
@@ -1136,7 +1141,6 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 function cfw_query_renderAsChart(resultTarget, queryResult, options){
 	
 	let targetDiv = $(resultTarget);
-	targetDiv.html(""); 
 	
 	// settings contains params of chart-command
 	var settings = queryResult.displaySettings;
