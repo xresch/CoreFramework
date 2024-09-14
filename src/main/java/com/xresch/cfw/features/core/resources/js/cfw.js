@@ -872,7 +872,7 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
 			<button id="${id}-dropdownMenuButton" class="form-control mb-2 dropdown-toggle dropdown-toggle-wide ${classes}" style="text-align: start;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			   &nbsp;
 			</button>
-			<div class="dropdown-menu dropdown-scroll w-100" aria-labelledby="${id}-dropdownMenuButton">
+			<div class="dropdown-menu dropdown-scroll mvw-80" aria-labelledby="${id}-dropdownMenuButton">
 		`
 		;
 	
