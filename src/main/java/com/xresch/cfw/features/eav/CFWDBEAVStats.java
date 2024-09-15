@@ -422,7 +422,8 @@ public class CFWDBEAVStats {
 			existingGroup.add(current);
 			
 		}
-						
+		
+				
 		//=====================================================
 		// Recalculate Values by Groups	
 		//=====================================================
@@ -437,43 +438,51 @@ public class CFWDBEAVStats {
 				continue;
 			}
 			
-			//---------------------------------------
-			// Calculate COUNT, MIN, MAX, SUM
 			
-			for(int k = 1; k < currentArray.size(); k++) {	
+			//---------------------------------------
+			// Calculate Statistics
+			EAVStats aggregation = new EAVStats()
+										.type(EAVStatsType.CUSTOM)
+										.granularity(target.get(EAVStatsFields.GRANULARITY.name()).getAsInt())
+										;
+			
+			for(int k = 0; k < currentArray.size(); k++) {	
 				
 				JsonObject toMerge = currentArray.get(k);
 				
 				//---------------------------------------
-				// Merge it Together
-				int count = target.get(EAVStatsFields.COUNT.name() ).getAsInt();
-				BigDecimal min = target.get(EAVStatsFields.MIN.name() ).getAsBigDecimal();
-				BigDecimal max = target.get(EAVStatsFields.MAX.name() ).getAsBigDecimal();
-				BigDecimal sum = target.get(EAVStatsFields.SUM.name() ).getAsBigDecimal();
-				BigDecimal val = target.get(EAVStatsFields.VAL.name() ).getAsBigDecimal();
-				
-				int count2 = toMerge.get(EAVStatsFields.COUNT.name() ).getAsInt();
-				BigDecimal min2 = toMerge.get(EAVStatsFields.MIN.name() ).getAsBigDecimal();
-				BigDecimal max2 = toMerge.get(EAVStatsFields.MAX.name() ).getAsBigDecimal();
-				BigDecimal sum2 = toMerge.get(EAVStatsFields.SUM.name() ).getAsBigDecimal();
-				BigDecimal val2 = toMerge.get(EAVStatsFields.VAL.name() ).getAsBigDecimal();
-				
-				target.addProperty(EAVStatsFields.COUNT.name(), 		count+count2);
-				target.addProperty(EAVStatsFields.MIN.name(), 			(min.compareTo(min2) <= 0 ? min : min2) );
-				target.addProperty(EAVStatsFields.MAX.name(), 			(max.compareTo(max2) >= 0 ? max : max2) );
-				target.addProperty(EAVStatsFields.SUM.name(), 			sum.add(sum2) );
-				target.addProperty("VALSUM", 							val.add(val2) );
+				// Get Values of Merge
+				BigDecimal min = null;
+				BigDecimal avg = null;
+				BigDecimal max = null;
+				BigDecimal sum = null;
 
+				BigDecimal p50 = null;
+				BigDecimal p95 = null;
+								
+				int count = target.get(EAVStats.COUNT).getAsInt();
+				
+				if( toMerge.has(EAVStats.MIN) && !toMerge.get(EAVStats.MIN).isJsonNull()) { min = toMerge.get(EAVStats.MIN).getAsBigDecimal(); }
+				if( toMerge.has(EAVStats.AVG) && !toMerge.get(EAVStats.AVG).isJsonNull()) { avg = toMerge.get(EAVStats.AVG).getAsBigDecimal(); }
+				if( toMerge.has(EAVStats.MAX) && !toMerge.get(EAVStats.MAX).isJsonNull()) { max = toMerge.get(EAVStats.MAX).getAsBigDecimal(); }
+				if( toMerge.has(EAVStats.SUM) && !toMerge.get(EAVStats.SUM).isJsonNull()) { sum = toMerge.get(EAVStats.SUM).getAsBigDecimal(); }
+				if( toMerge.has(EAVStats.P50) && !toMerge.get(EAVStats.P50).isJsonNull()) { p50 = toMerge.get(EAVStats.P50).getAsBigDecimal(); }
+				if( toMerge.has(EAVStats.P95) && !toMerge.get(EAVStats.P95).isJsonNull()) { p95 = toMerge.get(EAVStats.P95).getAsBigDecimal(); }
+
+				aggregation.addStatisticsCustom(count, min, avg, max, sum, p50, p95);
 			}
 			
 			//---------------------------------------
 			// Calculate AVG and VAL
-			BigDecimal count = new BigDecimal(currentArray.size());
-			BigDecimal finalSum = target.get(EAVStatsFields.SUM.name() ).getAsBigDecimal();
-			BigDecimal valSum = target.remove("VALSUM").getAsBigDecimal();
-
-			target.addProperty(EAVStatsFields.AVG.name(), finalSum.divide(count, RoundingMode.HALF_UP));
-			target.addProperty(EAVStatsFields.VAL.name(), valSum.divide(count, RoundingMode.HALF_UP));
+			aggregation.calculateStatistics();
+			target.addProperty(EAVStats.COUNT, aggregation.count());
+			target.addProperty(EAVStats.MIN, aggregation.min());
+			target.addProperty(EAVStats.AVG, aggregation.avg());
+			target.addProperty(EAVStats.MAX, aggregation.max());
+			target.addProperty(EAVStats.SUM, aggregation.sum());
+			target.addProperty(EAVStats.VAL, aggregation.val());
+			target.addProperty(EAVStats.P50, aggregation.p50());
+			target.addProperty(EAVStats.P95, aggregation.p95());
 			
 		}
 		

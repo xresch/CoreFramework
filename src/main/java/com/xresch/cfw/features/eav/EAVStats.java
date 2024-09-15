@@ -19,6 +19,7 @@ import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.datetime.CFWDate;
 import com.xresch.cfw.features.datetime.CFWDate.CFWDateFields;
 import com.xresch.cfw.features.eav.EAVEntity.EAVEntityFields;
+import com.xresch.cfw.features.eav.EAVStats.EAVStatsFields;
 import com.xresch.cfw.features.eav.api.APIEAVPushStats;
 import com.xresch.cfw.features.eav.api.APIEAVPushStatsCSV;
 
@@ -57,6 +58,18 @@ public class EAVStats extends CFWObject {
 	enum EAVStatsType{
 		COUNTER, VALUES, CUSTOM
 	}
+	
+	//---------------------------------------
+	// Make shorthand for fieldnames
+	public static final String COUNT = EAVStatsFields.COUNT.name();
+	public static final String MIN = EAVStatsFields.MIN.name();
+	public static final String AVG = EAVStatsFields.AVG.name();
+	public static final String MAX = EAVStatsFields.MAX.name();
+	public static final String SUM = EAVStatsFields.SUM.name();
+	public static final String VAL = EAVStatsFields.VAL.name();
+	public static final String P50 = EAVStatsFields.P50.name();
+	public static final String P95 = EAVStatsFields.P95.name();
+
 
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, EAVStatsFields.PK_ID)
 			.setPrimaryKeyAutoIncrement(this)
@@ -267,6 +280,15 @@ public class EAVStats extends CFWObject {
 		this.granularity.setValue(granularity);
 		return this;
 	}
+	
+	public int count() { 	  return count.getValue(); }
+	public BigDecimal min() { return min.getValue(); }
+	public BigDecimal avg() { return avg.getValue(); }
+	public BigDecimal max() { return max.getValue(); }
+	public BigDecimal sum() { return sum.getValue(); }
+	public BigDecimal val() { return val.getValue(); }
+	public BigDecimal p50() { return p50.getValue(); }
+	public BigDecimal p95() { return p95.getValue(); }
 		
 	
 	/****************************************************************
@@ -285,23 +307,6 @@ public class EAVStats extends CFWObject {
 		return this;
 	}
 	
-	/****************************************************************
-	 * Sanitizes values and replaces nulls with zeros for putting it in the database.
-	 * 
-	 ****************************************************************/
-//	public EAVStats sanitizeValues() {
-//
-//		if(this.count.getValue() == null) { this.count.setValue(0); }
-//		if(this.min.getValue() == null) { this.min.setValue(BigDecimal.ZERO); }
-//		if(this.avg.getValue() == null) { this.avg.setValue(BigDecimal.ZERO); }
-//		if(this.max.getValue() == null) { this.max.setValue(BigDecimal.ZERO); }
-//		if(this.sum.getValue() == null) { this.sum.setValue(BigDecimal.ZERO); }
-//		if(this.val.getValue() == null) { this.val.setValue(BigDecimal.ZERO); }
-//		if(this.p50.getValue() == null) { this.p50.setValue(BigDecimal.ZERO); }
-//		if(this.p95.getValue() == null) { this.p95.setValue(BigDecimal.ZERO); }
-//		
-//		return this;
-//	}
 	
 	/****************************************************************
 	 * Calculates the statistical values for putting it in the database.
