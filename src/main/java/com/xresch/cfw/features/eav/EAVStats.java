@@ -191,11 +191,11 @@ public class EAVStats extends CFWObject {
 						EAVStatsFields.FK_ID_DATE.toString(),
 						EAVStatsFields.TIME.toString(),
 						EAVStatsFields.COUNT.toString(),
-						EAVStatsFields.VAL.toString(),
 						EAVStatsFields.MIN.toString(),
 						EAVStatsFields.AVG.toString(),
 						EAVStatsFields.MAX.toString(),
 						EAVStatsFields.SUM.toString(),
+						EAVStatsFields.VAL.toString(),
 						EAVStatsFields.P50.toString(),
 						EAVStatsFields.P95.toString(),
 						EAVStatsFields.GRANULARITY.toString(),
@@ -218,7 +218,6 @@ public class EAVStats extends CFWObject {
 		
 		return apis;
 	}
-	
 	
 	
 	public Integer id() {
@@ -320,7 +319,8 @@ public class EAVStats extends CFWObject {
 			, BigDecimal p50
 			, BigDecimal p95
 		) {
-				
+		
+		
 		if(statisticsCustomArray == null) {
 			statisticsCustomArray = new HashMap<>();
 			statisticsCustomArray.put(EAVStatsFields.MIN, new ArrayList<>());
@@ -388,6 +388,7 @@ public class EAVStats extends CFWObject {
 			if(sum != null) {
 				this.val.setValue(sum.divide(bigGranularity, RoundingMode.HALF_UP));
 			}
+			
 			return this;
 		}
 		

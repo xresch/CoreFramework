@@ -95,6 +95,7 @@ public class CFWMath {
 	 ***********************************************************************************************/
 	public static BigDecimal bigAvg(List<BigDecimal> values) {
 		
+		while( values.remove(null) ); // remove all null values
 		if(values.isEmpty()) { return null; }
 		
 		BigDecimal sum = bigSum(values);
@@ -113,16 +114,16 @@ public class CFWMath {
 	 ***********************************************************************************************/
 	public static BigDecimal bigSum(List<BigDecimal> values) {
 		
+		while( values.remove(null) ); // remove all null values
 		if(values.isEmpty()) { return null; }
 		
 		BigDecimal sum = null;
 
-		for(BigDecimal current: values) {
+		for(BigDecimal current : values) {
 			if(sum == null) { sum = current; continue; }
 			
-			if(current != null) {
-				sum.add(current);
-			}
+			sum = sum.add(current);
+
 		}
 		
 		return sum;
@@ -143,8 +144,7 @@ public class CFWMath {
 	 ***********************************************************************************************/
 	public static BigDecimal bigPercentile(int percentile, List<BigDecimal> values) {
 		
-		// remove all null values
-		while( values.remove(null) );
+		while( values.remove(null) ); // remove all null values
 		
 		int count = values.size();
 		
