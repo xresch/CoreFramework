@@ -216,17 +216,20 @@ public class CFWCSV {
 				
 				if(i < valuesArray.size()) {  
 					String valueString = valuesArray.get(i); 
-					value = new JsonPrimitive(valueString);
 					
-					if(parseJsonStrings
-					&& (  valueString.startsWith("{")
-					   || valueString.startsWith("[") 
-					   )
-					){
-						try {
-							value = CFWJson.fromJson(valueString);
-						}catch(Throwable e) {
-							new CFWLog(CFWJson.logger).warn("JSON from CSV: error while parsing: "+e.getMessage());
+					if(valueString != null) {
+						value = new JsonPrimitive(valueString);
+					
+						if(parseJsonStrings
+						&& (  valueString.startsWith("{")
+						   || valueString.startsWith("[") 
+						   )
+						){
+							try {
+								value = CFWJson.fromJson(valueString);
+							}catch(Throwable e) {
+								new CFWLog(CFWJson.logger).warn("JSON from CSV: error while parsing: "+e.getMessage());
+							}
 						}
 					}
 				}

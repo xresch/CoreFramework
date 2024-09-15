@@ -83,19 +83,19 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 					int count = 0;
 					if(object.has("count")) { count = object.get("count").getAsInt(); }
 					
-					BigDecimal min = BigDecimal.ZERO;
-					BigDecimal avg = BigDecimal.ZERO;
-					BigDecimal max = BigDecimal.ZERO;
-					BigDecimal sum = BigDecimal.ZERO;
-					BigDecimal p50 = BigDecimal.ZERO;
-					BigDecimal p95 = BigDecimal.ZERO;
+					BigDecimal min = null;
+					BigDecimal avg = null;
+					BigDecimal max = null;
+					BigDecimal sum = null;
+					BigDecimal p50 = null;
+					BigDecimal p95 = null;
 					
-					if(object.has("min")) {  min = object.get("min").getAsBigDecimal(); }
-					if(object.has("avg")) {  avg = object.get("avg").getAsBigDecimal(); }
-					if(object.has("max")) {  max = object.get("max").getAsBigDecimal(); }
-					if(object.has("sum")) {  sum = object.get("sum").getAsBigDecimal(); }
-					if(object.has("p50")) {  p50 = object.get("p50").getAsBigDecimal(); }
-					if(object.has("p95")) {  p95 = object.get("p95").getAsBigDecimal(); }
+					if(object.has("min") && !object.get("min").isJsonNull() ) {  min = object.get("min").getAsBigDecimal(); }
+					if(object.has("avg") && !object.get("avg").isJsonNull() ) {  avg = object.get("avg").getAsBigDecimal(); }
+					if(object.has("max") && !object.get("max").isJsonNull() ) {  max = object.get("max").getAsBigDecimal(); }
+					if(object.has("sum") && !object.get("sum").isJsonNull() ) {  sum = object.get("sum").getAsBigDecimal(); }
+					if(object.has("p50") && !object.get("p50").isJsonNull() ) {  p50 = object.get("p50").getAsBigDecimal(); }
+					if(object.has("p95") && !object.get("p95").isJsonNull() ) {  p95 = object.get("p95").getAsBigDecimal(); }
 					
 					boolean success = CFW.DB.EAVStats.pushStatsCustom(
 								category

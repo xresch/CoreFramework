@@ -143,6 +143,9 @@ public class CFWMath {
 	 ***********************************************************************************************/
 	public static BigDecimal bigPercentile(int percentile, List<BigDecimal> values) {
 		
+		// remove all null values
+		while( values.remove(null) );
+		
 		int count = values.size();
 		
 		if(count == 0) {

@@ -315,7 +315,7 @@ public class EAVStats extends CFWObject {
 			, BigDecimal p50
 			, BigDecimal p95
 		) {
-		
+				
 		if(statisticsCustomArray == null) {
 			statisticsCustomArray = new HashMap<>();
 			statisticsCustomArray.put(EAVStatsFields.MIN, new ArrayList<>());
@@ -376,12 +376,13 @@ public class EAVStats extends CFWObject {
 			this.avg.setValue( CFW.Math.bigAvg( statisticsCustomArray.get(EAVStatsFields.AVG) ) );
 			this.max.setValue( CFW.Math.bigMax( statisticsCustomArray.get(EAVStatsFields.MAX) ) );
 			this.sum.setValue( CFW.Math.bigSum( statisticsCustomArray.get(EAVStatsFields.SUM) ) );
-			this.p50.setValue( CFW.Math.bigSum( statisticsCustomArray.get(EAVStatsFields.P50) ) );
-			this.p95.setValue( CFW.Math.bigSum( statisticsCustomArray.get(EAVStatsFields.P95) ) );
-
+			this.p50.setValue( CFW.Math.bigPercentile(50, statisticsCustomArray.get(EAVStatsFields.P50) ) );
+			this.p95.setValue( CFW.Math.bigPercentile(95, statisticsCustomArray.get(EAVStatsFields.P95) ) );
+			
 			BigDecimal sum = this.sum.getValue();
-			this.val.setValue(sum.divide(bigGranularity, RoundingMode.HALF_UP));
-
+			if(sum != null) {
+				this.val.setValue(sum.divide(bigGranularity, RoundingMode.HALF_UP));
+			}
 			return this;
 		}
 		
