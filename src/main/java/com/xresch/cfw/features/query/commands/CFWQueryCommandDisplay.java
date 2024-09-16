@@ -30,6 +30,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 			+"\n[titleformat=<titleformat>]  [zoom=<zoomNumber>]";
 	
 	public static final String DESCRIPTION_SYNTAX_DETAILS = "<ul>"
+			+"<!-- placeholder -->"
 			+"<li><b>asOption:&nbsp;</b>Defines how the data should be displayed. One of the following options:"
 				+"<ul>"
 					+"<li>table</li>"

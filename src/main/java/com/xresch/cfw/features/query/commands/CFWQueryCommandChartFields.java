@@ -28,13 +28,13 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
+public class CFWQueryCommandChartFields extends CFWQueryCommand {
 	
-	private static final String COMMAND_NAME = "displayfields";
+	private static final String COMMAND_NAME = "chartfields";
 
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandDisplayFields.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandChartFields.class.getName());
 	
-	private ArrayList<QueryPartAssignment> displaySettingsParts = new ArrayList<>();
+	private ArrayList<QueryPartAssignment> chartSettingsParts = new ArrayList<>();
 	private QueryPartAssignment fieldsPart = null; 
 	private QueryPartAssignment heightPart = null; 
 	private QueryPartAssignment widthPart = null; 
@@ -42,7 +42,7 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandDisplayFields(CFWQuery parent) {
+	public CFWQueryCommandChartFields(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -51,7 +51,7 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME, "formatdisplay"};
+		return new String[] {COMMAND_NAME, "formatchart"};
 	}
 
 	/***********************************************************************************************
@@ -59,15 +59,15 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Formats the specified fields with the defined display settings(see command ).";
+		return "Formats the specified fields as charts with the defined chart settings.";
 	}
-
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" fields=<fields> height=<height> width=<width> "+CFWQueryCommandDisplay.DESCIRPTION_SYNTAX;
+		return COMMAND_NAME+" fields=<fields> height=<height> width=<width> "+CFWQueryCommandChart.DESCIRPTION_SYNTAX;
 	}
 	
 	/***********************************************************************************************
@@ -75,13 +75,13 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return CFWQueryCommandDisplay.DESCRIPTION_SYNTAX_DETAILS
-					.replace(
+		return CFWQueryCommandChart.DESCRIPTION_SYNTAX_DETAILS
+					.replaceAll(
 							  "<!-- placeholder -->"
 							, """
-							   	<li><b>fields:&nbsp;</b>Array of the fieldnames these display settings should be applied too.</li>
-							  	<li><b>height:&nbsp;</b>(Optional) CSS height attribute to control the size of the display.</li>
-							  	<li><b>width:&nbsp;</b>(Optional) CSS width attribute to control the size of the display.</li>
+							   	<p><b>fields:&nbsp;</b>Array of the fieldnames these display settings should be applied too.</p>
+							  	<p><b>height:&nbsp;</b>(Optional) CSS height attribute to control the size of the display.</p>
+							  	<p><b>width:&nbsp;</b>(Optional) CSS width attribute to control the size of the display.</p>
 							  """
 					)
 				;
@@ -120,7 +120,7 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 				}else if(partName.toLowerCase().equals("width")) {
 					widthPart = zePart;
 				}else {
-					this.displaySettingsParts.add((QueryPartAssignment)currentPart);
+					this.chartSettingsParts.add((QueryPartAssignment)currentPart);
 					continue;
 				}
 
@@ -168,9 +168,14 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 				if(heightPart != null) {
 					height = heightPart.determineValue(record).getAsString(); 
 				}
-				String width = "100%";
+				String width = "150px";
 				if(widthPart != null) {
 					width = widthPart.determineValue(record).getAsString(); 
+					if(width.endsWith("%")) {
+						this.getQueryContext().addMessageWarning(COMMAND_NAME+": percentage values for parameter 'width' are not supported. Using 150px as default.");
+						width = "150px";
+					}
+					
 				}
 				
 				//-------------------------------------
@@ -207,8 +212,9 @@ public class CFWQueryCommandDisplayFields extends CFWQueryCommand {
 					
 					//--------------------------------------
 					// Override Original Display Settings
+					displaySettings.addProperty("as", "chart");
 					displaySettings.addProperty("menu", false);
-					for(QueryPartAssignment assignment : displaySettingsParts) {
+					for(QueryPartAssignment assignment : chartSettingsParts) {
 
 						String propertyName = assignment.getLeftSideAsString(null);
 

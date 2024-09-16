@@ -173,6 +173,9 @@ DONE
 - Query: source web - as=http will now also give you the duration. 
 - Query: source eav - attributes are not returned as uppercase fields
 
+- Query: Added Commands:
+	- chartfields (plus alias formatchart)
+	
 
 ------- v.9.0.0 -------
 - NEW FEATURE: Credentials Management to not have credentials in queries
