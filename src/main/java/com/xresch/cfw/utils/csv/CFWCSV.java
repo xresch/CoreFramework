@@ -184,7 +184,7 @@ public class CFWCSV {
 	
 		JsonArray result = new JsonArray();
 		
-		Scanner scanner = new Scanner(csv);
+		Scanner scanner = new Scanner(csv.trim());
 	
 		//----------------------------
 		// Skip if Empty

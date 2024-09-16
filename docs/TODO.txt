@@ -173,6 +173,9 @@ DONE
 - Query: source web - as=http will now also give you the duration. 
 - Query: source eav - attributes are not returned as uppercase fields
 
+- Query added sources:
+	- csv
+	
 - Query: Added Commands:
 	- chartfields (plus alias formatchart)
 	

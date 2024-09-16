@@ -129,6 +129,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionUserdata;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceAppDB;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceApplog;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceAuditlog;
+import com.xresch.cfw.features.query.sources.CFWQuerySourceCSV;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceEmpty;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
@@ -325,6 +326,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerSource(new CFWQuerySourceAppDB(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceApplog(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceAuditlog(null));
+		CFW.Registry.Query.registerSource(new CFWQuerySourceCSV(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceEmpty(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceJson(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceRandom(null));

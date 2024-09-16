@@ -1,0 +1,37 @@
+
+<p>
+	The csv source takes csv data with a header line and converts it into records.
+	By default it splits the text by the newline character ','.
+	
+</p>
+
+<p>An simple query that takes very simple csv input:</p>
+<pre><code class="language-cfwquery">| source csv 
+data=`
+id,item
+1,apple
+2,orange
+3, strawberry
+`</code></pre>
+
+<p>You can define a separator and use quotes to include separators in values:</p>
+<pre><code class="language-cfwquery">| source csv 
+separator=";"
+data=`
+	id;item
+	1;"tiramisu"
+	2;"i;scream"
+	3;"\"   panna cotta    \""
+`</code></pre>
+
+
+<p>You can use multiple characters for a separator:</p>
+<pre><code class="language-cfwquery">| source csv 
+separator="---"
+data=`
+	id---character---boolean
+	1---a---true
+	2---b---false
+	3---c---true
+`</code></pre>
+
