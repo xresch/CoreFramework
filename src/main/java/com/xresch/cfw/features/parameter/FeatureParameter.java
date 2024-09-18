@@ -2,16 +2,12 @@ package com.xresch.cfw.features.parameter;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.TreeMap;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.manual.ManualPage;
-import com.xresch.cfw.features.query.CFWQuery;
-import com.xresch.cfw.features.query.CFWQueryCommand;
-import com.xresch.cfw.features.query.CFWQueryManualPageCommand;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -56,6 +52,8 @@ public class FeatureParameter extends CFWAppFeature {
 		CFW.Registry.Parameters.add(new ParameterDefinitionBoolean());
 		CFW.Registry.Parameters.add(new ParameterDefinitionNumber());
 		CFW.Registry.Parameters.add(new ParameterDefinitionDashboardID());
+		CFW.Registry.Parameters.add(new ParameterDefinitionChartTypes());
+		CFW.Registry.Parameters.add(new ParameterDefinitionChartSettings());
 		
 	}
 	

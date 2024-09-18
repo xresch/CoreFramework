@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.core;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -52,6 +53,23 @@ public class FeatureCore extends CFWAppFeature {
 	public static final String PERMISSION_ALLOW_JAVASCRIPT = "Allow Javascript";
 	
 	public static final String CONFIG_BROWSER_RESOURCE_MAXAGE = "Browser Resource Max Age";
+	
+	private static final LinkedHashMap<String, String> CHART_TYPES = new LinkedHashMap<>();
+	static {
+		CHART_TYPES.put("area"			, "Area");
+		CHART_TYPES.put("line"			, "Line");
+		CHART_TYPES.put("bar"			, "Bar");
+		CHART_TYPES.put("scatter"		, "Scatter");
+		CHART_TYPES.put("steppedarea"	, "Stepped Area");
+		CHART_TYPES.put("steppedline"	, "Stepped Line");
+		CHART_TYPES.put("sparkarea"		, "Spark Area");
+		CHART_TYPES.put("sparkline"		, "Spark Line");
+		CHART_TYPES.put("sparkbar"		, "Spark Bar");
+		CHART_TYPES.put("pie"			, "Pie");
+		CHART_TYPES.put("doughnut"		, "Doughnut");
+		CHART_TYPES.put("radar"			, "Radar");
+		CHART_TYPES.put("polar"			, "Polar");
+	}
 	
 	/************************************************************************************
 	 * 
@@ -281,5 +299,18 @@ public class FeatureCore extends CFWAppFeature {
 	public void stopFeature() {
 		// nothing to do
 	}
+	
+	
+	/************************************************************************************
+	 * Returns a map of keys and labels for the available chart types.
+	 * 
+	 ************************************************************************************/
+	public static LinkedHashMap<String, String> getChartTypes() {
+		LinkedHashMap<String, String> clone = new LinkedHashMap<>();
+		clone.putAll(CHART_TYPES);
+		return clone;
+	}
+	
+	
 
 }

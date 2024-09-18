@@ -69,6 +69,7 @@ public class CFWParameter extends CFWObject {
 		PARAM_TYPE,
 		NAME,
 		VALUE,
+//		JSON_VALUE,  // to support form field types that need to start with 'JSON_'
 		MODE,
 		IS_MODE_CHANGE_ALLOWED,
 		IS_DYNAMIC,
@@ -127,6 +128,11 @@ public class CFWParameter extends CFWObject {
 	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE)
 			.setDescription("The value of the parameter as entered in the parameter editor. This might not be the final value(e.g. could also be a query for dynamic loading).")
 			.disableSanitization();
+	
+	// As the type of the value will be defined by the setting it is associated with, this is stored as JSON.
+//	private CFWField<String> jsonValue = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.JSON_VALUE)
+//			.setDescription("The value of the parameter as entered in the parameter editor. This might not be the final value(e.g. could also be a query for dynamic loading).")
+//			.disableSanitization();
 	
 	private CFWField<String> mode = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.MODE)
 			.setDescription("The mode of the widget.")
@@ -188,6 +194,7 @@ public class CFWParameter extends CFWObject {
 					DashboardParameterFields.PARAM_TYPE.toString(),
 					DashboardParameterFields.NAME.toString(),
 					DashboardParameterFields.VALUE.toString(),
+					//DashboardParameterFields.JSON_VALUE.toString(),
 					DashboardParameterFields.IS_DYNAMIC.toString(),
 					DashboardParameterFields.MODE.toString(),
 					DashboardParameterFields.IS_MODE_CHANGE_ALLOWED.toString(),
@@ -272,6 +279,15 @@ public class CFWParameter extends CFWObject {
 		this.value.setValue(value);
 		return this;
 	}
+	
+//	public String jsonValue() {
+//		return jsonValue.getValue();
+//	}
+//	
+//	public CFWParameter jsonValue(String value) {
+//		this.jsonValue.setValue(value);
+//		return this;
+//	}
 	
 	public String mode() {
 		return mode.getValue();

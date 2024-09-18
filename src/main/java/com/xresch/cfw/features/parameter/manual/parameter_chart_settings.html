@@ -1,0 +1,12 @@
+<p>This parameter allows a user to define chart settings.</p>
+
+<p>You can use the user input in a query as follows. Make sure to use the tojson()-function to convert the string to an object:</p>
+
+<pre><code class="language-cfwquery hljs">| paramdefaults
+	chart_settings={charttype: "bar", stacked: true }
+| source random records=100 type=series
+| chart 
+	by=[WAREHOUSE, ITEM]
+	x=TIME 
+	y=COUNT 
+	settings = tojson(param("chart_settings", {}))</code></pre>
