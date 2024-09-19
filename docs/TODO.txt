@@ -166,10 +166,13 @@ DONE
 - Utils: Created CFW.CSV to parse an convert CSV data.
 - API: Added Endpoint EAVStats.pushStats and EAVStats.pushStatsCSV
 - Dashboard: Sharing - fixed bug where a user in a shared group could access a dashboard even if it was not set to shared=true
+- Dashboard: Public - fixed bug when editing dashboard open settings threw error
 - Dashboard Widgets: Improved hierarchy of database widgets.
 - Context Settings: Now have a property to be enabled and disabled 
 - Select: Added filter to all select boxes
 - EAVStats: Added P50 and P90 values (percentiles)
+- Parameters: Added Chart Types
+- Parameters: Added Chart Settings
 - Query: source web - as=http will now also give you the duration. 
 - Query: source eav - attributes are not returned as uppercase fields
 

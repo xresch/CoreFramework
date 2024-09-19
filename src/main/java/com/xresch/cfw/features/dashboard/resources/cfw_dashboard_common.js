@@ -1,5 +1,5 @@
 
-var CFW_DASHBOARDLIST_URL = "./list";
+var CFW_DASHBOARDLIST_URL = "/app/dashboard/list"; //must be absolute to work with public dashboards too
 
 /*******************************************************************************
  * 
