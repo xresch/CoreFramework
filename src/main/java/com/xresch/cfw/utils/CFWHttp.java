@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -17,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
@@ -30,6 +30,18 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.graalvm.polyglot.Value;
 
 import com.google.common.base.Joiner;
@@ -217,14 +229,19 @@ public class CFWHttp {
 				// Get PAC from URL
 				CFWHttpResponse response = null;
 				
-				try {			
-					HttpURLConnection connection = (HttpURLConnection)new URL(CFW.Properties.PROXY_PAC).openConnection();
-					if(connection != null) {
-						connection.setRequestMethod("GET");
-						connection.connect();
-						
-						response = instance.new CFWHttpResponse(connection);
-					}
+				try {	
+					
+					response = CFWHttp.newRequestBuilder(CFW.Properties.PROXY_PAC)
+							.GET()
+							.send()
+							;
+//					HttpURLConnection connection = (HttpURLConnection)new URL(CFW.Properties.PROXY_PAC).openConnection();
+//					if(connection != null) {
+//						connection.setRequestMethod("GET");
+//						connection.connect();
+//						
+//						response = instance.new CFWHttpResponse(connection);
+//					}
 			    
 				} catch (Exception e) {
 					new CFWLog(logger)
@@ -399,6 +416,57 @@ public class CFWHttp {
 		return null;
 		
 	}
+	/******************************************************************************************************
+	 * If proxy is enabled, adds a HttpHost to the client.
+	 * 
+	 * @param clientBuilder the client that should get a proxy
+	 * @param targetURL the URL that should be called over a proxy (not the url of the proxy host)
+	 * 
+	 ******************************************************************************************************/
+	public static void httpClientAddProxy(HttpClientBuilder clientBuilder, String targetURL) {
+		
+		if(CFW.Properties.PROXY_ENABLED == false) {
+			return; // nothing todo
+		}else {
+			ArrayList<CFWProxy> proxiesArray = getProxies(targetURL);
+			
+			//--------------------------------------------------
+			// Return direct if no proxies were returned by PAC
+			if(proxiesArray.isEmpty()) {
+				return; 
+			}
+			
+			//--------------------------------------------------
+			// Iterate PAC Proxies until address is resolved
+			for(CFWProxy cfwProxy : proxiesArray) {
+				
+				if(cfwProxy.type.trim().toUpperCase().equals("DIRECT")) {
+					return; // no proxy required
+				}else {
+					
+					InetSocketAddress address = new InetSocketAddress(cfwProxy.host, cfwProxy.port);
+					if(address.isUnresolved()) { 
+						continue;
+					};
+
+					
+					HttpHost proxy = new HttpHost(cfwProxy.host, cfwProxy.port);
+
+					DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+					clientBuilder.setRoutePlanner(routePlanner);
+				}
+				return ; // done
+			}
+			
+			//-------------------------------------
+			// None of the addresses were resolved
+			new CFWLog(logger)
+			.warn("The proxy addresses couldn't be resolved.");
+		}
+
+		return ;
+		
+	}
 	
 	
 	/******************************************************************************************************
@@ -472,39 +540,44 @@ public class CFWHttp {
 		
 		CFWHttp.logFinerRequestInfo("GET", url, params, headers, null);
 		
-		try {
-			//-----------------------------------
-			// Handle params
-			url = buildURL(url, params);
-			
-			//-----------------------------------
-			// Handle headers
-			HttpURLConnection connection = createProxiedURLConnection(url);
-			if(connection != null) {
-				if(headers != null && !headers.isEmpty() ) {
-					for(Entry<String, String> header : headers.entrySet()) {
-						connection.setRequestProperty(header.getKey(), header.getValue());
-					}
-				}
-				
-				//-----------------------------------
-				// Connect and create response
-				if(connection != null) {
-					connection.setRequestMethod("GET");
-					connection.connect();
-					
-					outgoingHTTPCallsCounter.labels("GET").inc();
-					return instance.new CFWHttpResponse(connection);
-				}
-				
-			}
-	    
-		} catch (Exception e) {
-			new CFWLog(logger)
-				.severe("Exception occured: "+e.getMessage(), e);
-		} 
-		
-		return null;
+		return CFWHttp.newRequestBuilder(url)
+				.GET()
+				.headers(headers)
+				.params(params)
+				.send();
+//		try {
+//			//-----------------------------------
+//			// Handle params
+//			url = buildURL(url, params);
+//			
+//			//-----------------------------------
+//			// Handle headers
+//			HttpURLConnection connection = createProxiedURLConnection(url);
+//			if(connection != null) {
+//				if(headers != null && !headers.isEmpty() ) {
+//					for(Entry<String, String> header : headers.entrySet()) {
+//						connection.setRequestProperty(header.getKey(), header.getValue());
+//					}
+//				}
+//				
+//				//-----------------------------------
+//				// Connect and create response
+//				if(connection != null) {
+//					connection.setRequestMethod("GET");
+//					connection.connect();
+//					
+//					outgoingHTTPCallsCounter.labels("GET").inc();
+//					return instance.new CFWHttpResponse(connection);
+//				}
+//				
+//			}
+//	    
+//		} catch (Exception e) {
+//			new CFWLog(logger)
+//				.severe("Exception occured: "+e.getMessage(), e);
+//		} 
+//		
+//		return null;
 	    	
 	}
 		
@@ -520,108 +593,115 @@ public class CFWHttp {
 		
 		CFWHttp.logFinerRequestInfo("POST", url, params, headers, null);	
 		
-		try {
+		return CFWHttp.newRequestBuilder(url)
+					.POST()
+					.headers(headers)
+					.params(params)
+					.send();
 
-			url = buildURL(url, params);
-			HttpURLConnection connection = createProxiedURLConnection(url);
-			connection.setRequestMethod("POST");
-			connection.setInstanceFollowRedirects(true);
-			
-			if(connection != null) {
-				
-				//-----------------------------------
-				// Handle headers
-				if(headers != null ) {
-					for(Entry<String, String> header : headers.entrySet())
-					connection.setRequestProperty(header.getKey(), header.getValue());
-				}
-				
-				//-----------------------------------
-				// Add Params to Request Body
-				
-				// to be checked, not working properly
-//				if(params != null ) {
-//					
-//					String paramsQuery = buildQueryString(params);
-//					System.out.println("params: "+paramsQuery);
-//					connection.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded"); 
-//					connection.setRequestProperty( "charset", "utf-8");
-//					connection.setRequestProperty( "Content-Length", Integer.toString( paramsQuery.length() ));
-//					
-//					connection.setDoOutput(true);
-//					connection.connect();
-//					try(OutputStream outStream = connection.getOutputStream()) {
-//					    byte[] input = paramsQuery.getBytes("utf-8");
-//					    outStream.write(input, 0, input.length);      
-//					    outStream.flush();
-//					}
+		
+//		try {
+//
+//			url = buildURL(url, params);
+//			HttpURLConnection connection = createProxiedURLConnection(url);
+//			connection.setRequestMethod("POST");
+//			connection.setInstanceFollowRedirects(true);
+//			
+//			if(connection != null) {
+//				
+//				//-----------------------------------
+//				// Handle headers
+////				if(headers != null ) {
+////					for(Entry<String, String> header : headers.entrySet())
+////					connection.setRequestProperty(header.getKey(), header.getValue());
+////				}
+//				
+//				//-----------------------------------
+//				// Add Params to Request Body
+//				
+//				// to be checked, not working properly
+////				if(params != null ) {
+////					
+////					String paramsQuery = buildQueryString(params);
+////					System.out.println("params: "+paramsQuery);
+////					connection.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded"); 
+////					connection.setRequestProperty( "charset", "utf-8");
+////					connection.setRequestProperty( "Content-Length", Integer.toString( paramsQuery.length() ));
+////					
+////					connection.setDoOutput(true);
+////					connection.connect();
+////					try(OutputStream outStream = connection.getOutputStream()) {
+////					    byte[] input = paramsQuery.getBytes("utf-8");
+////					    outStream.write(input, 0, input.length);      
+////					    outStream.flush();
+////					}
+////				}
+//				
+//				//-----------------------------------
+//				// Connect and create response
+//				if(connection != null) {			
+//					outgoingHTTPCallsCounter.labels("POST").inc();
+//					return instance.new CFWHttpResponse(connection);
 //				}
-				
-				//-----------------------------------
-				// Connect and create response
-				if(connection != null) {			
-					outgoingHTTPCallsCounter.labels("POST").inc();
-					return instance.new CFWHttpResponse(connection);
-				}
-			}
-		} catch (Exception e) {
-			new CFWLog(logger)
-				.severe("Exception occured: "+e.getMessage(), e);
-		} 
-		
-		return null;
+//			}
+//		} catch (Exception e) {
+//			new CFWLog(logger)
+//				.severe("Exception occured: "+e.getMessage(), e);
+//		} 
+//		
+//		return null;
 	    	
 	}
 	
-	/******************************************************************************************************
-	 * Send a HTTP POST request sending JSON with a Content-Type header "application/json; charset=UTF-8".
-	 * Returns the result or null in case of error.
-	 * 
-	 * @param url used for the request.
-	 * @param body the content of the POST body
-	 * @return String response
-	 ******************************************************************************************************/
-	public static CFWHttpResponse sendPOSTRequestJSON(String url, String body) {
-		return sendPOSTRequest(url, "application/json; charset=UTF-8", body);
-	}
-	
-	/******************************************************************************************************
-	 * Send a HTTP POST request and returns the result or null in case of error.
-	 * @param url used for the request.
-	 * @param contentType the value for the Content-Type header, e.g. " "application/json; charset=UTF-8", or null
-	 * @param body the content of the POST body
-	 * @return String response
-	 ******************************************************************************************************/
-	public static CFWHttpResponse sendPOSTRequest(String url, String contentType, String body) {
-		
-		
-		try {
-			HttpURLConnection connection = createProxiedURLConnection(url);
-			if(connection != null) {
-				connection.setRequestMethod("POST");
-				
-				if(!Strings.isNullOrEmpty(contentType)) {
-					connection.setRequestProperty("Content-Type", contentType);
-				}
-				connection.setDoOutput(true);
-				connection.connect();
-				try(OutputStream outStream = connection.getOutputStream()) {
-				    byte[] input = body.getBytes("utf-8");
-				    outStream.write(input, 0, input.length);           
-				}
-				
-				outgoingHTTPCallsCounter.labels("POST").inc();
-				return instance.new CFWHttpResponse(connection);
-			}
-	    
-		} catch (Exception e) {
-			new CFWLog(logger)
-				.severe("Exception occured.", e);
-		} 
-		
-		return null;
-	    	
-	}
+//	/******************************************************************************************************
+//	 * Send a HTTP POST request sending JSON with a Content-Type header "application/json; charset=UTF-8".
+//	 * Returns the result or null in case of error.
+//	 * 
+//	 * @param url used for the request.
+//	 * @param body the content of the POST body
+//	 * @return String response
+//	 ******************************************************************************************************/
+//	public static CFWHttpResponse sendPOSTRequestJSON(String url, String body) {
+//		return sendPOSTRequest(url, "application/json; charset=UTF-8", body);
+//	}
+//	
+//	/******************************************************************************************************
+//	 * Send a HTTP POST request and returns the result or null in case of error.
+//	 * @param url used for the request.
+//	 * @param contentType the value for the Content-Type header, e.g. " "application/json; charset=UTF-8", or null
+//	 * @param body the content of the POST body
+//	 * @return String response
+//	 ******************************************************************************************************/
+//	public static CFWHttpResponse sendPOSTRequest(String url, String contentType, String body) {
+//		
+//		
+//		try {
+//			HttpURLConnection connection = createProxiedURLConnection(url);
+//			if(connection != null) {
+//				connection.setRequestMethod("POST");
+//				
+//				if(!Strings.isNullOrEmpty(contentType)) {
+//					connection.setRequestProperty("Content-Type", contentType);
+//				}
+//				connection.setDoOutput(true);
+//				connection.connect();
+//				try(OutputStream outStream = connection.getOutputStream()) {
+//				    byte[] input = body.getBytes("utf-8");
+//				    outStream.write(input, 0, input.length);           
+//				}
+//				
+//				outgoingHTTPCallsCounter.labels("POST").inc();
+//				return instance.new CFWHttpResponse(connection);
+//			}
+//	    
+//		} catch (Exception e) {
+//			new CFWLog(logger)
+//				.severe("Exception occured.", e);
+//		} 
+//		
+//		return null;
+//	    	
+//	}
 	
 	
 	
@@ -760,7 +840,7 @@ public class CFWHttp {
 		String URL = null;
 		String requestBody = null;
 		String requestBodyContentType = "plain/text; charset=UTF-8";
-		
+
 		private HashMap<String, String> params = new HashMap<>();
 		private HashMap<String, String> headers = new HashMap<>();
 		
@@ -792,6 +872,19 @@ public class CFWHttp {
 			return this;
 		}
 		
+		
+		/***********************************************
+		 * Adds a map of parameters
+		 ***********************************************/
+		public CFWHttpRequestBuilder params(Map<String, String> paramsMap) {
+			
+			if(paramsMap == null) { return this; }
+			
+			this.params.putAll(paramsMap);
+			return this;
+			
+		}
+		
 		/***********************************************
 		 * Add a header
 		 ***********************************************/
@@ -799,6 +892,7 @@ public class CFWHttp {
 			headers.put(name, value);
 			return this;
 		}
+
 		
 		/***********************************************
 		 * Adds a map of headers
@@ -811,8 +905,6 @@ public class CFWHttp {
 			return this;
 			
 		}
-		
-		
 		
 		/***********************************************
 		 * Add a header
@@ -866,40 +958,49 @@ public class CFWHttp {
 				//---------------------------------
 				// Create URL
 				String urlWithParams = buildURLwithParams();
-				HttpURLConnection connection = createProxiedURLConnection(urlWithParams);
-				connection.setRequestMethod(method);
-				connection.setInstanceFollowRedirects(true);
+				//HttpURLConnection connection = createProxiedURLConnection(urlWithParams);
+				//connection.setRequestMethod(method);
+				//connection.setInstanceFollowRedirects(true);
 				
-				if(connection != null) {
+
+				HttpUriRequestBase requestBase = new HttpUriRequestBase(method, URI.create(urlWithParams));
+				
+				if(requestBase != null) {
+					
 					
 					//-----------------------------------
 					// Handle headers
 					if(headers != null ) {
-						for(Entry<String, String> header : headers.entrySet())
-						connection.setRequestProperty(header.getKey(), header.getValue());
+						for(Entry<String, String> header : headers.entrySet()) {
+							requestBase.addHeader(header.getKey(), header.getValue());
+						}
 					}
 					
 					//-----------------------------------
 					// Handle POST Body
 					if(requestBody != null) {
-						if(headers.containsKey(HEADER_CONTENT_TYPE)) {
-							connection.setRequestProperty(HEADER_CONTENT_TYPE, headers.get(HEADER_CONTENT_TYPE));
-						}else if(!Strings.isNullOrEmpty(requestBodyContentType)) {
-							connection.setRequestProperty(HEADER_CONTENT_TYPE, requestBodyContentType);
-						}
-						connection.setDoOutput(true);
-						connection.connect();
-						try(OutputStream outStream = connection.getOutputStream()) {
-						    byte[] input = requestBody.getBytes("utf-8");
-						    outStream.write(input, 0, input.length);           
-						}
+						
+						StringEntity bodyEntity = new StringEntity(requestBody);
+						requestBase.setEntity(bodyEntity);
+						
+//						if(headers.containsKey(HEADER_CONTENT_TYPE)) {
+//							connection.setRequestProperty(HEADER_CONTENT_TYPE, headers.get(HEADER_CONTENT_TYPE));
+//						}else if(!Strings.isNullOrEmpty(requestBodyContentType)) {
+//							connection.setRequestProperty(HEADER_CONTENT_TYPE, requestBodyContentType);
+//						}
+//						connection.setDoOutput(true);
+//						connection.connect();
+//						try(OutputStream outStream = connection.getOutputStream()) {
+//						    byte[] input = requestBody.getBytes("utf-8");
+//						    outStream.write(input, 0, input.length);           
+//						}
 					}
 
 					//-----------------------------------
 					// Connect and create response
-					if(connection != null) {			
+					if(requestBase != null) {			
 						outgoingHTTPCallsCounter.labels(method).inc();
-						CFWHttpResponse response = instance.new CFWHttpResponse(connection);
+						CFWHttpResponse response = instance.new CFWHttpResponse(requestBase);
 						return response;
 					}
 				}
@@ -924,73 +1025,128 @@ public class CFWHttp {
 		private String body;
 		private int status = 500;
 		private long duration = -1;
-		private Map<String, List<String>> headers;
+		private Header[] headers;
 		
 		private boolean errorOccured = false;
 		
-		public CFWHttpResponse(HttpURLConnection conn) {
-			
-			BufferedReader in = null;
-			StringBuilder builder = new StringBuilder();
-			int responseCode = -1;
-			
-			long startMillis = System.currentTimeMillis();
-			try{
-				url = conn.getURL();
-				
-				//------------------------------
-				// connect if not already done
-				conn.connect();
-				
-				//------------------------------
-				// Read Response Body
-				status = conn.getResponseCode();
-				headers = conn.getHeaderFields();
+		/******************************************************************************************************
+		 * 
+		 ******************************************************************************************************/
+//		public CFWHttpResponse(HttpURLConnection conn) {
+//			
+//			BufferedReader in = null;
+//			StringBuilder builder = new StringBuilder();
+//			int responseCode = -1;
+//			
+//			long startMillis = System.currentTimeMillis();
+//			try{
+//				url = conn.getURL();
+//				
+//				//------------------------------
+//				// connect if not already done
+//				conn.connect();
+//				
+//				//------------------------------
+//				// Read Response Body
+//				status = conn.getResponseCode();
+//				//headers = conn.getHeaderFields();
+//
+//				//------------------------------
+//				// Get Response Stream
+//				if (status <= 299) {
+//				    in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//				} else {
+//				    in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+//				}
+//				
+//				//------------------------------
+//				// Read Response Body
+//		        String inputLine;
+//		
+//		        while ((inputLine = in.readLine()) != null) {
+//		        	builder.append(inputLine);
+//		        	builder.append("\n");
+//		        }
+//		        
+//		        body = builder.toString();
+//
+//			}catch(Exception e) {
+//				new CFWLog(responseLogger)
+//					.severe("Exception occured while accessing URL: Type=\""+e.getClass().getSimpleName()
+//							+"\", HTTPStatus=\""+responseCode+"\""
+//							+"\", Message=\""+e.getMessage()+"\""
+//							, e);
+//				errorOccured = true;
+//			}finally {
+//				
+//				long endMillis = System.currentTimeMillis();
+//		        duration = endMillis - startMillis;
+//		        
+//				if(in != null) {
+//					try {
+//						conn.disconnect();
+//						in.close();
+//					} catch (IOException e) {
+//						new CFWLog(responseLogger)
+//							.severe("Exception occured while closing http stream.", e);
+//					}
+//				}
+//			}
+//		}
 
-				//------------------------------
-				// Get Response Stream
-				responseCode = conn.getResponseCode();
-				if (responseCode <= 299) {
-				    in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-				} else {
-				    in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-				}
-				
-				//------------------------------
-				// Read Response Body
-		        String inputLine;
-		
-		        while ((inputLine = in.readLine()) != null) {
-		        	builder.append(inputLine);
-		        	builder.append("\n");
-		        }
-		        
-		        body = builder.toString();
+		/******************************************************************************************************
+		 * 
+		 ******************************************************************************************************/
+		public CFWHttpResponse(HttpUriRequestBase requestBase) {
+			
+			//----------------------------------
+			// Create HTTP Client
 
-			}catch(Exception e) {
-				new CFWLog(responseLogger)
-					.severe("Exception occured while accessing URL: Type=\""+e.getClass().getSimpleName()
-							+"\", HTTPStatus=\""+responseCode+"\""
-							+"\", Message=\""+e.getMessage()+"\""
-							, e);
+			try {
+				url = requestBase.getUri().toURL();
+			} catch (Exception e) {
 				errorOccured = true;
-			}finally {
-				
-				long endMillis = System.currentTimeMillis();
-		        duration = endMillis - startMillis;
-		        
-				if(in != null) {
-					try {
-						conn.disconnect();
-						in.close();
-					} catch (IOException e) {
-						new CFWLog(responseLogger)
-							.severe("Exception occured while closing http stream.", e);
+				new CFWLog(responseLogger).severe("URL is malformed.", e);
+				return ;
+			}
+			
+			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+			httpClientAddProxy(clientBuilder, url.toString());
+			
+			CloseableHttpClient httpClient = clientBuilder.build();
+			
+			//----------------------------------
+			// Send Request and Read Response
+			long startMillis = System.currentTimeMillis();
+			try {
+				Boolean success = httpClient.execute(requestBase, new HttpClientResponseHandler<Boolean>() {
+					@Override
+					public Boolean handleResponse(ClassicHttpResponse response) throws HttpException, IOException {
+						if(response != null) {
+							status = response.getCode();
+							headers = response.getHeaders();
+							body = EntityUtils.toString(response.getEntity());
+
+						}
+						return true;
 					}
-				}
+				});
+				
+			} catch (IOException e) {
+				errorOccured = true;
+				new CFWLog(responseLogger).severe("Exception occured during HTTP request.", e);
+				
+			}finally {
+				long endMillis = System.currentTimeMillis();
+				duration = endMillis - startMillis;
+
+				
 			}
 		}
-
+		
+		/******************************************************************************************************
+		 * 
+		 ******************************************************************************************************/
 		public boolean errorOccured() {
 			return errorOccured;
 		}
@@ -1141,7 +1297,7 @@ public class CFWHttp {
 		/******************************************************************************************************
 		 * 
 		 ******************************************************************************************************/
-		public Map<String, List<String>> getHeaders() {
+		public Header[] getHeaders() {
 			return headers;
 		}
 		
@@ -1151,10 +1307,10 @@ public class CFWHttp {
 		public JsonObject getHeadersAsJson() {
 			
 			JsonObject object = new JsonObject();
-			for(Entry<String, List<String>> entry : headers.entrySet()) {
+			for(Header entry : headers) {
 				
-				if(entry.getKey() != null) {
-					object.addProperty(entry.getKey(), Joiner.on(", ").join(entry.getValue()));
+				if(entry.getName() != null) {
+					object.addProperty(entry.getName(), entry.getValue());
 				}
 			}
 			
