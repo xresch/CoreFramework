@@ -340,7 +340,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		}
 		
 		if(!Strings.isNullOrEmpty(username)) {
-			requestBuilder.authenticationBasic(username, password);
+			requestBuilder.setAuthCredentials(username, password);
 		}
 		
 		requestBuilder.headers(headersMap);

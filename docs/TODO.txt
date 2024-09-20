@@ -162,6 +162,7 @@ DONE
 ------- current -------
 - BREAKING CODE CHANGE: Refactoring of ContextSettingsChangeListener.onDelete() to ContextSettingsChangeListener.onDeleteOrDeactivate()
 - BREAKING CODE CHANGE: Refactoring of CFW.Math.bigPercentile(), changing order of parameters
+- BREAKING CODE CHANGE: Changes of CFWHttp to use Apache HttpClient
 - NEW FEATURE: Postgres Extensions
 - Utils: Created CFW.CSV to parse an convert CSV data.
 - API: Added Endpoint EAVStats.pushStats and EAVStats.pushStatsCSV

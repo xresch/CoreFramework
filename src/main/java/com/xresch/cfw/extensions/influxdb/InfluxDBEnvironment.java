@@ -179,7 +179,7 @@ public class InfluxDBEnvironment extends AbstractContextSettings {
 		 
 		 if(!Strings.isNullOrEmpty(this.username())) { 
 			 //builder.header("Authorization", "Token "+ username.getValue() + ":" + password.getValue());
-			 builder.authenticationBasic(username.getValue(), password.getValue());
+			 builder.setAuthCredentials(username.getValue(), password.getValue());
 		 }
 		 
 		//---------------------------

@@ -135,10 +135,35 @@ The following query uses the unbox command to keep some of the original fields(f
 
 
 <p>In case the URL you need to call needs Basic Authentication, specify username and password on the source:</p>
-<pre><code class="language-cfwquery">| source web 
+<pre><code class="language-cfwquery">#########################################
+# Basic
+| source web 
 	url="http://www.httpbin.org/basic-auth/testUsername/testPassword"
 	username='testUsername'
-	password='testPassword'</code></pre>
+	password='testPassword'
+;
+#########################################
+# Digest
+| source web 
+	url="http://www.httpbin.org/digest-auth/auth/testUsername/testPassword/SHA-512"
+	username='testUsername'
+	password='testPassword'
+;
+#########################################
+# NTLM
+| source web 
+	as=http
+	url="https://authenticationtest.com/HTTPAuth/"
+	username='user'
+	password='pass'
+;
+#########################################
+# Bearer Token
+| source web 
+	url="http://httpbin.org/bearer"
+	headers={ 'accept': 'application/json', "Authorization": "Bearer wh0need5-c00kIe5-1f-theycanh4ve-t1r4m15u"}
+;
+</code></pre>
 	
 	
 <p>In case the URL needs specific headers, for example a token, you can add headers in JSON format as follows:</p>

@@ -10,7 +10,6 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -30,15 +29,28 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.hc.client5.http.auth.AuthSchemeFactory;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.NTCredentials;
+import org.apache.hc.client5.http.auth.StandardAuthScheme;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
+import org.apache.hc.client5.http.impl.auth.BasicSchemeFactory;
+import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
+import org.apache.hc.client5.http.impl.auth.DigestScheme;
+import org.apache.hc.client5.http.impl.auth.DigestSchemeFactory;
+import org.apache.hc.client5.http.impl.auth.NTLMScheme;
+import org.apache.hc.client5.http.impl.auth.NTLMSchemeFactory;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpException;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
@@ -836,6 +848,8 @@ public class CFWHttp {
 	public class CFWHttpRequestBuilder {
 		
 		private static final String HEADER_CONTENT_TYPE = "Content-Type";
+		private String username = null;
+		private char[] pwdArray = null;
 		String method = "GET";
 		String URL = null;
 		String requestBody = null;
@@ -909,8 +923,13 @@ public class CFWHttp {
 		/***********************************************
 		 * Add a header
 		 ***********************************************/
-		public CFWHttpRequestBuilder authenticationBasic(String username, String password) {
-			CFWHttp.addBasicAuthorizationHeader(headers, username, password);
+		public CFWHttpRequestBuilder setAuthCredentials(String username, String password) {
+			
+			//CFWHttp.addBasicAuthorizationHeader(headers, username, password);
+			
+			this.username = username;
+			this.pwdArray = (password != null ) ? password.toCharArray() : "".toCharArray();
+
 			return this;
 		}
 		
@@ -995,14 +1014,93 @@ public class CFWHttp {
 //						    outStream.write(input, 0, input.length);           
 //						}
 					}
+					
+					//----------------------------------
+					// Create HTTP Client
+					
+					HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+					httpClientAddProxy(clientBuilder, URL);
+					
+					if(username != null) {
+						
+						//---------------------------------
+						// Credential Provider
+						String scheme = requestBase.getUri().getScheme();
+						String hostname = requestBase.getUri().getHost();
+						int port = requestBase.getUri().getPort();
+						HttpHost targetHost = new HttpHost(scheme, hostname, port);
+
+						CredentialsProviderBuilder credProviderBuilder = CredentialsProviderBuilder.create();
+						
+						//------------------------------
+						// Basic 
+						AuthScope authScopeBasic = new AuthScope(targetHost, null, new BasicScheme().getName());
+						credProviderBuilder.add(authScopeBasic, username, pwdArray);
+
+						//------------------------------
+						// Digest
+						AuthScope authScopeDigest = new AuthScope(targetHost, null, new DigestScheme().getName());
+						credProviderBuilder.add(authScopeDigest, username, pwdArray);
+                        
+						//------------------------------
+						// NTLM
+						String ntlmUsername = username;
+						String ntlmDomain = null;
+						if(username.contains("@")) {
+							String[] splitted = username.split("@");
+							ntlmUsername = splitted[0];
+							ntlmDomain = splitted[1];
+						}
+						AuthScope authScopeNTLM = new AuthScope(targetHost, null, new NTLMScheme().getName());
+						
+						NTCredentials ntlmCreds = new NTCredentials(pwdArray, ntlmUsername, ntlmDomain, null);
+						credProviderBuilder.add(authScopeNTLM, ntlmCreds);
+						
+						//------------------------------
+						// Kerberos
+//						GSSManager manager = GSSManager.getInstance();
+//						GSSName name = manager.createName(username, GSSName.NT_USER_NAME);
+//					    GSSCredential gssCred = manager.createCredential(name,GSSCredential.DEFAULT_LIFETIME, (Oid) null, GSSCredential.INITIATE_AND_ACCEPT);
+//					    
+//						AuthScope authScopeKerberos = new AuthScope(targetHost, null, new KerberosScheme().getName());
+//						
+//						KerberosCredentials kerbCred = new KerberosCredentials(gssCred);
+//						credProviderBuilder.add(authScopeKerberos, kerbCred);
+
+						//---------------------------------
+						// Scheme Factory
+						@SuppressWarnings("deprecation")
+						Registry<AuthSchemeFactory> schemeFactoryRegistry = RegistryBuilder.<AuthSchemeFactory>create()
+						        .register(StandardAuthScheme.BASIC, BasicSchemeFactory.INSTANCE)
+						        .register(StandardAuthScheme.DIGEST, DigestSchemeFactory.INSTANCE)
+						        .register(StandardAuthScheme.NTLM, NTLMSchemeFactory.INSTANCE)
+//						        .register(StandardAuthScheme.SPNEGO, new SPNegoSchemeFactory(
+//						                KerberosConfig.custom()
+//						                        .setStripPort(KerberosConfig.Option.DEFAULT)
+//						                        .setUseCanonicalHostname(KerberosConfig.Option.DEFAULT)
+//						                        .build(),
+//						                SystemDefaultDnsResolver.INSTANCE))
+//						        .register(StandardAuthScheme.KERBEROS, KerberosSchemeFactory.DEFAULT)
+						        .build();
+						
+						//---------------------------------
+						// Credential Provider
+						clientBuilder
+							.setDefaultAuthSchemeRegistry(schemeFactoryRegistry)
+							.setDefaultCredentialsProvider(credProviderBuilder.build());
+						
+					}
+					
+					CloseableHttpClient httpClient = clientBuilder.build();
+					
 
 					//-----------------------------------
 					// Connect and create response
-					if(requestBase != null) {			
-						outgoingHTTPCallsCounter.labels(method).inc();
-						CFWHttpResponse response = instance.new CFWHttpResponse(requestBase);
-						return response;
-					}
+		
+					outgoingHTTPCallsCounter.labels(method).inc();
+					CFWHttpResponse response = instance.new CFWHttpResponse(httpClient, requestBase);
+					return response;
+					
 				}
 			} catch (Throwable e) {
 				new CFWLog(logger)
@@ -1097,23 +1195,17 @@ public class CFWHttp {
 		/******************************************************************************************************
 		 * 
 		 ******************************************************************************************************/
-		public CFWHttpResponse(HttpUriRequestBase requestBase) {
+		public CFWHttpResponse(CloseableHttpClient httpClient, HttpUriRequestBase requestBase) {
 			
 			//----------------------------------
-			// Create HTTP Client
-
+			// Get URL
 			try {
 				url = requestBase.getUri().toURL();
 			} catch (Exception e) {
 				errorOccured = true;
-				new CFWLog(responseLogger).severe("URL is malformed.", e);
+				new CFWLog(responseLogger).severe("URL is malformed:"+e.getMessage(), e);
 				return ;
 			}
-			
-			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-			httpClientAddProxy(clientBuilder, url.toString());
-			
-			CloseableHttpClient httpClient = clientBuilder.build();
 			
 			//----------------------------------
 			// Send Request and Read Response
@@ -1123,9 +1215,14 @@ public class CFWHttp {
 					@Override
 					public Boolean handleResponse(ClassicHttpResponse response) throws HttpException, IOException {
 						if(response != null) {
+							
 							status = response.getCode();
 							headers = response.getHeaders();
-							body = EntityUtils.toString(response.getEntity());
+							
+							HttpEntity entity = response.getEntity();
+							if(entity != null) {
+								body = EntityUtils.toString(response.getEntity());
+							}
 
 						}
 						return true;
@@ -1134,13 +1231,11 @@ public class CFWHttp {
 				
 			} catch (IOException e) {
 				errorOccured = true;
-				new CFWLog(responseLogger).severe("Exception occured during HTTP request.", e);
+				new CFWLog(responseLogger).severe("Exception occured during HTTP request:"+e.getMessage(), e);
 				
 			}finally {
 				long endMillis = System.currentTimeMillis();
 				duration = endMillis - startMillis;
-
-				
 			}
 		}
 		
