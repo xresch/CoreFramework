@@ -169,6 +169,7 @@ DONE
 - Dashboard: Sharing - fixed bug where a user in a shared group could access a dashboard even if it was not set to shared=true
 - Dashboard: Public - fixed bug when editing dashboard open settings threw error
 - Dashboard Widgets: Improved hierarchy of database widgets.
+- Dashboard Parameter Widget: added option to add params next to title 
 - Context Settings: Now have a property to be enabled and disabled 
 - Select: Added filter to all select boxes
 - EAVStats: Added P50 and P90 values (percentiles)
