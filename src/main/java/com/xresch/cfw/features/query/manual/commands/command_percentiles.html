@@ -1,0 +1,21 @@
+
+<p>The percentiles command will sort the values by the given field and calculates the percentile value for all the records.
+This command is useful to create percentile distribution charts.
+</p>
+
+<p>Following query creates a percentile chart for the BOX_SIZE values. </p>
+<pre><code class="language-cfwquery">| source random records=72 type=series
+# you can calculate multiple percentiles at once
+# Left on the assignment is the target fieldname, right is the fieldname to base the percentile on)
+| percentiles 
+	PERC_TOTAL = TOTAL
+	PERC_PRICE = PRICE
+	PERC_BOX_SIZE = BOX_SIZE
+| chart # make a percentile chart for box size
+	by = [WAREHOUSE, ITEM] 
+	type = 'area'
+	x = PERC_BOX_SIZE
+	y = BOX_SIZE
+	xtype = linear
+	multichart = true</code></pre>
+

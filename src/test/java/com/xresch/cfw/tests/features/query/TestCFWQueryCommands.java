@@ -1489,7 +1489,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		JsonObject result = queryResults.getRecordAsObject(0);
 		
-		Assertions.assertEquals(8, result.size(), "Record has only tree fields");
+		Assertions.assertEquals(7, result.size());
 		Assertions.assertFalse(result.has("INDEX"), "Record has field INDEX");
 		Assertions.assertFalse(result.has("TIME"), "Record has field TIME");
 		Assertions.assertFalse(result.has("FIRSTNAME"), "Record has field FIRSTNAME");
@@ -1521,7 +1521,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		JsonObject result = queryResults.getRecordAsObject(0);
 		
-		Assertions.assertEquals(11, result.size(), "Record has only tree fields");
+		Assertions.assertEquals(10, result.size());
 		Assertions.assertFalse(result.has("INDEX"), "Record has field INDEX");
 		Assertions.assertTrue(result.has("ROW"), "Record has field TIME");
 

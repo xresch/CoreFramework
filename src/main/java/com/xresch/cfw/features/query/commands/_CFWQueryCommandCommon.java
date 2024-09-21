@@ -4,15 +4,46 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartGroup;
+import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 public class _CFWQueryCommandCommon {
 
+	
+	/***********************************************************************************************
+	 * Used for sorting fields
+	 ***********************************************************************************************/
+	public static int compareByFieldname(EnhancedJsonObject o1, EnhancedJsonObject o2, String fieldname, boolean reverseNulls) {
+		int compareResult;
+		int nullsSmaller = (reverseNulls) ? 1 : -1;
+		int nullsBigger = (reverseNulls) ? -1 : 1;
+		
+		QueryPartValue value1 = QueryPartValue.newFromJsonElement(o1.get(fieldname));
+		QueryPartValue value2 = QueryPartValue.newFromJsonElement(o2.get(fieldname));
+
+		if(value1.isNumberOrNumberString() && value2.isNumberOrNumberString()) {
+			compareResult = value1.getAsBigDecimal().compareTo(value2.getAsBigDecimal());
+		}else if(value1.isBoolOrBoolString() && value2.isBoolOrBoolString()) {
+			compareResult = Boolean.compare(value1.getAsBoolean(), value2.getAsBoolean());
+		}else{
+			if(value1.isNull()) {
+				if(value2.isNull()) { compareResult = 0; }
+				else				{ compareResult = nullsSmaller; }
+			}else if(value2.isNull()) {
+				 compareResult = nullsBigger; 
+			}else {
+				compareResult = CFW.Utils.Text.compareStringsAlphanum(value1.getAsString(), value2.getAsString());
+			}
+		}
+		return compareResult;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

@@ -183,7 +183,7 @@ DONE
 	
 - Query: Added Commands:
 	- chartfields (plus alias formatchart)
-	
+	- percentiles
 
 ------- v.9.0.0 -------
 - NEW FEATURE: Credentials Management to not have credentials in queries
