@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
@@ -618,11 +619,16 @@ public class CFWParameter extends CFWObject {
 		
 		object.addProperty(name.getName(), name.getValue());
 		
+
+		
 		//------------------------------------------------
 		// Convert Value to Correct Type
-		if(paramType.getValue().contentEquals("BOOLEAN")) {
+		if(value.getValue() == null) {
+			object.add(id.getName(), JsonNull.INSTANCE);
+		}else if(paramType.getValue().contentEquals("BOOLEAN")) {
 			object.addProperty(value.getName(), Boolean.parseBoolean(value.getValue()) );
 		}else if(paramType.getValue().contentEquals("NUMBER")) {
+			
 			object.addProperty(value.getName(), new BigDecimal(value.getValue()) );
 		}else {
 			object.addProperty(value.getName(), value.getValue() );

@@ -244,17 +244,20 @@ function cfw_dashboard_getWidgetDefinition(widgetUniqueType){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_parameter_fireParamWidgetUpdate(paramElement){
+function cfw_parameter_fireParamWidgetUpdate(paramButton){
 	
 	//----------------------------------
 	// Initialize
 	var FIELDNAME_PROMPT_PW = "cfw-promptpassword";
 	var FIELDNAME_AFFECTED_WIDGETS = "cfw-affectedwidgets";
-	var paramField = $(paramElement);
-	var widgetElement = paramField.closest('.grid-stack-item');
-	var widgetID = widgetElement.data('id');
+	var paramButton = $(paramButton);
+	var widgetID = paramButton.closest('.cfw-parameter-widget-parent').data('widget-id');
+	var widgetElement = $('.grid-stack-item[data-id='+widgetID+']');
 	var paramForms = $('.cfw-parameter-widget-parent form');
 	
+	console.log(paramButton)
+	console.log(widgetID)
+	console.log(widgetElement)
 	//-----------------------------------------------
 	// Create merged Params of All Parameter Widgets
 	var mergedParams = {}; 

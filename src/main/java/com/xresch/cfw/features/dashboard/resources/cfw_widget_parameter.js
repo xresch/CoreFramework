@@ -21,7 +21,8 @@
 					var settings = widgetObject.JSON_SETTINGS;
 					var formHTML = data.payload.html;
 					
-					var parentDiv = $('<div class= "d-flex flex-column cfw-parameter-widget-parent w-100">');
+					
+					var parentDiv = $('<div class="d-flex flex-column cfw-parameter-widget-parent w-100" data-widget-id="'+widgetObject.PK_ID+'">');
 
 					var noflexDiv = $('<div class="d-block w-100">');
 					noflexDiv.append(settings.description);
@@ -114,7 +115,7 @@
 									var wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');
 									 cfw_internal_applyChartSettings(inputField.attr('id'), wrapper, chartsettingsValues);
 								}else{
-									// stringify value, else it won't work with properly with booleans
+									// stringify value, else it won't work properly with booleans
 									inputField.val(""+viewerCustomValue);
 								}
 							}
@@ -123,7 +124,23 @@
 					
 					//----------------------------------
 					// Callback
-					callback(widgetObject, parentDiv);
+					$('#globalParams').html('');
+					if( settings.addtotop != true ){
+						callback(widgetObject, parentDiv);
+					}else{
+						parentDiv.find('form')
+								 .css('width', '100%')
+								 .css('flex-flow', 'wrap')
+								 ;
+						$('#cfw-dashboard-control-panel .btn-group').addClass('mt-2');
+						$('#globalParams')
+								.html('')
+								.removeClass('mt-2')
+								.append(parentDiv)
+								;
+						callback(widgetObject, "<span>Added next to title</span>");
+					}
+					
 					
 					//----------------------------------
 					// Hack overflow on widget for autocomplete lists

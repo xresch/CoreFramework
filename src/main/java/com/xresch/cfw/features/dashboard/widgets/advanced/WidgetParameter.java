@@ -41,6 +41,7 @@ public class WidgetParameter extends WidgetDefinition {
 	public static final String FIELDNAME_CHECKPASSWORD = "checkpassword";
 	public static final String FIELDNAME_BUTTONLABEL = "buttonlabel";
 	public static final String FIELDNAME_SHOWBUTTON = "showbutton";
+	public static final String FIELDNAME_ADDTOTOP = "addtotop";
 	public static final String FIELDNAME_JSON_PARAMETERS = "JSON_PARAMETERS";
 	public static final String FIELDNAME_DESCRIPTION = "description";
 	public static final String FIELDNAME_LOAD_PREVIOUS_VALUES = "load_previous_values";
@@ -120,13 +121,19 @@ public class WidgetParameter extends WidgetDefinition {
 							}
 						})	
 					)
-				
+			
+			.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_ADDTOTOP)
+					.setLabel("{!cfw_widget_parameter_addtotop!}")
+					.setDescription("{!cfw_widget_parameter_addtotop_desc!}")
+					.setValue(false)
+				)
+			
 			.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_SHOWBUTTON)
 					.setLabel("{!cfw_widget_parameter_showbutton!}")
 					.setDescription("{!cfw_widget_parameter_showbutton_desc!}")
 					.setValue(true)
 				)
-			
+						
 			.addField(CFWField.newString(FormFieldType.TEXT, FIELDNAME_BUTTONLABEL)
 					.setLabel("{!cfw_widget_parameter_buttonlabel!}")
 					.setDescription("{!cfw_widget_parameter_buttonlabel_desc!}")
