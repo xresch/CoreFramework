@@ -202,6 +202,10 @@ pre {
 .modal-content{
 	max-height: 95vh;
 	padding: 5px;
+	border: 3px solid rgba(2, 2, 2, 0.9);
+    backdrop-filter: blur(3px);
+    background-color: rgba(0, 0, 0, 0.75);
+	box-shadow: 0 0 8px rgba(200, 200, 255, 0.25);
 }
 
 .modal-header {
@@ -210,6 +214,7 @@ pre {
 }
 .modal-title {
     padding-left: 0.5rem;
+    margin-top: 0px;
 
 }
 .modal-body{

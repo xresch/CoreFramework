@@ -164,7 +164,9 @@ DONE
 - BREAKING CODE CHANGE: Refactoring of CFW.Math.bigPercentile(), changing order of parameters
 - BREAKING CODE CHANGE: Changes of CFWHttp to use Apache HttpClient
 - NEW FEATURE: Postgres Extensions
+- UI: Modal panels now have a blurred & shine through backround. As you sometimes just want to see what is going on behind there.
 - Utils: Created CFW.CSV to parse an convert CSV data.
+- Utils: Added CFW.Random.randomJSONArrayOfStatisticalSeriesData().
 - API: Added Endpoint EAVStats.pushStats and EAVStats.pushStatsCSV
 - Charts: y field can now be specified as an array of multiple fields
 - Charts: can now be specified without grouping (without by-parameter)
@@ -179,6 +181,7 @@ DONE
 - EAVStats: Added P50 and P90 values (percentiles)
 - Parameters: Added Chart Types
 - Parameters: Added Chart Settings
+- Query: Autocomplete: Made full with of window to reduce likelihood of closing when selecting text.
 - Query: source web - as=http will now also give you the duration. 
 - Query: source eav - attributes are not returned as uppercase fields
 
