@@ -61,6 +61,8 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 		+"</ul>"
 	+"<p><b>x:&nbsp;</b>Name of the field containing the values for the x-axis.</p>"	
 	+"<p><b>y:&nbsp;</b>Name of the field containing the values for the y-axis.</p>"	
+	+"<p><b>xlabel:&nbsp;</b>The label for the x-axis.</p>"	
+	+"<p><b>ylabel:&nbsp;</b>The label for the y-axis.</p>"	
 	+"<p><b>xtype:&nbsp;</b>Type of the x-axis:</p>"	
 		+"<ul>"
 			+"<li>time</li>"
@@ -72,12 +74,13 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 			+"<li>linear</li>"
 			+"<li>logarithmic</li>"
 		+"</ul>"
+	+"<p><b>ymin:&nbsp;</b>Suggest a minimum value for the y-axis.</p>"	
+	+"<p><b>ymax:&nbsp;</b>Suggest a maximum value for the y-axis.</p>"	
 	+"<p><b>stacked:&nbsp;</b>Toogle if the series should be stacked. (Default:false)</p>"	
 	+"<p><b>showlegend:&nbsp;</b>Toogle if the legend should be displayed. (Default:false)</p>"	
 	+"<p><b>showaxes:&nbsp;</b>Toogle if the axes should be displayed. (Default:true)</p>"	
 	+"<p><b>pointradius:&nbsp;</b>Radius of the points drawn in charts. (Default: 1)</p>"	
-	+"<p><b>ymin:&nbsp;</b>Suggest a minimum value for the y-axis.</p>"	
-	+"<p><b>ymax:&nbsp;</b>Suggest a maximum value for the y-axis.</p>"	
+	+"<p><b>tension:&nbsp;</b>The tension of the lines, used to make lines smoother. (Value between 0-1, Default: 0)</p>"	
 	+"<p><b>spangaps:&nbsp;</b>Set to true to connect lines if there is a gap in the data.</p>"	
 	
 	+"<p><b>details:&nbsp;</b>If true show display the details of the chart data. (Default: false)</p>"	
@@ -87,9 +90,8 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	+"<p><b>multichart:&nbsp;</b>Set to true to display each series in it's own chart.</p>"	
 	+"<p><b>multicharttitle:&nbsp;</b>Set to true to display title for charts.</p>"	
 	+"<p><b>multichartcolumns:&nbsp;</b> Number of columns for multi chart display.</p>"	
-	+"<p><b>minheight:&nbsp;</b> The minimum height of the chart(e.g. 200px, 20vh etc..).</p>"	
-	
-			;
+	+"<p><b>height:&nbsp;</b> The minimum height of the chart(e.g. 200px, 20vh etc..).</p>"	
+	;
 
 	
 	/***********************************************************************************************

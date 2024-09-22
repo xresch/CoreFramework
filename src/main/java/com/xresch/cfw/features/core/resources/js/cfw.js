@@ -1412,6 +1412,15 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 			</div>
 			
 			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-TENSION">
+					Tension(0-1):
+				</label>   
+				<div class="col-sm-9">
+					<input id="${fieldID}-TENSION" type="number" class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')">
+				</div>
+			</div>
+			
+			<div class="row m-1">  
 				<label class="col-sm-3" for="${fieldID}-STACKED">
 					Stacked:
 				</label>   
@@ -1593,6 +1602,7 @@ function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
 
 	wrapper.find(selector+"-CHARTTYPE").val(chartSettings.charttype );
 	wrapper.find(selector+"-POINTRADIUS").val(chartSettings.pointradius );
+	wrapper.find(selector+"-TENSION").val(chartSettings.tension );
 	wrapper.find(selector+"-XAXIS_TYPE").val(chartSettings.xtype );
 	wrapper.find(selector+"-YAXIS_TYPE").val(chartSettings.ytype );
 	wrapper.find(selector+"-YAXIS_MIN").val(chartSettings.ymin );
@@ -1634,6 +1644,7 @@ function cfw_internal_updateChartSettings(elementID){
 	chartSettings.showaxes			= $(selector+"-SHOWAXES:checked").val();  
 	chartSettings.spangaps			= $(selector+"-SPANGAPS:checked").val();  
 	chartSettings.pointradius		= $(selector+"-POINTRADIUS").val();  
+	chartSettings.tension			= $(selector+"-TENSION").val();  
 	
 	chartSettings.multichart		= $(selector+"-MULTICHART:checked").val();  
 	chartSettings.multicharttitle 	= $(selector+"-MULTICHARTTITLE:checked").val();  
@@ -1643,6 +1654,7 @@ function cfw_internal_updateChartSettings(elementID){
 	//--------------------------------------
 	// Convert Numbers and Booleans
 	chartSettings.pointradius 		= !isNaN(chartSettings.pointradius) ? parseFloat(chartSettings.pointradius) : 0;
+	chartSettings.tension 			= !isNaN(chartSettings.tension) ? parseFloat(chartSettings.tension) : 0.0;
 	chartSettings.ymin 				= !isNaN(chartSettings.ymin) ? parseFloat(chartSettings.ymin) : 0;
 	chartSettings.ymax 				= !isNaN(chartSettings.ymax) ? parseFloat(chartSettings.ymax) : null;
 	chartSettings.multichartcolumns = !isNaN(chartSettings.multichartcolumns) ? parseInt(chartSettings.multichartcolumns) : null;

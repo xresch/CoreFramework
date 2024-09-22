@@ -25,6 +25,7 @@ public class CFWChartSettings {
 	private static final String SHOWAXES 		= "showaxes";
 	private static final String SPANGAPS 		= "spangaps";
 	private static final String POINTRADIUS 	= "pointradius";
+	private static final String TENSION		 	= "tension";
 	private static final String MULTICHART 		= "multichart";
 	private static final String MULTICHARTTITLE = "multicharttitle";
 	private static final String MULTICHARTCOLUMNS = "multichartcolumns";
@@ -107,6 +108,7 @@ public class CFWChartSettings {
 		defaults.addProperty(SHOWAXES, true);
 		defaults.addProperty(SPANGAPS, false);
 		defaults.addProperty(POINTRADIUS, 2);
+		defaults.addProperty(TENSION, 0);
 		defaults.addProperty(MULTICHART, false);
 		defaults.addProperty(MULTICHARTTITLE, false);
 		defaults.addProperty(MULTICHARTCOLUMNS, 1);
@@ -215,6 +217,23 @@ public class CFWChartSettings {
 	 ***************************************************************************************/
 	public CFWChartSettings pointRadius(float value) {
 		chartSettingsData.addProperty(POINTRADIUS, value);
+		return this;
+	}
+	
+	/***************************************************************************************
+	 * can return null
+	 ***************************************************************************************/
+	public Float tension() {
+		if(chartSettingsData == null || chartSettingsData.get(TENSION).isJsonNull()) return null;
+		
+		return chartSettingsData.get(TENSION).getAsFloat();
+	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public CFWChartSettings tension(float value) {
+		chartSettingsData.addProperty(TENSION, value);
 		return this;
 	}
 	

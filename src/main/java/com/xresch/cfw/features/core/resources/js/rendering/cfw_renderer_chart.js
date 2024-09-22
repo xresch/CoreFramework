@@ -2,7 +2,6 @@
  * 
  ******************************************************************/
 function cfw_renderer_chart_defaultOnDoubleClick(renderDef, chartSettings, data){ 
-	
 
 	var chartDetailsDiv = $('<div class="w-100 h-100">'); 
 	var isVerticalize = (chartSettings.datamode == 'datapoints');
@@ -228,6 +227,8 @@ function cfw_renderer_chart(renderDef) {
 		ytype: 'linear',
 		//the radius for the points shown on line and area charts
 		pointradius: 0,
+		//the tension of the line from 0 to 1 (default: 0)
+		tension: 0,
 		// the padding of the chart
 		padding: '5px',
 		// the minimum height of the chart(s), as percent or pixel value like 100px, 50% etc... (default: 100%)
@@ -273,7 +274,7 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Initialize
 	settings.doFill = false;
-	settings.isSteppedline = false;
+	settings.steppedValue = false;
 	settings.indexAxis = 'x';
 	settings.isLabelBased = false;
 	settings.tooltipmode = 'index';
@@ -318,12 +319,12 @@ function cfw_renderer_chart(renderDef) {
 			break;
 		case 'steppedline':
 			settings.charttype = 'line';
-			settings.isSteppedline = true;
+			settings.steppedValue = 'middle';
 			break;
 		case 'steppedarea':
 			settings.charttype = 'line';
 			settings.doFill = true;
-			settings.isSteppedline = true;
+			settings.steppedValue = 'middle';
 			break;
 		case 'scatter':
 			if(settings.pointradius == 0){
@@ -763,7 +764,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 			elements: {
                 point:{
                     radius: settings.pointradius
-                },
+                }
             },            
 			plugins:  {
 				legend: {
@@ -1017,8 +1018,8 @@ function cfw_renderer_chart_createDatasetObject(settings, label, index) {
             borderColor: colors.border,
             borderWidth: 1,
             spanGaps: settings.spangaps,
-            stepped: settings.isSteppedline,
-            lineTension: 0,
+            stepped: settings.steppedValue,
+            tension: settings.tension,
             cfwSum: 0,
             cfwCount: 0
 		};
@@ -1232,7 +1233,7 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 		}
 		
 		currentDataset.spanGaps = settings.spangaps;
-		currentDataset.steppedLine = settings.isSteppedline;
+		currentDataset.steppedLine = settings.steppedValue;
 		currentDataset.lineTension = 0;
 	}
 	/*	currentDataset = {
@@ -1243,7 +1244,7 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 	            borderColor: borderColor,
 	            borderWidth: 1,
 	            spanGaps: settings.spangaps,
-	            steppedLine: settings.isSteppedline,
+	            steppedLine: settings.steppedValue,
 	            lineTension: 0,
 	            cfwSum: 0,
 	            cfwCount: 0
