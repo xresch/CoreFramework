@@ -8,10 +8,9 @@
 	x=TIME 
 	y=COUNT </code></pre>
 	
-<p>You can provide multiple columns for the y-axis by using an array: </p>
+<p>You can provide multiple columns for the y-axis by using an array. Also you can leave the by-parameter away for no grouping of series: </p>
 <pre><code class="language-cfwquery">| source random records=100 type="stats" seriesCount = 1
 | chart 
-	by = [STATISTIC] 
 	type = line
 	x = TIME 
 	y = [MIN, AVG, MAX, P90]

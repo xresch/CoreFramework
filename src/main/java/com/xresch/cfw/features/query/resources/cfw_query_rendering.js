@@ -1149,10 +1149,8 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 	// Prepare TitleFields
 	var seriesColumns = (settings.by != null) ? settings.by : settings.groupby; // groupby is deprecated
 	var titlefields = seriesColumns;
-	if(seriesColumns == null || seriesColumns.length == 0){
-		// use second as default
-		let keys = Object.keys(queryResult.records[0]);
-		titlefields = [keys[1]];
+	if(titlefields == null ){
+		titlefields=[]; // no grouping by default
 	}
 	
 	//---------------------------------
@@ -1201,7 +1199,7 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 	
 	//Final override by param "settings" of chart command
 	Object.assign(finalSettings, settings.settings)
-	
+
 	//---------------------------
 	// Render Settings
 	var dataToRender = {

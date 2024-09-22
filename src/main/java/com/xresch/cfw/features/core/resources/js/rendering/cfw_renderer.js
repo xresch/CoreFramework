@@ -44,7 +44,7 @@ class CFWRenderer{
 		 	data: null,
 			// (Optional) name of the field that is used as the identifier of the data
 		 	idfield: null,
-		 	// (Optional) names of the fields that are used for a titles. Takes the first field from the first object if null
+		 	// (Optional) names of the fields that are used for a titles. Takes the first field from the first object if null. If empty array, no title
 		 	titlefields: null,
 		 	// The format of the title, use {0}, {1} ... {n} as placeholders, concatenates all title fields if null(default)
 		 	titleformat: null,
@@ -114,6 +114,13 @@ class CFWRenderer{
 			 * Create Title HTML (uses customized values)
 			 *************************************************************/
 		 	getTitleHTML:  function(record){
+				
+				//-------------------------
+				// Empty Title
+				if( this.titlefields.length == 0){
+					return "";
+				}
+				
 				//-------------------------
 				// Create title Base
 				var title;
@@ -148,6 +155,12 @@ class CFWRenderer{
 			 *************************************************************/
 			getTitleString:  function(record){
 		 		
+		 		//-------------------------
+				// Empty Title
+				if( this.titlefields.length == 0 ){
+					return "";
+				}
+				
 				//-------------------------
 				// Create title Base
 				var title;
@@ -244,7 +257,7 @@ class CFWRenderer{
 			 
 			 //--------------------------
 			 // resolve title fields
-			 if(definition.titlefields == null || definition.titlefields.length == 0 ){ 
+			 if(definition.titlefields == null){ 
 				 if(definition.visiblefields.length > 0){ 
 					 definition.titlefields = [definition.visiblefields[0]];
 				 }else{

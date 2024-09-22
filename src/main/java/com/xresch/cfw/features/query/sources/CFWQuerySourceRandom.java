@@ -96,8 +96,8 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 		return new CFWObject()
 			.addField(
 				CFWField.newInteger(FormFieldType.NUMBER, "records")
-					.setDescription("Number of records to generate. (Default: 1000)")
-					.setValue(1000)
+					.setDescription("Number of records to generate. (Default: 200)")
+					.setValue(200)
 			)
 			.addField(
 					CFWField.newString(FormFieldType.TEXT, "type")

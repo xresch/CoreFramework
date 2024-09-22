@@ -373,6 +373,7 @@ function cfw_renderer_chart(renderDef) {
 
 	//========================================
 	// Create titleFormat
+
 	if(renderDef.titleformat == null && renderDef.data.length > 0){
 		renderDef.titleformat = '';
 		let firstRecord = renderDef.data[0];
@@ -386,7 +387,8 @@ function cfw_renderer_chart(renderDef) {
 			}
 		}else{
 			let index = 0;
-			for(let key in firstRecord){
+			renderDef.titleformat += '';
+			/*for(let key in firstRecord){
 				
 				if(key == settings.xfield 
 				|| settings.yfield.includes(key)
@@ -395,7 +397,7 @@ function cfw_renderer_chart(renderDef) {
 				let label = renderDef.getLabel(key, CFW_RENDER_NAME_CHART);
 				renderDef.titleformat += label+'="{'+index+'}" / ';
 				index++;
-			}
+			}*/
 		}
 		renderDef.titleformat = renderDef.titleformat.substr(0, renderDef.titleformat.length-3);
 		
@@ -1111,9 +1113,15 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 			
 			//----------------------------
 			// Create Label & Dataset
-			var label = renderDef.getTitleString(currentRecord) + " / "+yfieldname;
+			var label = renderDef.getTitleString(currentRecord);
+			
+			if( ! CFW.utils.isNullOrEmpty(label) ){
+				label += " / " + yfieldname;
+			}else{
+				label = yfieldname;
+			}
+			
 			if(datasets[label] == undefined){
-				
 				datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, colorCounter++);
 			}
 			
