@@ -1,6 +1,7 @@
 package com.xresch.cfw.utils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.util.Set;
@@ -438,6 +439,16 @@ public class CFWRandom {
 		return new BigDecimal(number);
 
 	}
+	
+	/******************************************************************************
+	 * Creates a random BigDecimal based on int number, no fractions.
+	 * 
+	 * @return
+	 ******************************************************************************/
+	public static BigDecimal randomBigDecimalInRange(int lowerInclusive, int upperInclusive, int maxDecimals) {
+		return randomBigDecimalInRange((long)lowerInclusive, (long)upperInclusive, maxDecimals);
+	}
+	
 	/******************************************************************************
 	 * Creates a random BigDecimal based on long number, no fractions.
 	 * 
@@ -611,6 +622,57 @@ public class CFWRandom {
 		return array;
 	}
 	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param valuesCount
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfStatisticalSeriesData(int seriesCount, int valuesCount, long earliest, long latest) { 
+		JsonArray array = new JsonArray();
+		
+		long timerange = latest - earliest;
+		long timestep = timerange / valuesCount;
+		
+		Integer[] decimals = new Integer[] {1, 2, 3};
+		
+		//--------------------------------------
+		// Create Series 
+		for(int i = 0; i < seriesCount; i++) {
+			String statisticName = randomStatisticsTitle();
+
+			//--------------------------------------
+			// Create Values for Series
+			for(int j = 0; j < valuesCount; j++) {
+				
+				JsonObject currentItem = new JsonObject();
+				
+				int count = randomIntegerInRange(20,100);
+				
+				ArrayList<BigDecimal> values = new ArrayList<>();
+				for(int k = 0; k < count; k++) {
+					values.add( randomBigDecimalInRange(5, 100, randomFromArray(decimals) ) );
+				}
+				currentItem.addProperty("TIME", earliest+(timestep*j));
+				currentItem.addProperty("STATISTIC", statisticName);
+
+				currentItem.addProperty("COUNT", count );
+				currentItem.addProperty("MIN", CFW.Math.bigMin(values) );
+				currentItem.addProperty("AVG", CFW.Math.bigAvg(values) );
+				currentItem.addProperty("MAX", CFW.Math.bigMax(values) );
+				currentItem.addProperty("SUM", CFW.Math.bigSum(values) );
+				currentItem.addProperty("MEDIAN", CFW.Math.bigMedian(values) );
+				currentItem.addProperty("STDEV", CFW.Math.bigStdev(values,true) );
+				currentItem.addProperty("P90", CFW.Math.bigPercentile(90, values) );
+				currentItem.addProperty("P95", CFW.Math.bigPercentile(95, values) );
+				
+				//--------------------------------------
+				// Additional Values
+				array.add(currentItem);
+			}
+		}
+		
+		return array;
+	}
 	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 

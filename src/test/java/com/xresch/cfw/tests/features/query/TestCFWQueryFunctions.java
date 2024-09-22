@@ -2196,7 +2196,7 @@ source json data=`
 		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
 		JsonObject record = queryResults.getRecordAsObject(0);
-		Assertions.assertEquals("2.5", record.get("MEDIAN_ARRAY").toString());
+		Assertions.assertEquals("3", record.get("MEDIAN_ARRAY").toString());
 		Assertions.assertEquals(2, record.get("MEDIAN_ARRAY_NULLS").getAsInt());
 		Assertions.assertEquals("3", record.get("MEDIAN_OBJECT").toString());
 		Assertions.assertEquals(2, record.get("MEDIAN_OBJECT_NULLS").getAsInt());
@@ -2220,7 +2220,7 @@ source json data=`
 [
 	  {count: 1, value: 9, float: 1.23}
 	 ,{count: 2, value: 8, float: 2.34}
-	 ,{count: 3, value: 7, float: 3.44}
+	 ,{count: 3, value: 7, float: 3.40}
 	 ,{count: 4, value: 6, float: 4.55}
 	 ,{count: 5, value: null, float: 6.77}
 	 ,{count: null, value: null, float: 7.88}
@@ -2246,9 +2246,9 @@ source json data=`
 		
 		JsonObject record = queryResults.getRecordAsObject(0);
 		Assertions.assertEquals("3", record.get("MEDIAN").toString());
-		Assertions.assertEquals("7.5", record.get("MEDIAN_NONULL").toString());
-		Assertions.assertEquals("6.5", record.get("MEDIAN_NULLS").toString());
-		Assertions.assertEquals("3.995", record.get("MEDIAN_FLOAT").toString());
+		Assertions.assertEquals("8", record.get("MEDIAN_NONULL").toString());
+		Assertions.assertEquals("7", record.get("MEDIAN_NULLS").toString());
+		Assertions.assertEquals("3.98", record.get("MEDIAN_FLOAT").getAsString());
 	}
 	
 	/****************************************************************
@@ -2884,6 +2884,152 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testStdev() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source json data=`
+[
+	 {index: 0, array: [1,2,3], object: {a: 0, b: -1, c: 3 } }
+	,{index: 1, array: [1,null,3], object: {a: 11, b: 22, c: null} }
+	,{index: 2, array: [null,null,3], object: {a: null, b: 22, c: null} }
+	,{index: 3, array: [null,null,null], object: {a: null, b: null, c: null} }
+	,{index: 3, array: [1,2,3, "StringsAndBooleans_ignored"], object: {a: 11, b: 22, c: 33, string: "ignored"} }
+]
+`
+| set 
+	# returns the standard deviation(population) for the values in the array 
+	STDEV_ARRAY=stdev(array)
+	# returns the standard deviation(population) for the values in the array, nulls will be threated as zero
+	STDEV_ARRAY_NULLS=stdev(array, true)
+	# returns the standard deviation(population) for the values of all fields in the object, nulls will be ignored, precision of the result will be 5
+	STDEV_OBJECT=stdev(object, false, 5)
+	# returns the standard deviation(sample) for the values of all fields in the object, nulls will be threated as zeros, precision of the result will be 2
+	STDEV_OBJECT_NULLS=stdev(object, true, 2, false)
+	# if input is a single number, returns 0, as there is no deviation from a single number
+	STDEV_NUMBER=stdev(index)
+	# following will return null
+	STDEV_ZERO=stdev()
+	STDEV_NULL=stdev(null)
+	UNSUPPORTED_A=stdev(true)
+	UNSUPPORTED_B=stdev("some_string")
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(5, queryResults.getRecordCount());
+		
+		//------------------------------
+		// Check First Query Result
+		int i = -1;
+		JsonObject record = queryResults.getRecordAsObject(++i);
+		Assertions.assertEquals("0.816", record.get("STDEV_ARRAY").getAsString());
+		Assertions.assertEquals("0.816", record.get("STDEV_ARRAY_NULLS").getAsString());
+		Assertions.assertEquals("1.69967", record.get("STDEV_OBJECT").getAsString());
+		Assertions.assertEquals("2.08", record.get("STDEV_OBJECT_NULLS").getAsString());
+		Assertions.assertEquals("0.000", record.get("STDEV_NUMBER").getAsString());
+
+		Assertions.assertTrue(record.get("STDEV_ZERO").isJsonNull());
+		Assertions.assertEquals(0, record.get("STDEV_NULL").getAsInt());
+		Assertions.assertEquals(0, record.get("UNSUPPORTED_A").getAsInt());
+		Assertions.assertEquals(0, record.get("UNSUPPORTED_B").getAsInt());
+		
+		//------------------------------
+		// Check Second Query Result
+		record = queryResults.getRecordAsObject(++i);
+		Assertions.assertEquals("1.000", record.get("STDEV_ARRAY").getAsString());
+		Assertions.assertEquals("1.247", record.get("STDEV_ARRAY_NULLS").getAsString());
+		Assertions.assertEquals("5.50000", record.get("STDEV_OBJECT").getAsString());
+		Assertions.assertEquals("11.00", record.get("STDEV_OBJECT_NULLS").getAsString());
+		Assertions.assertEquals("0.000", record.get("STDEV_NUMBER").getAsString());
+
+		//------------------------------
+		// Check Third Query Result
+		record = queryResults.getRecordAsObject(++i);
+		Assertions.assertEquals("0.000", record.get("STDEV_ARRAY").getAsString());
+		Assertions.assertEquals("1.414", record.get("STDEV_ARRAY_NULLS").getAsString());
+		Assertions.assertEquals("0.00000", record.get("STDEV_OBJECT").getAsString());
+		Assertions.assertEquals("12.70", record.get("STDEV_OBJECT_NULLS").getAsString());
+		Assertions.assertEquals("0.000", record.get("STDEV_NUMBER").getAsString());
+		
+		//------------------------------
+		// Check Forth Query Result
+		record = queryResults.getRecordAsObject(++i);
+		Assertions.assertEquals("0.000", record.get("STDEV_ARRAY").getAsString());
+		Assertions.assertEquals("0.000", record.get("STDEV_ARRAY_NULLS").getAsString());
+		Assertions.assertEquals("0.00000", record.get("STDEV_OBJECT").getAsString());
+		Assertions.assertEquals("0.00", record.get("STDEV_OBJECT_NULLS").getAsString());
+		Assertions.assertEquals("0.000", record.get("STDEV_NUMBER").getAsString());
+		
+		
+		//------------------------------
+		// Check Fifth Query Result
+		record = queryResults.getRecordAsObject(++i);
+		Assertions.assertEquals("0.816", record.get("STDEV_ARRAY").getAsString());
+		Assertions.assertEquals("0.816", record.get("STDEV_ARRAY_NULLS").getAsString());
+		Assertions.assertEquals("8.98146", record.get("STDEV_OBJECT").getAsString());
+		Assertions.assertEquals("11.00", record.get("STDEV_OBJECT_NULLS").getAsString());
+		Assertions.assertEquals("0.000", record.get("STDEV_NUMBER").getAsString());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testStdev_Aggr() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: 2.12345678}
+	 ,{count: 3, value: 3, float: 3.123456}
+	 ,{count: 4, value: 4, float: 4.65365}
+	 ,{count: 5, value: 5, float: 5.76476}
+	 ,{count: 6, value: null, float: 6.7647}
+	 ,{count: 7, value: null, float: 7.989896}
+	 ,{count: 8, value: null, float: 8.5653}
+	 ,{count: 9, value: null, float: 9.6525}
+	 ,{count: 10, value: null, float: 10.65635}
+
+]
+`
+| stats 
+	"STDEV"=stdev(value) # ignore nulls, 3 decimal precision
+	"STDEV2DEC"=stdev(value, true, 2) # count nulls as 0, 2 decimals
+	"STDEV_ZERO_DEC"=stdev(value, false, 0) # ignore nulls, no decimals
+	"STDEV_SAMPLE"=stdev(value, false, 5, false) # ignore nulls, 5 decimals, use sample formula
+			""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		Assertions.assertEquals("1.414", record.get("STDEV").getAsString());
+		Assertions.assertEquals("1.80", record.get("STDEV2DEC").getAsString());
+		Assertions.assertEquals("1", record.get("STDEV_ZERO_DEC").getAsString());
+		Assertions.assertEquals("1.58114", record.get("STDEV_SAMPLE").getAsString());	
+		
+	}
+
 	/****************************************************************
 	 * 
 	 ****************************************************************/

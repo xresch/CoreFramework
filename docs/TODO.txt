@@ -166,6 +166,7 @@ DONE
 - NEW FEATURE: Postgres Extensions
 - Utils: Created CFW.CSV to parse an convert CSV data.
 - API: Added Endpoint EAVStats.pushStats and EAVStats.pushStatsCSV
+- Charts: y field can now be specified as an array of multiple fields
 - Charts: Added option "tension" to make chart lines smooth
 - Charts: Stepped charts will now show points in the middle of the step
 - Dashboard: Sharing - fixed bug where a user in a shared group could access a dashboard even if it was not set to shared=true

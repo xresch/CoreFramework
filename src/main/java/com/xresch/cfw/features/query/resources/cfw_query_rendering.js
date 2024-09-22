@@ -1157,22 +1157,18 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 	
 	//---------------------------------
 	// Use first Column if not specified
-	var xColumn;
+	var xColumn = settings.x;
 	if(CFW.utils.isNullOrEmpty(settings.x)){
 		let keys = Object.keys(queryResult.records[0]);
 		xColumn = keys[0];
-	}else{
-		var xColumn = settings.x.trim();
 	}
 	
 	//---------------------------------
 	// Use last Column if not specified
-	var yColumn;
+	var yColumns = settings.y;
 	if(CFW.utils.isNullOrEmpty(settings.y)){
 		let keys = Object.keys(queryResult.records[0]);
-		yColumn = keys[keys.length-1];
-	}else{
-		var yColumn = settings.y.trim();
+		yColumns = keys[keys.length-1];
 	}
 	
 	//---------------------------------
@@ -1182,7 +1178,7 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 		// How should the input data be handled groupbytitle|arrays 
 		datamode: 'groupbytitle',
 		xfield: xColumn,
-		yfield: yColumn,
+		yfield: yColumns,
 		type: "line",
 		xtype: "time",
 		ytype: "linear",

@@ -1,6 +1,7 @@
 package com.xresch.cfw.utils;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,40 +9,9 @@ import java.util.List;
 
 public class CFWMath {
 
+	private static final int GLOBAL_SCALE = 6;
 	public static final BigDecimal BIGDEC_TWO = new BigDecimal(2);
 	public static final BigDecimal BIGDEC_NEG_ONE = new BigDecimal(-1);
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public static BigDecimal bigMedian(List<BigDecimal> values) {
-		
-		int count = values.size();
-		
-		if(count == 0) {
-			return null;
-		}
-		
-		int percentile = 50;
-		int percentilePosition = (int)Math.ceil( count * (percentile / 100f) );
-		
-		//---------------------------
-		// Retrieve number
-		boolean isEvenCount = (count % 2 == 0);
-		values.sort(null);
-		
-		if(percentilePosition > 0) {
-			BigDecimal resultValue = values.get(percentilePosition-1);
-			if(isEvenCount) {
-				return resultValue.add(values.get(percentilePosition)).divide(BIGDEC_TWO, RoundingMode.HALF_UP);
-			}else {
-				return resultValue;
-			}
-		}else {
-			return values.get(0);
-		}
-		
-	}
 	
 	/***********************************************************************************************
 	 * 
@@ -99,7 +69,7 @@ public class CFWMath {
 		if(values.isEmpty()) { return null; }
 		
 		BigDecimal sum = bigSum(values);
-		
+		sum = sum.setScale(GLOBAL_SCALE); // won't calculate decimals if not set
 		if(sum == null) { return null; } 
 		
 		BigDecimal count = new BigDecimal(values.size());
@@ -117,7 +87,7 @@ public class CFWMath {
 		while( values.remove(null) ); // remove all null values
 		if(values.isEmpty()) { return null; }
 		
-		BigDecimal sum = null;
+		BigDecimal sum = BigDecimal.ZERO.setScale(GLOBAL_SCALE);
 
 		for(BigDecimal current : values) {
 			if(sum == null) { sum = current; continue; }
@@ -130,6 +100,38 @@ public class CFWMath {
 		
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static BigDecimal bigMedian(List<BigDecimal> values) {
+		
+		int count = values.size();
+		
+		if(count == 0) {
+			return null;
+		}
+		
+		int percentile = 50;
+		int percentilePosition = (int)Math.ceil( count * (percentile / 100f) );
+		
+		//---------------------------
+		// Retrieve number
+		boolean isEvenCount = (count % 2 == 0);
+		values.sort(null);
+		
+		if(percentilePosition > 0) {
+			BigDecimal resultValue = values.get(percentilePosition-1);
+			if(isEvenCount) {
+				return resultValue.add(values.get(percentilePosition)).divide(BIGDEC_TWO, RoundingMode.HALF_UP);
+			}else {
+				return resultValue;
+			}
+		}else {
+			return values.get(0);
+		}
+		
+	}
+
 	/***********************************************************************************************
 	 * 
 	 * @percentile a value between 0 and 100
@@ -166,5 +168,108 @@ public class CFWMath {
 		}
 		
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static BigDecimal bigStdev(List<BigDecimal> values, boolean usePopulation) {
+		
+		//while( values.remove(null) );
+		
+		// zero or one number will have standard deviation 0
+		if(values.size() <= 1) {
+			return BigDecimal.ZERO;
+		}
+	
+//		How to calculate standard deviation:
+//		Step 1: Find the mean/average.
+//		Step 2: For each data point, find the square of its distance to the mean.
+//		Step 3: Sum the values from Step 2.
+//		Step 4: Divide by the number of data points.
+//		Step 5: Take the square root.
+		
+		//-----------------------------------------
+		// STEP 1: Find Average
+		BigDecimal count = new BigDecimal(values.size());
+		
+		BigDecimal average = bigAvg(values);
+
+		BigDecimal sumDistanceSquared = BigDecimal.ZERO;
+		
+		for(BigDecimal value : values) {
+			//-----------------------------------------
+			// STEP 2: For each data point, find the 
+			// square of its distance to the mean.
+			BigDecimal distance = value.subtract(average);
+			//-----------------------------------------
+			// STEP 3: Sum the values from Step 2.
+			sumDistanceSquared = sumDistanceSquared.add(distance.pow(2));
+		}
+		
+		//-----------------------------------------
+		// STEP 4 & 5: Divide and take square root
+		
+		BigDecimal divisor = (usePopulation) ? count : count.subtract(BigDecimal.ONE);
+		
+		BigDecimal divided = sumDistanceSquared.divide(divisor, RoundingMode.HALF_UP);
+		
+		// TODO JDK8 Migration: should work with JDK 9
+		MathContext mc = new MathContext(GLOBAL_SCALE, RoundingMode.HALF_UP);
+		BigDecimal standardDeviation = divided.sqrt(mc);
+		
+		return standardDeviation;
+	}
+	
+//	/***********************************************************************************************
+//	 * 
+//	 ***********************************************************************************************/
+//	private BigDecimal calculateStandardDeviation(boolean usePopulation) {
+//		
+//		// zero or one number will have standard deviation 0
+//		if(values.size() <= 1) {
+//			return BigDecimal.ZERO;
+//		}
+//	
+////		How to calculate standard deviation:
+////		Step 1: Find the mean/average.
+////		Step 2: For each data point, find the square of its distance to the mean.
+////		Step 3: Sum the values from Step 2.
+////		Step 4: Divide by the number of data points.
+////		Step 5: Take the square root.
+//		
+//		//-----------------------------------------
+//		// STEP 1: Find Average
+//		BigDecimal count = new BigDecimal(values.size());
+//		count.setScale(6);
+//		
+//		BigDecimal average = sum.divide(count, RoundingMode.HALF_UP);
+//		
+//		BigDecimal sumDistanceSquared = BigDecimal.ZERO;
+//		for(BigDecimal value : values) {
+//			//-----------------------------------------
+//			// STEP 2: For each data point, find the 
+//			// square of its distance to the mean.
+//			BigDecimal distance = value.subtract(average);
+//			//-----------------------------------------
+//			// STEP 3: Sum the values from Step 2.
+//			sumDistanceSquared = sumDistanceSquared.add(distance.pow(2));
+//		}
+//		
+//		//-----------------------------------------
+//		// STEP 4 & 5: Divide and take square root
+//		
+//		BigDecimal divisor = (usePopulation) ? count : count.subtract(BigDecimal.ONE);
+//		
+//		BigDecimal divided = sumDistanceSquared.divide(divisor, RoundingMode.HALF_UP);
+//		
+//		// TODO JDK8 Migration: should work with JDK 9
+//		MathContext mc = new MathContext(6, RoundingMode.HALF_UP);
+//		BigDecimal standardDeviation = divided.sqrt(mc);
+//		
+//		//reset values when calculation is done
+//		values.clear();
+//		sum = BigDecimal.ZERO.setScale(6);
+//		return standardDeviation;
+//	}
 	
 }

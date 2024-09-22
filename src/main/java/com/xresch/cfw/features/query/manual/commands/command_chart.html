@@ -8,25 +8,38 @@
 	x=TIME 
 	y=COUNT </code></pre>
 	
-
+<p>You can provide multiple columns for the y-axis by using an array: </p>
+<pre><code class="language-cfwquery">| source random records=100 type="stats" seriesCount = 1
+| chart 
+	by = [STATISTIC] 
+	type = line
+	x = TIME 
+	y = [MIN, AVG, MAX, P90]
+	tension = 0.4 # 0 to 1, makes lines smoother
+	pointradius=2</code></pre>
+	
 <h2>Display Options</h2>
 <p>You can change the look and feel of your chart using various options. </p>
 <pre><code class="language-cfwquery">| source random records=100 type=series
 | chart 
-	by=[WAREHOUSE, ITEM] 
-	type=area
-	x=TIME 
-	y=COUNT 
-	height='250px'
-	stacked=true
-	showaxes=true
-	showlegend=false 
-	spangaps=true
-	xtype=time 
-	ytype=linear
-	ymin=-10
-	ymax=200
-	pointradius=0</code></pre>
+	by = [WAREHOUSE, ITEM] 
+	type = area
+	x = TIME 
+	y = COUNT
+	height = '250px'
+	stacked = true
+	showaxes = true
+	showlegend = false 
+	spangaps = true
+	xtype = time 
+	ytype = linear
+	xlabel = "Time"
+	ylabel = "Count"
+	ymin = -10
+	ymax = 200
+	tension = 0.4 # 0 to 1, makes lines smoother
+	pointradius = 0</code></pre>
+	
 	
 <h2>Multiple Charts</h2>	
 <p>If you have multiple series you would like to show in separate charts, you can use the multichart options to split them up. </p>

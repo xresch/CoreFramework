@@ -272,6 +272,16 @@ function cfw_renderer_chart(renderDef) {
 	}
 	
 	//========================================
+	// Make yfield an array to support multiple fields
+	if( !Array.isArray(settings.yfield) ){
+		if(settings.yfield != null){
+			settings.yfield = [settings.yfield]
+		}else{
+			settings.yfield = [];
+		}
+	};
+	
+	//========================================
 	// Initialize
 	settings.doFill = false;
 	settings.steppedValue = false;
@@ -377,7 +387,11 @@ function cfw_renderer_chart(renderDef) {
 		}else{
 			let index = 0;
 			for(let key in firstRecord){
-				if(key == settings.xfield || key == settings.yfield) { continue; }
+				
+				if(key == settings.xfield 
+				|| settings.yfield.includes(key)
+				) { continue; }
+				
 				let label = renderDef.getLabel(key, CFW_RENDER_NAME_CHART);
 				renderDef.titleformat += label+'="{'+index+'}" / ';
 				index++;
@@ -1031,41 +1045,46 @@ function cfw_renderer_chart_createDatasetObject(settings, label, index) {
  ******************************************************************/
 function cfw_renderer_chart_createDatasetsForGantt(renderDef, settings) {
 	
-	var datasets = {};
+	let datasets = {};
 
-	var timelineStart = null; 
+	let timelineStart = null; 
 	
 	//----------------------------
-	// STEP ONE: Sort All by Label
-	for(var i = 0; i < renderDef.data.length; i++){
-		var currentRecord = renderDef.data[i];
+	// For Every yfield
+	for(let k = 0; k < settings.yfield.length; k++){
 		
-		//----------------------------
-		// Create Label & Dataset
-		var label = renderDef.getTitleString(currentRecord);
-		if(datasets[label] == undefined){
-			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
+		let yfieldname = settings.yfield[k];
+		
+		for(var i = 0; i < renderDef.data.length; i++){
+			let currentRecord = renderDef.data[i];
+			let yValue = currentRecord[yfieldname];
+			
+			//----------------------------
+			// Create Label & Dataset
+			let label = renderDef.getTitleString(currentRecord) + " / " +yfieldname;
+			if(datasets[label] == undefined){
+				datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
+			}
+			
+			let currentSet = datasets[label];
+			
+			//----------------------------
+			// Add Values
+			currentSet.originalData.push(currentRecord);
+			
+			let xValue = currentRecord[settings.xfield];
+			
+			currentSet.data.push([ 
+				CFW.format.epochToTimestamp(xValue)
+				, CFW.format.epochToTimestamp(yValue) 
+			]) ;
+			
+			if(timelineStart > xValue
+					|| timelineStart == null){
+						timelineStart = xValue;
+					}
+			
 		}
-		
-		var currentSet = datasets[label];
-		
-		//----------------------------
-		// Add Values
-		var yValue = currentRecord[settings.yfield];
-		currentSet.originalData.push(currentRecord);
-		
-		var xValue = currentRecord[settings.xfield];
-		
-		currentSet.data.push([ 
-			CFW.format.epochToTimestamp(xValue)
-			, CFW.format.epochToTimestamp(yValue) 
-		]) ;
-		
-		if(timelineStart > xValue
-				|| timelineStart == null){
-					timelineStart = xValue;
-				}
-		
 	}
 	
 	settings.xmin = CFW.format.epochToTimestamp(timelineStart);
@@ -1079,40 +1098,47 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 	
 	var datasets = {};
 	
+	//----------------------------
+	// For Every yfield
 	var colorCounter = 0;
-	for(let i = 0; i < renderDef.data.length; i++){
-		var currentRecord = renderDef.data[i];
+	for(let k = 0; k < settings.yfield.length; k++){
 		
-		//----------------------------
-		// Create Label & Dataset
-		var label = renderDef.getTitleString(currentRecord);
-		if(datasets[label] == undefined){
+		let yfieldname = settings.yfield[k];
+		
+		
+		for(let i = 0; i < renderDef.data.length; i++){
+			var currentRecord = renderDef.data[i];
 			
-			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, colorCounter++);
-		}
-		
-		//----------------------------
-		// Add Values
-		var value = currentRecord[settings.yfield];
-		datasets[label].originalData.push(currentRecord);
-		
-		if(settings.xfield == null){
-			datasets[label].data.push(value);
-			datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
-			datasets[label].cfwCount += 1;
-		}else{
-			
-			if(currentRecord[settings.xfield] != null){
-				datasets[label].data.push({
-					x: currentRecord[settings.xfield], 
-					y: value
-				});
+			//----------------------------
+			// Create Label & Dataset
+			var label = renderDef.getTitleString(currentRecord) + " / "+yfieldname;
+			if(datasets[label] == undefined){
+				
+				datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, colorCounter++);
 			}
-			datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
-			datasets[label].cfwCount += 1;
+			
+			//----------------------------
+			// Add Values
+			var value = currentRecord[yfieldname];
+			datasets[label].originalData.push(currentRecord);
+			
+			if(settings.xfield == null){
+				datasets[label].data.push(value);
+				datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
+				datasets[label].cfwCount += 1;
+			}else{
+				
+				if(currentRecord[settings.xfield] != null){
+					datasets[label].data.push({
+						x: currentRecord[settings.xfield], 
+						y: value
+					});
+				}
+				datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
+				datasets[label].cfwCount += 1;
+			}
 		}
 	}
-	
 	return datasets;
 }
 
@@ -1123,35 +1149,42 @@ function cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings) {
 	
 	var datasets = {};
 	var colorCounter = 0;
-	for(var i = 0; i < renderDef.data.length; i++){
-
-		var currentRecord = renderDef.data[i];
+	
+	//----------------------------
+	// For Every yfield
+	for(let k = 0; k < settings.yfield.length; k++){
 		
-		//----------------------------
-		// Create Label & Dataset
-		var label = renderDef.getTitleString(currentRecord);
-		if(datasets[label] == undefined){
-			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, colorCounter++);
-		}
-		
-		//----------------------------
-		// Add Values
-		var value = currentRecord[settings.yfield];
-		var datapoints = currentRecord['datapoints'];
-		datasets[label].originalData.push(currentRecord);
-
-		for(x in datapoints.data){
-			var y = datapoints.data[x]
-
-			datasets[label].data.push({
-				x: x, 
-				y: y
-			});
+		let yfieldname = settings.yfield[k];
+		for(var i = 0; i < renderDef.data.length; i++){
+	
+			var currentRecord = renderDef.data[i];
 			
-			datasets[label].cfwSum += isNaN(y) ? 0 : parseFloat(y);
-			datasets[label].cfwCount += 1;
-		}
+			//----------------------------
+			// Create Label & Dataset
+			var label = renderDef.getTitleString(currentRecord) + " / "+yfieldname;
+			if(datasets[label] == undefined){
+				datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, colorCounter++);
+			}
 			
+			//----------------------------
+			// Add Values
+			//var value = currentRecord[yfieldname];
+			var datapoints = currentRecord['datapoints'];
+			datasets[label].originalData.push(currentRecord);
+	
+			for(x in datapoints.data){
+				var y = datapoints.data[x]
+	
+				datasets[label].data.push({
+					x: x, 
+					y: y
+				});
+				
+				datasets[label].cfwSum += isNaN(y) ? 0 : parseFloat(y);
+				datasets[label].cfwCount += 1;
+			}
+				
+		}
 	}
 	
 	return datasets;
@@ -1165,35 +1198,41 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 	var datasets = {};
 	var colorCounter = 0;
 	
-	for(var i = 0; i < renderDef.data.length; i++){
-		var currentRecord = renderDef.data[i];
+	//----------------------------
+	// For Every yfield
+	for(let k = 0; k < settings.yfield.length; k++){
 		
-		//----------------------------
-		// Create Label & Dataset
-		var label = renderDef.getTitleString(currentRecord);
-		if(datasets[label] == undefined){
-			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, colorCounter++);
-		}
+		let yfieldname = settings.yfield[k];
 		
-		var yArray = currentRecord[settings.yfield];
-		datasets[label].originalData.push(currentRecord);
-		
-		if(settings.xfield == null){
-			datasets[label].data = yArray;
-		}else{
-			var xArray = currentRecord[settings.xfield];
+		for(var i = 0; i < renderDef.data.length; i++){
+			var currentRecord = renderDef.data[i];
 			
-			for(let i = 0; i < xArray.length; i++){
-				if(xArray[i] != null){
-					datasets[label].data.push({
-						x: xArray[i], 
-						y: yArray[i]
-					});
+			//----------------------------
+			// Create Label & Dataset
+			var label = renderDef.getTitleString(currentRecord)+" / "+yfieldname;
+			if(datasets[label] == undefined){
+				datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, colorCounter++);
+			}
+			
+			var yArray = currentRecord[yfieldname];
+			datasets[label].originalData.push(currentRecord);
+			
+			if(settings.xfield == null){
+				datasets[label].data = yArray;
+			}else{
+				var xArray = currentRecord[settings.xfield];
+				
+				for(let i = 0; i < xArray.length; i++){
+					if(xArray[i] != null){
+						datasets[label].data.push({
+							x: xArray[i], 
+							y: yArray[i]
+						});
+					}
 				}
 			}
 		}
 	}
-	
 	return datasets;
 }
 
@@ -1234,7 +1273,7 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 		
 		currentDataset.spanGaps = settings.spangaps;
 		currentDataset.steppedLine = settings.steppedValue;
-		currentDataset.lineTension = 0;
+		currentDataset.tension = settings.tension;
 	}
 	/*	currentDataset = {
 				label: label, 
@@ -1245,10 +1284,9 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 	            borderWidth: 1,
 	            spanGaps: settings.spangaps,
 	            steppedLine: settings.steppedValue,
-	            lineTension: 0,
+	            tension: 0,
 	            cfwSum: 0,
 	            cfwCount: 0
-			};*/
-			
+			};*/			
 	return datasets;
 }

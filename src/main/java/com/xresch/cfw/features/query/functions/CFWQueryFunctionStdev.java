@@ -118,46 +118,7 @@ public class CFWQueryFunctionStdev extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	private BigDecimal calculateStandardDeviation(boolean usePopulation) {
 		
-		// zero or one number will have standard deviation 0
-		if(values.size() <= 1) {
-			return BigDecimal.ZERO;
-		}
-	
-//		How to calculate standard deviation:
-//		Step 1: Find the mean/average.
-//		Step 2: For each data point, find the square of its distance to the mean.
-//		Step 3: Sum the values from Step 2.
-//		Step 4: Divide by the number of data points.
-//		Step 5: Take the square root.
-		
-		//-----------------------------------------
-		// STEP 1: Find Average
-		BigDecimal count = new BigDecimal(values.size());
-		count.setScale(6);
-		
-		BigDecimal average = sum.divide(count, RoundingMode.HALF_UP);
-		
-		BigDecimal sumDistanceSquared = BigDecimal.ZERO;
-		for(BigDecimal value : values) {
-			//-----------------------------------------
-			// STEP 2: For each data point, find the 
-			// square of its distance to the mean.
-			BigDecimal distance = value.subtract(average);
-			//-----------------------------------------
-			// STEP 3: Sum the values from Step 2.
-			sumDistanceSquared = sumDistanceSquared.add(distance.pow(2));
-		}
-		
-		//-----------------------------------------
-		// STEP 4 & 5: Divide and take square root
-		
-		BigDecimal divisor = (usePopulation) ? count : count.subtract(BigDecimal.ONE);
-		
-		BigDecimal divided = sumDistanceSquared.divide(divisor, RoundingMode.HALF_UP);
-		
-		// TODO JDK8 Migration: should work with JDK 9
-		MathContext mc = new MathContext(6, RoundingMode.HALF_UP);
-		BigDecimal standardDeviation = divided.sqrt(mc);
+		BigDecimal standardDeviation = CFW.Math.bigStdev(values, usePopulation);
 		
 		//reset values when calculation is done
 		values.clear();
