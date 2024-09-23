@@ -204,7 +204,7 @@ pre {
 	padding: 5px;
 	border: 3px solid rgba(2, 2, 2, 0.9);
     backdrop-filter: blur(3px);
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.50);
 	box-shadow: 0 0 8px rgba(200, 200, 255, 0.25);
 }
 
