@@ -306,9 +306,15 @@ pre {
 }
 
 .dropdown-toggle-wide::after {
-	position: absolute;
-	right: 8px;
-    top: calc(50% - 4px);
+    position: absolute;
+    right: 8px;
+    top: calc(100% - 15px);
+    color: var(--primary);
+    font-size: larger;
+}
+
+.form-control-sm.dropdown-toggle-wide::after {
+	right: 2px;
 }
 
 .dropdown.show .dropdown-menu-fixed {
