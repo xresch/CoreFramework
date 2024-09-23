@@ -11,17 +11,16 @@ import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.parameter.FeatureParameter;
-import com.xresch.cfw.features.parameter.ParameterDefinition;
-import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
 import com.xresch.cfw.datahandling.CFWTimeframe;
+import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
+import com.xresch.cfw.features.parameter.ParameterDefinition;
 
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  **************************************************************************************************************/
-public class DashboardParameterQueryResult extends ParameterDefinition {
+public class DashboardParameterQuerySelect extends ParameterDefinition {
 
 	public static final String UNIQUE_NAME = "Query Select";
 	
@@ -66,7 +65,13 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 	 ***************************************************************/
 	@SuppressWarnings({ "rawtypes" })
 	@Override
-	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe) {
+	public CFWField getFieldForWidget(
+			  HttpServletRequest request
+			, String dashboardid
+			, Object parameterValue
+			, CFWTimeframe timeframe
+			, JsonObject userSelectedParamValues
+			) {
 
 		CFWField settingsField = 
 				CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.VALUE)
@@ -79,7 +84,7 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 
 			//---------------------------------
 			// Execute Query
-			CFWQueryResultList resultArray = executor.parseAndExecuteAll(query, timeframe);
+			CFWQueryResultList resultArray = executor.parseAndExecuteAll(query, timeframe, userSelectedParamValues);
 			if(resultArray.size() == 0) {
 				return settingsField;
 			}
@@ -106,7 +111,7 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 			}
 			
 			//---------------------------------
-			// Get up to 256 options
+			// Get options
 			String firstFieldname = detectedFields.get(0).getAsString();
 			String secondFieldname = (fieldCount == 1) ? null : detectedFields.get(1).getAsString();
 			

@@ -437,7 +437,8 @@ public class ServletDashboardViewMethods
 				
 				int id = CFW.DB.DashboardWidgets.createGetPrimaryKey(duplicateThis);
 				duplicateThis.id(id); // needed because of caching
-				
+				duplicateThis.x(null);
+				duplicateThis.y(null);
 				response.getContent().append(CFW.JSON.toJSON(duplicateThis));
 			}else {
 				CFW.Messages.noPermission();
@@ -468,7 +469,7 @@ public class ServletDashboardViewMethods
 			String widgetDataString = request.getParameter("widget");
 			JsonObject widgetDataJson = CFW.JSON.fromJson(widgetDataString).getAsJsonObject();
 			String widgetType = widgetDataJson.get(DashboardWidgetFields.TYPE.toString()).getAsString();
-			String dashboardParams = request.getParameter("params");
+			String dashboardParams = request.getParameter(FeatureParameter.CFW_PARAMS);
 			
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 			
@@ -880,7 +881,7 @@ public class ServletDashboardViewMethods
 		//----------------------------
 		// Get Values
 		String widgetID = request.getParameter("widgetid");
-		String dashboardParams = request.getParameter("params");
+		String dashboardParams = request.getParameter(FeatureParameter.CFW_PARAMS);
 		String forceRefresh = request.getParameter("forcerefresh");
 		
 		String timeframeString = request.getParameter("timeframe");

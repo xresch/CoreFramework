@@ -1063,7 +1063,10 @@ function cfw_renderer_chart_createDatasetsForGantt(renderDef, settings) {
 			
 			//----------------------------
 			// Create Label & Dataset
-			let label = renderDef.getTitleString(currentRecord) + " / " +yfieldname;
+			let label = renderDef.getTitleString(currentRecord);
+			if(settings.yfield.length > 1){
+				label += " / " +yfieldname;
+			}
 			if(datasets[label] == undefined){
 				datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
 			}

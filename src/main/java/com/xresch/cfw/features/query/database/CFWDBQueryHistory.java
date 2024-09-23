@@ -97,6 +97,7 @@ public class CFWDBQueryHistory {
 				.queryCache()
 				.select()
 				.where(CFWQueryHistoryFields.FK_ID_USER, CFW.Context.Request.getUserID())
+				.orderbyDesc(CFWQueryHistoryFields.TIME)
 				.limit(historyLimit)
 				.getAsJSON();
 		

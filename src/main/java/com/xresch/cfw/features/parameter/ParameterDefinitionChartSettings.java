@@ -4,11 +4,11 @@ import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWChartSettings;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWTimeframe;
-import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
 
 public class ParameterDefinitionChartSettings extends ParameterDefinition {
 
@@ -53,7 +53,7 @@ public class ParameterDefinitionChartSettings extends ParameterDefinition {
 	 ***************************************************************/
 	@SuppressWarnings({ "rawtypes" })
 	@Override
-	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe) {
+	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe, JsonObject  userSelectedParamValues) {
 
 		CFWField<CFWChartSettings> settingsField = CFWField.newChartSettings("JSON_VALUE");
 

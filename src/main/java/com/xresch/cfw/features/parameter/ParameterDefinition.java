@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 
@@ -55,10 +56,11 @@ public abstract class ParameterDefinition {
 	 * @param dashboardid
 	 * @param parameterValue the value defined for the parameter
 	 * @param timeframe the timeframe chosen in the dashboard.
+	 * @param userSelectedParamValues TODO
 	 * @return CFW field
 	 ************************************************************/
 	@SuppressWarnings({ "rawtypes"})
-	public abstract CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe);
+	public abstract CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe, JsonObject userSelectedParamValues);
 
 	/************************************************************
 	 * Return true if the parameter is available based on the

@@ -141,7 +141,13 @@ public class CFWQueryExecutor {
 	 *  }
 	 * 
 	 ****************************************************************/
-	public CFWQueryResultList parseAndExecuteAll(String queryString, long earliest, long latest, int timezoneOffsetMinutes, JsonObject parametersObject) {
+	public CFWQueryResultList parseAndExecuteAll(
+			String queryString
+			, long earliest
+			, long latest
+			, int timezoneOffsetMinutes
+			, JsonObject parametersObject
+			){
 		
 		CFWQueryContext baseQueryContext = new CFWQueryContext();
 		baseQueryContext.setEarliest(earliest);

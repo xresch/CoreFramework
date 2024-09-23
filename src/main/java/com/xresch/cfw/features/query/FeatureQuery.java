@@ -340,7 +340,7 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
 		// Register Dashboard Parameters
-		CFW.Registry.Parameters.add(new DashboardParameterQueryResult());
+		CFW.Registry.Parameters.add(new DashboardParameterQuerySelect());
 		
 		//----------------------------------
 		// Register Job Tasks

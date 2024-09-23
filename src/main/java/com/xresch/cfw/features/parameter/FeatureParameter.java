@@ -26,6 +26,8 @@ public class FeatureParameter extends CFWAppFeature {
 			new ManualPage("Parameter")
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_mainpage.html"))
 			;
+
+	public static final String CFW_PARAMS = "params";
 	
 	
 	@Override

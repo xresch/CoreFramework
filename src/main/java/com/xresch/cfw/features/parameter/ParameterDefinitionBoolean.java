@@ -4,10 +4,10 @@ import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 
 public class ParameterDefinitionBoolean extends ParameterDefinition {
@@ -56,7 +56,7 @@ public class ParameterDefinitionBoolean extends ParameterDefinition {
 	 ***************************************************************/
 	@SuppressWarnings({ "rawtypes" })
 	@Override
-	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe) {
+	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe, JsonObject  userSelectedParamValues) {
 
 		return getFieldForSettings(request, dashboardid, parameterValue);
 	}

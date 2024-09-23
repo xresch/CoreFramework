@@ -203,9 +203,9 @@ pre {
 	max-height: 95vh;
 	padding: 5px;
 	border: 3px solid rgba(2, 2, 2, 0.9);
-    backdrop-filter: blur(3px);
-    background-color: rgba(0, 0, 0, 0.50);
-	box-shadow: 0 0 8px rgba(200, 200, 255, 0.25);
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.66);
+	box-shadow: 0 0 9px rgba(255, 255, 255, 0.66);
 }
 
 .modal-header {
@@ -1035,8 +1035,9 @@ pre {
  * Dataviewer
  *************************************************************************/
 .cfw-colorpicker button{
-	border: 2px solid rgba(0, 0, 0, 0.5);
 	min-width: 100px;
+	border: 2px solid rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 5px rgba(255, 255, 255, 0.75);
 }
 
 /*************************************************************************

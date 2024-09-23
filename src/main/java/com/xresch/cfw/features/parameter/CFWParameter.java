@@ -318,6 +318,33 @@ public class CFWParameter extends CFWObject {
 	}
 
 	/*****************************************************************
+	 * Returns paramsArray as a JsonObject with key value pairs.
+	 * Key will be the param name.
+	 * Value will be the param value.
+	 * 
+	 * @param 
+	 *****************************************************************/
+	public static JsonObject paramsArrayToParamsObject(JsonElement parameters) {
+		
+		JsonObject object = new JsonObject();
+		if(parameters != null 
+		&& !parameters.isJsonNull()
+		&& parameters.isJsonArray()
+		) {
+			JsonArray paramsArray = parameters.getAsJsonArray();
+			
+			for(JsonElement current : paramsArray) {
+				String paramName = current.getAsJsonObject().get("NAME").getAsString();
+				JsonElement value = current.getAsJsonObject().get("VALUE");
+				object.add(paramName, value);
+			}
+				
+		}
+		
+		return object;
+			
+	}
+	/*****************************************************************
 	 * Returns the settings with applied parameters.
 	 * 
 	 * @param javascriptStyleParams in the format of the javascript parameters
@@ -556,6 +583,16 @@ public class CFWParameter extends CFWObject {
 		
 		String dashboardID = request.getParameter("id");
 		
+		//---------------------------------
+		// Get Parameters Selected by User
+		String userSelectedParamsJson = request.getParameter(FeatureParameter.CFW_PARAMS);
+		
+		JsonObject userSelectedParamsObject = null;
+		if( !Strings.isNullOrEmpty(userSelectedParamsJson) ) {
+			JsonElement paramsElementArray = CFW.JSON.fromJson(userSelectedParamsJson);
+			userSelectedParamsObject = CFWParameter.paramsArrayToParamsObject(paramsElementArray);
+		}
+		
 		//===========================================
 		// Replace Value Field
 		//===========================================
@@ -589,7 +626,7 @@ public class CFWParameter extends CFWObject {
 				ParameterDefinition def = CFW.Registry.Parameters.getDefinition(param.paramSettingsLabel());
 				if(def != null) {
 					if(doForWidget) {
-						newValueField = def.getFieldForWidget(request, dashboardID, currentValueField.getValue(), timeframe);
+						newValueField = def.getFieldForWidget(request, dashboardID, currentValueField.getValue(), timeframe, userSelectedParamsObject);
 					}else {
 						newValueField = def.getFieldForSettings(request, dashboardID, currentValueField.getValue());
 					}
