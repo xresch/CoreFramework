@@ -310,7 +310,7 @@ pre {
     right: 8px;
     top: calc(100% - 15px);
     color: var(--primary);
-    font-size: larger;
+    font-size: large;
 }
 
 .form-control-sm.dropdown-toggle-wide::after {
@@ -1069,6 +1069,23 @@ pre {
 .cfw-dataviewer-settings-button > .btn-xs {
 	position: relative;
     top: 37px;
+}
+
+/* Following is dirty, but it works and makes it look fine inside of widgets*/
+.cfw-dataviewer-renderresult .flex-grow-1{
+	width: 100%;
+}
+
+.cfw-dataviewer-renderresult pre{
+	max-height: 80vh;
+	overflow: auto !important;
+}
+
+.cfw-dashboard-widget-body .cfw-dataviewer-renderresult .flex-grow-1{
+	width: auto;
+}
+.cfw-dashboard-widget-body .cfw-dataviewer-renderresult pre{
+	max-height: 100%;
 }
 
 

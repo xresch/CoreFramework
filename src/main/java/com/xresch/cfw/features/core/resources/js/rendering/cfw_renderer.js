@@ -443,7 +443,11 @@ function cfw_renderer_json(renderDef) {
 	// Create JSON 
 	var randomID = CFW.utils.randomString(16);
 	var wrapperDiv = $('<div class="flex-grow-1">');
-	wrapperDiv.append('<pre class="card p-3 maxvh-80 overflow-auto" id="json-'+randomID+'"><code>'+JSON.stringify(renderDef.data, null, 2)+'</code></pre>');
+	wrapperDiv.append('<pre class="card p-3" id="json-'+randomID
+						+'" ondblclick="CFW.selection.selectElementContent(this)"><code>'
+							+JSON.stringify(renderDef.data, null, 2)
+						+'</code></pre>'
+						);
 	
 	//-----------------------------------
 	// highlight
@@ -474,7 +478,7 @@ function cfw_renderer_csv(renderDef) {
 	
 	//-----------------------------------
 	// Target Element
-	let pre = $('<pre class="card p-3 maxvh-80 overflow-auto" ondblclick="CFW.selection.selectElementContent(this)">');
+	let pre = $('<pre class="card p-3" ondblclick="CFW.selection.selectElementContent(this)">');
 	//let pre = $('<pre>');
 	pre.append(pre);
 	
@@ -536,7 +540,9 @@ function cfw_renderer_csv(renderDef) {
 		pre.append(span);
 	}
 
-	return pre;
+	var wrapperDiv = $('<div class="flex-grow-1">');
+	wrapperDiv.append(pre);
+	return wrapperDiv;
 }
 CFW.render.registerRenderer(CFW_RENDER_NAME_CSV,  new CFWRenderer(cfw_renderer_csv));
 
@@ -598,7 +604,7 @@ function cfw_renderer_xml(renderDef) {
 	//-----------------------------------
 	// Target Element
 	
-	let pre = $('<pre class="card p-3 maxvh-80 overflow-auto" ondblclick="CFW.selection.selectElementContent(this)">');
+	let pre = $('<pre class="card p-3" ondblclick="CFW.selection.selectElementContent(this)">');
 	//let pre = $('<pre>');
 	pre.append(pre);
 	
@@ -643,7 +649,10 @@ function cfw_renderer_xml(renderDef) {
 	html += "</data>\r\n";
 
 	pre.text(html);
-	return pre;
+	
+	var wrapperDiv = $('<div class="flex-grow-1">');
+	wrapperDiv.append(pre);
+	return wrapperDiv;
 }
 CFW.render.registerRenderer(CFW_RENDER_NAME_XML,  new CFWRenderer(cfw_renderer_xml));
 
@@ -2108,11 +2117,10 @@ function cfw_renderer_dataviewer(renderDef) {
 		var params = cfw_renderer_dataviewer_createParams(dataviewerDiv, settings.initialpage);
 		rendererName = params.rendererName.trim().toLowerCase();
 		
-		//customSettings = queryResult.displaySettings.settings;
-		//currentSettings = renderDefinition.rendererSettings[rendererName]
-		//Object.assign(currentSettings, customSettings);
-			
-		return CFW.render.getRenderer(rendererName).render(params.finalRenderDef);	
+		let renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex flex-grow-1 w-100">');
+		let renderResult = CFW.render.getRenderer(rendererName).render(params.finalRenderDef)
+		renderWrapper.append(renderResult);
+		return renderWrapper;	
 	}
 	
 	//-----------------------------------
