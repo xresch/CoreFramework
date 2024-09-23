@@ -70,8 +70,9 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 			+"<li><b>titleformat:&nbsp;</b>(Optional) Format of the title. Use '{0}', '{1}'... as placeholders for field values.</li>"	
 			+"<li><b>visiblefields:&nbsp;</b>(Optional) Array of the fieldnames that should be visible.</li>"	
 			+"<li><b>zoomNumber:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</li>"	
+			+"<li><b>sizes:&nbsp;</b>(Optional) An array of page sizes.</li>"	
+			+"<li><b>defaultsize:&nbsp;</b>(Optional) The default selected page size.</li>"	
 			+"<li><b>settings:&nbsp;</b>(Optional) Json Object containing more options for the selected display type.</li>";
-
 
 	public static final String COMMAND_NAME = "display";
 

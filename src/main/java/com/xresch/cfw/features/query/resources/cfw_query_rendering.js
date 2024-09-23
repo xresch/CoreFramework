@@ -1025,6 +1025,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 					rendererIndex: rendererIndex,
 					menu: queryResult.displaySettings.menu,
 					pagination: queryResult.displaySettings.pagination,
+					sizes: queryResult.displaySettings.sizes,
+					defaultsize: queryResult.displaySettings.defaultsize,
 					sortable: false,
 					renderers: [
 						{	label: 'Table',
@@ -1122,7 +1124,6 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		Object.assign(currentSettings, customSettings);
 	}
 
-	
 	//-----------------------------------
 	// Render!!!
 	let renderResult = CFW.render.getRenderer("dataviewer").render(renderDefinition);	

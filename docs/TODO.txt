@@ -182,6 +182,7 @@ DONE
 - Parameters: Added Chart Types
 - Parameters: Added Chart Settings
 - Query: Autocomplete: Made full with of window to reduce likelihood of closing when selecting text.
+- Query: Command Display: New parameters "sizes" and "defaultsize" to configure page size.
 - Query: source web - as=http will now also give you the duration. 
 - Query: source eav - attributes are not returned as uppercase fields
 
