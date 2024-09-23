@@ -1536,7 +1536,7 @@ function cfw_dashboard_toggleFullscreenMode(){
 	if(CFW_DASHBOARD_FULLSCREEN_MODE){
 		CFW_DASHBOARD_FULLSCREEN_MODE = false;
 
-		$('.hideOnFullScreen').css('display', '');
+		$('.hideOnFullScreen').attr('style', '');
 		$('.cfw-content').css('padding-top', '');
 		$('.navbar').css('display', '');
 		
@@ -1554,7 +1554,8 @@ function cfw_dashboard_toggleFullscreenMode(){
 		
 	}else{
 		CFW_DASHBOARD_FULLSCREEN_MODE = true;
-		$('.hideOnFullScreen').css('display', 'none');
+		// using attr('style') here as css('display') does not take !important 
+		$('.hideOnFullScreen').attr('style', 'display: none !important;');
 		$('.cfw-content').css('padding-top', '0px');
 		$('.navbar').css('display', 'none');
 		
