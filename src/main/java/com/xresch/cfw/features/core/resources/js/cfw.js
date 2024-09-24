@@ -886,8 +886,12 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
 			if( !CFW.utils.isNullOrEmpty(currentOption.label) ) {
 					label = currentOption.label
 			}
-			
-			dropdownHTML += ' <a class="dropdown-item filterable" onclick="cfw_setSelectValue(\''+fieldID+'\', \''+currentOption.value.replaceAll('"', '&quot;')+'\')">'+label+'</a>';
+			let noApostrophe = currentOption.value
+										.replaceAll('"', '&quot;')
+										.replaceAll("'", "\\'")
+										;
+										
+			dropdownHTML += ' <a class="dropdown-item filterable" onclick="cfw_setSelectValue(\''+fieldID+'\', \''+noApostrophe+'\')">'+label+'</a>';
 		}
 	}
 	
