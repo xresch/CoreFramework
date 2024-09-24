@@ -734,13 +734,13 @@ function cfw_query_formatSpecial_Display(span, object){
 	// Data is null
 	if(records == null){
 		cfw_query_formatShowNulls(span, records);
+		return;
 	}
 
 	//---------------------------------
-	// Data is Object or Array
+	// Data is Array
 	if( Array.isArray(records) ){
 
-		
 		cfw_query_renderQueryResult(span, object.queryResults);
 		//span.text("test");
 		return;
@@ -748,8 +748,18 @@ function cfw_query_formatSpecial_Display(span, object){
 	}
 	
 	//---------------------------------
+	// Data is object
+	if( typeof records === "object" ){
+		let array = [records];
+		cfw_query_renderQueryResult(span, array);
+		return;
+
+	}
+	
+	
+	//---------------------------------
 	// Any other data type
-	span.text(JSON.stringify(records));
+	span.text(records);
 }
 
 /*******************************************************************************
@@ -767,11 +777,21 @@ function cfw_query_formatSpecial_CSS(span, object){
 	// Data is null
 	if(value == null){
 		cfw_query_formatShowNulls(span, value);
+		return;
+	}
+	
+	//---------------------------------
+	// Data is Object or Array
+	if( Array.isArray(value) || typeof value === "object" ){
+
+		span.text( JSON.stringify(records) );
+		return;
+
 	}
 
 	//---------------------------------
 	// Any other data type
-	span.text(JSON.stringify(value));
+	span.text(value);
 }
 
 /*******************************************************************************
