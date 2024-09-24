@@ -101,10 +101,16 @@ public class CFWHttp {
 	private static CFWHttp instance = new CFWHttp();
 	
 	public enum CFWHttpAuthMethod{
+		/* Digest authentication with the Apache HttpClient */
 		  BASIC
+		  /* Digest authentication using Basic Header */
+		, BASIC_HEADER
+		  /* Digest authentication with the Apache HttpClient */
 		, DIGEST
+		  /* NTLM: untested, deprecated, experimental */
 		, NTLM
-		, KERBEROS //experimental
+		  /* Kerberos: untested, deprecated, experimental */
+		, KERBEROS 
 	}
 
 	private static final Counter outgoingHTTPCallsCounter = Counter.build()
@@ -565,9 +571,7 @@ public class CFWHttp {
 	 * @return CFWHttpResponse response or null
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendGETRequest(String url, HashMap<String, String> params, HashMap<String, String> headers) {
-		
-		CFWHttp.logFinerRequestInfo("GET", url, params, headers, null);
-		
+
 		return CFWHttp.newRequestBuilder(url)
 				.GET()
 				.headers(headers)
@@ -618,8 +622,6 @@ public class CFWHttp {
 	 * @return String response
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendPOSTRequest(String url, HashMap<String, String> params, HashMap<String, String> headers) {
-		
-		CFWHttp.logFinerRequestInfo("POST", url, params, headers, null);	
 		
 		return CFWHttp.newRequestBuilder(url)
 					.POST()
@@ -994,8 +996,6 @@ public class CFWHttp {
 		@SuppressWarnings("deprecation")
 		public CFWHttpResponse send() {
 			
-			CFWHttp.logFinerRequestInfo(method, URL, params, headers, requestBody);	
-			
 			try {
 				
 				//---------------------------------
@@ -1062,6 +1062,13 @@ public class CFWHttp {
 							break;
 							
 							//------------------------------
+							// Basic 
+							case BASIC_HEADER:
+								CFWHttp.addBasicAuthorizationHeader(headers, username, new String(pwdArray));
+							break;
+							
+							
+							//------------------------------
 							// Digest
 							case DIGEST:
 								AuthScope authScopeDigest = new AuthScope(targetHost, null, new DigestScheme().getName());
@@ -1111,15 +1118,17 @@ public class CFWHttp {
 						
 						}
 
-						//---------------------------------
-						// Scheme Factory
-						Registry<AuthSchemeFactory> schemeFactoryRegistry = registryBuilder.build();
-						
-						//---------------------------------
-						// Credential Provider
-						clientBuilder
-							.setDefaultAuthSchemeRegistry(schemeFactoryRegistry)
-							.setDefaultCredentialsProvider(credProviderBuilder.build());
+						if (this.authMethod != CFWHttpAuthMethod.BASIC_HEADER) {
+							//---------------------------------
+							// Scheme Factory
+							Registry<AuthSchemeFactory> schemeFactoryRegistry = registryBuilder.build();
+							
+							//---------------------------------
+							// Credential Provider
+							clientBuilder
+								.setDefaultAuthSchemeRegistry(schemeFactoryRegistry)
+								.setDefaultCredentialsProvider(credProviderBuilder.build());
+						}
 						
 					}
 					
@@ -1133,9 +1142,10 @@ public class CFWHttp {
 
 					//-----------------------------------
 					// Connect and create response
-					CloseableHttpClient httpClient = clientBuilder.build();
-					
+					CFWHttp.logFinerRequestInfo(method, URL, params, headers, requestBody);	
 					outgoingHTTPCallsCounter.labels(method).inc();
+
+					CloseableHttpClient httpClient = clientBuilder.build();
 					CFWHttpResponse response = instance.new CFWHttpResponse(httpClient, requestBase);
 					return response;
 					

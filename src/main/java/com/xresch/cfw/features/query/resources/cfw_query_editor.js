@@ -475,11 +475,15 @@ class CFWQueryEditor{
 					 	;
 					 	
 		let newText;	
-		let newCursorStart;			 	
-		let newCursorEnd;			 	
+		let newCursorStart = 0;			 	
+		let newCursorEnd = 0;			 	
 		switch(insertMode){
+			
 			case 'start':
-				selectedLines = selectedLines.trim()+"\n";
+				
+				if(selectedLines.startsWith("\n")) { selectedLines = selectedLines.substring(1); };
+				
+				selectedLines = selectedLines+"\n";
 				newText = selectedRemoved.substring(0, insertPosition) 
 						+ selectedLines
 		    		+ selectedRemoved.substring(insertPosition);
@@ -489,22 +493,29 @@ class CFWQueryEditor{
 			break;
 			
 			case 'end':
-				selectedLines = "\n"+selectedLines.trim();
+				selectedLines = selectedLines;
 				newText = selectedRemoved + selectedLines;
 				newCursorEnd = newText.length;
 				newCursorStart = newCursorEnd - selectedLines.length+1;
 			break;	
 			
 			default:
-				selectedLines = "\n"+selectedLines.trim();
+
+				if(indexLineStart == 0 
+				&& selectedRemoved.startsWith("\n")) { 
+					selectedRemoved = selectedRemoved.substring(1);
+					selectedLines = selectedLines+"\n";
+					newCursorStart = -1;
+					newCursorEnd = -1;
+				};
+				
 				newText = selectedRemoved.substring(0, insertPosition) 
 						+ selectedLines
 		    		+ selectedRemoved.substring(insertPosition);
-		    	newCursorStart = insertPosition+1;
-		    	newCursorEnd = insertPosition + selectedLines.length;
+		    	newCursorStart += insertPosition+1;
+		    	newCursorEnd += insertPosition + selectedLines.length;
 			break;	
 		}
-
 		
 		domElement.value = newText;
 		domElement.selectionStart = newCursorStart;
