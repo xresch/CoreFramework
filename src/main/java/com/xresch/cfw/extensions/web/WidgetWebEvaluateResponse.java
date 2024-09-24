@@ -282,7 +282,7 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 			}
 			
 			if(!Strings.isNullOrEmpty(username)) {
-				requestBuilder.setAuthCredentials(username, password);
+				requestBuilder.setAuthCredentialsBasic(username, password);
 			}
 			
 			requestBuilder.headers(headers);

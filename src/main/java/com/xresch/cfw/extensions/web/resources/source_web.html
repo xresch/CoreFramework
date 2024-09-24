@@ -145,17 +145,11 @@ The following query uses the unbox command to keep some of the original fields(f
 #########################################
 # Digest
 | source web 
-	url="http://www.httpbin.org/digest-auth/auth/testUsername/testPassword/SHA-512"
+	url="http://www.httpbin.org/digest-auth/auth/testUsername/testPassword/MD5"
+	auth="digest"
 	username='testUsername'
 	password='testPassword'
-;
-#########################################
-# NTLM
-| source web 
-	as=http
-	url="https://authenticationtest.com/HTTPAuth/"
-	username='user'
-	password='pass'
+| formatfield headers = list
 ;
 #########################################
 # Bearer Token
@@ -163,6 +157,15 @@ The following query uses the unbox command to keep some of the original fields(f
 	url="http://httpbin.org/bearer"
 	headers={ 'accept': 'application/json', "Authorization": "Bearer wh0need5-c00kIe5-1f-theycanh4ve-t1r4m15u"}
 ;
+#########################################
+# NTLM (experimental as not tested)
+/*| source web 
+	as=http
+	url="find a NTLM URL"
+	auth="ntlm"
+	username='user'
+	password='pass'
+;*/
 </code></pre>
 	
 	

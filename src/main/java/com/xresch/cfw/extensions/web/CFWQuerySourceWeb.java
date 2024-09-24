@@ -24,6 +24,8 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.utils.CFWHttp;
+import com.xresch.cfw.utils.CFWHttp.CFWHttpAuthMethod;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
@@ -41,6 +43,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	private static final String PARAM_URL 		= "url";
 	private static final String PARAM_HEADERS 	= "headers";
 	private static final String PARAM_BODY 		= "body";
+	private static final String PARAM_AUTH 		= "auth";
 	private static final String PARAM_USERNAME 	= "username";
 	private static final String PARAM_PASSWORD 	= "password";
 	private static final String PARAM_AS	= "as";
@@ -229,6 +232,13 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 						)
 				
 				.addField(
+						CFWField.newString(FormFieldType.TEXT, PARAM_AUTH)
+								.setDescription("(Optional)The authentication method used, either of 'basic' | 'digest' | 'ntlm' (Default: basic)")
+								.addValidator(new NotNullOrEmptyValidator())
+								.disableSanitization()
+						)
+				
+				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_USERNAME)
 								.setDescription("(Optional)The username for Basic Authentication.")
 								.addValidator(new NotNullOrEmptyValidator())
@@ -311,6 +321,12 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		String username = (String) parameters.getField(PARAM_USERNAME).getValue();
 		String password = (String) parameters.getField(PARAM_PASSWORD).getValue();
 		
+		String auth = (String) parameters.getField(PARAM_AUTH).getValue();
+		CFWHttpAuthMethod authMethod = null;
+		if(auth != null) {
+			authMethod = CFWHttpAuthMethod.valueOf(auth.trim().toUpperCase());
+		}
+		
 		//------------------------------------
 		// Get Headers
 		String headersString = (String) parameters.getField(PARAM_HEADERS).getValue();
@@ -340,7 +356,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		}
 		
 		if(!Strings.isNullOrEmpty(username)) {
-			requestBuilder.setAuthCredentials(username, password);
+			requestBuilder.setAuthCredentials(authMethod,username, password);
 		}
 		
 		requestBuilder.headers(headersMap);
