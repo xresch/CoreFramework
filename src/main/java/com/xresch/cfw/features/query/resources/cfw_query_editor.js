@@ -509,14 +509,6 @@ class CFWQueryEditor{
 		domElement.value = newText;
 		domElement.selectionStart = newCursorStart;
 		domElement.selectionEnd = newCursorEnd;
-		
-		console.log("==========================")
-		console.log("direction:"+direction)
-		console.log("insertPosition:"+insertPosition)
-		console.log("selectedLines:"+selectedLines)
-		console.log("textBefore:"+textBefore)
-		console.log("textAfter:"+textAfter)
-
 	
 	}
 	
