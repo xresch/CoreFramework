@@ -73,32 +73,36 @@ Potential TODOs
 - Widget: Collaboration: Chat
 - Widget: Collaboration: Logbook
 - Widget: Disable Refresh
-- Widget: Global Params: Add params next to title instead of in widget.
 - Widget: Param Value Button: Apply parameter values if button is pressed.
 
 - Query: Docs - Write Developers Manual dev_query.html
 - Query: Docs - mimic template mechanism
 - Query: Widget - Option to open query in Editor if user has permission
 - Query: Improve Autocomplete
-- Query: function: math ceil/floor/abs etc...
-- Query: function: array() aggregation
-- Query: function: fieldshidden()
-- Query: function: timediff()
-- Query: function: isString()
-- Query: arrayify (needed for subquery results)
-- Query: Command hide (to hide fields, or make prefix "_" to hide fields)
-- Query: Command resultdelete (delete by name)
-- Query: Command statsx (pivot)
-- Query: Command formatfield - sparkline format (or new command)
+- Query Functions: 
+	- math ceil/floor/abs etc...
+	- fieldshidden()
+	- timediff()
+	- movavg - to aggregate moving averages
+
+- Query: Command:
+	- hide - to hide fields, or make prefix "_" to hide fields
+	- statsx - pivot
+	- formatbar - special format to format fields as a bar indicator
+	- index - calculate new value index based on 100 or others
+	- arrayify (needed for subquery results) ???
+	
 - Query: Manual Page - How to create charts 
 - Query: Mimic calling mimic working with meta()
 - Query: Autocomplete - fix "F:" replace issue
 - Query: fixed ConcurrentModificationException when using command resultconcat
+- Query: 
 - Query: Test cases
 	- command messages
 	- command if, else, end
 	- command formatcss
 	- command formatdisplay
+	- command percentile
 	- metadata template
 	- function array
 	- function distinct
