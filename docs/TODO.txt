@@ -182,6 +182,7 @@ DONE
 - EAVStats: Added P50 and P90 values (percentiles)
 - Parameters: Added Chart Types
 - Parameters: Added Chart Settings
+- Query: Editor - Move Lines up or down with Alt + Up/Down
 - Query: Autocomplete - Made full with of window to reduce likelihood of closing when selecting text.
 - Query: History - Fixed not showing latest executed queries when list reached 1000 items.
 - Query: Command Display: New parameters "sizes" and "defaultsize" to configure page size.

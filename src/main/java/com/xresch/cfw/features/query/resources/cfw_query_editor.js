@@ -339,7 +339,7 @@ class CFWQueryEditor{
 	 * 
 	 * @param direction 'up' or 'down' 
 	 ******************************************************************************/
-	copyCurrentLine(direction){
+	copySelectedLines(direction){
 		
 		var domElement = this.textarea.get(0);
 		var selectionStart = domElement.selectionStart;
@@ -376,20 +376,147 @@ class CFWQueryEditor{
 		
 		//--------------------------------------------
 		// Insert Line
-		var line = value.substring(indexLineStart, indexLineEnd);	
+		var selectedLines = value.substring(indexLineStart, indexLineEnd);	
 		
 		// set textarea value to: text before caret + tab + text after caret
 		value = value.substring(0, indexLineStart) 
-						+line+breakAtStart
-						+line
+						+selectedLines
+						+breakAtStart
+						+selectedLines
 		    		+ value.substring(indexLineEnd);
 		
 		domElement.value = value;
 		
-		let newCursorPos = (direction == "down") ? selectionStart + line.length : selectionStart;
+		let newCursorPos = (direction == "down") ? selectionStart + selectedLines.length : selectionStart;
 		
 		domElement.selectionStart = newCursorPos;
 		domElement.selectionEnd = newCursorPos;
+	
+	}
+	
+	/*******************************************************************************
+	 * 
+	 * @param direction 'up' or 'down' 
+	 ******************************************************************************/
+	moveSelectedLines(direction){
+		
+		let domElement = this.textarea.get(0);
+		let selectionStart = domElement.selectionStart;
+		let selectionEnd = domElement.selectionEnd;
+		let value = domElement.value;
+		
+		//--------------------------------------------
+		// Find Line Start
+		let indexLineStart = selectionStart;
+		if(value.charAt(indexLineStart) == "\n"){ indexLineStart-- };
+		
+		for(; indexLineStart > 0 ;indexLineStart-- ){
+			if(value.charAt(indexLineStart) == "\n"){ break; }
+		}
+				
+		if(indexLineStart == 0 && direction == "up"){
+			return; // start of text, cannot move up
+		}
+		
+		//--------------------------------------------
+		// Find Line End
+		let indexLineEnd = selectionEnd;
+		let newlineFound = false;
+		for(; indexLineEnd < value.length-1 ;indexLineEnd++ ){
+			if(value.charAt(indexLineEnd) == "\n"){ newlineFound = true; break; }
+		}
+		
+		if(!newlineFound){
+			indexLineEnd = value.length;
+		}
+		
+		if(indexLineEnd == value.length && direction == "down"){
+			return; // end of text, cannot move down
+		}
+		
+		//--------------------------------------------
+		// Find insert Position
+		let insertPosition = 0;
+		
+		if(direction == "down"){
+			insertPosition = indexLineEnd+1;
+			for(; insertPosition < value.length-1 ;insertPosition++ ){
+				if(value.charAt(insertPosition) == "\n"){ newlineFound = true; break; }
+			}
+			if(!newlineFound){ insertPosition = value.length; }
+		}else{
+			insertPosition = indexLineStart-1;
+			for(; insertPosition > 0 ;insertPosition-- ){
+				if(value.charAt(insertPosition) == "\n"){ break; 
+			}
+			if(insertPosition < 0 ){ insertPosition = 0; }
+		}
+		}
+		
+		//--------------------------------------------
+		// Move Lines
+		let selectedLines = value.substring(indexLineStart, indexLineEnd);	
+		let textBefore = value.substring(0, indexLineStart);
+		let textAfter = value.substring(indexLineEnd);
+		
+		let selectedRemoved = textBefore + textAfter;
+
+		if(direction == "down"){ 
+			insertPosition -= selectedLines.length; 
+			if(insertPosition < 0){ insertPosition = 0; }
+		}	
+		
+		let insertMode = 
+				(insertPosition == 0) 
+					? "start"
+					: (insertPosition == selectedRemoved.length-1)
+					 	? "end"
+					 	: "somewhere"
+					 	;
+					 	
+		let newText;	
+		let newCursorStart;			 	
+		let newCursorEnd;			 	
+		switch(insertMode){
+			case 'start':
+				selectedLines = selectedLines.trim()+"\n";
+				newText = selectedRemoved.substring(0, insertPosition) 
+						+ selectedLines
+		    		+ selectedRemoved.substring(insertPosition);
+		    	newCursorStart = 0;
+		    	newCursorEnd = selectedLines.length-1;
+		
+			break;
+			
+			case 'end':
+				selectedLines = "\n"+selectedLines.trim();
+				newText = selectedRemoved + selectedLines;
+				newCursorEnd = newText.length;
+				newCursorStart = newCursorEnd - selectedLines.length+1;
+			break;	
+			
+			default:
+				selectedLines = "\n"+selectedLines.trim();
+				newText = selectedRemoved.substring(0, insertPosition) 
+						+ selectedLines
+		    		+ selectedRemoved.substring(insertPosition);
+		    	newCursorStart = insertPosition+1;
+		    	newCursorEnd = insertPosition + selectedLines.length;
+			break;	
+		}
+
+		
+		domElement.value = newText;
+		domElement.selectionStart = newCursorStart;
+		domElement.selectionEnd = newCursorEnd;
+		
+		console.log("==========================")
+		console.log("direction:"+direction)
+		console.log("insertPosition:"+insertPosition)
+		console.log("selectedLines:"+selectedLines)
+		console.log("textBefore:"+textBefore)
+		console.log("textAfter:"+textAfter)
+
 	
 	}
 	
@@ -517,7 +644,12 @@ class CFWQueryEditor{
 		this.textarea.addClass('query-original query-text-format');
 		this.textarea.removeClass('form-control');
 		this.textarea.attr('spellcheck', false);
-		this.textarea.attr('placeholder', 'Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute.');
+		this.textarea.attr('placeholder', 'Write your query. '
+					+'\r\n Ctrl + Space for content assist. '
+					+'\r\n Ctrl + Enter to execute.'
+					+'\r\n Ctrl + Alt + Up/Down duplicate selected lines.'
+					+'\r\n Alt + Up/Down to move selected lines.'
+					);
 		
 		//--------------------------------
 		// Create Editor
@@ -625,14 +757,41 @@ class CFWQueryEditor{
 			//---------------------------
 			// Ctrl + Alt + Up
 			if (e.ctrlKey && e.altKey && e.keyCode == 38) {
-				queryEditor.copyCurrentLine('up');
+				queryEditor.copySelectedLines('up');
 				return;
 			}
 			
 			//---------------------------
 			// Ctrl + Alt + Down
 			if (e.ctrlKey && e.altKey && e.keyCode == 40) {
-				queryEditor.copyCurrentLine('down');
+				queryEditor.copySelectedLines('down');
+				return;
+			}
+			//---------------------------
+			// Alt + Up
+			if ( e.altKey && e.keyCode == 38) {
+				queryEditor.moveSelectedLines('up');
+				return;
+			}
+			
+			//---------------------------
+			// Alt + Down
+			if (e.altKey && e.keyCode == 40) {
+				queryEditor.moveSelectedLines('down');
+				return;
+			}
+			
+			//---------------------------
+			// Alt + Left or Right
+			// Is mapped to browser go back and forth in tab history
+			// Prevent it to not lose changes in query. 
+			if (e.altKey 
+			   && (  
+				     e.keyCode == 37 
+			      || e.keyCode == 39
+			      ) 
+			   ){
+				e.preventDefault();
 				return;
 			}
 			
