@@ -2117,10 +2117,12 @@ function cfw_renderer_dataviewer(renderDef) {
 		var params = cfw_renderer_dataviewer_createParams(dataviewerDiv, settings.initialpage);
 		rendererName = params.rendererName.trim().toLowerCase();
 		
-		let renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex flex-grow-1 h-100 w-100">');
 		let renderResult = CFW.render.getRenderer(rendererName).render(params.finalRenderDef)
-		renderWrapper.append(renderResult);
-		return renderWrapper;	
+		// following makes too much troubles, don't do it
+		// let renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex flex-grow-1 h-100 w-100">');
+		// renderWrapper.append(renderResult);
+		
+		return renderResult;	
 	}
 	
 	//-----------------------------------

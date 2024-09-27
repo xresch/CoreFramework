@@ -1084,8 +1084,9 @@ pre {
 .cfw-dashboard-widget-body .cfw-dataviewer-renderresult .flex-grow-1{
 	width: auto;
 }
-.cfw-dashboard-widget-body .cfw-dataviewer-renderresult pre{
+.cfw-dashboard-widget-body pre{
 	max-height: 100%;
+	overflow: unset;
 }
 
 

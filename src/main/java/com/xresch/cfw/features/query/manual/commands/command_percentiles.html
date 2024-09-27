@@ -16,6 +16,68 @@ This command is useful to create percentile distribution charts.
 	type = 'area'
 	x = PERC_BOX_SIZE
 	y = BOX_SIZE
+	xlabel = "Percentile"
+	ylabel = "Box Size"
 	xtype = linear
 	multichart = true</code></pre>
+	
 
+
+<p>Here is a more fancy example on how to create a percentile graph for multiple statistical values. </p>
+<pre><code class="language-cfwquery">
+| meta name="data"
+| source random type="stats"
+| filter 
+	type != "user"
+| rename ENTITY = REQUEST
+;
+#####################################
+# MIN
+| resultcopy 	"data"
+| meta 			name = "MIN"
+| percentiles   PERC = meta(name)
+| set 			PERC = ceil(PERC)
+| stats			by=[PERC] meta(name) = AVG( "MIN" )
+| keep PERC, meta(name)
+;
+#####################################
+# AVG
+| resultcopy 	"data"
+| meta 			name = "AVG"
+| percentiles   PERC = meta(name)
+| set 			PERC = ceil(PERC)
+| stats			by=[PERC] meta(name) = AVG( "AVG" )
+| keep PERC, meta(name)
+;
+#####################################
+# MAX
+| resultcopy 	"data"
+| meta 			name = "MAX"
+| percentiles   PERC = meta(name)
+| set 			PERC = ceil(PERC)
+| stats			by=[PERC] meta(name) = AVG( "MAX" )
+| keep PERC, meta(name)
+;
+
+#####################################
+# Join
+| meta name = "INDEX"
+| source empty records = 100
+| set PERC = count() + 1
+;
+| resultjoin on=PERC join="right" # join MIN
+;
+| resultjoin on=PERC join="right"  # join AVG
+;
+| resultjoin on=PERC join="right"  # join MAX
+| resultremove "data"
+| rename PERC = Percentile
+| chart 
+	type=line
+	y=["MIN", "AVG", "P95", "MAX"]	
+	x=Percentile
+	xtype=linear
+	xlabel = "Percentile"
+	ylabel = "Response Time"
+	pointradius=2
+	height="500px"</code></pre>

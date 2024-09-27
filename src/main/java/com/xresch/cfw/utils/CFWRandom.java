@@ -646,11 +646,18 @@ public class CFWRandom {
 				
 				JsonObject currentItem = new JsonObject();
 				
-				int count = randomIntegerInRange(20,100);
+				int count = randomIntegerInRange(5,100);
 				
 				ArrayList<BigDecimal> values = new ArrayList<>();
+				int lowerBound = randomIntegerInRange(0, 20);
+				int upperBound = randomIntegerInRange(40, 100);
+				
+				int outlierPercentage = randomIntegerInRange(0,100);
+				if     (outlierPercentage > 95) { upperBound = randomIntegerInRange(200,500); }
+				else if(outlierPercentage > 90) { upperBound = randomIntegerInRange(100,200); }
+					
 				for(int k = 0; k < count; k++) {
-					values.add( randomBigDecimalInRange(5, 100, randomFromArray(decimals) ) );
+					values.add( randomBigDecimalInRange(lowerBound, upperBound, randomFromArray(decimals) ) );
 				}
 				currentItem.addProperty("TIME", earliest+(timestep*j));
 				currentItem.addProperty("STATISTIC", statisticName);
