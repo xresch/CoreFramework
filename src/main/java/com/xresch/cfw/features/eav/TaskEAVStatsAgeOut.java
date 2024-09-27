@@ -27,7 +27,7 @@ public class TaskEAVStatsAgeOut extends CFWScheduledTask {
 		for(int granularity : CFW.Time.AGE_OUT_GRANULARITIES) {
 			//--------------------------
 			// Get Age Out Time
-			Timestamp ageOutTime = CFW.Time.getDefaultAgeOutTime(granularity);
+			Timestamp ageOutTime = this.getAgeOutTime(granularity);
 			
 			//--------------------------
 			// Get timespan 

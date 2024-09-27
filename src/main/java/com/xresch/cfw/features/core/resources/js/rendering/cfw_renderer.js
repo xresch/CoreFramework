@@ -443,7 +443,7 @@ function cfw_renderer_json(renderDef) {
 	// Create JSON 
 	var randomID = CFW.utils.randomString(16);
 	var wrapperDiv = $('<div class="flex-grow-1">');
-	wrapperDiv.append('<pre class="card p-3" id="json-'+randomID
+	wrapperDiv.append('<pre id="json-'+randomID
 						+'" ondblclick="CFW.selection.selectElementContent(this)"><code>'
 							+JSON.stringify(renderDef.data, null, 2)
 						+'</code></pre>'
@@ -478,7 +478,7 @@ function cfw_renderer_csv(renderDef) {
 	
 	//-----------------------------------
 	// Target Element
-	let pre = $('<pre class="card p-3" ondblclick="CFW.selection.selectElementContent(this)">');
+	let pre = $('<pre ondblclick="CFW.selection.selectElementContent(this)">');
 	//let pre = $('<pre>');
 	pre.append(pre);
 	
@@ -604,7 +604,7 @@ function cfw_renderer_xml(renderDef) {
 	//-----------------------------------
 	// Target Element
 	
-	let pre = $('<pre class="card p-3" ondblclick="CFW.selection.selectElementContent(this)">');
+	let pre = $('<pre ondblclick="CFW.selection.selectElementContent(this)">');
 	//let pre = $('<pre>');
 	pre.append(pre);
 	
@@ -2117,7 +2117,7 @@ function cfw_renderer_dataviewer(renderDef) {
 		var params = cfw_renderer_dataviewer_createParams(dataviewerDiv, settings.initialpage);
 		rendererName = params.rendererName.trim().toLowerCase();
 		
-		let renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex flex-grow-1 w-100">');
+		let renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex flex-grow-1 h-100 w-100">');
 		let renderResult = CFW.render.getRenderer(rendererName).render(params.finalRenderDef)
 		renderWrapper.append(renderResult);
 		return renderWrapper;	

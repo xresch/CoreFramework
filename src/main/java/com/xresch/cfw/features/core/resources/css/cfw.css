@@ -1072,14 +1072,13 @@ pre {
     top: 37px;
 }
 
-/* Following is dirty, but it works and makes it look fine inside of widgets*/
+/* Following is kinda dirty, but it works and makes it look fine inside of widgets*/
 .cfw-dataviewer-renderresult .flex-grow-1{
 	width: 100%;
 }
 
 .cfw-dataviewer-renderresult pre{
-	max-height: 80vh;
-	overflow: auto !important;
+	overflow: unset;
 }
 
 .cfw-dashboard-widget-body .cfw-dataviewer-renderresult .flex-grow-1{
