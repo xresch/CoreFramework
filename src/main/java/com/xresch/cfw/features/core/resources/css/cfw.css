@@ -1306,6 +1306,54 @@ pre {
 }
 
 /*************************************************************************
+ * min viewport width
+ *************************************************************************/
+.minw-5 { min-width: 5%;}
+.minw-10 { min-width: 10%;}
+.minw-15 { min-width: 15%;} 
+.minw-20 { min-width: 20%;}
+.minw-25 { min-width: 25%;} 
+.minw-30 { min-width: 30%;}
+.minw-35 { min-width: 35%;} 
+.minw-40 { min-width: 40%;}
+.minw-45 { min-width: 45%;} 
+.minw-50 { min-width: 50%;}
+.minw-55 { min-width: 55%;} 
+.minw-60 { min-width: 60%;}
+.minw-65 { min-width: 65%;} 
+.minw-70 { min-width: 70%;}
+.minw-75 { min-width: 75%;} 
+.minw-80 { min-width: 80%;}
+.minw-85 { min-width: 85%;} 
+.minw-90 { min-width: 90%;}
+.minw-95 { min-width: 95%;} 
+.minw-100{ min-width: 100%;} 
+
+/*************************************************************************
+ * max viewport width
+ *************************************************************************/
+.maxw-5 { max-width: 5%;}
+.maxw-10 { max-width: 10%;}
+.maxw-15 { max-width: 15%;} 
+.maxw-20 { max-width: 20%;}
+.maxw-25 { max-width: 25%;} 
+.maxw-30 { max-width: 30%;}
+.maxw-35 { max-width: 35%;} 
+.maxw-40 { max-width: 40%;}
+.maxw-45 { max-width: 45%;} 
+.maxw-50 { max-width: 50%;}
+.maxw-55 { max-width: 55%;} 
+.maxw-60 { max-width: 60%;}
+.maxw-65 { max-width: 65%;} 
+.maxw-70 { max-width: 70%;}
+.maxw-75 { max-width: 75%;} 
+.maxw-80 { max-width: 80%;}
+.maxw-85 { max-width: 85%;} 
+.maxw-90 { max-width: 90%;}
+.maxw-95 { max-width: 95%;} 
+.maxw-100{ max-width: 100%;} 
+
+/*************************************************************************
  * viewport width
  *************************************************************************/
 .vw-5 { width: 5vw;}

@@ -8,26 +8,28 @@
  ******************************************************************************/
 function cfw_query_getRendererIndex(queryResult){
 	
-	rendererIndex = 0;	
+	let rendererIndex = 0;	
 	
+
 	if(queryResult.displaySettings.as != null){
 		switch(queryResult.displaySettings.as.trim().toLowerCase()){
 			case 'table':				rendererIndex = 0; break;		
 			case 'panels':				rendererIndex = 1; break;	
-			case 'cards':				rendererIndex = 2; break;	
-			case 'tiles':				rendererIndex = 3; break;
-			case 'tileandbar':			rendererIndex = 4; break;
-			case 'statustiles':			rendererIndex = 5; break;
-			case 'statuslist':			rendererIndex = 6; break;
-			case 'statusbar':			rendererIndex = 7; break;
-			case 'statusbarreverse':	rendererIndex = 8; break;
+			case 'properties':			rendererIndex = 2; break;	
+			case 'cards':				rendererIndex = 3; break;	
+			case 'tiles':				rendererIndex = 4; break;
+			case 'tileandbar':			rendererIndex = 5; break;
+			case 'statustiles':			rendererIndex = 6; break;
+			case 'statuslist':			rendererIndex = 7; break;
+			case 'statusbar':			rendererIndex = 8; break;
+			case 'statusbarreverse':	rendererIndex = 9; break;
 			
-			case 'statusmap':			rendererIndex = 9; break;
+			case 'statusmap':			rendererIndex = 10; break;
 			
-			case 'title':			rendererIndex = 10; break;	
-			case 'csv':				rendererIndex = 11; break;	
-			case 'json':			rendererIndex = 12; break;	
-			case 'xml':				rendererIndex = 13; break;	
+			case 'title':			rendererIndex = 11; break;	
+			case 'csv':				rendererIndex = 12; break;	
+			case 'json':			rendererIndex = 13; break;	
+			case 'xml':				rendererIndex = 14; break;	
 			
 		}
 	}
@@ -1021,6 +1023,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 			rendererSettings: {
 				table: { filterable: false, narrow: true},
 				panels: { narrow: true},
+				properties: { narrow: true},
 				cards: { narrow: true},
 				tiles: { 
 					popover: false,
@@ -1060,6 +1063,14 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 						
 						{	label: 'Panels',
 							name: 'panels',
+							renderdef: {
+								rendererSettings: {
+									panels: {narrow: true},
+								},
+							}
+						},
+						{	label: 'Properties',
+							name: 'properties',
 							renderdef: {
 								rendererSettings: {
 									panels: {narrow: true},

@@ -99,6 +99,7 @@ public class WidgetSettingsFactory {
 		rendererOptions.put("tileandbar", "Tile and Status Bar");
 		rendererOptions.put("table", "Table");
 		rendererOptions.put("panels", "Panels");
+		rendererOptions.put("properties", "Properties");
 		rendererOptions.put("cards", "Cards");
 		rendererOptions.put("statuslist", "Status List");
 		rendererOptions.put("statusbar", "Status Bar");

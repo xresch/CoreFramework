@@ -169,6 +169,7 @@ DONE
 - BREAKING CODE CHANGE: Refactoring needed for Parameter propagation
 - BREAKING CODE CHANGE: Changes of CFWHttp to use Apache HttpClient
 - NEW FEATURE: Postgres Extensions
+- NEW DISPLAY: New display as option "Properties"
 - UI: Modal panels now have a blurred & shine through backround. As you sometimes just want to see what is going on behind there.
 - Utils: Created CFW.CSV to parse an convert CSV data.
 - Utils: Added CFW.Random.randomJSONArrayOfStatisticalSeriesData().

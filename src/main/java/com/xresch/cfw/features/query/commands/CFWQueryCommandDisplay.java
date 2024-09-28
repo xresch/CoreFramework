@@ -35,6 +35,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 				+"<ul>"
 					+"<li>table</li>"
 					+"<li>panels</li>"
+					+"<li>properties</li>"
 					+"<li>cards</li>"
 					+"<li>tiles</li>"
 					+"<li>tileandbar</li>"
