@@ -146,18 +146,31 @@ function cfw_renderer_properties_addPanel(targetElement, currentRecord, renderDe
 	for(let key in renderDef.titlefields){
 		let fieldname = renderDef.titlefields[key];
 		let label = renderDef.getLabel(fieldname, CFW_RENDER_NAME_PROPERTIES);
-		partTitlefields.append('<div><b>'+label+':</b> <span class="text-secondary">'+currentRecord[fieldname]+' </span></span>');
+		let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PROPERTIES);
+		
+		let propertyDisplay = $('<div><b>'+label+':</b>&nbsp;</div>');
+		let valueSpan = $('<span class="text-secondary">');
+		valueSpan.append(value);
+		propertyDisplay.append(valueSpan);
+		partTitlefields.append(propertyDisplay);
 	}
 	
 	
 	//-------------------------
 	// Visible Fields
-	let partVisiblefields = $('<div class="flex-grow-1 border-left pl-2">'); 
+	let partVisiblefields = $('<div class="flex-grow-1 border-left pl-2 word-break-word">'); 
 	
 	for(let key in renderDef.visiblefields){
 		let fieldname = renderDef.visiblefields[key];
 		let label = renderDef.getLabel(fieldname, CFW_RENDER_NAME_PROPERTIES);
-		partVisiblefields.append('<span><b>'+label+':</b> <span class="text-secondary">'+currentRecord[fieldname]+' </span></span>');
+		let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PROPERTIES);
+		
+		let propertyDisplay = $('<span class="mr-2"><b>'+label+':</b>&nbsp;</span>');
+		let valueSpan = $('<span class="text-secondary">');
+		valueSpan.append(value);
+		propertyDisplay.append(valueSpan);
+		partVisiblefields.append(propertyDisplay);
+		
 	}
 	
 	//-------------------------

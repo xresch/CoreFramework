@@ -1280,8 +1280,8 @@ pre {
  *************************************************************************/
 .format-base {
     display: inline-block;
-    padding: 0.25em 0.4em;
-    line-height: 1;
+    padding: 0.2em 0.3em;
+    line-height: 0.9;
     white-space: nowrap;
     vertical-align: text-top;
 }
