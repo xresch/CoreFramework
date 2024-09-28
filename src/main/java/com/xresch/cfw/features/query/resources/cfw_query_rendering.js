@@ -731,6 +731,8 @@ function cfw_query_formatSpecial_Display(span, object){
 	let width =  object.width;
 	span.css("height", height);
 	span.css("width", width);
+	span.css("overflow", "auto");
+	
 	
 	//---------------------------------
 	// Data is null

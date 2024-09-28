@@ -145,10 +145,9 @@ function cfw_renderer_properties_addPanel(targetElement, currentRecord, renderDe
 	let partTitlefields = $('<div class="flex-column minw-20">'); 
 	for(let key in renderDef.titlefields){
 		let fieldname = renderDef.titlefields[key];
-		let label = renderDef.getLabel(fieldname, CFW_RENDER_NAME_PROPERTIES);
 		let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PROPERTIES);
 		
-		let propertyDisplay = $('<div><b>'+label+':</b>&nbsp;</div>');
+		let propertyDisplay = $('<div><b>'+fieldname+':</b>&nbsp;</div>');
 		let valueSpan = $('<span class="text-secondary">');
 		valueSpan.append(value);
 		propertyDisplay.append(valueSpan);
@@ -162,10 +161,9 @@ function cfw_renderer_properties_addPanel(targetElement, currentRecord, renderDe
 	
 	for(let key in renderDef.visiblefields){
 		let fieldname = renderDef.visiblefields[key];
-		let label = renderDef.getLabel(fieldname, CFW_RENDER_NAME_PROPERTIES);
 		let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PROPERTIES);
 		
-		let propertyDisplay = $('<span class="mr-2"><b>'+label+':</b>&nbsp;</span>');
+		let propertyDisplay = $('<span class="mr-2"><b>'+fieldname+':</b>&nbsp;</span>');
 		let valueSpan = $('<span class="text-secondary">');
 		valueSpan.append(value);
 		propertyDisplay.append(valueSpan);

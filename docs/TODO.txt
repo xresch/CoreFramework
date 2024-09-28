@@ -171,6 +171,7 @@ DONE
 - NEW FEATURE: Postgres Extensions
 - NEW DISPLAY: New display as option "Properties"
 - UI: Modal panels now have a blurred & shine through backround. As you sometimes just want to see what is going on behind there.
+- UI: Default formats for true/false/null values take up less vertical space.
 - Utils: Created CFW.CSV to parse an convert CSV data.
 - Utils: Added CFW.Random.randomJSONArrayOfStatisticalSeriesData().
 - API: Added Endpoint EAVStats.pushStats and EAVStats.pushStatsCSV
