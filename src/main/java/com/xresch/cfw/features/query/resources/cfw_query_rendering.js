@@ -184,6 +184,7 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'date': 				cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
 				case 'decimals': 			cfw_query_formatDecimals(resultSpan, value, current[1]); break;
 				case 'duration': 			cfw_query_formatDuration(resultSpan, value, current[1]); break;
+				case 'indicator': 			cfw_query_formatIndicator(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6], current[7]); break;
 				case 'ea'+'stere'+'ggs': 	cfw_query_formatEa_sterE_ggs(resultSpan, value); break;
 				case 'link': 				cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'list': 				cfw_query_formatList(resultSpan, value, current[1], current[2], current[3]); break;
@@ -465,7 +466,7 @@ function cfw_query_formatDecimals(span, value, precision){
  ******************************************************************************/
 function cfw_query_formatDuration(span, value, durationUnit){
 	
-	span.addClass('text-right');
+	span.addClass('w-100 text-right');
 	
 	if(value != null){
 		if(!isNaN(value)){
@@ -474,6 +475,56 @@ function cfw_query_formatDuration(span, value, durationUnit){
 			span.text(value);
 		}
 	}
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatIndicator(span, value, excellent, good, warning, emergency, danger, position, colortext){
+	
+	// set defaults
+	if(excellent 	=== undefined )		{ excellent = 0; }
+	if(good 		=== undefined )		{ good = 20; }
+	if(warning 		=== undefined )		{ warning = 40; }
+	if(emergency 	=== undefined )		{ emergency = 60; }
+	if(danger 		=== undefined )		{ danger = 80; }
+	if(position 	=== undefined )		{ position = 'right'; }
+	if(colortext 	=== undefined )		{ colortext = false; }
+	
+	span.addClass('font-weight-bold');
+	
+	let style = CFW.colors.getThresholdStyle(
+			  value
+			, excellent
+			, good
+			, warning
+			, emergency
+			, danger
+			, false
+		);
+	
+	var isHighToLow = CFW.colors.getThresholdDirection(excellent, good, warning, emergency, danger);
+	var indicator = CFW.colors.getThresholdIndicatorForStyle(style, isHighToLow);
+	
+	//-------------------------------
+	// Add Indicator
+	if(position == 'right'){
+		span.addClass("w-100 text-right"); 
+		span.append("&nbsp;")
+			.append(indicator)
+			;
+	}else{
+		span.prepend("&nbsp;")
+			.prepend(indicator)
+			;
+	}
+	
+	//-------------------------------
+	// Color Text
+	if(colortext == true  || colortext == "true"){
+			CFW.colors.colorizeElement(span, style, "text");
+	}
+
 
 }
 

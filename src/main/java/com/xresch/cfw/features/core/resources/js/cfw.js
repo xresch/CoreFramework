@@ -428,6 +428,40 @@ function cfw_colors_getThresholdWorse(thresholdClassOne, thresholdClassTwo ) {
 
 	return thresholdClassOne;
 }
+
+/************************************************************************************************
+ * Used to find the direction of the threshold.
+ * 
+ * @return true if it is High to Low, false otherwise.
+ ************************************************************************************************/
+function cfw_colors_getThresholdDirection(
+			  tExellent
+			, tGood
+			, tWarning
+			, tEmergency
+			, tDanger
+		){
+	
+	var isHighToLow = true;
+	var thresholds = [tExellent, tGood, tWarning, tEmergency, tDanger];
+	var firstDefined = null;
+
+	for(var i = 0; i < thresholds.length; i++){
+		var current = thresholds[i];
+		if (!CFW.utils.isNullOrEmpty(current)){
+			if(firstDefined == null){
+				firstDefined = current;
+			}else{
+				if(current != null && firstDefined < current ){
+					isHighToLow = false;
+				}
+				break;
+			}
+		}
+	}	
+	
+	return isHighToLow;	
+}
 /************************************************************************************************
  * Returns a cfw style string for the value based on the defined thresholds e.g CFW.style.green.
  * You can use the string for creating a class like: 
@@ -462,7 +496,7 @@ function cfw_colors_getThresholdStyle(
 		, tDanger
 		, isDisabled
 		, evaluateLower) {
-
+	
 	//---------------------------
 	// Initial Checks
 	if(isDisabled) { return CFW.style.disabled; }
@@ -481,30 +515,13 @@ function cfw_colors_getThresholdStyle(
 
 	//---------------------------
 	// Find Threshold direction
-	var direction = 'HIGH_TO_LOW';
-	var thresholds = [tExellent, tGood, tWarning, tEmergency, tDanger];
-	var firstDefined = null;
-
-	for(var i = 0; i < thresholds.length; i++){
-		var current = thresholds[i];
-		if (!CFW.utils.isNullOrEmpty(current)){
-			if(firstDefined == null){
-				firstDefined = current;
-			}else{
-				if(current != null && firstDefined < current ){
-					direction = 'LOW_TO_HIGH';
-				}
-				break;
-			}
-		}
-	}
+	var isHighToLow = cfw_colors_getThresholdDirection(tExellent, tGood, tWarning, tEmergency, tDanger);
 
 	//---------------------------
 	// Set Colors for Thresholds
-
 	var styleString = CFW.style.notevaluated;
 	
-	if(direction == 'HIGH_TO_LOW'){
+	if(isHighToLow){
 		if 		(!CFW.utils.isNullOrEmpty(tExellent) 	&& value >= tExellent) 	{ styleString = CFW.style.green; } 
 		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value >= tGood) 		{ styleString = CFW.style.limegreen; } 
 		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value >= tWarning) 	{ styleString = CFW.style.yellow; } 
@@ -533,6 +550,76 @@ function cfw_colors_getThresholdStyle(
 	}
 	
 	return styleString;
+}
+
+/************************************************************************************************
+ * Returns a colored indicator for the given threshold.
+ * 
+ * @param value the value that should be thresholded
+ * @param tExellent the threshold for excellent
+ * @param tGood the threshold for good
+ * @param tWarning the threshold for warning
+ * @param tEmergency the threshold for emergency
+ * @param tDanger the threshold for danger
+ * @param isDisabled define if the thresholding is disabled
+ * @param evaluateLower if true, values below the lowest threshold are evaluated as the lowest color.
+ *        If false, values are not evaluated
+ ************************************************************************************************/
+function cfw_colors_getThresholdIndicator(
+		  value
+		, tExellent
+		, tGood
+		, tWarning
+		, tEmergency
+		, tDanger
+		, isDisabled
+		, evaluateLower) {
+			
+	let style = CFW.colors.getThresholdStyle(
+		  value
+		, tExellent
+		, tGood
+		, tWarning
+		, tEmergency
+		, tDanger
+		, isDisabled
+		, evaluateLower);
+	
+	var isHighToLow = CFW.colors.getThresholdDirection(tExellent, tGood, tWarning, tEmergency, tDanger);
+	
+	return CFW.colors.getThresholdIndicatorForStyle(style, isHighToLow);
+
+}
+
+/************************************************************************************************
+ * Returns a colored indicator for the given threshold style and direction.
+ * 
+ * @param style one of the styles returned by cfw_colors_getThresholdStyle()
+ * @param isHighToLow value returned by cfw_colors_getThresholdDirection()
+ ************************************************************************************************/
+function cfw_colors_getThresholdIndicatorForStyle(style, isHighToLow){
+
+	var iconClass = "fa-arrow-up";
+	var rotateBy = 0;
+
+	if 		(style == CFW.style.green ) 	{ (isHighToLow) ? rotateBy = 0 : rotateBy = 180; } 
+	else if (style == CFW.style.limegreen ) { (isHighToLow) ? rotateBy = 45 : rotateBy = 135; } 
+	else if (style == CFW.style.yellow ) 	{  rotateBy = 90; } 
+	else if (style == CFW.style.orange ) 	{ (isHighToLow) ? rotateBy = 135 : rotateBy = 45; } 
+	else if (style == CFW.style.red ) 		{ (isHighToLow) ? rotateBy = 180 : rotateBy = 0;} 
+	else if (style == CFW.style.notevaluated ) 		{ iconClass = "fa-minus"; } 
+	else{ 
+		rotateBy = 90;
+	} 
+	
+	let indicator = $('<i class="fas ">');	
+	
+	CFW.colors.colorizeElement(indicator, style, "text");
+	
+	indicator.addClass(iconClass);
+	if(rotateBy > 0){ indicator.addClass('rotate-'+rotateBy); }
+	
+	return indicator;	
 }
 
 /************************************************************************************************
@@ -3178,16 +3265,15 @@ function cfw_format_millisToDuration(millis){
 		
 		var clockString = seconds + "." + milliseconds + "s";
 		
-		if(minutes != "00"){
+		if(minutes != "00" 
+		|| hours != "00" 
+		|| days != 0
+		){
 			clockString = minutes + "m "+clockString;
 		}
 		
-		if(hours != "00"){
-			
-			if(minutes == "00"){
-				clockString = minutes + "m "+clockString;
-			}
-			
+		if(hours != "00" 
+		|| days != 0){
 			clockString = hours + "h " +clockString;
 			
 		}
@@ -5590,7 +5676,10 @@ var CFW = {
 		randomRGB: cfw_colors_randomRGB,
 		randomHSL: cfw_colors_randomHSL,
 		randomSL: cfw_colors_randomSL,
+		getThresholdDirection: cfw_colors_getThresholdDirection,
 		getThresholdStyle: cfw_colors_getThresholdStyle,
+		getThresholdIndicator: cfw_colors_getThresholdIndicator,
+		getThresholdIndicatorForStyle: cfw_colors_getThresholdIndicatorForStyle,
 		getSplitThresholdStyle: cfw_colors_getSplitThresholdStyle,
 		getThresholdWorse: cfw_colors_getThresholdWorse,
 	},

@@ -44,6 +44,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		, DATE
 		, DECIMALS
 		, DURATION
+		, INDICATOR
 		, LINK
 		, LIST
 		, LOWERCASE
@@ -206,6 +207,37 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			).example(
 				 "#Formats the LAST_LOGIN epoch milliseconds as a date."
 				+"\r\n| source random | formatfield LAST_LOGIN=duration"
+			)
+		);
+		
+		//------------------------------------------------
+		// Indicator 
+		//------------------------------------------------
+		formatterDefinitionArray.put(FieldFormatterName.INDICATOR.toString(),
+			instance.new FormatterDefinition(
+				FieldFormatterName.INDICATOR.toString(), 
+				"Adds an indicator to the value based on a threshold.",
+				new Object[][] {
+					 new Object[] {"green", 0, "The threshold for status green."}
+					 ,new Object[] {"lime-green", 20, "The threshold for status lime-green."}
+					 ,new Object[] {"yellow", 40, "The threshold for status yellow."}
+					 ,new Object[] {"orange", 60, "The threshold for status orange."}
+					 ,new Object[] {"red", 80, "The threshold for status red."}
+					 ,new Object[] {"position", "right", "Either 'left' or 'right'."}
+					 ,new Object[] {"colortext", false, "Define if the text should be colored."}
+				}
+			).example(
+				"""
+				# example adds indicators to float values for -100 to 100 and formats them as percentages
+				| source random records=100
+				| set VALUE = randomFloat(-100, 100)
+				| formatfield
+					VALUE = [
+							  ['decimals', 1]
+							, ['postfix', " %"]
+							, ['indicator', 100, 50, 0, -50, -100, "right"]
+						]
+				"""
 			)
 		);
 		
@@ -400,18 +432,18 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		);
 				
 		//------------------------------------------------
-		// Threshhold 
+		// Threshold 
 		//------------------------------------------------
 		formatterDefinitionArray.put(FieldFormatterName.THRESHOLD.toString(),
 			instance.new FormatterDefinition(
 				FieldFormatterName.THRESHOLD.toString(), 
 				"Colors the value based on a threshold.",
 				new Object[][] {
-					 new Object[] {"excellent", 0, "The threshold for status excellent."}
-					 ,new Object[] {"good", 20, "The threshold for status good."}
-					 ,new Object[] {"warning", 40, "The threshold for status warning."}
-					 ,new Object[] {"emergency", 60, "The threshold for status emergency."}
-					 ,new Object[] {"danger", 80, "The threshold for status emergency."}
+					 new Object[] {"green", 0, "The threshold for status green."}
+					 ,new Object[] {"lime-green", 20, "The threshold for status lime-green."}
+					 ,new Object[] {"yellow", 40, "The threshold for status yellow."}
+					 ,new Object[] {"orange", 60, "The threshold for status orange."}
+					 ,new Object[] {"red", 80, "The threshold for status red."}
 					 ,new Object[] {"type", "bg", "Either 'bg' or 'text'."}
 				}
 			).example(
