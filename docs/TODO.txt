@@ -170,8 +170,10 @@ DONE
 - BREAKING CODE CHANGE: Changes of CFWHttp to use Apache HttpClient
 - NEW FEATURE: Postgres Extensions
 - NEW DISPLAY: New display as option "Properties"
+
 - UI: Modal panels now have a blurred & shine through backround. As you sometimes just want to see what is going on behind there.
 - UI: Default formats for true/false/null values take up less vertical space.
+- UI: Duration formats now show minutes and hours if they are zero when bigger intervals are not zero.
 - Utils: Created CFW.CSV to parse an convert CSV data.
 - Utils: Added CFW.Random.randomJSONArrayOfStatisticalSeriesData().
 - API: Added Endpoint EAVStats.pushStats and EAVStats.pushStatsCSV
@@ -192,6 +194,7 @@ DONE
 - Query: Autocomplete - Made full with of window to reduce likelihood of closing when selecting text.
 - Query: History - Fixed not showing latest executed queries when list reached 1000 items.
 - Query: Command Display: New parameters "sizes" and "defaultsize" to configure page size.
+- Query: Command Formatfield: New formatter 'indicators', that adds an arrow indicator to your values.
 - Query: source web - as=http will now also give you the duration. 
 - Query: source eav - attributes are not returned as uppercase fields
 
