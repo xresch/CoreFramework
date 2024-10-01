@@ -1,5 +1,5 @@
 
-var CFW_RENDER_NAME_CHART = 'chart';
+const CFW_RENDER_NAME_CHART = 'chart';
 
 /******************************************************************
  * 

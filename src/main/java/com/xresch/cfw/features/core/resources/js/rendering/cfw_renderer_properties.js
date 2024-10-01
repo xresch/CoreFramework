@@ -1,5 +1,5 @@
 
-CFW_RENDER_NAME_PROPERTIES = 'properties';
+const CFW_RENDER_NAME_PROPERTIES = 'properties';
 
 /******************************************************************
  * 
