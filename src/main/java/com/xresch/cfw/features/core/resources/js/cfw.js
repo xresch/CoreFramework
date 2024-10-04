@@ -798,7 +798,7 @@ function cfw_internal_initializeBooleanSwitch(fieldIDOrJQuery){
 	
 	let labelYes = CFWL("cfw_core_yes", "Yes");
 	let labelNo = CFWL("cfw_core_no", "No");
-	console.log(isSelected +" "+inputField.val())
+
 	//-------------------------
 	// Check is Disabled
 	let booleanSwitch;
