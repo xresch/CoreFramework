@@ -63,6 +63,23 @@ function cfw_utils_isNullOrEmpty(value){
 }
 
 /************************************************************************************************
+ * Check if a value is true or a true string.
+ ************************************************************************************************/
+function cfw_utils_isTrue(value){
+
+	if(value == true 
+	|| (
+		  typeof value === "string" 
+		&& value.trim().toLowerCase() == "true" 
+	   ) 
+	){
+		return true;
+	}
+	
+	return false;
+}
+
+/************************************************************************************************
  * Replaces all occurences of one string with another.
  ************************************************************************************************/
 function cfw_utils_replaceAll(string, search, replace) {
@@ -767,28 +784,47 @@ function cfw_filterTable(searchField){
  *************************************************************************************/
 function cfw_internal_initializeBooleanSwitch(fieldIDOrJQuery){
 	
-	var inputField;
+	//-------------------------
+	// Initialize
+	let inputField;
 	if (fieldIDOrJQuery instanceof jQuery){
 		inputField = fieldIDOrJQuery;
 	}else{
 		inputField = $('#'+fieldIDOrJQuery);
 	}
-
-	labelYes = CFWL("cfw_core_yes", "Yes");
-	labelNo = CFWL("cfw_core_no", "cfw_core_no");
-
-	var booleanSwitch = $(`<label class="cfw-switch">
-		<div class="cfw-switch-slider" onclick="cfw_internal_toggleBooleanSwitchValue(this);">
-			 <div class="cfw-switch-slider-on">${labelYes}</div>
-			 <div class="cfw-switch-slider-button">&nbsp;</div>
-			 <div class="cfw-switch-slider-off">${labelNo}</div>
-		</div>
-	</label>`);
+	inputField.addClass('d-none');
+	
+	let isSelected = CFW.utils.isTrue( inputField.val() );
+	
+	let labelYes = CFWL("cfw_core_yes", "Yes");
+	let labelNo = CFWL("cfw_core_no", "No");
+	console.log(isSelected +" "+inputField.val())
+	//-------------------------
+	// Check is Disabled
+	let booleanSwitch;
+	if( CFW.utils.isTrue(inputField.prop('disabled')) ){
+		
+		if(isSelected){		booleanSwitch = $(`<label>${labelYes}</label>`); }
+		else{				booleanSwitch = $(`<label>${labelNo}</label>`); }
+		
+	}else{
+		//-------------------------
+		// Make Boolean Switch
+	
+		booleanSwitch = $(`<label class="cfw-switch">
+				<div class="cfw-switch-slider" onclick="cfw_internal_toggleBooleanSwitchValue(this);">
+					 <div class="cfw-switch-slider-on">${labelYes}</div>
+					 <div class="cfw-switch-slider-button">&nbsp;</div>
+					 <div class="cfw-switch-slider-off">${labelNo}</div>
+				</div>
+			</label>`
+			);
+	}
 		
 	inputField.before(booleanSwitch);
 	booleanSwitch.prepend(inputField);
 	
-	cfw_internal_setBooleanSwitchValue(booleanSwitch, inputField.val());
+	cfw_internal_setBooleanSwitchValue(booleanSwitch, isSelected);
 }
 
 /**************************************************************************************
@@ -812,13 +848,7 @@ function cfw_internal_toggleBooleanSwitchValue(switchButton){
  *************************************************************************************/
 function cfw_internal_setBooleanSwitchValue(elSwitchWrapper, isSelected){
 	
-	if(typeof isSelected === "string"){
-		if(isSelected.trim().toLowerCase() == "true"){
-			isSelected = true;
-		}else{
-			isSelected = false;
-		}
-	}
+	isSelected = CFW.utils.isTrue(isSelected);
 	
 	var zeInput =  elSwitchWrapper.find('input');
 	
@@ -5772,6 +5802,7 @@ var CFW = {
 		randomString: cfw_utils_randomString,
 		chainedOnload: cfw_utils_chainedOnload,
 		isNullOrEmpty: cfw_utils_isNullOrEmpty,
+		isTrue: cfw_utils_isTrue,
 		nullTo: cfw_utils_nullTo,
 		setFloatPrecision: cfw_utils_setFloatPrecision,
 		urlToLink: cfw_utils_urlToLink,
