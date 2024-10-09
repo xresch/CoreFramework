@@ -280,12 +280,12 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_TIMEFIELD)
-							.setDescription("The field of the response that contains the time.")	
+							.setDescription("(Optional)The field of the response that contains the time when using as=json.")	
 					)
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_TIMEFORMAT)
-							.setDescription("The format of the time in the time field. (Default: 'epoch').")	
+							.setDescription("(Optional)The format of the time in the time field when using as=json. (Default: 'epoch').")	
 							.setValue("epoch")
 					)
 			;
