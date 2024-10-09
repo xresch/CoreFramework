@@ -132,7 +132,7 @@
 								 .css('width', '100%')
 								 .css('flex-flow', 'wrap')
 								 ;
-						$('#cfw-dashboard-control-panel .btn-group').addClass('mt-2');
+						$('#cfw-dashboard-control-panel > .btn-group').addClass('mt-2');
 						$('#globalParams')
 								.html('')
 								.removeClass('mt-2')
