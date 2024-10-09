@@ -4,11 +4,12 @@
 <p>The web source is fetching data from a URL and can parse it in various ways. 
 This can be useful to call REST API's and such. This source supports the use of Basic Authentication and HTTP Headers. </p>
 
-
-<p>Following is a basic example that fetches user data from a public test API:</p>
-
+<h2>List of As-Options</h2>
+<p>This source allows to parse the response of request in various ways, following a list of the available as-options(Default: json):</p>
+{asOptionPlaceholder}
 
 <h2>Parse As JSON</h2>
+<p>Following is a basic example that fetches user data from a public test API:</p>
 <pre><code class="language-cfwquery">| source web 
 	method="GET"
 	url="https://jsonplaceholder.typicode.com/users"</code></pre>
@@ -54,6 +55,7 @@ The following query uses the unbox command to keep some of the original fields(f
 	address    # unbox all fields from address
 	address.geo  # unbox all fields from address.geo
 	company    # unbox all fields from company 
+	replace=true
 | remove geo # remove geo as it was unboxed already</code></pre>
 
 
@@ -134,11 +136,21 @@ The following query uses the unbox command to keep some of the original fields(f
 </table>
 
 
-<p>In case the URL you need to call needs Basic Authentication, specify username and password on the source:</p>
+<p>In case the URL you need to call needs Basic Authentication, specify username and password on the source.</p>
+<p><b class="badge-danger pl-1 pr-1">IMPORTANT:</b> In the examples the credentials are plain text, you might consider storing them in "Tools &gt;&gt; Credentials" and using the credentials()-function.</p>
 <pre><code class="language-cfwquery">#########################################
 # Basic
 | source web 
 	url="http://www.httpbin.org/basic-auth/testUsername/testPassword"
+	#auth="basic" # this is default
+	username='testUsername'
+	password='testPassword'
+;
+#########################################
+# Basic (Alternative)
+| source web 
+	url="http://www.httpbin.org/basic-auth/testUsername/testPassword"
+	auth="basic_header" # adds the authentication directly as a http header
 	username='testUsername'
 	password='testPassword'
 ;
@@ -157,15 +169,7 @@ The following query uses the unbox command to keep some of the original fields(f
 	url="http://httpbin.org/bearer"
 	headers={ 'accept': 'application/json', "Authorization": "Bearer wh0need5-c00kIe5-1f-theycanh4ve-t1r4m15u"}
 ;
-#########################################
-# NTLM (experimental as not tested)
-/*| source web 
-	as=http
-	url="find a NTLM URL"
-	auth="ntlm"
-	username='user'
-	password='pass'
-;*/
+
 </code></pre>
 	
 	

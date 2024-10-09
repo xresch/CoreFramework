@@ -147,7 +147,25 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureWebExtensions.PACKAGE_RESOURCES, "source_web.html");
+		
+		//------------------------------------
+		// Create As-Option List
+		StringBuilder asOptionList = new StringBuilder("<ul>");
+		
+		for(String type : CFWQuerySourceWebType.getNames()){
+			CFWQuerySourceWebType current = CFWQuerySourceWebType.valueOf(type);
+			asOptionList.append("<li><b>"+type+":&nbsp;</b>"+current.shortDescription()+"</li>");
+		}
+		asOptionList.append("</ul>");
+		
+		
+		//------------------------------------
+		// Fetch resource and replace
+		return CFW.Files.readPackageResource(
+					FeatureWebExtensions.PACKAGE_RESOURCES
+					, "source_web.html"
+				).replace("{asOptionPlaceholder}", asOptionList)
+				;
 	}
 	/******************************************************************
 	 *
