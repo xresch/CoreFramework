@@ -186,7 +186,7 @@ function cfw_query_printHistoryView(data){
 				, QUERY: function(record, value) { 
 					if(value == null){ return "&nbsp;"; }
 					
-					var pre = $('<pre class="maxvh-20">');
+					var pre = $('<pre class="maxvh-20 overflow-auto">');
 					var code = $('<code class="language-cfwquery">');
 					code.text(value);
 					pre.append(code);
