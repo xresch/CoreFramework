@@ -774,8 +774,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 						major: {
 							enabled: true,
 							//fontStyle: 'bold'
-						},
-
+						}
 					},
 				}
 			},
@@ -789,9 +788,8 @@ function cfw_renderer_chart_createChartOptions(settings) {
 				legend: {
 		    		display: settings.showlegend,
 		    	},
-	    	    tickFormat: {
-	    	      notation: 'compact'
-	    	    },
+		    	// doesn't work, seems not to be part of chartjs but of QuickChart
+	    	    //tickFormat: { notation: 'compact' },
 		    	title: {}, // placeholder
 				tooltip: {
 					intersect: false,
@@ -801,7 +799,18 @@ function cfw_renderer_chart_createChartOptions(settings) {
 				},
 			}
 	    };
+	    
+	//----------------------------------
+	// Custom Tick Format
+	// this would corrupts labels for horizontal charts (indexAxis=y) like ganttCharts
+	if(settings.indexAxis != 'y'){
+		chartOptions.scales.y.ticks.callback =
+				function(value, index, values) {
+					return cfw_format_numbersInThousands(value, 1, false, false);
+				};
+	}
 	
+	//----------------------------------
 	// for radial charts
 	if(settings.charttype == 'radar'
 	|| settings.charttype == 'polarArea'){
@@ -817,6 +826,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 	      };
 	}
 	
+	//----------------------------------
 	// workaround to avoid TypeError for tick generation
 	if(settings.charttype == 'pie'
 	|| settings.charttype == 'doughnut'){

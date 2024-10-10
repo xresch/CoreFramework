@@ -31,6 +31,7 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.server.session.DatabaseAdaptor;
 import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.DefaultSessionIdManager;
+import org.eclipse.jetty.server.session.HouseKeeper;
 import org.eclipse.jetty.server.session.JDBCSessionDataStore;
 import org.eclipse.jetty.server.session.SessionCache;
 import org.eclipse.jetty.server.session.SessionDataStore;
@@ -265,6 +266,7 @@ public class CFWApplicationExecutor {
 	        {
 	            ServletContextHandler context = (ServletContextHandler) handler;
 	            SessionHandler sessionHandler = context.getSessionHandler();
+
 	            new SessionTracker(handler.getServer(), sessionHandler);
 	        }
 	    }
@@ -324,7 +326,21 @@ public class CFWApplicationExecutor {
 	
 	    SessionHandler sessionHandler = new SessionHandler();
 	    
+	    //-----------------------------------
+	    // Set Session Scavenging Interval
+	    try {
+	    HouseKeeper houseKeeper = new HouseKeeper();
+	    houseKeeper.setSessionIdManager(idmanager);
+
+	    houseKeeper.setIntervalSec(33L);
+	    idmanager.setSessionHouseKeeper(houseKeeper);
+	    }catch(Exception e) {
+	    	new CFWLog(logger).severe(e);
+	    }
+
 	    
+	    //-----------------------------------
+	    // Add Session ID Manager
 	    sessionHandler.setSessionIdManager(CFWApplicationExecutor.idmanager);
 	    // workaround maxInactiveInterval=-1 issue
 	    // set inactive interval in RequestHandler
