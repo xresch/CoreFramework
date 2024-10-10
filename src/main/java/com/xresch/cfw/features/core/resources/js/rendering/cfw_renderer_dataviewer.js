@@ -76,7 +76,8 @@ function cfw_renderer_dataviewer(renderDef) {
 	var settings = _.merge({}, defaultSettings, renderDef.rendererSettings.dataviewer);	
 	
 	// _.merge() merges arrays, we want to override the defaults 
-	if( Array.isArray(renderDef.rendererSettings.dataviewer.sizes) ){
+	if( renderDef.rendererSettings.dataviewer != null
+	 && Array.isArray(renderDef.rendererSettings.dataviewer.sizes) ){
 		settings.sizes = renderDef.rendererSettings.dataviewer.sizes;
 	}
 	
