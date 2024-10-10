@@ -53,27 +53,30 @@ public class CFWCSV {
 		
 		ArrayList<String> result = new ArrayList<>();
 		
-		csvRecord = csvRecord.trim();
-		
+		String line = csvRecord.trim();
+		int LENGTH = line.length();
 		
 		//-----------------------------
 		// Check first value omitted
-		if(csvRecord.startsWith(separator)) {
+		if(line.startsWith(separator)) {
 			result.add(null);
+			separatorSkipped = true;
 			cursor += separator.length();
+			
 		}
-	
+		
 		//-----------------------------
 		// Parse CSV Record 
 		outer:
-		while( cursor < csvRecord.length() ) {
+		while( cursor < LENGTH ) {
 			
-			if(cursor > 0) { previous = csvRecord.charAt(cursor-1); }
-			current = csvRecord.charAt(cursor);
-	
+			if(cursor > 0) { previous = line.charAt(cursor-1); }
+			current = line.charAt(cursor);
+			
 			//----------------------------
 			// Skip Blanks
-			while(current == ' ') { current = csvRecord.charAt(++cursor); }
+			while(current == ' ') { current = line.charAt(++cursor); }
+			
 			
 			//----------------------------
 			// Grab Quoted Text
@@ -82,18 +85,18 @@ public class CFWCSV {
 				startPos = cursor;
 				
 				inner:
-				while(cursor < csvRecord.length()-1 ) {
+				while(cursor < LENGTH-1 ) {
 					previous = current;
-					current = csvRecord.charAt(++cursor);
+					current = line.charAt(++cursor);
 	
 					if(current == '"' 
 					&& previous != '\\'
 					) {
-						String potentialEscapedQuotes = csvRecord.substring(startPos+1, cursor);
+						String potentialEscapedQuotes = line.substring(startPos+1, cursor);
 						String noEscapes = potentialEscapedQuotes.replace("\\\"", "\"");
 						result.add(noEscapes);
 						cursor++;
-						if(cursor < csvRecord.length() ) {
+						if(cursor < LENGTH ) {
 							break inner;
 						}else {
 							break outer;
@@ -102,16 +105,17 @@ public class CFWCSV {
 					
 				}
 			}
-			
+
 			//----------------------------
 			// Skip Blanks
-			while(current == ' ') { current = csvRecord.charAt(++cursor); }
+			current = line.charAt(cursor);
+			while(current == ' ') { current = line.charAt(++cursor); }
 			
 			//----------------------------
 			// Skip Separator
-			current = csvRecord.charAt(cursor);
+			current = line.charAt(cursor);
 			if(current == separatorFirstChar
-			&& csvRecord.substring(cursor).startsWith(separator) ) {
+			&& line.substring(cursor).startsWith(separator) ) {
 				cursor += separator.length();
 				if(separatorSkipped) {
 					result.add(null);
@@ -125,15 +129,15 @@ public class CFWCSV {
 			//----------------------------
 			// Grab Separated Text
 			startPos = cursor;
-			while(cursor < csvRecord.length() ) {
+			while(cursor < LENGTH ) {
 				separatorSkipped = false;
-				current = csvRecord.charAt(cursor);
+				current = line.charAt(cursor);
 				
 				if(current == '"' ) { break; } // break and go let quotes section do the work
 	
 				if(current == separatorFirstChar
-				&& csvRecord.substring(cursor).startsWith(separator)) {
-					result.add(csvRecord.substring(startPos, cursor).trim());
+				&& line.substring(cursor).startsWith(separator)) {
+					result.add(line.substring(startPos, cursor).trim());
 					//cursor++;
 					break;
 				}
@@ -143,15 +147,15 @@ public class CFWCSV {
 			
 			//----------------------------
 			// Grab Last
-			if(cursor >= csvRecord.length() ) {
-				result.add(csvRecord.substring(startPos, cursor).trim());
+			if(cursor >= LENGTH ) {
+				result.add(line.substring(startPos, cursor).trim());
 				break;
 			}
 		}
 		
 		//-----------------------------
 		// Check Last Value omitted
-		if(csvRecord.endsWith(separator)) {
+		if(line.endsWith(separator)) {
 			result.add(null);
 			cursor += separator.length();
 		}

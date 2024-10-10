@@ -127,6 +127,55 @@ public class TestCFWCSV {
 		Assertions.assertEquals("xyz", splitted.get(++i));
 		Assertions.assertEquals("12\"34", splitted.get(++i));
 		Assertions.assertEquals("@@@", splitted.get(++i));
+		
+		//---------------------------------
+		// Two quotes at beginning
+		//---------------------------------
+		splitted = CFW.CSV.splitCSVQuotesAware(";", """
+				;;1 ; 2 ; 3
+				""");
+		
+		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
+		
+		i=-1;
+		Assertions.assertEquals(5, splitted.size());
+		Assertions.assertEquals(null, splitted.get(++i));
+		Assertions.assertEquals(null, splitted.get(++i));
+		Assertions.assertEquals("1", splitted.get(++i));
+		Assertions.assertEquals("2", splitted.get(++i));
+		Assertions.assertEquals("3", splitted.get(++i));
+		
+		//---------------------------------
+		// Blanks between quotes
+		//---------------------------------
+		splitted = CFW.CSV.splitCSVQuotesAware(";", """
+				"1" ; "2" ; "3"
+				""");
+		
+		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
+		
+		i=-1;
+		Assertions.assertEquals(3, splitted.size());
+		Assertions.assertEquals("1", splitted.get(++i));
+		Assertions.assertEquals("2", splitted.get(++i));
+		Assertions.assertEquals("3", splitted.get(++i));
+		
+		//---------------------------------
+		// Empty Quotes
+		//---------------------------------
+		splitted = CFW.CSV.splitCSVQuotesAware(";", """
+				""; "" ; 1 ;2; ""
+				""");
+		
+		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
+		
+		i=-1;
+		Assertions.assertEquals(5, splitted.size());
+		Assertions.assertEquals("", splitted.get(++i));
+		Assertions.assertEquals("", splitted.get(++i));
+		Assertions.assertEquals("1", splitted.get(++i));
+		Assertions.assertEquals("2", splitted.get(++i));
+		Assertions.assertEquals("", splitted.get(++i));
 	
 	}
 	
