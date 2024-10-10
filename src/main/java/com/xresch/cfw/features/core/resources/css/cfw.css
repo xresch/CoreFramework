@@ -133,6 +133,12 @@ pre {
     border: 1px rgba(0,0,0,0) solid; 
 }
 
+.border-1 {	border-width: 1px; }
+.border-2 {	border-width: 2px; }
+.border-3 {	border-width: 3px; }
+.border-4 {	border-width: 4px; }
+.border-5 {	border-width: 5px; }
+
 .table-cfw-green, .table-cfw-green th, .table-cfw-green td, .table-cfw-green thead, .table-cfw-green tbody {		background-color: var(--cfw-green); }
 .table-cfw-limegreen, .table-cfw-limegreen th, .table-cfw-limegreen td, .table-cfw-limegreen thead, .table-cfw-limegreen tbody{		background-color: var(--cfw-limegreen); }
 .table-cfw-yellow, .table-cfw-yellow th, .table-cfw-yellow td, .table-cfw-yellow thead, .table-cfw-yellow tbody{		background-color: var(--cfw-yellow); }

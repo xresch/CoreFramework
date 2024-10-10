@@ -1024,12 +1024,20 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
 	//--------------------------------
 	// Add Filter
 	let menu = wrapper.find('.dropdown-menu');
+	
+	//--------------------------------
+	// Add scroll to top
+	wrapper.on('shown.bs.dropdown', function(obj) {
+	    menu.animate({scrollTop: (-1 * menu[0].scrollHeight) }, 1000)
+	});
+	
+  	//--------------------------------
+	// Add Filter
 	let filterField = $('<input type="text" class="form-control-sm w-fill ml-1 mr-1"'
 								+' placeholder="Filter..."'
 								+' onkeyup="cfw_filterSelect(this, event, \''+fieldID+'\')">');
 	
 	menu.prepend(filterField);
-	
 	
 }
 
@@ -1047,6 +1055,19 @@ function cfw_filterSelect(filterField, event, fieldID){
 	event.stopPropagation();
 		
 	CFW.utils.filterItems('#'+fieldID+'-cfw-select', filterField, '.filterable');
+	
+	//=====================================================
+	// Handle Filter Highlight
+	let field = $(filterField);
+	if(CFW.utils.isNullOrEmpty(field.val())){
+		field.removeClass('bg-cfw-yellow');
+		field.closest(".dropdown-menu").removeClass('border-cfw-yellow border-3');
+		
+	}else{
+		field.addClass('bg-cfw-yellow');
+		field.closest(".dropdown-menu").addClass('border-cfw-yellow border-3');
+	}
+	
 }
 
 /*************************************************************************************

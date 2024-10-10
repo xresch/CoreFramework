@@ -187,7 +187,7 @@ DONE
 - Dashboard Widgets: Improved hierarchy of database widgets.
 - Dashboard Parameter Widget: added option to add params next to title 
 - Context Settings: Now have a property to be enabled and disabled 
-- Select: Added filter to all select boxes
+- Select: Added filter to all select boxes with highlighting when filtered
 - EAVStats: Added P50 and P90 values (percentiles)
 - Parameters: Added Chart Types
 - Parameters: Added Chart Settings
