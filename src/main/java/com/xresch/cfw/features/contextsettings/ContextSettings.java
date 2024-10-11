@@ -49,7 +49,7 @@ public class ContextSettings extends CFWObject {
 			.addValidator(new LengthValidator(1, 255));
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, ContextSettingsFields.CFW_CTXSETTINGS_NAME.toString())
-			.setLabel("Is ")
+			.setLabel("Name")
 			.setColumnDefinition("VARCHAR(255)")
 			.setDescription("The name of the context setting.")
 			.addValidator(new LengthValidator(1, 255));
