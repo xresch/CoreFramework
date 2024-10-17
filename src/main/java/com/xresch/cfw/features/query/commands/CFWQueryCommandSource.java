@@ -359,25 +359,8 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			if(commandToListen == null) {
 				commandToListen = this;
 			}
-		}
-		
-		// Note: experimental, solved some issues but might also messed up.
-		parent.getContext().setFieldnames(fieldnameManager);
-		
-		commandToListen.addListener(new PipelineActionListener() {
+		}	
 			
-			@Override
-			public void onDone() {
-				
-				// Apply all field modifications of previous source and
-				// add the resulting fields to this fieldmanager.
-				// Then use this fieldmanager as the one of the context.
-				Set<String> namesFromContext = parent.getContext().getFinalFieldnames();
-
-				fieldnameManager.addSourceFieldnames(namesFromContext);
-				
-			}
-		});		
 	}
 	
 	/***********************************************************************************************
@@ -475,6 +458,21 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			this.waitForInput(100);	
 			
 		}
+		
+		//==================================================
+		// Take over all detected fields
+		//==================================================
+		
+		// Apply all field modifications of previous source and
+		// add the resulting fields to this fieldmanager.
+		// Then use this fieldmanager as the one of the context.
+		Set<String> namesFromContext = parent.getContext().getFinalFieldnames();
+
+		fieldnameManager.addSourceFieldnames(namesFromContext);
+		
+		// Note: experimental, solved some issues but might also messed up.
+		parent.getContext().setFieldnames(fieldnameManager);
+		
 				
 		//==================================================
 		// Read all records for this Source
@@ -525,8 +523,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			// Wait for more input
 			this.waitForInput(100);	
 		}
-		
-		
+				
 		this.setDone();
 		
 	}

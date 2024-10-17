@@ -362,6 +362,7 @@ public class CFWQueryContext{
 	 * Override the current fieldnames.
 	 ***********************************************************************************************/
 	public void setFieldnames(CFWQueryFieldnameManager fieldnameManager) {
+		
 		contextFieldnameManager = fieldnameManager;
 	}
 	
