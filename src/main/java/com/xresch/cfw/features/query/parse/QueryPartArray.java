@@ -164,11 +164,23 @@ public class QueryPartArray extends QueryPart {
 	public boolean isIndex() {
 		
 		if(partsArray.size() == 1) {
+			
 			QueryPartValue value = partsArray.get(0).determineValue(null);
-			if(value.isNumber() && value.isInteger()) {
+			if((value.isNumber() && value.isInteger()) ) {
 				arrayIndex = value.getAsInteger();
 				return true;
 			}
+			
+			// Assume is an index if the part is probably evaluating to a number
+			QueryPart part = partsArray.get(0);
+			if(part instanceof QueryPartBinaryExpression 
+			|| part instanceof QueryPartFunction
+			|| part instanceof QueryPartGroup
+			) {
+				return true;
+			}
+			
+			
 		}
 		
 		return false;

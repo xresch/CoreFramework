@@ -297,6 +297,12 @@ public class CFWQueryParser {
 	public CFWQueryToken lookahead() {
 		return this.lookat(0);
 	}
+	/***********************************************************************************************
+	 * Returns the token before the current token.
+	 ***********************************************************************************************/
+	public CFWQueryToken lookbehind() {
+		return this.lookat(-2);
+	}
 	
 	/***********************************************************************************************
 	 * Returns the token with a specific offset to the token that will be consumed next by consumeToken().
@@ -571,7 +577,6 @@ public class CFWQueryParser {
 			case LITERAL_STRING:		firstToken = this.consumeToken();
 										addTrace("Create Value Part", "String", firstToken.value());
 										firstPart = QueryPartValue.newString(firstToken.value());
-										//TODO check lookahead, determine if AccessMember, Assignment, Method etc...
 										break;
 				
 			case LITERAL_BOOLEAN:		firstToken = this.consumeToken();
@@ -707,8 +712,8 @@ public class CFWQueryParser {
 					arrayPart.add(secondPart);
 				}
 				
-				//Create member access if previous is string/function and array contains index
-				if(isPreviousArrayable && arrayPart.isIndex()) {
+				//Create member access if previous is string/function and current is array
+				if(isPreviousArrayable && arrayPart.isIndex()) { 
 					QueryPart previousPart = popPreviousPart();
 					if(previousPart instanceof QueryPartAssignment) {
 						QueryPartAssignment assignmentPart = (QueryPartAssignment)previousPart;
@@ -833,10 +838,11 @@ public class CFWQueryParser {
 					default:			this.throwParseException("Unknown keyword:"+keyword, firstToken.position());
 				}
 			break;
-//									
+									
 //			case OPERATOR_NOT:
-//				break;
 //
+//				break;
+
 
 			default:					//this.throwParseException("Unexpected token.", firstToken.position());
 										break;
@@ -931,6 +937,7 @@ public class CFWQueryParser {
 						}else {
 							memberAccessPart = new QueryPartJsonMemberAccess(currentContext, memberAccessPart, memberAccessValue);
 						}
+						
 						resultPart = memberAccessPart;
 						
 						//-------------------------------
