@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
@@ -31,6 +32,17 @@ public class CFWQueryExecutor {
 	
 	private boolean checkPermissions = true;
 	private boolean saveToHistory = false;
+	private boolean enableTracing = false;
+	
+	CFWQueryParser parser;
+	
+	/****************************************************************
+	 * Enable or disable tracing
+	 ****************************************************************/
+	public CFWQueryExecutor enableTracing(boolean enableTracing) {
+		this.enableTracing = enableTracing;
+		return this;
+	}
 	
 	/****************************************************************
 	 * Enable or disable if the users permissions should be
@@ -246,6 +258,10 @@ public class CFWQueryExecutor {
 		// Get Result List
 		CFWQueryResultList resultArray = queryList.get(0).getContext().getResultList();
 		
+		//============================================
+		// Add Trace Result
+		if(enableTracing) { resultArray.addResult(parser.getTraceAsQueryResult()); }
+		
 		//======================================
 		// Set initial Queue
 		if(initialQueue != null && !queryList.isEmpty()) {
@@ -362,11 +378,11 @@ public class CFWQueryExecutor {
 		//======================================
 		// Parse The Query
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
-		CFWQueryParser parser = new CFWQueryParser(queryString, checkPermissions, baseQueryContext, cloneContext);
+		parser = new CFWQueryParser(queryString, checkPermissions, baseQueryContext, cloneContext);
 		
 		try {
 			//tracing is experimental, might lead to errors
-			//parser.enableTracing();
+			parser.enableTracing(enableTracing);
 			queryList = parser.parse();
 
 		}catch (NumberFormatException e) {
@@ -391,7 +407,7 @@ public class CFWQueryExecutor {
 			parserDebugState(baseQueryContext, parser);
 			return null;
 		}finally {
-
+			
 		}
 		return queryList;
 	}
@@ -401,6 +417,12 @@ public class CFWQueryExecutor {
 		
 		CFWQueryResultList resultArray = baseQueryContext.getResultList();
 		
+		//============================================
+		// Add Trace Result
+		if(enableTracing) { resultArray.addResult(parser.getTraceAsQueryResult()); }
+
+		//============================================
+		// Add Debug info
 		JsonArray detectedFields = new JsonArray();
 		detectedFields.add("KEY");
 		detectedFields.add("VALUE");
@@ -412,6 +434,7 @@ public class CFWQueryExecutor {
 		
 		resultArray.addResult(debugState);
 		
+
 		return resultArray;
 	}
 

@@ -6,6 +6,7 @@ import java.util.Stack;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -13,6 +14,7 @@ import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
+import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
@@ -177,8 +179,13 @@ public class CFWQueryParser {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryParser enableTracing() {
-		enableTracing = true;
+	public CFWQueryParser enableTracing(boolean enableTracing) {
+		this.enableTracing = enableTracing;
+		
+		if(!enableTracing) {
+			return this;
+		}
+
 		traceArray = new JsonArray();
 		
 		if(tokenlist != null) {
@@ -187,6 +194,7 @@ public class CFWQueryParser {
 			
 			StringBuilder tokenOverview = new StringBuilder();
 			for(CFWQueryToken token : tokenlist) {
+				
 				tokenOverview.append(token.type().toString()+"("+token.value()+"), ");
 			}
 			
@@ -203,16 +211,18 @@ public class CFWQueryParser {
 	 * @param message for your trace (use for longer values)
 	 ***********************************************************************************************/
 	public void addTrace(Object key, Object value, Object message) {
+
 		if(enableTracing) {
+
 			JsonObject object = new JsonObject();
 			
 			//-------------------------------
 			// Create Message
 			String finalMessage = "";
 			if(message != null) { 
-		
+				
 				if(!(message instanceof QueryPart)) {
-					finalMessage.toString();
+					finalMessage = message.toString();
 				}else{
 					JsonObject debugObject = ((QueryPart)message).createDebugObject(null);
 					if(debugObject != null) {
@@ -238,6 +248,28 @@ public class CFWQueryParser {
 			
 		}
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public JsonArray getTraceResults() {
+		return traceArray;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryResult getTraceAsQueryResult() {
+		CFWQueryResult traceResult = new CFWQueryResult(initialContext);
+		ArrayList<EnhancedJsonObject> traceRecords = new ArrayList<>();
+		for(JsonElement element : traceArray) {
+			
+			traceRecords.add(new EnhancedJsonObject(element.getAsJsonObject()));
+		}
+		traceResult.setRecords(traceRecords);
+		return traceResult;
+	}
+	
 	
 	/***********************************************************************************************
 	 * Get the previous part from the array of parts.
@@ -267,12 +299,6 @@ public class CFWQueryParser {
 		return previousPart;
 	}
 	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public JsonArray getTraceResults() {
-		return traceArray;
-	}
 	
 	/***********************************************************************************************
 	 * 

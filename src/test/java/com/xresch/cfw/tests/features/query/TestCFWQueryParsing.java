@@ -595,7 +595,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		queryString = "myString==notEqualString OR myNumber>22 ";
 		
 		parser = new CFWQueryParser(queryString, true, queryContext, true)
-				.enableTracing();
+				.enableTracing(true);
 		
 		parsedParts = parser.parseQueryParts();
 		
@@ -625,7 +625,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		queryString = "myString==notEqualString and myNumber>22 ";
 		
 		parser = new CFWQueryParser(queryString, true, queryContext, true)
-				.enableTracing();
+				.enableTracing(true);
 		
 		parsedParts = parser.parseQueryParts();
 		
@@ -654,7 +654,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		queryString = "not myNumber<22 ";
 		
 		parser = new CFWQueryParser(queryString, true, queryContext, true)
-				.enableTracing();
+				.enableTracing(true);
 		
 		parsedParts = parser.parseQueryParts();
 		
