@@ -209,8 +209,8 @@ pre {
 	max-height: 95vh;
 	padding: 5px;
 	border: 3px solid rgba(2, 2, 2, 0.9);
-    backdrop-filter: blur(4px);
-    background-color: rgba(0, 0, 0, 0.66);
+    /* backdrop-filter: blur(4px); Don't do this here, will create issues with expanding elements to fullscreen */
+    background-color: rgba(0, 0, 0, 0.80);
 	box-shadow: 0 0 9px rgba(255, 255, 255, 0.66);
 }
 
@@ -650,21 +650,22 @@ pre {
 	z-index: 1055;
 }
 
-#cfw-default-modal{
+  #cfw-default-modal
+, #cfw-small-modal
+, #cfw-large-modal
+{
 	position: fixed;
 	-ms-overflow-style: none;
 }
-#cfw-default-modal::-webkit-scrollbar{
+
+
+  #cfw-default-modal::-webkit-scrollbar
+, #cfw-small-modal::-webkit-scrollbar
+, #cfw-large-modal::-webkit-scrollbar
+{
 	display: none;
 }
 
-#cfw-small-modal{
-	position: fixed;
-	-ms-overflow-style: none;
-}
-#cfw-small-modal::-webkit-scrollbar{
-	display: none;
-}
 
 #cfw-loader-body {
 	z-index: 1024;
