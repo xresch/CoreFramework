@@ -478,6 +478,41 @@ public class TestCFWQueryParts extends DBTestMaster {
 		
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+//	@Test
+//	public void testQueryPartJsonMemberAccess_accessMemberFromArrayIndex() throws IOException {
+//		
+//		//---------------------------------
+//		String queryString = """
+//| source json
+//	data= {array: [ {name: Alechandra}]}
+//| set
+//	name = array[0].name
+//				""";
+//		
+//		CFWQueryResultList resultArray = 
+//				new CFWQueryExecutor()
+//					.enableTracing(true)
+//					.parseAndExecuteAll(queryString, earliest, latest, 0);
+//		
+//		CFWQueryResult queryResults = resultArray.get(0);
+//		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+//		
+//		//------------------------------
+//		// Check First Query Result
+//		queryResults = resultArray.get(1);
+//		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+//		
+//		Assertions.assertEquals(2, resultArray.size());
+//		
+//		Assertions.assertEquals(1, queryResults.getRecordCount());
+//		
+//		JsonObject record = queryResults.getRecordAsObject(0);		
+//		
+//	}
+	
 	
 	/****************************************************************
 	 * 
