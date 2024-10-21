@@ -89,7 +89,127 @@ public class CFWUtilsText {
     }
 	
 	/*******************************************************************
-	 * This Method sorts with the following in ming:
+	 * Splits a text by a separator while being aware of quotes.
+	 * Separators inside of quotes will not be used to split
+	 *  
+	 * The method will act as follows:
+	 * <ul>
+	 * 		<li><b>Separators:&nbsp;</b> Can be one character or a sequence of characters. Does not support regex.</li>
+	 * 		<li><b>Double Quotes:&nbsp;</b> Can be used to wrap values to allow it to contain separators. Quotes inside can be escaped using '\';  </li>
+	 * 		<li><b>Blanks:&nbsp;</b>Blanks at beginning and end of a values are ignored, except if a value is quoted.</li>
+	 * 		<li><b>Skipped Values:&nbsp;</b> If two separators follow each other it will be considered like one separator. </li>
+	 * </ul>
+	 * 
+	 * @param textToSplit the text to split
+	 * @param separator the separator, can be multiple characters, does not support regex
+	 * @param isDoubleQuotesAware true if should be aware, false otherwise 
+	 * @param isSingleQuotesAware true if should be aware, false otherwise 
+	 * @param isBackticksAware true if should be aware, false otherwise 
+	 *******************************************************************/
+	public static ArrayList<String> splitQuotesAware(String separator, String textToSplit
+			, boolean isDoubleQuotesAware
+			, boolean isSingleQuotesAware
+			, boolean isBackticksAware
+			){
+		
+		//-----------------------------
+		// Variables
+		char previous = '½'; 	// the last character, initialized with random character, only used to check for escaping with '\'
+		char current;			// the current character
+		char separatorFirstChar = separator.charAt(0); // performance improvement, check first char instead of doing a substring every time
+		int cursor = 0;			// position in parsing
+		int startPos = -1; 		// used as starting position of a value
+
+		ArrayList<String> result = new ArrayList<>();
+		
+		int LENGTH = textToSplit.length();
+		
+		//-----------------------------
+		// Check starts with separator
+		if(textToSplit.startsWith(separator)) {
+			cursor += separator.length();
+		}
+		
+		//-----------------------------
+		// Parse String
+		outer:
+		while( cursor < LENGTH ) {
+			
+			if(cursor > 0) { previous = textToSplit.charAt(cursor-1); }
+			current = textToSplit.charAt(cursor);
+				
+			//----------------------------
+			// Grab Separated Text
+			startPos = cursor;
+			while(cursor < LENGTH ) {
+				current = textToSplit.charAt(cursor);
+				
+				//----------------------------
+				// Handle Quoted Text
+				if((isDoubleQuotesAware && current == '"') 
+				|| (isSingleQuotesAware && current == '\'')
+				|| (isBackticksAware && current == '`')
+				)  { 
+
+					char quote = current;
+					
+					inner:
+					while(cursor < LENGTH-1 ) {
+						previous = current;
+						current = textToSplit.charAt(++cursor);
+		
+						if(current == quote 
+						&& previous != '\\'
+						) {
+							cursor++;
+							break inner;
+							
+						}
+					}
+				} 
+				
+				//----------------------------
+				// Check is Separator
+				if(cursor < LENGTH ) {
+					current = textToSplit.charAt(cursor);
+	
+					if(current == separatorFirstChar
+					&& textToSplit.substring(cursor).startsWith(separator)) {
+	
+						result.add( textToSplit.substring(startPos, cursor) );
+						//cursor++;
+						break;
+					}
+					
+					cursor++;
+				}
+			}
+			
+			
+			//----------------------------
+			// Handle Separator
+			if(cursor < LENGTH ) {
+				current = textToSplit.charAt(cursor);
+				if(current == separatorFirstChar
+				&& textToSplit.substring(cursor).startsWith(separator) ) {
+					cursor += separator.length();
+					continue; 
+				}
+			}
+						
+			//----------------------------
+			// Grab Last
+			if(cursor >= LENGTH ) {
+				result.add( textToSplit.substring(startPos, cursor) );
+				break;
+			}
+		}
+	
+		return result;
+	}
+	
+	/*******************************************************************
+	 * This Method sorts with the following in mind:
 	 *   - Numbers in strings are in order
 	 *   - Lower and uppercase letters of same char are next to each other 
 	 *    
