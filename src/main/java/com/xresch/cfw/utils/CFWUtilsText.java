@@ -99,17 +99,19 @@ public class CFWUtilsText {
 	 * 		<li><b>Blanks:&nbsp;</b>Blanks at beginning and end of a values are ignored, except if a value is quoted.</li>
 	 * 		<li><b>Skipped Values:&nbsp;</b> If two separators follow each other it will be considered like one separator. </li>
 	 * </ul>
-	 * 
-	 * @param textToSplit the text to split
 	 * @param separator the separator, can be multiple characters, does not support regex
+	 * @param textToSplit the text to split
 	 * @param isDoubleQuotesAware true if should be aware, false otherwise 
 	 * @param isSingleQuotesAware true if should be aware, false otherwise 
 	 * @param isBackticksAware true if should be aware, false otherwise 
+	 * @param escapedSeparators true if separators can be escaped with backslashes
+	 * @param escapedSeparators TODO
 	 *******************************************************************/
 	public static ArrayList<String> splitQuotesAware(String separator, String textToSplit
 			, boolean isDoubleQuotesAware
 			, boolean isSingleQuotesAware
 			, boolean isBackticksAware
+			, boolean escapedSeparators
 			){
 		
 		//-----------------------------
@@ -171,9 +173,11 @@ public class CFWUtilsText {
 				//----------------------------
 				// Check is Separator
 				if(cursor < LENGTH ) {
+					if(cursor > 0) { previous = textToSplit.charAt(cursor-1); }
 					current = textToSplit.charAt(cursor);
 	
 					if(current == separatorFirstChar
+					&& (!escapedSeparators || previous != '\\')
 					&& textToSplit.substring(cursor).startsWith(separator)) {
 	
 						result.add( textToSplit.substring(startPos, cursor) );
@@ -189,8 +193,10 @@ public class CFWUtilsText {
 			//----------------------------
 			// Handle Separator
 			if(cursor < LENGTH ) {
+				if(cursor > 0) { previous = textToSplit.charAt(cursor-1); }
 				current = textToSplit.charAt(cursor);
 				if(current == separatorFirstChar
+				&& (!escapedSeparators || previous != '\\')		
 				&& textToSplit.substring(cursor).startsWith(separator) ) {
 					cursor += separator.length();
 					continue; 
