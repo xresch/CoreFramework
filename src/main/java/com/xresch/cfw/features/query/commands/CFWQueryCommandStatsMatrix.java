@@ -2,9 +2,11 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import com.google.gson.JsonArray;
@@ -40,7 +42,7 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 	private LinkedHashMap<String, QueryPartFunction> functionMap = new LinkedHashMap<>();
 	
 	// contains row plus columnMaps
-	private TreeMap<String, TreeMap<String, AggregationGroup>> rowMap = new TreeMap<>(CFW.Utils.Text.getAlphanumericComparator());
+	private TreeMap<String, TreeMap<String, AggregationGroup>> rowMap = new TreeMap<>();
 	
 	private String columnFieldname = null;
 	
@@ -219,7 +221,7 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 				}
 			}
 			
-
+			
 			//----------------------------
 			// Create and Get Group
 			if(!rowMap.containsKey(rowID)) {
@@ -253,6 +255,7 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 		//----------------------------
 		// Create Result Records
 		if(isPreviousDone() && getInQueue().isEmpty()) {
+			
 			for(Entry<String, TreeMap<String, AggregationGroup>> rowEntry : rowMap.entrySet()) {
 				EnhancedJsonObject newRecord = new EnhancedJsonObject();
 				boolean isGroupAdded = false;
