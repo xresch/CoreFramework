@@ -130,12 +130,14 @@ function cfw_usermgmt_createGroup(){
 	var createGroupForm = $('<div id="cfw-usermgmt-createGroup">');	
 
 	var formID = "cfwCreateGroupForm";
+	var redrawCallback = "cfw_usermgmt_common_redrawCallback({tab: 'groups'})";
 	if(CFW_USERMGMT_SCOPE == CFW_USERMGMT_SCOPE_GROUPS){
 		formID = "cfwCreateGroupWithOwnerForm";
+		redrawCallback = "cfw_usermgmt_common_redrawCallback({tab: 'mygroups'})";
 	}
 	
 	CFW.http.getForm(formID, createGroupForm);
-	CFW.ui.showModalMedium(CFWL('cfw_usermgmt_createGroup', "Create Group"), createGroupForm, "cfw_usermgmt_common_redrawCallback({tab: 'groups'})");
+	CFW.ui.showModalMedium(CFWL('cfw_usermgmt_createGroup', "Create Group"), createGroupForm, redrawCallback );
 	
 }
 
