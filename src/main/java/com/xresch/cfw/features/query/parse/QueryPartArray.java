@@ -239,7 +239,7 @@ public class QueryPartArray extends QueryPart {
 		
 		JsonObject debugObject = new JsonObject();
 		
-		debugObject.addProperty("partType", "Array");
+		debugObject.addProperty(QueryPart.FIELD_PARTTYPE, "Array");
 		
 		int i = 0;
 		for(QueryPart part : partsArray) {

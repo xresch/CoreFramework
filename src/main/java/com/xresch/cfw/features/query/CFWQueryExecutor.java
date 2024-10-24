@@ -32,17 +32,9 @@ public class CFWQueryExecutor {
 	
 	private boolean checkPermissions = true;
 	private boolean saveToHistory = false;
-	private boolean enableTracing = false;
-	
+
 	CFWQueryParser parser;
 	
-	/****************************************************************
-	 * Enable or disable tracing
-	 ****************************************************************/
-	public CFWQueryExecutor enableTracing(boolean enableTracing) {
-		this.enableTracing = enableTracing;
-		return this;
-	}
 	
 	/****************************************************************
 	 * Enable or disable if the users permissions should be
@@ -260,7 +252,8 @@ public class CFWQueryExecutor {
 		
 		//============================================
 		// Add Trace Result
-		if(enableTracing) { resultArray.addResult(parser.getTraceAsQueryResult()); }
+		if(parser.isTracingEnabled()) { resultArray.addResult(parser.getTraceAsQueryResult()); }
+		if(parser.isTrackPartsEnabled()) { resultArray.addResult(parser.getPartsAsQueryResult()); }
 		
 		//======================================
 		// Set initial Queue
@@ -381,8 +374,6 @@ public class CFWQueryExecutor {
 		parser = new CFWQueryParser(queryString, checkPermissions, baseQueryContext, cloneContext);
 		
 		try {
-			//tracing is experimental, might lead to errors
-			parser.enableTracing(enableTracing);
 			queryList = parser.parse();
 
 		}catch (NumberFormatException e) {
@@ -419,7 +410,8 @@ public class CFWQueryExecutor {
 		
 		//============================================
 		// Add Trace Result
-		if(enableTracing) { resultArray.addResult(parser.getTraceAsQueryResult()); }
+		if(parser.isTracingEnabled()) { resultArray.addResult(parser.getTraceAsQueryResult()); }
+		if(parser.isTrackPartsEnabled()) { resultArray.addResult(parser.getPartsAsQueryResult()); }
 
 		//============================================
 		// Add Debug info

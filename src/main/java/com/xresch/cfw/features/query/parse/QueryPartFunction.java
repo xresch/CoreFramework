@@ -264,7 +264,7 @@ public class QueryPartFunction extends QueryPart {
 		
 		JsonObject debugObject = new JsonObject();
 		
-		debugObject.addProperty("partType", "Function");
+		debugObject.addProperty(QueryPart.FIELD_PARTTYPE, "Function");
 		
 		int i = 0;
 		for(QueryPart part : functionParameters) {

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -82,7 +83,7 @@ import com.xresch.cfw.logging.CFWLog;
 public class CFWQueryParser {
 	
 	private static Logger logger = CFWLog.getLogger(CFWQueryParser.class.getName());
-	
+		
 	// contains the original query string
 	private String query = null;
 	
@@ -105,6 +106,9 @@ public class CFWQueryParser {
 	// the context of currentQuery
 	private CFWQueryContext currentContext;
 	
+	// the parts of all queries, used for debugging, will contain CFWQueryCommand and CFQQueryPart
+	ArrayList<Object> allqueryParts = new ArrayList<>(); 
+	
 	// the parts of the currentQuery
 	ArrayList<QueryPart> currentQueryParts = new ArrayList<>(); //initialized here so test cases don't run into nullpointer
 	
@@ -125,6 +129,8 @@ public class CFWQueryParser {
 	public static final String KEYWORD_NOT = "NOT";
 	
 	private boolean enableTracing = false;
+	private boolean enableTrackParts = false;
+	
 	private JsonArray traceArray;
 	
 	//Used for GIB!-Ea-stere-gg
@@ -156,23 +162,43 @@ public class CFWQueryParser {
 			, CFWQueryContext initialContext
 			, boolean doCloneContext) {
 		
+		//--------------------------------
+		// Set Context
 		if(initialContext == null) {
 			initialContext = new CFWQueryContext();
 		}
 		
 		initialContext.setFullQueryString(inputQuery);
 		
+		//--------------------------------
+		// Set Parameters
 		this.query = inputQuery;
 		this.initialContext = initialContext;
 		this.doCloneContext = doCloneContext;
 		this.checkSourcePermissions = initialContext.checkPermissions();
 		this.cursor = 0;
 		
-		tokenlist = new CFWQueryTokenizer(this.query, false, true)
+		//--------------------------------
+		// Get Tokens
+		this.tokenlist = new CFWQueryTokenizer(this.query, false, true)
 				.keywords(KEYWORD_AND
 						, KEYWORD_OR
 						, KEYWORD_NOT)
 				.getAllTokens();
+		
+		//--------------------------------
+		// Check Tracing Enabled
+		if( ! Strings.isNullOrEmpty(inputQuery) ) {
+			
+			String firstLine = inputQuery.split("\n")[0];
+			if(firstLine.contains("#TRACE")) {
+				this.enableTracing(true);
+			};
+			
+			if(firstLine.contains("#PARTS")) {
+				this.enableTrackParts = true;
+			};
+		}
 		
 	}
 	
@@ -202,6 +228,20 @@ public class CFWQueryParser {
 		}
 		return this;
 		
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public boolean isTracingEnabled() {
+		return enableTracing;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public boolean isTrackPartsEnabled() {
+		return enableTrackParts;
 	}
 	
 	/***********************************************************************************************
@@ -260,30 +300,97 @@ public class CFWQueryParser {
 	 * 
 	 ***********************************************************************************************/
 	public CFWQueryResult getTraceAsQueryResult() {
-		CFWQueryResult traceResult = new CFWQueryResult(initialContext);
+		
+		CFWQueryResult traceResult = new CFWQueryResult(new CFWQueryContext());
 		ArrayList<EnhancedJsonObject> traceRecords = new ArrayList<>();
-		for(JsonElement element : traceArray) {
-			
-			traceRecords.add(new EnhancedJsonObject(element.getAsJsonObject()));
+		
+		//-----------------------------
+		// Set Metadata
+		traceResult.getMetadata().addProperty("name", "Trace of Parser");
+		traceResult.getMetadata().addProperty("title", true);
+		
+		//-----------------------------
+		// Create Trace Records
+		if(traceArray != null) {
+			for(JsonElement element : traceArray) {
+				traceRecords.add(new EnhancedJsonObject(element.getAsJsonObject()));
+			}
 		}
+		
+		//-----------------------------
+		// Set Detected Fieldnames
+		if( ! traceRecords.isEmpty() ) {
+			traceResult.setDetectedFields(traceRecords.get(0).keySet());
+		}
+		
+		
+		//-----------------------------
+		// Return Result
 		traceResult.setRecords(traceRecords);
 		return traceResult;
 	}
 	
-	
 	/***********************************************************************************************
-	 * Get the previous part from the array of parts.
-	 * Returns null of there is no previous part.
+	 * 
 	 ***********************************************************************************************/
-	private QueryPart getPreviousPart() {
+	public CFWQueryResult getPartsAsQueryResult() {
+		CFWQueryResult partsResult = new CFWQueryResult(new CFWQueryContext());
+		ArrayList<EnhancedJsonObject> partRecords = new ArrayList<>();
+		
+		//-----------------------------
+		// Set Metadata
+		partsResult.getMetadata().addProperty("name", "List of Final Query Parts");
+		partsResult.getMetadata().addProperty("title", true);
 
-		QueryPart previousPart = null;
-		if( currentQueryParts.size() > 0) { 
-			previousPart = currentQueryParts.remove(currentQueryParts.size()-1);
+		//-----------------------------
+		// Create Records
+		for(Object part : allqueryParts) {
+			
+			EnhancedJsonObject partObject = new EnhancedJsonObject();
+			partRecords.add(partObject);
+			
+			if(part instanceof QueryPart) {
+				JsonObject debugObject = ((QueryPart)part).createDebugObject(null);
+				
+				partObject.add(
+						QueryPart.FIELD_PARTTYPE
+					  , debugObject.remove(QueryPart.FIELD_PARTTYPE)
+				);
+				partObject.add("value", debugObject);
+				
+			}else if(part instanceof CFWQueryCommand) { 
+				CFWQueryCommand command = (CFWQueryCommand)part;
+				partObject.addProperty(QueryPart.FIELD_PARTTYPE, "command");
+				partObject.addProperty("value", command.getUniqueName());
+			}
 		}
 		
-		return previousPart;
+		//-----------------------------
+		// Set Detected Fieldnames
+		if( ! partRecords.isEmpty() ) {
+			partsResult.setDetectedFields(partRecords.get(0).keySet());
+		}
+					
+		//-----------------------------
+		// Return Result
+		partsResult.setRecords(partRecords);
+		return partsResult;
 	}
+	
+	
+//	/***********************************************************************************************
+//	 * Get the previous part from the array of parts.
+//	 * Returns null of there is no previous part.
+//	 ***********************************************************************************************/
+//	private QueryPart getPreviousPart() {
+//
+//		QueryPart previousPart = null;
+//		if( currentQueryParts.size() > 0) { 
+//			previousPart = currentQueryParts.remove(currentQueryParts.size()-1);
+//		}
+//		
+//		return previousPart;
+//	}
 	
 	/***********************************************************************************************
 	 * Pops the previous part from the array of parts.
@@ -520,7 +627,13 @@ public class CFWQueryParser {
 			// Create Command instance
 			CFWQueryCommand command = CFW.Registry.Query.createCommandInstance(parentQuery, commandName);
 			
+			if(this.enableTrackParts) {
+				allqueryParts.add(command);
+				allqueryParts.addAll(parts);
+			}
+			
 			command.setAndValidateQueryParts(this, parts);
+			
 			addTrace("Parse", "Command", "[END]");
 			
 			return command;
@@ -549,7 +662,6 @@ public class CFWQueryParser {
 			addTrace("Parse", "Query Part", part);
 		}
 		
-		
 		return currentQueryParts;
 	}
 	
@@ -559,8 +671,6 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	public QueryPart parseQueryPart(CFWQueryParserContext context) throws ParseException {
 		
-		QueryPart secondPart = null;
-
 		//------------------------------------------
 		// Prevent endless loops and OutOfMemoryErrors
 		if(cursor != lastCursor) {
@@ -650,20 +760,28 @@ public class CFWQueryParser {
 
 					if(this.lookahead() != null 
 					&& this.lookahead().type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_OPEN) {
-						QueryPart arrayPart = this.parseQueryPart(CFWQueryParserContext.FUNCTION);
-						
-						if(arrayPart instanceof QueryPartArray 
-						&& ((QueryPartArray)arrayPart).getQueryPartsArray().size() == 1) {
-							//--------------------------------------------------
-							// Make JSON member access on function return value 
-							firstPart = new QueryPartJsonMemberAccess(currentContext, firstPart, arrayPart);
-							
-						}else {
-							//--------------------------------------------------
-							// Failover, shouldn't really happen, but you never know ...
-							currentQueryParts.add(firstPart);
-							firstPart = arrayPart;
-						}
+						firstPart = this.parseJsonMemberAccess(context, firstPart);
+//						QueryPart arrayPart = this.parseQueryPart(CFWQueryParserContext.FUNCTION);
+//						
+//						if(arrayPart instanceof QueryPartArray 
+//						&& ((QueryPartArray)arrayPart).getQueryPartsArray().size() == 1) {
+//							//--------------------------------------------------
+//							// Make JSON member access on function return value 
+//							firstPart = new QueryPartJsonMemberAccess(currentContext, firstPart, arrayPart);
+//							
+//						}/*if(arrayPart instanceof QueryPartJsonMemberAccess) {
+//							//--------------------------------------------------
+//							// Make JSON member access on function return value 
+//							firstPart = new QueryPartJsonMemberAccess(currentContext, firstPart, arrayPart);
+//							
+//						}*/
+//						else {
+//							//--------------------------------------------------
+//							// Failover, shouldn't really happen, but you never know ...
+//							System.out.println("AAAAA");
+//							currentQueryParts.add(firstPart);
+//							firstPart = arrayPart;
+//						}
 						
 						
 					}
@@ -717,6 +835,8 @@ public class CFWQueryParser {
 			//=======================================================	
 			case SIGN_BRACE_SQUARE_OPEN: 
 				
+				//--------------------------------------
+				// Check is Previous Arrayable
 				boolean isPreviousArrayable = false;
 				CFWQueryToken previousToken = this.lookat(-1);
 				if(previousToken != null) {
@@ -724,6 +844,9 @@ public class CFWQueryParser {
 										 || previousToken.type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE
 										 ;
 				}
+				
+				//--------------------------------------
+				// Start Array
 				firstToken = this.consumeToken();
 				
 				contextStack.add(CFWQueryParserContext.ARRAY);
@@ -731,32 +854,29 @@ public class CFWQueryParser {
 				QueryPartArray arrayPart = new QueryPartArray(currentContext).isEmbracedArray(true);
 				firstPart = arrayPart;
 				
-				secondPart = this.parseQueryPart(CFWQueryParserContext.ARRAY);
+				QueryPart tempPart = this.parseQueryPart(CFWQueryParserContext.ARRAY);
 				
+				//--------------------------------------
 				//Handle empty arrays and end of array
-				if(secondPart != null && !(secondPart instanceof QueryPartEnd)) {
-					arrayPart.add(secondPart);
+				if(tempPart != null && !(tempPart instanceof QueryPartEnd)) {
+					arrayPart.add(tempPart);
 				}
 				
-				//Create member access if previous is string/function and current is array
-				if(isPreviousArrayable && arrayPart.isIndex()) { 
-					QueryPart previousPart = popPreviousPart();
-					if(previousPart instanceof QueryPartAssignment) {
-						QueryPartAssignment assignmentPart = (QueryPartAssignment)previousPart;
-						QueryPart leftside = assignmentPart.getLeftSide();
-						QueryPart rightside = assignmentPart.getRightSide();
-						QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(currentContext, rightside, arrayPart);
-						firstPart = new QueryPartAssignment(currentContext, leftside, memberAccessPart);
-					}else {
-						QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(currentContext, previousPart, arrayPart);
-						firstPart = memberAccessPart;
-					}
-				}
-				
+				//--------------------------------------
 				// Close Array
-				if(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE) {
+				if(this.lookahead() != null 
+				&& this.lookahead().type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE) {
 					//TODO check if this is needed >> contextStack.pop(CFWQueryParserContext.ARRAY);
 					this.consumeToken();
+				}
+				
+				//--------------------------------------
+				// Check if the array is part of a JsonMemberAccess
+				if(this.lookahead() != null 
+				&& this.lookahead().type() == CFWQueryTokenType.OPERATOR_DOT
+				){
+					this.consumeToken();
+					firstPart = parseJsonMemberAccess(context, arrayPart);
 				}
 				
 				//------------------------------
@@ -765,6 +885,21 @@ public class CFWQueryParser {
 					return firstPart;
 				}
 				
+				//--------------------------------------
+				//Create member access if previous is string/function and current is array
+				if(isPreviousArrayable && arrayPart.isIndex()) { 
+					QueryPart previousPart = popPreviousPart();
+					if(previousPart instanceof QueryPartAssignment) {
+						QueryPartAssignment assignmentPart = (QueryPartAssignment)previousPart;
+						QueryPart leftside = assignmentPart.getLeftSide();
+						QueryPart rightside = assignmentPart.getRightSide();
+						QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(currentContext, rightside, firstPart);
+						firstPart = new QueryPartAssignment(currentContext, leftside, memberAccessPart);
+					}else {
+						QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(currentContext, previousPart, firstPart);
+						firstPart = memberAccessPart;
+					}
+				}
 				
 				
 			break;	
@@ -897,13 +1032,17 @@ public class CFWQueryParser {
 			//------------------------------
 			//End of Array Part
 			case SIGN_BRACE_SQUARE_CLOSE:
-				addTrace("End Part", "Close Array", "");
+				addTrace("End Part", "Close Array", "After: "+firstPart.createDebugObject(null));
+				
+				
+				contextStack.add(CFWQueryParserContext.ARRAY);
+				
 			return resultPart;
 			
 			//------------------------------
 			//End of Group
 			case SIGN_BRACE_ROUND_CLOSE:	
-				addTrace("End Part", "Close Group", "");
+				addTrace("End Part", "Close Group", ")");
 			return resultPart;
 			
 	
@@ -938,48 +1077,7 @@ public class CFWQueryParser {
 			// QueryPartJsonMemberAccess		
 			case OPERATOR_DOT:
 				this.consumeToken();
-				addTrace("Start Part", "JsonMemberAccess", "");
-
-				QueryPartJsonMemberAccess memberAccessPart = null;
-				while(this.hasMoreTokens()) {
-					CFWQueryToken lookahead = this.lookahead();
-					if(lookahead.isStringOrText()
-					|| lookahead.type() == CFWQueryTokenType.FUNCTION_NAME
-					|| lookahead.type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_OPEN) {
-						//-------------------------------
-						// Create Access Part
-						QueryPart memberAccessValue = null;
-						if(lookahead.isStringOrText()) {
-							// Handle String Value
-							CFWQueryToken nextToken = this.consumeToken();
-							memberAccessValue = QueryPartValue.newString(nextToken.value());
-						}else {
-							// Handle Array Part Value
-							memberAccessValue = this.parseQueryPart(context);
-						}
-						
-						if(memberAccessPart == null) {
-							memberAccessPart = new QueryPartJsonMemberAccess(currentContext, firstPart, memberAccessValue);
-						}else {
-							memberAccessPart = new QueryPartJsonMemberAccess(currentContext, memberAccessPart, memberAccessValue);
-						}
-						
-						resultPart = memberAccessPart;
-						
-						//-------------------------------
-						// Check is there another Dot
-						if(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.OPERATOR_DOT) {
-							this.consumeToken();
-						}else {
-							break;
-						}
-						
-					}else {
-						this.throwParseException("Expected string, function or '[fieldname]' after dot operator '.'. ", this.cursor()-1);
-					}
-					
-				}
-				addTrace("End Part", "JsonMemberAccess", "");
+				resultPart = parseJsonMemberAccess(context, firstPart);
 			break;	
 			
 				
@@ -1023,6 +1121,60 @@ public class CFWQueryParser {
 		}
 		
 		return resultPart;
+	}
+
+	/***********************************************************************************************
+	 * Parses a JsonMemberAccess.
+	 * @param consumeToken TODO
+	 ***********************************************************************************************/
+	private QueryPart parseJsonMemberAccess(CFWQueryParserContext context, QueryPart firstPart)
+			throws ParseException {
+		
+		addTrace("Start Part", "JsonMemberAccess", "");
+
+		QueryPartJsonMemberAccess memberAccessPart = null;
+		
+		while(this.hasMoreTokens()) {
+			CFWQueryToken lookahead = this.lookahead();
+			if(lookahead.isStringOrText()
+			|| lookahead.type() == CFWQueryTokenType.FUNCTION_NAME
+			|| lookahead.type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_OPEN) {
+				//-------------------------------
+				// Create Access Part
+				QueryPart memberAccessValue = null;
+				if(lookahead.isStringOrText()) {
+					// Handle String Value
+					CFWQueryToken nextToken = this.consumeToken();
+					memberAccessValue = QueryPartValue.newString(nextToken.value());
+				}else {
+					// Handle Array Part Value
+					memberAccessValue = this.parseQueryPart(context);
+				}
+				
+				if(memberAccessPart == null) {
+					memberAccessPart = new QueryPartJsonMemberAccess(currentContext, firstPart, memberAccessValue);
+				}else {
+					// TODO this case is probably death code
+					memberAccessPart = new QueryPartJsonMemberAccess(currentContext, memberAccessPart, memberAccessValue);
+				}
+								
+				//-------------------------------
+				// Check is there another Dot
+				if(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.OPERATOR_DOT) {
+					this.consumeToken();
+				}else {
+					break;
+				}
+				
+			}else {
+				this.throwParseException("Expected string, function or '[fieldname]' after dot operator '.'. ", this.cursor()-1);
+			}
+			
+		}
+		
+		addTrace("End Part", "JsonMemberAccess", "");
+		
+		return memberAccessPart;
 	}
 
 	/***********************************************************************************************

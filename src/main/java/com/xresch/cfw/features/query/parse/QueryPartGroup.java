@@ -285,7 +285,7 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 		
 		JsonObject debugObject = new JsonObject();
 		
-		debugObject.addProperty("partType", "Group");
+		debugObject.addProperty(QueryPart.FIELD_PARTTYPE, "Group");
 		
 		int i = 0;
 		for(QueryPart part : partsGroup) {

@@ -857,7 +857,7 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 		
 		JsonObject debugObject = new JsonObject();
 
-		debugObject.addProperty("partType", "Value");
+		debugObject.addProperty(QueryPart.FIELD_PARTTYPE, "Value");
 		
 		debugObject.add("value", this.getAsJsonElement());
 

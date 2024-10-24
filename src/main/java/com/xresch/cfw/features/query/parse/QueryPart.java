@@ -13,6 +13,8 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
  **************************************************************************************************************/
 public abstract class QueryPart {
 	
+	public static final String FIELD_PARTTYPE = "partType";
+	
 	private int cursorPosition = 0;
 	
 	/***********************************************************************************************
@@ -32,6 +34,8 @@ public abstract class QueryPart {
 
 	
 	/***********************************************************************************************
+	 * Return a debug object, the object must at least contain a property with the name
+	 * QueryPart.FIELD_PARTTYPE.
 	 * 
 	 ***********************************************************************************************/
 	public abstract JsonObject createDebugObject(EnhancedJsonObject object);

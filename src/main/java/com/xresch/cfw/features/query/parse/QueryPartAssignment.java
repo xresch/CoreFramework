@@ -112,7 +112,7 @@ public class QueryPartAssignment extends QueryPart {
 		
 		JsonObject debugObject = new JsonObject();
 		
-		debugObject.addProperty("partType", "Assignment");
+		debugObject.addProperty(QueryPart.FIELD_PARTTYPE, "Assignment");
 		debugObject.add("leftside", leftside.createDebugObject(object));
 		debugObject.add("rightside", rightside.createDebugObject(object));
 		

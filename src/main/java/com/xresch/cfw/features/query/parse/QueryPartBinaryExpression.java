@@ -415,7 +415,7 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 		
 		JsonObject debugObject = new JsonObject();
 		
-		debugObject.addProperty("partType", "Binary");
+		debugObject.addProperty(QueryPart.FIELD_PARTTYPE, "Binary");
 		
 		if(leftside != null) {
 			debugObject.add("leftside", leftside.createDebugObject(object) );
