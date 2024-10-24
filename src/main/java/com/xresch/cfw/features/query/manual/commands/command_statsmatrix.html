@@ -6,14 +6,16 @@
 </p>
 <pre><code class="language-cfwquery">| meta BY = [ITEM, BOX_SIZE, CLASS]
 | source random records=100 type=series
+| sort CLASS # sort by field used as statsmatrix column
 | statsmatrix 
 	column=CLASS
 	row=meta(BY)
-	count=count(COUNT) 
-	AVG=avg(COUNT) 
-	SUM=sum(COUNT)
+	records=count() # number of records aggregated
+	COUNT=sum(COUNT) # total count of items
+	PRICE_AVG=avg( round(PRICE, 2) ) 
+	TOTAL_VALUE=sum( round(PRICE*COUNT, 2) ) 
 | sort meta(BY)
-| formatfield
+| off formatfield # this is not needed anymore, done by statsmatrix out-of-the-box
 	fields(meta(BY))=['list', "none"] # for all fields except BY-fields
 	meta(BY)=[
 		 ['align', "center"]
