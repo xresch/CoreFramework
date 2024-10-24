@@ -254,7 +254,8 @@ public class CFWQueryExecutor {
 		// Add Trace Result
 		if(parser.isTracingEnabled()) { resultArray.addResult(parser.getTraceAsQueryResult()); }
 		if(parser.isTrackPartsEnabled()) { resultArray.addResult(parser.getPartsAsQueryResult()); }
-		
+		if(parser.isTrackTokensEnabled()) { resultArray.addResult(parser.getTokensAsQueryResult()); }
+
 		//======================================
 		// Set initial Queue
 		if(initialQueue != null && !queryList.isEmpty()) {
@@ -412,6 +413,7 @@ public class CFWQueryExecutor {
 		// Add Trace Result
 		if(parser.isTracingEnabled()) { resultArray.addResult(parser.getTraceAsQueryResult()); }
 		if(parser.isTrackPartsEnabled()) { resultArray.addResult(parser.getPartsAsQueryResult()); }
+		if(parser.isTrackTokensEnabled()) { resultArray.addResult(parser.getTokensAsQueryResult()); }
 
 		//============================================
 		// Add Debug info

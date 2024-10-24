@@ -199,7 +199,7 @@ DONE
 - Query: source web - as=http will now also give you the duration. 
 - Query: source eav - attributes are not returned as uppercase fields
 - Query: Fixed issue with parsing JsonMemberAccess messing up AssignmentParts
-- Query: Added #TRACE and #PARTS flag für debugging
+- Query: Added #TRACE, #PARTS and #TOKENS flag for debugging (add to first line of Query)
 - Query added sources:
 	- csv
 	

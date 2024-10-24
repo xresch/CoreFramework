@@ -68,7 +68,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			QueryPartAssignment assignmentPart = (QueryPartAssignment)leftside;
 			QueryPart assignmentLeftside = assignmentPart.getLeftSide();
 			QueryPart assignmentRightside = assignmentPart.getRightSide();
-			QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, assignmentRightside, rightside);
+			QueryPart memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, assignmentRightside, rightside);
 			return new QueryPartAssignment(context, assignmentLeftside, memberAccessPart);
 		}
 		
@@ -76,7 +76,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		// Handle Left is Binary
 		if(leftside instanceof QueryPartBinaryExpression) { 
 			QueryPartBinaryExpression expression = (QueryPartBinaryExpression)leftside;
-			QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, expression.getRightSide(), rightside);
+			QueryPart memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, expression.getRightSide(), rightside);
 			return new QueryPartBinaryExpression(context, expression.getLeftSide(), expression.getOperatorType(), memberAccessPart);
 		}	
 		
