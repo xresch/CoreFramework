@@ -1136,5 +1136,78 @@ public class TestCFWQueryParts extends DBTestMaster {
 		Assertions.assertEquals(6.42, evaluationResult.getAsDouble());
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testQueryPartBinaryExpressionOperatorPrecedence() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source empty
+| set
+	addition 		= 1 + 2 + 4.5	# returns 7.5
+	subtraction 	= 10 - 4 - 2.5	# returns 3.5
+	addsub 			= 12 + 4 - 3.5 	# returns 12.5
+	multiplication 	= 2 * 2 * 3  	# returns 12
+	division		= 90 / 3 / 6  	# returns 5
+	addmulti		= 2 + 4 * 8   	# returns 34
+	adddiv			= 2 + 8 / 4   	# returns 4
+	submulti		= 2 - 4 * 8   	# returns -30
+	subdiv			= 2 - 8 / 4   	# returns 0
+	mixed			= 2*8 - 2*3  	# returns 10
+	modulofirst		= 5 % 6 - 3		# returns 2
+	modulolast		= 5 - 6 % 4  	# returns 3
+	power			= 2 ^ 3 ^ 3     # returns 512
+	powermulti		= 2 ^ 3 * 4     # returns 32
+	powerplus		= 2 ^ 3 + 4     # returns 12
+	powerpluspower	= 2^3 + 4^4     # returns 264
+	group			= (2 + 8) / 2   # returns 5
+	group2			= (2 * 8) - 3   # returns 13
+	extreme 		= 2^(2 * 2 + 1) 
+					  * 
+					  (4/2) - 1 	# returns 63 >> (2^5) * 2 = 32*2 - 1 
+				""";
+		
+		CFWQueryResultList resultArray = 
+				new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		CFWQueryResult queryResults = resultArray.get(0);
+		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+		
+		//------------------------------
+		// Check First Query Result
+		queryResults = resultArray.get(0);
+		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+		
+		Assertions.assertEquals(1, resultArray.size());
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);		
+		Assertions.assertEquals("7.5", record.get("addition").getAsString() );
+		Assertions.assertEquals("3.5", record.get("subtraction").getAsString() );
+		Assertions.assertEquals("12.5", record.get("addsub").getAsString() );
+		Assertions.assertEquals(12  , record.get("multiplication").getAsInt() );
+		Assertions.assertEquals(5   , record.get("division").getAsInt() );
+		Assertions.assertEquals(34  , record.get("addmulti").getAsInt() );
+		Assertions.assertEquals(4   , record.get("adddiv").getAsInt() );
+		Assertions.assertEquals(-30 , record.get("submulti").getAsInt() );
+		Assertions.assertEquals(0   , record.get("subdiv").getAsInt() );
+		Assertions.assertEquals(10  , record.get("mixed").getAsInt() );
+		Assertions.assertEquals(2   , record.get("modulofirst").getAsInt() );
+		Assertions.assertEquals(3   , record.get("modulolast").getAsInt() );
+		Assertions.assertEquals(512 , record.get("power").getAsInt() );
+		Assertions.assertEquals(32  , record.get("powermulti").getAsInt() );
+		Assertions.assertEquals(12  , record.get("powerplus").getAsInt() );
+		Assertions.assertEquals(264 , record.get("powerpluspower").getAsInt() );
+		Assertions.assertEquals(5   , record.get("group").getAsInt() );
+		Assertions.assertEquals(13  , record.get("group2").getAsInt() );
+
+
+
+		
+	}
+	
 	
 }

@@ -37,12 +37,86 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 	 * 
 	 ******************************************************************************************************/
 	public QueryPartBinaryExpression(CFWQueryContext context, QueryPart leftside, CFWQueryTokenType type, QueryPart rightside) {
-
+		
+		//-------------------------------------
+		// Hack Operator Precedence
+		if(rightside instanceof QueryPartBinaryExpression) {
+			
+			QueryPartBinaryExpression rightExpression = (QueryPartBinaryExpression)rightside; 
+			
+			int thisPrecedence = getOperatorPrecedence(type);
+			int rightPrecedence = getOperatorPrecedence(rightExpression.getOperatorType());
+			if(thisPrecedence != -1 
+			&& rightPrecedence != -1
+			) {
+				
+				//--------------------------------------------
+				// Switch Precedence 
+				// Make evaluate left to right
+				// e.g 1 - 1 - 1 >> (1 - 1) - 1
+				if(thisPrecedence >= rightPrecedence) {
+					
+					rightside = rightExpression.getRightSide();
+					QueryPart rightLeft = rightExpression.getLeftSide();
+					
+					leftside = new QueryPartBinaryExpression(context, leftside, type, rightLeft);
+					
+					type = rightExpression.getOperatorType();
+					
+				}
+				
+			}
+		}
+		
+		//-------------------------------------
+		// Set the Values
 		this.context = context;
 		this.leftside = leftside;
 		this.type = type;
 		this.rightside = rightside;
 		
+	}
+		
+	/******************************************************************************************************
+	 * Returns the left side of the assignment operation.
+	 * 
+	 ******************************************************************************************************/
+	public static int getOperatorPrecedence(CFWQueryTokenType type) {
+		
+		switch(type) {
+//			case OPERATOR_REGEX:			
+//				return 5;
+//				
+//			case OPERATOR_AND:				
+//				return 4;
+//			
+//			case OPERATOR_EQUAL_EQUAL:		
+//			case OPERATOR_EQUAL_NOT:		
+//				return 4;
+//				
+//			case OPERATOR_EQUAL_OR_GREATER:	
+//			case OPERATOR_EQUAL_OR_LOWER:	
+//			case OPERATOR_GREATERTHEN:		
+//			case OPERATOR_LOWERTHEN:
+//				return 1;
+//			
+				
+			case OPERATOR_POWER:			
+				return 3;
+			
+			case OPERATOR_MULTIPLY:			
+			case OPERATOR_DIVIDE:			
+			case OPERATOR_MODULO:			
+				 return 2;
+				 
+			case OPERATOR_NOT:           
+			case OPERATOR_PLUS:				
+			case OPERATOR_MINUS:			
+				 return 1;
+			default: 
+				return -1;
+		}
+	
 	}
 		
 	/******************************************************************************************************
