@@ -130,14 +130,12 @@ function cfw_usermgmt_createGroup(){
 	var createGroupForm = $('<div id="cfw-usermgmt-createGroup">');	
 
 	var formID = "cfwCreateGroupForm";
-	var redrawCallback = "cfw_usermgmt_common_redrawCallback({tab: 'groups'})";
 	if(CFW_USERMGMT_SCOPE == CFW_USERMGMT_SCOPE_GROUPS){
 		formID = "cfwCreateGroupWithOwnerForm";
-		redrawCallback = "cfw_usermgmt_common_redrawCallback({tab: 'mygroups'})";
 	}
 	
 	CFW.http.getForm(formID, createGroupForm);
-	CFW.ui.showModalMedium(CFWL('cfw_usermgmt_createGroup', "Create Group"), createGroupForm, redrawCallback );
+	CFW.ui.showModalMedium(CFWL('cfw_usermgmt_createGroup', "Create Group"), createGroupForm, "cfw_usermgmt_common_redrawCallback({tab: 'groups'})" );
 	
 }
 
@@ -158,6 +156,7 @@ function cfw_usermgmt_editGroup(roleID){
 	//-----------------------------------
 	// Permissions
 	//-----------------------------------
+
 	if(CFW_USERMGMT_SCOPE == CFW_USERMGMT_SCOPE_USERMGMT){
 		var permissionDiv = $('<div id="cfw-usermgmt-roles">');
 		permissionDiv.append('<h2>'+CFWL('cfw_usermgmt_permissions', "Permissions")+'</h2>');
@@ -241,7 +240,7 @@ function cfw_usermgmt_printGroupListAdmin(data){
  ******************************************************************/
 function cfw_usermgmt_printGroupList(data, allowEdit, description){
 	
-	var parent = $("#tab-content");
+	let parent = $("#tab-content");
 	
 	//--------------------------------
 	// Description

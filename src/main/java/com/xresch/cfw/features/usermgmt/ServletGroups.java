@@ -49,7 +49,7 @@ public class ServletGroups extends HttpServlet
 			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureUserManagement.PACKAGE_RESOURCE, "cfw_usermgmt_common.js");
 			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureUserManagement.PACKAGE_RESOURCE, "cfw_usermgmt_groups.js");
 						
-			html.addJavascriptCode("cfw_usermgmt_groups_initialDraw({tab: 'mygroups'});");
+			html.addJavascriptCode("cfw_usermgmt_groups_initialDraw({tab: 'groups'});");
 			
 	        response.setContentType("text/html");
 	        response.setStatus(HttpServletResponse.SC_OK);

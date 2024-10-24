@@ -19,7 +19,7 @@ function cfw_usermgmt_groups_createTabs(){
 		//--------------------------------
 		// Groups
 			list.append(
-				'<li class="nav-item"><a class="nav-link active" id="tab-mygroups" data-toggle="pill" href="#" role="tab" onclick="cfw_usermgmt_groups_draw({tab: \'mygroups\'})"><i class="fas fa-users mr-2"></i>My Groups</a></li>'
+				'<li class="nav-item"><a class="nav-link active" id="tab-groups" data-toggle="pill" href="#" role="tab" onclick="cfw_usermgmt_groups_draw({tab: \'groups\'})"><i class="fas fa-users mr-2"></i>My Groups</a></li>'
 				+'<li class="nav-item"><a class="nav-link ml-2" id="tab-allgroups" data-toggle="pill" href="#" role="tab" onclick="cfw_usermgmt_groups_draw({tab: \'allgroups\'})"><i class="fas fa-users mr-2"></i>All Groups</a></li>'
 			);
 
@@ -71,7 +71,7 @@ function cfw_usermgmt_groups_draw(options){
 
 		switch(options.tab){
 									
-			case "mygroups":		CFW.http.fetchAndCacheData(CFW_USERMGMT_URL, {action: "fetch", item: "mygroups"}, "mygroups", cfw_usermgmt_printGroupListCanEdit);
+			case "groups":		CFW.http.fetchAndCacheData(CFW_USERMGMT_URL, {action: "fetch", item: "mygroups"}, "groups", cfw_usermgmt_printGroupListCanEdit);
 									break;
 									
 			case "allgroups":		CFW.http.fetchAndCacheData(CFW_USERMGMT_URL, {action: "fetch", item: "groups"}, "allgroups", cfw_usermgmt_printGroupListOverview);
