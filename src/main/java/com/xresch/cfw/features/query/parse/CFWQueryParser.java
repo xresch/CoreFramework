@@ -130,6 +130,7 @@ public class CFWQueryParser {
 	
 	private boolean enableTracing = false;
 	private boolean enableTrackParts = false;
+	private boolean enableTrackTokens = false;
 	
 	private JsonArray traceArray;
 	
@@ -190,13 +191,17 @@ public class CFWQueryParser {
 		// Check Tracing Enabled
 		if( ! Strings.isNullOrEmpty(inputQuery) ) {
 			
-			String firstLine = inputQuery.split("\n")[0];
+			String firstLine = inputQuery.split("\n")[0].toUpperCase();
 			if(firstLine.contains("#TRACE")) {
 				this.enableTracing(true);
 			};
 			
 			if(firstLine.contains("#PARTS")) {
 				this.enableTrackParts = true;
+			};
+			
+			if(firstLine.contains("#TOKENS")) {
+				this.enableTrackTokens = true;
 			};
 		}
 		
@@ -242,6 +247,13 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	public boolean isTrackPartsEnabled() {
 		return enableTrackParts;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public boolean isTrackTokensEnabled() {
+		return enableTrackTokens;
 	}
 	
 	/***********************************************************************************************
@@ -306,7 +318,7 @@ public class CFWQueryParser {
 		
 		//-----------------------------
 		// Set Metadata
-		traceResult.getMetadata().addProperty("name", "Trace of Parser");
+		traceResult.getMetadata().addProperty("name", "[#TRACE] Parsing");
 		traceResult.getMetadata().addProperty("title", true);
 		
 		//-----------------------------
@@ -339,7 +351,7 @@ public class CFWQueryParser {
 		
 		//-----------------------------
 		// Set Metadata
-		partsResult.getMetadata().addProperty("name", "List of Final Query Parts");
+		partsResult.getMetadata().addProperty("name", "[#PARTS] List of Final Query Parts");
 		partsResult.getMetadata().addProperty("title", true);
 
 		//-----------------------------
@@ -375,6 +387,39 @@ public class CFWQueryParser {
 		// Return Result
 		partsResult.setRecords(partRecords);
 		return partsResult;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryResult getTokensAsQueryResult() {
+		CFWQueryResult result = new CFWQueryResult(new CFWQueryContext());
+		ArrayList<EnhancedJsonObject> partRecords = new ArrayList<>();
+		
+		//-----------------------------
+		// Set Metadata
+		result.getMetadata().addProperty("name", "[#TOKENS] List of Tokens");
+		result.getMetadata().addProperty("title", true);
+
+		//-----------------------------
+		// Create Records
+		for(CFWQueryToken token : tokenlist) {
+			
+			EnhancedJsonObject partObject = new EnhancedJsonObject(token.toJson());
+			partRecords.add(partObject);
+
+		}
+		
+		//-----------------------------
+		// Set Detected Fieldnames
+		if( ! partRecords.isEmpty() ) {
+			result.setDetectedFields(partRecords.get(0).keySet());
+		}
+					
+		//-----------------------------
+		// Return Result
+		result.setRecords(partRecords);
+		return result;
 	}
 	
 	
