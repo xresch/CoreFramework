@@ -34,12 +34,13 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	private QueryPart leftside;
 	private QueryPart rightside = null;
 	private CFWQueryContext context;
+	
 	/******************************************************************************************************
 	 * 
 	 * @param leftside The name on the left side of the assignment operation.
 	 * 
 	 ******************************************************************************************************/
-	public QueryPartJsonMemberAccess(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
+	private QueryPartJsonMemberAccess(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
 		super();
 		this.context = context;
 		
@@ -54,6 +55,37 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		}
 		
 	}
+	
+	/******************************************************************************************************
+	 * Had to create this ugly workaround... don't ask, it made things work.
+	 * 
+	 ******************************************************************************************************/
+	public static QueryPart createMemberAccess(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
+		
+		//----------------------------------------
+		// Handle Left is Assignment
+		if(leftside instanceof QueryPartAssignment) {
+			QueryPartAssignment assignmentPart = (QueryPartAssignment)leftside;
+			QueryPart assignmentLeftside = assignmentPart.getLeftSide();
+			QueryPart assignmentRightside = assignmentPart.getRightSide();
+			QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, assignmentRightside, rightside);
+			return new QueryPartAssignment(context, assignmentLeftside, memberAccessPart);
+		}
+		
+		//----------------------------------------
+		// Handle Left is Binary
+		if(leftside instanceof QueryPartBinaryExpression) { 
+			QueryPartBinaryExpression expression = (QueryPartBinaryExpression)leftside;
+			QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, expression.getRightSide(), rightside);
+			return new QueryPartBinaryExpression(context, expression.getLeftSide(), expression.getOperatorType(), memberAccessPart);
+		}	
+		
+		//----------------------------------------
+		// Any other case
+		return new QueryPartJsonMemberAccess(context, leftside, rightside);
+		
+	}
+	
 	
 	/******************************************************************************************************
 	 * 

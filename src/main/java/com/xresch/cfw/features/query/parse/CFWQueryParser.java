@@ -865,17 +865,25 @@ public class CFWQueryParser {
 				//--------------------------------------
 				//Create member access if previous is string/function and current is array
 				if(isPreviousArrayable && arrayPart.isIndex()) { 
+					
 					QueryPart previousPart = popPreviousPart();
-					if(previousPart instanceof QueryPartAssignment) {
-						QueryPartAssignment assignmentPart = (QueryPartAssignment)previousPart;
-						QueryPart leftside = assignmentPart.getLeftSide();
-						QueryPart rightside = assignmentPart.getRightSide();
-						QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(currentContext, rightside, firstPart);
-						firstPart = new QueryPartAssignment(currentContext, leftside, memberAccessPart);
-					}else {
-						QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(currentContext, previousPart, firstPart);
-						firstPart = memberAccessPart;
-					}
+					firstPart = QueryPartJsonMemberAccess.createMemberAccess(currentContext, previousPart, firstPart);
+					
+//					QueryPart previousPart = popPreviousPart();
+//					if(previousPart instanceof QueryPartAssignment) {
+//						QueryPartAssignment assignmentPart = (QueryPartAssignment)previousPart;
+//						QueryPart leftside = assignmentPart.getLeftSide();
+//						QueryPart rightside = assignmentPart.getRightSide();
+//						QueryPartJsonMemberAccess memberAccessPart = QueryPartJsonMemberAccess(currentContext, rightside, firstPart);
+//						firstPart = new QueryPartAssignment(currentContext, leftside, memberAccessPart);
+//					}else if(previousPart instanceof QueryPartBinaryExpression) { 
+//						QueryPartBinaryExpression expression = (QueryPartBinaryExpression)previousPart;
+//						QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(currentContext, expression.getRightSide(), firstPart);
+//						firstPart = new QueryPartBinaryExpression(currentContext, expression.getLeftSide(), expression.getOperatorType(), memberAccessPart);
+//					}else {
+//						QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(currentContext, previousPart, firstPart);
+//						firstPart = memberAccessPart;
+//					}
 				}
 				
 				
@@ -1109,15 +1117,16 @@ public class CFWQueryParser {
 		
 		addTrace("Start Part", "JsonMemberAccess", "");
 
-		QueryPartJsonMemberAccess memberAccessPart = null;
+		QueryPart memberAccessPart = null;
 		
 		while(this.hasMoreTokens()) {
 			CFWQueryToken lookahead = this.lookahead();
 			if(lookahead.isStringOrText()
 			|| lookahead.type() == CFWQueryTokenType.FUNCTION_NAME
 			|| lookahead.type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_OPEN) {
+				
 				//-------------------------------
-				// Create Access Part
+				// Get Access Value
 				QueryPart memberAccessValue = null;
 				if(lookahead.isStringOrText()) {
 					// Handle String Value
@@ -1128,11 +1137,13 @@ public class CFWQueryParser {
 					memberAccessValue = this.parseQueryPart(context);
 				}
 				
-				if(memberAccessPart == null) {
-					memberAccessPart = new QueryPartJsonMemberAccess(currentContext, firstPart, memberAccessValue);
+				//-------------------------------
+				// Create MemberAccessPart
+				if(memberAccessPart != null) {
+					// nested parts during while-loop
+					memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(currentContext, memberAccessPart, memberAccessValue);
 				}else {
-					// TODO this case is probably death code
-					memberAccessPart = new QueryPartJsonMemberAccess(currentContext, memberAccessPart, memberAccessValue);
+					memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(currentContext, firstPart, memberAccessValue);
 				}
 								
 				//-------------------------------
@@ -1151,7 +1162,11 @@ public class CFWQueryParser {
 		
 		addTrace("End Part", "JsonMemberAccess", "");
 		
+		//------------------------------------
+		// Return 
 		return memberAccessPart;
+
+		
 	}
 
 	/***********************************************************************************************
@@ -1198,15 +1213,17 @@ public class CFWQueryParser {
 			
 			//-------------------------------------
 			// Parse All Subsequent Binary Operations
-//			while(this.hasMoreTokens() 
-//			&& this.lookahead().type() != CFWQueryTokenType.OPERATOR_EQUAL // used for assignments
-//			&& this.lookahead().type() != CFWQueryTokenType.OPERATOR_DOT  // used for JsonMemberAccess
-//			&& this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR  // used for piping commands
-//			&& this.lookahead().type().name().startsWith("OPERATOR_")   // any other is used for binary expressions
-//			){
-//				CFWQueryToken binaryOperator = this.consumeToken();
-//				expressionRightPart = parseBinaryExpressionPart(context, expressionRightPart, binaryOperator.type(), false );
-//			}
+			while(this.hasMoreTokens() 
+			  && this.lookahead().type() != CFWQueryTokenType.OPERATOR_EQUAL // used for assignments
+			  && this.lookahead().type() != CFWQueryTokenType.OPERATOR_DOT  // used for JsonMemberAccess
+			  && this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR  // used for piping commands
+			  && this.lookahead().type().name().startsWith("OPERATOR_")   // any other is used for binary expressions
+			  ){
+				currentQueryParts.add(expressionRightPart);
+				expressionRightPart = this.parseQueryPart(CFWQueryParserContext.BINARY);
+				//CFWQueryToken binaryOperator = this.consumeToken();
+				//expressionRightPart = parseBinaryExpressionPart(context, expressionRightPart, binaryOperator.type(), false );
+			}
 			
 			
 			//-------------------------------------
@@ -1216,7 +1233,6 @@ public class CFWQueryParser {
 			if( ! (expressionLeftPart instanceof QueryPartAssignment) ) {
 				resultPart = new QueryPartBinaryExpression(currentContext, expressionLeftPart, operatorType, expressionRightPart);
 			}else {
-				
 				QueryPartAssignment assignment = (QueryPartAssignment)expressionLeftPart;
 				QueryPartBinaryExpression expression = new QueryPartBinaryExpression(currentContext, assignment.getRightSide(), operatorType, expressionRightPart);
 				resultPart = new QueryPartAssignment(currentContext, assignment.getLeftSide(), expression);

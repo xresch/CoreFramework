@@ -224,7 +224,7 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level1 = QueryPartValue.newString("memba");
 		level2 = QueryPartValue.newString("submemba");
 		
-		QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
+		QueryPart memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, level2);
 		
 		Assertions.assertEquals("memba.submemba", memberAccessPart.determineValue(null).getAsString());
 		
@@ -241,8 +241,8 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level2 = QueryPartValue.newString("anothermemba");
 		level3 = QueryPartValue.newString("numba");
 		
-		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
-					new QueryPartJsonMemberAccess(context, level2, level3)
+		memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, 
+					QueryPartJsonMemberAccess.createMemberAccess(context, level2, level3)
 				);
 		
 		Assertions.assertEquals(42, 
@@ -257,7 +257,7 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level1 = QueryPartValue.newString("array");
 		level2 = new QueryPartArray(context, 1);
 
-		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
+		memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, level2);
 		
 		Assertions.assertEquals("B", 
 				memberAccessPart.determineValue(
@@ -272,8 +272,8 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level2 = new QueryPartArray(context, 1);
 		level3 = QueryPartValue.newString("key");
 		
-		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
-					new QueryPartJsonMemberAccess(context, level2, level3)
+		memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, 
+					QueryPartJsonMemberAccess.createMemberAccess(context, level2, level3)
 				);
 		
 		Assertions.assertEquals("valueB", 
@@ -306,11 +306,11 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level1 = QueryPartValue.newString("memba");
 		level2 = QueryPartValue.newString("submemba");
 		
-		QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
+		QueryPart memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, level2);
 		
 		Assertions.assertEquals("memba.submemba", memberAccessPart.determineValue(null).getAsString());
 		
-		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Itse not-e mee, itse Luigi!"));
+		((QueryPartJsonMemberAccess)memberAccessPart).setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Itse not-e mee, itse Luigi!"));
 		
 		Assertions.assertEquals("Itse not-e mee, itse Luigi!", 
 				memberAccessPart.determineValue(
@@ -325,11 +325,11 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level2 = QueryPartValue.newString("anothermemba");
 		level3 = QueryPartValue.newString("numba");
 		
-		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
-					new QueryPartJsonMemberAccess(context, level2, level3)
+		memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, 
+					QueryPartJsonMemberAccess.createMemberAccess(context, level2, level3)
 				);
 		
-		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive(99.9f));
+		((QueryPartJsonMemberAccess)memberAccessPart).setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive(99.9f));
 		
 		Assertions.assertEquals(99.9f, 
 				memberAccessPart.determineValue(
@@ -343,9 +343,9 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level1 = QueryPartValue.newString("array");
 		level2 = new QueryPartArray(context, 1);
 
-		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
+		memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, level2);
 		
-		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Bla"));
+		((QueryPartJsonMemberAccess)memberAccessPart).setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Bla"));
 		
 		Assertions.assertEquals("Bla", 
 				memberAccessPart.determineValue(
@@ -360,11 +360,11 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level2 = new QueryPartArray(context, 1);
 		level3 = QueryPartValue.newString("key");
 		
-		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
-				new QueryPartJsonMemberAccess(context, level2, level3)
+		memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, 
+				QueryPartJsonMemberAccess.createMemberAccess(context, level2, level3)
 			);
 		
-		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Be the value"));
+		((QueryPartJsonMemberAccess)memberAccessPart).setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Be the value"));
 		
 		Assertions.assertEquals("Be the value", 
 				memberAccessPart.determineValue(
@@ -379,11 +379,11 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level2 = new QueryPartArray(context, 1);
 		level3 = QueryPartValue.newString("key");
 		
-		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
-					new QueryPartJsonMemberAccess(context, level2, level3)
+		memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, 
+					QueryPartJsonMemberAccess.createMemberAccess(context, level2, level3)
 				);
 		
-		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Be the value"));
+		((QueryPartJsonMemberAccess)memberAccessPart).setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Be the value"));
 		
 		Assertions.assertEquals("Be the value", 
 				memberAccessPart.determineValue(
@@ -398,11 +398,11 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level2 = QueryPartValue.newString("newSubEntry");
 		level3 = QueryPartValue.newString("key");
 		
-		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
-					new QueryPartJsonMemberAccess(context, level2, level3)
+		memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, 
+					QueryPartJsonMemberAccess.createMemberAccess(context, level2, level3)
 				);
 		
-		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("a new value"));
+		((QueryPartJsonMemberAccess)memberAccessPart).setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("a new value"));
 		
 		Assertions.assertEquals("a new value", 
 				memberAccessPart.determineValue(
@@ -417,11 +417,11 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level2 = new QueryPartArray(context, 0);
 		level3 = QueryPartValue.newString("key");
 		
-		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
-					new QueryPartJsonMemberAccess(context, level2, level3)
+		memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, 
+					QueryPartJsonMemberAccess.createMemberAccess(context, level2, level3)
 				);
 		
-		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("a new value"));
+		((QueryPartJsonMemberAccess)memberAccessPart).setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("a new value"));
 		
 		Assertions.assertEquals("a new value", 
 				memberAccessPart.determineValue(
@@ -618,7 +618,7 @@ public class TestCFWQueryParts extends DBTestMaster {
 		level1 = QueryPartValue.newString("memba");
 		level2 = QueryPartValue.newString("submemba");
 		
-		QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
+		QueryPart memberAccessPart = QueryPartJsonMemberAccess.createMemberAccess(context, level1, level2);
 		
 		Assertions.assertEquals("memba.submemba", memberAccessPart.determineValue(null).getAsString());
 		

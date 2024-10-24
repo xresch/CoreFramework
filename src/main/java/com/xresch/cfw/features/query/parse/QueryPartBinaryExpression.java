@@ -68,6 +68,14 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 	public QueryPart getRightSide() {
 		return rightside;
 	}
+	
+	/******************************************************************************************************
+	 * Returns the right side of the assignment operation.
+	 * 
+	 ******************************************************************************************************/
+	public CFWQueryTokenType getOperatorType() {
+		return type;
+	}
 
 	/******************************************************************************************************
 	 * Evaluates the binary expression and returns the resulting value.
