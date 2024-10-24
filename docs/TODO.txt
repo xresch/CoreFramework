@@ -198,7 +198,7 @@ DONE
 - Query: Command Formatfield: New formatter 'indicators', that adds an arrow indicator to your values.
 - Query: source web - as=http will now also give you the duration. 
 - Query: source eav - attributes are not returned as uppercase fields
-- Query: Fixed issue with parsing JsonMemberAccess messing up AssignmentParts
+- Query: Fixed issue with parsing JsonMemberAccess messing up AssignmentParts and concatenation
 - Query: Added #TRACE, #PARTS and #TOKENS flag for debugging (add to first line of Query)
 - Query added sources:
 	- csv

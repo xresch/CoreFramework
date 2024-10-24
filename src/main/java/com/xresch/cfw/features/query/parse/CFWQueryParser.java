@@ -1179,7 +1179,7 @@ public class CFWQueryParser {
 					memberAccessValue = QueryPartValue.newString(nextToken.value());
 				}else {
 					// Handle Array Part Value
-					memberAccessValue = this.parseQueryPart(context);
+					memberAccessValue = this.parseQueryPart(CFWQueryParserContext.JSON_MEMBER_ACCESS);
 				}
 				
 				//-------------------------------
@@ -1239,6 +1239,13 @@ public class CFWQueryParser {
 	 * @param consumeToken TODO
 	 ***********************************************************************************************/
 	private QueryPart parseBinaryExpressionPart(CFWQueryParserContext context, QueryPart expressionLeftPart, CFWQueryTokenType operatorType, boolean consumeToken ) throws ParseException {
+		//-------------------------------------
+		// Do Nothing when in JsonMember Context
+		if(context == CFWQueryParserContext.JSON_MEMBER_ACCESS) {
+			return expressionLeftPart;
+			
+		}
+		
 		
 		addTrace("Start Part", "Binary Expression", operatorType);
 			

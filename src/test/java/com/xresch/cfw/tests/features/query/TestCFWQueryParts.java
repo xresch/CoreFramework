@@ -482,7 +482,7 @@ public class TestCFWQueryParts extends DBTestMaster {
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testQueryPartJsonMemberAccess_accessMemberFromArrayIndex() throws IOException {
+	public void testQueryPartJsonMemberAccess_accessMemberFromArray() throws IOException {
 		
 		//---------------------------------
 		String queryString = """
@@ -538,6 +538,75 @@ public class TestCFWQueryParts extends DBTestMaster {
 		Assertions.assertEquals("misu3", record.get("functionDotField").getAsString() );
 		Assertions.assertEquals("Alejandra", record.get("arrayDotFunction").getAsString() );
 		Assertions.assertEquals("Martinez", record.get("arrayDotFunctionExtreme").getAsString() );
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testQueryPartJsonMemberAccess_accessMemberFromArrayAndConcat() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source json
+	data = {
+		array: [ 
+			{ name: "Hera", subarray: [
+				{subname: "Jones"}
+			] }
+		],
+		arrayInArray: [
+			["one", "two"]
+		],
+		object: {"favorite": "tiramisu", "object": { "sub": 42  } }
+		
+	}
+| set
+	front = "@" + array[0].name	# returns @Hera
+	back = array[0].name + "@" 	# returns Hera@
+	both = "@" + array[0].name + "@" 	# returns @Hera@
+	subname = "@" + array[0].subarray[0].subname + "@" # returns @Jones@
+	multiarray = "@" + arrayInArray[0][1] + "@"	# returns @two@
+	functionArray = "@" + literal( ["x","y","z"] )[1] + "@" 	# returns @y@
+	fieldObjectArray = "@" + literal( [{tira: "misu"}] )[0] + "@" # returns 	@{"tira":"misu"}@
+	functionArrayMember = "@" + literal( [{tira: "misu"}] )[0].tira + "@" 	# returns @misu@
+	functionField =  "@" + literal( {tira: "misu1"} ).tira + "@" 	# returns @misu1@
+	functionFieldArray =  "@" + literal( {tira: "misu2"} )[tira] + "@" 	# returns @misu2@
+	functionDotField = "@" + literal( {tira: "misu3"} ).[tira] + "@" 	# returns @misu3@
+	arrayDotFunction = "@" +  array[0].literal("name") + "@" 	# returns @Hera@
+	arrayDotFunctionExtreme = "@" + array[0].literal("subarray")[0].subname + "@"	# returns @Jones@
+				""";
+		
+		CFWQueryResultList resultArray = 
+				new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		CFWQueryResult queryResults = resultArray.get(0);
+		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+		
+		//------------------------------
+		// Check First Query Result
+		queryResults = resultArray.get(0);
+		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+		
+		Assertions.assertEquals(1, resultArray.size());
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);		
+		Assertions.assertEquals("@Hera", record.get("front").getAsString() );
+		Assertions.assertEquals("Hera@", record.get("back").getAsString() );
+		Assertions.assertEquals("@Hera@", record.get("both").getAsString() );
+		Assertions.assertEquals("@Jones@", record.get("subname").getAsString() );
+		Assertions.assertEquals("@two@", record.get("multiarray").getAsString() );
+		Assertions.assertEquals("@y@", record.get("functionArray").getAsString() );
+		Assertions.assertEquals("@{\"tira\":\"misu\"}@", record.get("fieldObjectArray").getAsString() );
+		Assertions.assertEquals("@misu@", record.get("functionArrayMember").getAsString() );
+		Assertions.assertEquals("@misu1@", record.get("functionField").getAsString() );
+		Assertions.assertEquals("@misu2@", record.get("functionFieldArray").getAsString() );
+		Assertions.assertEquals("@misu3@", record.get("functionDotField").getAsString() );
+		Assertions.assertEquals("@Hera@", record.get("arrayDotFunction").getAsString() );
+		Assertions.assertEquals("@Jones@", record.get("arrayDotFunctionExtreme").getAsString() );
 		
 	}
 	
