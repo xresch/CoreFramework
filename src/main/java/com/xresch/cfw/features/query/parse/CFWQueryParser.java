@@ -760,30 +760,7 @@ public class CFWQueryParser {
 
 					if(this.lookahead() != null 
 					&& this.lookahead().type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_OPEN) {
-						firstPart = this.parseJsonMemberAccess(context, firstPart);
-//						QueryPart arrayPart = this.parseQueryPart(CFWQueryParserContext.FUNCTION);
-//						
-//						if(arrayPart instanceof QueryPartArray 
-//						&& ((QueryPartArray)arrayPart).getQueryPartsArray().size() == 1) {
-//							//--------------------------------------------------
-//							// Make JSON member access on function return value 
-//							firstPart = new QueryPartJsonMemberAccess(currentContext, firstPart, arrayPart);
-//							
-//						}/*if(arrayPart instanceof QueryPartJsonMemberAccess) {
-//							//--------------------------------------------------
-//							// Make JSON member access on function return value 
-//							firstPart = new QueryPartJsonMemberAccess(currentContext, firstPart, arrayPart);
-//							
-//						}*/
-//						else {
-//							//--------------------------------------------------
-//							// Failover, shouldn't really happen, but you never know ...
-//							System.out.println("AAAAA");
-//							currentQueryParts.add(firstPart);
-//							firstPart = arrayPart;
-//						}
-						
-						
+						firstPart = this.parseJsonMemberAccess(context, firstPart);						
 					}
 				}else {
 					this.throwParseException("expected parameters after function: "+functionName, firstToken.position());
@@ -992,10 +969,10 @@ public class CFWQueryParser {
 				
 				switch(keyword) {
 				
-					case KEYWORD_AND: 	return createBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_AND, false ); 
-					case KEYWORD_OR: 	return createBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_OR, false ); 
+					case KEYWORD_AND: 	return parseBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_AND, false ); 
+					case KEYWORD_OR: 	return parseBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_OR, false ); 
 					
-					case KEYWORD_NOT: 	return createBinaryExpressionPart(context, null, CFWQueryTokenType.OPERATOR_NOT, false );
+					case KEYWORD_NOT: 	return parseBinaryExpressionPart(context, null, CFWQueryTokenType.OPERATOR_NOT, false );
 					default:			this.throwParseException("Unknown keyword:"+keyword, firstToken.position());
 				}
 			break;
@@ -1032,7 +1009,7 @@ public class CFWQueryParser {
 			//------------------------------
 			//End of Array Part
 			case SIGN_BRACE_SQUARE_CLOSE:
-				addTrace("End Part", "Close Array", "After: "+firstPart.createDebugObject(null));
+				addTrace("End Part", "Close Array", "] - After: "+firstPart.createDebugObject(null));
 				
 				
 				contextStack.add(CFWQueryParserContext.ARRAY);
@@ -1084,20 +1061,20 @@ public class CFWQueryParser {
 			//------------------------------
 			// Binary Operations
 			//case OPERATOR_OR: not supported as pipe '|' is used as command separator, see keyword 'OR'
-			case OPERATOR_AND:				resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_AND, true ); break;	
-			case OPERATOR_EQUAL_EQUAL:		resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, true ); break;	
-			case OPERATOR_EQUAL_NOT:		resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT, true ); break;	
-			case OPERATOR_EQUAL_OR_GREATER:	resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, true ); break;	
-			case OPERATOR_EQUAL_OR_LOWER:	resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, true ); break;	
-			case OPERATOR_REGEX:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_REGEX, true ); break;	
-			case OPERATOR_GREATERTHEN:		resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_GREATERTHEN, true ); break;	
-			case OPERATOR_LOWERTHEN:		resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_LOWERTHEN, true ); break;	
-			case OPERATOR_PLUS:				resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_PLUS, true ); break;	
-			case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_MINUS, true ); break;	
-			case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY, true ); break;	
-			case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
-			case OPERATOR_POWER:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_POWER, true ); break;	
-			case OPERATOR_MODULO:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_MODULO, true ); break;	
+			case OPERATOR_AND:				resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_AND, true ); break;	
+			case OPERATOR_EQUAL_EQUAL:		resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, true ); break;	
+			case OPERATOR_EQUAL_NOT:		resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT, true ); break;	
+			case OPERATOR_EQUAL_OR_GREATER:	resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, true ); break;	
+			case OPERATOR_EQUAL_OR_LOWER:	resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, true ); break;	
+			case OPERATOR_REGEX:			resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_REGEX, true ); break;	
+			case OPERATOR_GREATERTHEN:		resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_GREATERTHEN, true ); break;	
+			case OPERATOR_LOWERTHEN:		resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_LOWERTHEN, true ); break;	
+			case OPERATOR_PLUS:				resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_PLUS, true ); break;	
+			case OPERATOR_MINUS:			resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_MINUS, true ); break;	
+			case OPERATOR_MULTIPLY:			resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY, true ); break;	
+			case OPERATOR_DIVIDE:			resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
+			case OPERATOR_POWER:			resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_POWER, true ); break;	
+			case OPERATOR_MODULO:			resultPart = parseBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_MODULO, true ); break;	
 			case OPERATOR_NOT:
 				break;
 	
@@ -1201,20 +1178,54 @@ public class CFWQueryParser {
 	 * @param context TODO
 	 * @param consumeToken TODO
 	 ***********************************************************************************************/
-	private QueryPart createBinaryExpressionPart(CFWQueryParserContext context, QueryPart firstPart, CFWQueryTokenType operatorType, boolean consumeToken ) throws ParseException {
+	private QueryPart parseBinaryExpressionPart(CFWQueryParserContext context, QueryPart expressionLeftPart, CFWQueryTokenType operatorType, boolean consumeToken ) throws ParseException {
 		
 		addTrace("Start Part", "Binary Expression", operatorType);
-			if(firstPart == null) {
-				firstPart = this.popPreviousPart();
+			
+			//-------------------------------------
+			// Check firstPart
+			if(expressionLeftPart == null) {
+				expressionLeftPart = this.popPreviousPart();
 			}
+			
+			//-------------------------------------
+			// Consume Token
 			if(consumeToken) { this.consumeToken(); }
-			QueryPart secondPart = this.parseQueryPart(CFWQueryParserContext.BINARY);
+			
+			//-------------------------------------
+			// Parse Part
+			QueryPart expressionRightPart = this.parseQueryPart(CFWQueryParserContext.BINARY);
+			
+			//-------------------------------------
+			// Parse All Subsequent Binary Operations
+//			while(this.hasMoreTokens() 
+//			&& this.lookahead().type() != CFWQueryTokenType.OPERATOR_EQUAL // used for assignments
+//			&& this.lookahead().type() != CFWQueryTokenType.OPERATOR_DOT  // used for JsonMemberAccess
+//			&& this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR  // used for piping commands
+//			&& this.lookahead().type().name().startsWith("OPERATOR_")   // any other is used for binary expressions
+//			){
+//				CFWQueryToken binaryOperator = this.consumeToken();
+//				expressionRightPart = parseBinaryExpressionPart(context, expressionRightPart, binaryOperator.type(), false );
+//			}
+			
+			
+			//-------------------------------------
+			// Check Assignment Part
+			QueryPart resultPart;
+			
+			if( ! (expressionLeftPart instanceof QueryPartAssignment) ) {
+				resultPart = new QueryPartBinaryExpression(currentContext, expressionLeftPart, operatorType, expressionRightPart);
+			}else {
+				
+				QueryPartAssignment assignment = (QueryPartAssignment)expressionLeftPart;
+				QueryPartBinaryExpression expression = new QueryPartBinaryExpression(currentContext, assignment.getRightSide(), operatorType, expressionRightPart);
+				resultPart = new QueryPartAssignment(currentContext, assignment.getLeftSide(), expression);
+				
+			}
+			
 		addTrace("End Part", "Binary Expression", "");
 		
-		QueryPartBinaryExpression expression = new QueryPartBinaryExpression(currentContext, firstPart, operatorType, secondPart);
-		
-
-		return expression;
+		return resultPart;
 		
 		// following is outdated, kept here in case any more problems arise.
 		//----------------------------------
