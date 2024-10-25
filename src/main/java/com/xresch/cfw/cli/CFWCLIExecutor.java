@@ -69,7 +69,7 @@ public class CFWCLIExecutor {
 				ArrayList<String> commandAndParams = CFW.Utils.Text.splitQuotesAware(" ", command, true, true, true, false);
 				
 				ProcessBuilder builder = new ProcessBuilder(commandAndParams);
-
+				builder.redirectErrorStream(true);
 				if(directory != null) {
 					builder.directory(directory);
 				}
@@ -81,22 +81,12 @@ public class CFWCLIExecutor {
 		
 		
 	}
-	
+		
 	/***************************************************************************
 	 * 
 	 * 
 	 ***************************************************************************/
 	public void execute(OutputStream out) throws IOException, InterruptedException {
-		
-		
-	}
-	
-	
-	/***************************************************************************
-	 * 
-	 * 
-	 ***************************************************************************/
-	public void execute(OutputStream out, OutputStream err) throws IOException, InterruptedException {
 		
 		for(ArrayList<ProcessBuilder> pipeline : pipelines) {
 			
@@ -107,12 +97,10 @@ public class CFWCLIExecutor {
 				last = processes.get(processes.size() - 1);
 	
 			    last.getInputStream().transferTo(out);
-			    last.getErrorStream().transferTo(err);
 			    last.waitFor();
 			}finally {
 				if(last != null) {
 					last.getInputStream().close();
-					
 				}
 			}
 		}

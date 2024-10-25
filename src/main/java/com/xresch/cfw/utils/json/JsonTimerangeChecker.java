@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -73,6 +74,7 @@ public class JsonTimerangeChecker {
 	}
 	/************************************************************
 	 * Check if the specified JsonObject is in the timerange.
+	 * Always returns true if the specified fieldname is null or empty.
 	 * Returns false on parsing error.
 	 * @param object to check if it is in the time range
 	 * @param returnTrueOnNull if null values should be considered in range  
@@ -80,8 +82,12 @@ public class JsonTimerangeChecker {
 	 ************************************************************/
 	public boolean isInTimerange(JsonObject object, boolean returnTrueOnNull) throws ParseException {
 		
-		JsonElement element = object.get(fieldname);
+		if (Strings.isNullOrEmpty(fieldname)) {
+			return true;
+		}
 		
+		
+		JsonElement element = object.get(fieldname);
 		if(element == null || element.isJsonNull()) {
 			return (returnTrueOnNull) ? true : false;
 		}

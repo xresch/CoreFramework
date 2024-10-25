@@ -12,6 +12,7 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
@@ -183,7 +184,7 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 					int compareResult = 0;
 					for(String fieldname : fieldnames) {
 						
-						compareResult = _CFWQueryCommandCommon.compareByFieldname(o1, o2, fieldname, isReverseNulls);
+						compareResult = _CFWQueryCommon.compareByFieldname(o1, o2, fieldname, isReverseNulls);
 
 						if(compareResult != 0) {
 							break;

@@ -1,20 +1,32 @@
-package com.xresch.cfw.features.query.commands;
+package com.xresch.cfw.features.query;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.query.EnhancedJsonObject;
-import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartGroup;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
+import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
+/**************************************************************************************************************
+ * 
+ * Class contains common functions used over multiple classes.
+ * 
+ * @author Reto Scheiwiller
+ * 
+ * (c) Copyright 2024
+ * 
+ * @license MIT-License
+ **************************************************************************************************************/
+public class _CFWQueryCommon {
 
-public class _CFWQueryCommandCommon {
-
+	
 	
 	/***********************************************************************************************
 	 * Used for sorting fields
@@ -103,6 +115,41 @@ public class _CFWQueryCommandCommon {
 			}
 		}
 		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public static void createHTTPResponseExceptionResult(CFWQueryContext context, LinkedBlockingQueue<EnhancedJsonObject> outQueue, CFWHttpResponse response, Exception e) throws ParseException {
+		
+		EnhancedJsonObject exceptionObject = new EnhancedJsonObject();
+		exceptionObject.addProperty("Key", "Exception" );
+		exceptionObject.addProperty("Value", CFW.Utils.Text.stacktraceToString(e) );
+		outQueue.add( exceptionObject );
+		
+		exceptionObject = new EnhancedJsonObject();
+		exceptionObject.addProperty("Key", "Status" );
+		exceptionObject.addProperty("Value", response.getStatus() );
+		outQueue.add( exceptionObject );
+		exceptionObject = new EnhancedJsonObject();
+		exceptionObject.addProperty("Key", "HTTPHeaders" );
+		exceptionObject.add("Value", CFW.JSON.objectToJsonElement(response.getHeaders()) );
+		outQueue.add( exceptionObject );
+		
+		exceptionObject = new EnhancedJsonObject();
+		exceptionObject.addProperty("Key", "ResponseBody" );
+		exceptionObject.addProperty("Value", response.getResponseBody() );
+		outQueue.add( exceptionObject );
+				
+		//-------------------------
+		// Value Formatter
+		JsonArray listFormatterParams = new JsonArray();
+		listFormatterParams.add("list");
+		listFormatterParams.add("none");
+		listFormatterParams.add("0px");
+		listFormatterParams.add(true);
+		QueryPartValue listFormatter = QueryPartValue.newJson(listFormatterParams);
+		CFWQueryCommandFormatField.addFormatter(context, "Value", listFormatter);
 	}
 	
 }

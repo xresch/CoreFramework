@@ -280,9 +280,9 @@ The following query uses the unbox command to keep some of the original fields(f
 | filter 
 	line ~= "^[^#].*"
 | set
-	metric = extract(line, "^(.*?)\{.*")
+	metric = extract(line, "^([^\s]*?)[ \{].*")
 	fields = extract(line, "^.*?(\{.*?\}).*")
-	value = extract(line, "^.*?\} (.*)")
+	value = extract(line, "^.* (.*)")
 	fields = tojson(replace(fields, ",}", "}"))
 | formatfield fields=list</code></pre>	
 

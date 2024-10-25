@@ -11,6 +11,7 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
@@ -69,7 +70,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return _CFWQueryCommandCommon.getFilterOperatorDescipriontHTML();
+		return _CFWQueryCommon.getFilterOperatorDescipriontHTML();
 		
 	}
 
@@ -92,7 +93,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 			evaluationGroup = new QueryPartGroup(parent.getContext());
 		}
 		
-		_CFWQueryCommandCommon.createFilterEvaluatiooGroup(parser, parts, COMMAND_NAME, evaluationGroup);;
+		_CFWQueryCommon.createFilterEvaluatiooGroup(parser, parts, COMMAND_NAME, evaluationGroup);;
 		
 	}
 	

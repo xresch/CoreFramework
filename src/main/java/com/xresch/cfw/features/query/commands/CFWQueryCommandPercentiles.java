@@ -13,6 +13,7 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
@@ -164,7 +165,7 @@ public class CFWQueryCommandPercentiles extends CFWQueryCommand {
 					@Override
 					public int compare(EnhancedJsonObject o1, EnhancedJsonObject o2) {
 						
-						return _CFWQueryCommandCommon.compareByFieldname(o1, o2, fieldname, false);
+						return _CFWQueryCommon.compareByFieldname(o1, o2, fieldname, false);
 
 					}
 				};
