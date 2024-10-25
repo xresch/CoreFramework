@@ -1,18 +1,13 @@
 package com.xresch.cfw.extensions.cli;
 
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import org.w3c.dom.Document;
+import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.cli.CFWCLIExecutor;
 import com.xresch.cfw.datahandling.CFWField;
@@ -25,15 +20,11 @@ import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query._CFWQueryCommonStringParser;
-import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
+import com.xresch.cfw.features.query._CFWQueryCommonStringParser.CFWQueryStringParserType;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.utils.CFWHttp;
-import com.xresch.cfw.utils.CFWHttp.CFWHttpAuthMethod;
-import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
-import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
-import com.xresch.cfw.validation.CustomValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 	
 /**************************************************************************************************************
@@ -43,9 +34,12 @@ import com.xresch.cfw.validation.NotNullOrEmptyValidator;
  **************************************************************************************************************/
 public class CFWQuerySourceCLI extends CFWQuerySource {
 
+	private static Logger logger = CFWLog.getLogger(WidgetCLIResults.class.getName());
+	
 	private static final String PARAM_AS		= "as";
 	private static final String PARAM_DIR 		= "dir";
 	private static final String PARAM_COMMANDS 	= "commands";
+	private static final String PARAM_TIMEOUT 	= "timeout";
 	
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
@@ -53,55 +47,6 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 	
 	private QueryPartValue listFormatter = null;
 
-	public enum CFWQuerySourceCLIType {
-
-		  json("Parse the response into a json object or array.")
-		, html("Parse the response as HTML and convert it into a flat table.")
-		, htmltables("Parse the response as HTML and extracts all table data found in the HTML.")
-		, htmltree("Parse the response as HTML and convert it into a json structure.")
-		, xml("Parse the response as XML and convert it into a flat table.")
-		, xmltree("Parse the response as XML and convert it into a json structure.")
-		, plain("Parse the response as plain text and convert it to a single record with field 'response'.")
-		, http("Parse the response as HTTP and creates a single record containing HTTP status, headers and body.")
-		, lines("Parse the response as text and return every line as its own record.")
-		;
-		
-		//==============================
-		// Caches
-		private static TreeSet<String> enumNames = null;		
-		
-		//==============================
-		// Fields
-		private String shortDescription;
-
-		private CFWQuerySourceCLIType(String shortDescription) {
-			this.shortDescription = shortDescription;
-		}
-				
-		public String shortDescription() { return this.shortDescription; }
-		
-		/********************************************************************************************
-		 * Returns a set with all names
-		 ********************************************************************************************/
-		public static TreeSet<String> getNames() {
-			if(enumNames == null) {
-				enumNames = new TreeSet<>();
-				
-				for(CFWQuerySourceCLIType unit : CFWQuerySourceCLIType.values()) {
-					enumNames.add(unit.name());
-				}
-			}
-			return enumNames;
-		}
-		
-		/********************************************************************************************
-		 * 
-		 ********************************************************************************************/
-		public static boolean has(String enumName) {
-			return getNames().contains(enumName);
-		}
-
-	}
 	
 	/******************************************************************
 	 *
@@ -152,8 +97,8 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		// Create As-Option List
 		StringBuilder asOptionList = new StringBuilder("<ul>");
 		
-		for(String type : CFWQuerySourceCLIType.getNames()){
-			CFWQuerySourceCLIType current = CFWQuerySourceCLIType.valueOf(type);
+		for(String type : CFWQueryStringParserType.getNames()){
+			CFWQueryStringParserType current = CFWQueryStringParserType.valueOf(type);
 			asOptionList.append("<li><b>"+type+":&nbsp;</b>"+current.shortDescription()+"</li>");
 		}
 		asOptionList.append("</ul>");
@@ -211,11 +156,17 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 								.disableSanitization()
 						)
 				
+				.addField(
+						CFWField.newInteger(FormFieldType.TEXTAREA, PARAM_TIMEOUT)
+						.setDescription("(Optional)The timeout in seconds (default: 120).")
+						.setValue(124)
+						)
+				
 							
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_AS)
 						.setDescription("(Optional)Define how the response should be parsed, default is 'lines'. Options: "
-								 					+CFW.JSON.toJSON( CFWQuerySourceCLIType.getNames()))
+								 					+CFW.JSON.toJSON( CFWQueryStringParserType.getNames()))
 						.addValidator(new NotNullOrEmptyValidator())
 						.disableSanitization()
 						)
@@ -254,14 +205,14 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		if(Strings.isNullOrEmpty(parseAs)) { parseAs = "lines"; };
 		parseAs = parseAs.trim().toLowerCase();
 		
-		if( !CFWQuerySourceCLIType.has(parseAs) ){
+		if( !CFWQueryStringParserType.has(parseAs) ){
 			this.getParent().getContext().addMessageError("source cli: value as='"+parseAs+"' is not supported."
 														 +" Available options: "
-														 +CFW.JSON.toJSON( CFWQuerySourceCLIType.getNames()) );
+														 +CFW.JSON.toJSON( CFWQueryStringParserType.getNames()) );
 			return;
 		}
 		
-		CFWQuerySourceCLIType type = CFWQuerySourceCLIType.valueOf(parseAs);
+		CFWQueryStringParserType type = CFWQueryStringParserType.valueOf(parseAs);
 		
 		
 		//------------------------------------
@@ -270,41 +221,57 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 
 		//------------------------------------
 		// Get Commands
-		
 		String commands = (String) parameters.getField(PARAM_COMMANDS).getValue();
 		
-		//----------------------------------------
-		// Send Request and Fetch Data
-		CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands); 
+		//------------------------------------
+		// Get timeout
+		Integer timeout = (Integer) parameters.getField(PARAM_TIMEOUT).getValue();
+		if(timeout == null) {
+			timeout = 120;
+		}
 		
+		//----------------------------------------
+		// Execute Command
+		ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
+		
+		CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands, resultStream); 
+		
+		//will wait until done
+		executor.execute();
+		executor.waitForCompletionOrTimeout(timeout);
+		
+		//----------------------------------------
+		// Get Data
+		String dataString = new String(resultStream.toByteArray());
+
 		//------------------------------------
 		// Parse Data
-//		try {
-//			ArrayList<EnhancedJsonObject> result = _CFWQueryCommonStringParser.parse(type, response);
-//			
-//			//------------------------------------
-//			// Json Timeframe Checker
-//			String timefield = (String)parameters.getField(PARAM_TIMEFIELD).getValue();
-//			String timeformat = (String)parameters.getField(PARAM_TIMEFORMAT).getValue();	
-//			JsonTimerangeChecker timerangeChecker = 
-//					new JsonTimerangeChecker(timefield, timeformat, earliestMillis, latestMillis);
-//
-//			//------------------------------------
-//			// Filter by Time Range
-//			if(result != null && !result.isEmpty()) {
-//
-//				for(EnhancedJsonObject current : result) {
-//
-//					if(timerangeChecker.isInTimerange(current.getWrappedObject(), false)) {
-//						result.add(current);
-//					}
-//				}
-//			}
-//			
-//		}catch(Exception e) {
-//			_CFWQueryCommon.createHTTPResponseExceptionResult(this.parent.getContext(), outQueue, response, e);
-//			return;
-//		}
+		try {
+			ArrayList<EnhancedJsonObject> result = _CFWQueryCommonStringParser.parse(type, dataString);
+			
+			//------------------------------------
+			// Json Timeframe Checker
+			String timefield = (String)parameters.getField(PARAM_TIMEFIELD).getValue();
+			String timeformat = (String)parameters.getField(PARAM_TIMEFORMAT).getValue();	
+			JsonTimerangeChecker timerangeChecker = 
+					new JsonTimerangeChecker(timefield, timeformat, earliestMillis, latestMillis);
+
+			//------------------------------------
+			// Filter by Time Range
+			if(result != null && !result.isEmpty()) {
+
+				for(EnhancedJsonObject current : result) {
+
+					if(timerangeChecker.isInTimerange(current.getWrappedObject(), false)) {
+						outQueue.add(current);
+					}
+				}
+			}
+			
+		}catch(Exception e) {
+			new CFWLog(logger).severe("source cli: Error while creating result: "+e, e);
+			return;
+		}
 			
 	}
 

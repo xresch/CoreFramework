@@ -1,328 +1,35 @@
 
 <div id="manual-toc"></div>
 
-<p>The web source is fetching data from a URL and can parse it in various ways. 
-This can be useful to call REST API's and such. This source supports the use of Basic Authentication and HTTP Headers. </p>
+<p>With the cli source you can execute commands on the command line of your application server.</p>
 
 <h2>List of As-Options</h2>
-<p>This source allows to parse the response of request in various ways, following a list of the available as-options(Default: json):</p>
+<p>This source allows to parse the response of request in various ways, following a list of the available as-options(Default: lines):</p>
 {asOptionPlaceholder}
 
-<h2>Parse As JSON</h2>
-<p>Following is a basic example that fetches user data from a public test API:</p>
-<pre><code class="language-cfwquery">| source web 
-	method="GET"
-	url="https://jsonplaceholder.typicode.com/users"</code></pre>
-
-<p>At the time when this tutorial was written, above API returned an array of 10 records with the following data structure:</p>
-
-<pre><code class="language-cfwquery"> {
-    "id": 1,
-    "username": "Bret",
-    "name": "Leanne Graham"
-    "email": "Sincere@april.biz",
-    "phone": "1-770-736-8031 x56442",
-    "website": "hildegard.org",
-    "address": {
-      "street": "Kulas Light",
-      "suite": "Apt. 556",
-      "city": "Gwenborough",
-      "zipcode": "92998-3874",
-      "geo": {
-        "lat": "-37.3159",
-        "lng": "81.1496"
-      }
-    },
-    "company": {
-      "name": "Romaguera-Crona",
-      "catchPhrase": "Multi-layered client-server neural-net",
-      "bs": "harness real-time e-markets"
-    },
-  },</code></pre>
-
-
-<p>To further process the above data, we can 'flatten' the structure using the unbox command.
-The following query uses the unbox command to keep some of the original fields(firstname, username, email) and unbox some of the data structures(address, geo, company):</p>
-<pre><code class="language-cfwquery">| source web 
-	method="GET"
-	url="https://jsonplaceholder.typicode.com/users"
-| rename 
-	name=firstname # rename this, else would be overridden by company.name
-| unbox 
-	firstname  # keep firstname
-	username   # keep username
-	email      # keep email
-	address    # unbox all fields from address
-	address.geo  # unbox all fields from address.geo
-	company    # unbox all fields from company 
-	replace=true
-| remove geo # remove geo as it was unboxed already</code></pre>
-
-
-<p>The result for the above query would look like the following:</p>
-<table class="table table-striped table-hover table-sm">
-	<thead>
-		<th><div>firstname</div></th>
-		<th><div>username</div></th>
-		<th><div>email</div></th>
-		<th><div>street</div></th>
-		<th><div>suite</div></th>
-		<th><div>city</div></th>
-		<th><div>zipcode</div></th>
-		<th><div>lat</div></th>
-		<th><div>lng</div></th>
-		<th><div>name</div></th>
-		<th><div>catchPhrase</div></th>
-		<th><div>bs</div></th>
-	</thead>
-	<tbody>
-		<tr class="cfwRecordContainer">
-			<td><span>Leanne Graham</span></td>
-			<td><span>Bret</span></td>
-			<td><span>Sincere@april.biz</span></td>
-			<td><span>Kulas Light</span></td>
-			<td><span>Apt. 556</span></td>
-			<td><span>Gwenborough</span></td>
-			<td><span>92998-3874</span></td>
-			<td><span>-37.3159</span></td>
-			<td><span>81.1496</span></td>
-			<td><span>Romaguera-Crona</span></td>
-			<td><span>Multi-layered client-server neural-net</span></td>
-			<td><span>harness real-time e-markets</span></td>
-		</tr>
-		<tr class="cfwRecordContainer">
-			<td><span>Ervin Howell</span></td>
-			<td><span>Antonette</span></td>
-			<td><span>Shanna@melissa.tv</span></td>
-			<td><span>Victor Plains</span></td>
-			<td><span>Suite 879</span></td>
-			<td><span>Wisokyburgh</span></td>
-			<td><span>90566-7771</span></td>
-			<td><span>-43.9509</span></td>
-			<td><span>-34.4618</span></td>
-			<td><span>Deckow-Crist</span></td>
-			<td><span>Proactive didactic contingency</span></td>
-			<td><span>synergize scalable supply-chains</span></td>
-		</tr>
-		<tr class="cfwRecordContainer">
-			<td><span>Clementine Bauch</span></td>
-			<td><span>Samantha</span></td>
-			<td><span>Nathan@yesenia.net</span></td>
-			<td><span>Douglas Extension</span></td>
-			<td><span>Suite 847</span></td>
-			<td><span>McKenziehaven</span></td>
-			<td><span>59590-4157</span></td>
-			<td><span>-68.6102</span></td>
-			<td><span>-47.0653</span></td>
-			<td><span>Romaguera-Jacobson</span></td>
-			<td><span>Face to face bifurcated interface</span></td>
-			<td><span>e-enable strategic applications</span></td>
-		</tr>
-		<tr class="cfwRecordContainer">
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-			<td><span>...</span></td>
-		</tr>
-	</tbody>
-</table>
-
-
-<p>In case the URL you need to call needs Basic Authentication, specify username and password on the source.</p>
-<p><b class="badge-danger pl-1 pr-1">IMPORTANT:</b> In the examples the credentials are plain text, you might consider storing them in "Tools &gt;&gt; Credentials" and using the credentials()-function.</p>
-<pre><code class="language-cfwquery">#########################################
-# Basic
-| source web 
-	url="http://www.httpbin.org/basic-auth/testUsername/testPassword"
-	#auth="basic" # this is default
-	username='testUsername'
-	password='testPassword'
-;
-#########################################
-# Basic (Alternative)
-| source web 
-	url="http://www.httpbin.org/basic-auth/testUsername/testPassword"
-	auth="basic_header" # adds the authentication directly as a http header
-	username='testUsername'
-	password='testPassword'
-;
-#########################################
-# Digest
-| source web 
-	url="http://www.httpbin.org/digest-auth/auth/testUsername/testPassword/MD5"
-	auth="digest"
-	username='testUsername'
-	password='testPassword'
-| formatfield headers = list
-;
-#########################################
-# Bearer Token
-| source web 
-	url="http://httpbin.org/bearer"
-	headers={ 'accept': 'application/json', "Authorization": "Bearer wh0need5-c00kIe5-1f-theycanh4ve-t1r4m15u"}
-;
-
+<h2>Basic example</h2>
+<p>Here is a basic example how you can use this source: </p>
+<pre><code class="language-cfwquery">| source cli 
+	as=plain # defines how the output should be parsed
+	dir="Z:\Repositories\CoreFramework" # defines the working directory. If empty, uses the working directory of the application. 
+	commands=`
+		###################################
+		# Bash: Execute a command 
+		###################################
+		"C:\Program Files\Git\bin\bash.exe" -c "java -version"
+		
+		###################################
+		# Bash: Execute a command with pipes
+		###################################
+		"C:\Program Files\Git\bin\bash.exe" -c "ps -ef | grep 'bash'"
+		
+		###################################
+		# CMD: Execute a command
+		###################################
+		cmd /c mvn install
+		`
+	timeout=120
 </code></pre>
-	
-	
-<p>In case the URL needs specific headers, for example a token, you can add headers in JSON format as follows:</p>
-<pre><code class="language-cfwquery"># Below source is basically the following curl:
-# curl -X GET "http://httpbin.org/bearer" -H "accept: application/json" -H "Authorization: Bearer wh0need5-c00kIe5-1f-theycanh4ve-t1r4m15u"
-| source web 
-	url="http://httpbin.org/bearer"
-	headers={ 'accept': 'application/json', "Authorization": "Bearer wh0need5-c00kIe5-1f-theycanh4ve-t1r4m15u"}</code></pre>	
-
-
-
-<p>A request body can be defined as follows. Be aware that you might need to specify the header 'Content Type' depending on the API you are calling:</p>
-<pre><code class="language-cfwquery">| source web 
-	method="POST"
-	url="https://jsonplaceholder.typicode.com/posts"
-	headers={'Content-Type': 'application/json; charset=UTF-8'}
-	body={
-		    "title": "foo",
-		    "body": "bar",
-		    "userId": 2
-		}</code></pre>	
-		
-		
-		
-<h2>Parse As HTML</h2>
-<p>Following is an example how to fetch data and parse the response as HTML. The response will be a flat table containing all elements from the HTML tree:</p>
-<pre><code class="language-cfwquery">| source web 
-	as="html"
-	method="GET"
-	url="https://www.nasa.gov"
-| sort key
-| filter
-	text != ""
-| unbox 
-	attributes.id
-	attributes.class</code></pre>	
-
-
-
-<h2>Parse As HTML with Structure</h2>
-<p>Using 'as=htmltree'  will also parse as HTML, but retains the tree structure of the elements:</p>
-<pre><code class="language-cfwquery">| source web 
-	as="htmltree"
-	method="GET"
-	url="https://www.xresch.com"
-| unbox children
-| unbox children
-| unbox children
-| sort key </code></pre>	
-
-
-<h2>Parse As HTML and Extract Tables</h2>
-<p>Using 'as=htmltables' will parse as HTML and extract all the tables from the response:</p>
-<pre><code class="language-cfwquery">| source web 
-	as="htmltables"
-	method="GET"
-	url="https://en.wikipedia.org/wiki/List_of_animal_names"
-| filter 
-	tableindex > 0
-	length(data) > 0
-| unbox data replace = true</code></pre>	
-
-
-
-<h2>Parse As XML</h2>
-<p>Following is an example how to fetch data and parse the response as XML. The response will be a flat table containing all elements from the XML tree:</p>
-<pre><code class="language-cfwquery">| source web 
-	as="xml"
-	method="GET"
-	url="https://run.mocky.io/v3/7d94a2d4-ac28-4a31-b295-bacca4269027"
-	/* Above Mock URL returned at some point in history:
-	&lt;record>
-   		&lt;firstname>Aurora&lt;/firstname>
-   		&lt;lastname>Testonia&lt;/lastname>
-   		&lt;country>Ireland&lt;/country>
-   		&lt;dessert withcream="true" creamWipped="yes please">Tiramisu&lt;/dessert>
-	&lt;/record> */
-| sort key</code></pre>	
-
-
-<h2>Parse As XML with Structure</h2>
-<p>Using 'as=xmltree' will also parse as XML, but retains the tree structure of the elements:</p>
-<pre><code class="language-cfwquery">| source web 
-	as="xmltree"
-	method="GET"
-	url="https://run.mocky.io/v3/7d94a2d4-ac28-4a31-b295-bacca4269027"
-	/* Above Mock URL returned at some point in history:
-	&lt;record>
-   		&lt;firstname>Aurora&lt;/firstname>
-   		&lt;lastname>Testonia&lt;/lastname>
-   		&lt;country>Ireland&lt;/country>
-   		&lt;dessert withcream="true" creamWipped="yes please">Tiramisu&lt;/dessert>
-	&lt;/record> */
-| unbox children
-| unbox children
-| sort key </code></pre>	
-
-
-
-<h2>Parse As Lines</h2>
-<p>Following is an example how to fetch data and parse the response as lines:</p>
-<pre><code class="language-cfwquery">| source web 
-	as="lines"
-	method="GET"
-	#url="https://jsonplaceholder.typicode.com/users"
-	url="http://localhost:8888/metrics"
-| filter 
-	line ~= "^[^#].*"
-| set
-	metric = extract(line, "^(.*?)\{.*")
-	fields = extract(line, "^.*?(\{.*?\}).*")
-	value = extract(line, "^.*?\} (.*)")
-	fields = tojson(replace(fields, ",}", "}"))
-| formatfield fields=list</code></pre>	
-
-
-
-<h2>Fetching Data From JIRA</h2>
-<p>Following is an example how to fetch data from the API of the well known project management tool JIRA:</p>
-<pre><code class="language-cfwquery">| source web 
-    method="GET"
-    url="https://jira.acme.com/rest/api/2/search"
-    username="yourApiUser"
-    password="yourAPIpassword"
-    headers={'Content-Type': 'application/json; charset=UTF-8', 'accept': 'application/json'}
-    body=`{"jql": "resolution = Unresolved AND created >= '-1d' ORDER BY created DESC, updated DESC", "maxResults": 10} `
-| unbox issues replace=true
-| unbox issues replace=true
-| rename 
-    id="ID" 
-    key="KEY"
-    self="URL"
-| set 
-	"PARENT_ID" = fields.parent.id
-	"PARENT_KEY" = fields.parent.key 
-	"PARENT_URL" = fields.parent.self 	
-	"TITLE" = fields.summary					
- 	"ASSIGNEE" = fields.assignee.name 			
- 	"ASSIGNEE_EMAIL" = fields.assignee.emailAddress 	
- 	"REPORTER" = fields.reporter.name
- 	"REPORTER_EMAIL" = fields.reporter.emailAddress 
-  	"STATUS" = fields.status.name 
-	"CREATED" = fields.created
-	"UPDATED" = fields.updated
-| remove expand, fields
-| set
-    CREATED = timeparse("yyyy-MM-dd'T'HH:mm:ss.SSSZ", CREATED)
-    UPDATED = timeparse("yyyy-MM-dd'T'HH:mm:ss.SSSZ", UPDATED)
-| formatfield 
-    [fields, issues] = list
-    [CREATED, UPDATED] = date</code></pre>	
-
 
 
 

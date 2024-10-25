@@ -1465,6 +1465,7 @@ pre {
 .word-break-keep{ word-break: keep-all; }
 .word-wrap-break{ word-wrap: break-word; }
 .word-wrap-none{  white-space: nowrap;}
+.word-wrap-preline{  white-space: pre-line; }
 
 .textarea-nowrap {
   white-space: pre;

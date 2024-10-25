@@ -57,7 +57,7 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 	 * Return if the feature is active by default or if the admin has to enable it.
 	 ************************************************************************************/
 	public boolean activeByDefault() {
-		return true;
+		return false;
 	};
 	
 	/************************************************************************************
@@ -72,7 +72,7 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 
 		//----------------------------------
 		// Register Widget
-		CFW.Registry.Widgets.add(new WidgetCLIResults());
+		//CFW.Registry.Widgets.add(new WidgetCLIResults());
 		
 		//----------------------------------
 		// Register Sources
@@ -84,7 +84,7 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 				new ManualPage(FEATURE_NAME)
 					.faicon("fas fa-code")
 					.addPermission(FeatureCLIExtensions.PERMISSION_CLI_EXTENSIONS)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "widget_cfw_webextensions_evaluateresponse.html")
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "widget_cfw_cli.html")
 			);
 	}
 

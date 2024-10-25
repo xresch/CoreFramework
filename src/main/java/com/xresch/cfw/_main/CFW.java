@@ -13,6 +13,7 @@ import com.xresch.cfw.cli.CFWCommandLineInterface;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWRegistryObjects;
 import com.xresch.cfw.db.CFWDB;
+import com.xresch.cfw.extensions.cli.FeatureCLIExtensions;
 import com.xresch.cfw.extensions.databases.FeatureDBExtensions;
 import com.xresch.cfw.extensions.databases.generic.FeatureDBExtensionsGenericJDBC;
 import com.xresch.cfw.extensions.databases.mssql.FeatureDBExtensionsMSSQL;
@@ -518,6 +519,7 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureDBExtensionsOracle.class);
 		CFW.Registry.Features.addFeature(FeatureDBExtensionsGenericJDBC.class);
 		CFW.Registry.Features.addFeature(FeatureInfluxDB.class);
+		CFW.Registry.Features.addFeature(FeatureCLIExtensions.class);
 		CFW.Registry.Features.addFeature(FeatureWebExtensions.class);
 		
 		//---------------------------
