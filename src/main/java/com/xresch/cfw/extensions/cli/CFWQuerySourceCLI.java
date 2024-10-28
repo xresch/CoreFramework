@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.cli.CFWCLIExecutor;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -145,7 +144,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_DIR)
-							.setDescription("The working directory where the commands should be executed.")
+							.setDescription("The working directory where the commands should be executed. (Default: \""+getDefaultFolderDescription()+"\")")
 							.addValidator(new NotNullOrEmptyValidator())
 							.disableSanitization()
 					)
@@ -173,16 +172,31 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_TIMEFIELD)
-							.setDescription("(Optional)The field of the response that contains the time when using as=json.")	
+							.setDescription("(Optional)The column of the result that contains the time.")	
 					)
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_TIMEFORMAT)
-							.setDescription("(Optional)The format of the time in the time field when using as=json. (Default: 'epoch').")	
+							.setDescription("(Optional)The format of the time in the time column. (Default: 'epoch').")	
 							.setValue("epoch")
 					)
 			;
 	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private String getDefaultFolderDescription() {
+		
+		String defaultDir = CFW.DB.Config.getConfigAsString(FeatureCLIExtensions.CONFIG_CATEGORY, FeatureCLIExtensions.CONFIG_DEFAULT_WORKDIR); 
+		if(Strings.isNullOrEmpty(defaultDir)) {
+			defaultDir = "App Root Directory";
+		}
+		
+		return defaultDir;
+	}
+
+	
 	
 	/******************************************************************
 	 *

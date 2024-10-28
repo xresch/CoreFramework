@@ -1,11 +1,31 @@
 
 <div id="manual-toc"></div>
 
-<p>With the cli source you can execute commands on the command line of your application server.</p>
+<p>With the cli source you can execute commands on the command line of your application server. The result of this command will contain the merged 
+standard and error outputs of the executed commands. You can define how the </p>
+
+<h2>Command Line Privileges</h2>
+<p>The commands will be executed with the the application user and therefore use the same privileges. 
+If executions fail because of access denied or similar issues, an administrator might have to grant the user additional rights.
+This can highly depend on your admin's mood. To increase the chances for success, it is suggested to invite for a Tiramisu (or two)
+before the asking for more privileges takes place.
+</p>
 
 <h2>List of As-Options</h2>
 <p>This source allows to parse the response of request in various ways, following a list of the available as-options(Default: lines):</p>
 {asOptionPlaceholder}
+
+<h2>Examples: Single Command</h2>
+<p>Here are some very basic examples of how to execute a single command. For commands other than cmp and powershell on windows, 
+you probably need to specify a fully qualified path or execute them with cmd/powershell.</p>
+
+<p><b>CMD:</b></p>			<pre><code class="language-cfwquery">| source cli commands=`cmd /c dir`</code></pre>
+<p><b>Powershell:</b></p>	<pre><code class="language-cfwquery">| source cli commands=`powershell Get-ChildItem`</code></pre>
+<p><b>Git Bash:</b></p>		<pre><code class="language-cfwquery">| source cli commands=`"C:\Program Files\Git\bin\bash.exe" -c "ls -la"`</code></pre>
+<p><b>Maven:</b></p>		<pre><code class="language-cfwquery">| source cli commands=`mvn.cmd install`
+#or...
+| source cli commands=`cmd /c mvn install`</code></pre>
+
 
 <h2>Basic example</h2>
 <p>Here is a basic example how you can use this source: </p>

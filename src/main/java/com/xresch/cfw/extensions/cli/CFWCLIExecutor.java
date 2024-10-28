@@ -1,4 +1,4 @@
-package com.xresch.cfw.cli;
+package com.xresch.cfw.extensions.cli;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,8 +8,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * Takes one or multiple commands that should be executed on the command line of the server.
@@ -20,6 +24,8 @@ import com.xresch.cfw._main.CFW;
  **************************************************************************************************************/
 public class CFWCLIExecutor implements Runnable {
 	
+	private static Logger logger = CFWLog.getLogger(CFWCLIExecutor.class.getName());
+	
 	
 	private ArrayList<ArrayList<ProcessBuilder>> pipelines = new ArrayList<>();
 	
@@ -28,6 +34,7 @@ public class CFWCLIExecutor implements Runnable {
 	private boolean isCompleted = false;
 	
 	Thread thread;
+	private Exception exceptionDuringRun = null;
 	
 	/***************************************************************************
 	 * 
@@ -46,10 +53,12 @@ public class CFWCLIExecutor implements Runnable {
 		this.out = out;
 		//--------------------------------
 		// Directory
-		if(workingDir == null) { workingDir = ""; }
+		if(Strings.isNullOrEmpty(workingDir)) {
+			workingDir = CFW.DB.Config.getConfigAsString(FeatureCLIExtensions.CONFIG_CATEGORY, FeatureCLIExtensions.CONFIG_DEFAULT_WORKDIR); 
+		}
 		
 		File directory = null;
-		if( ! workingDir.isBlank() ) {
+		if( workingDir != null && ! workingDir.isBlank() ) {
 			directory = new File(workingDir);
 			
 			if(!directory.exists()) {
@@ -57,7 +66,6 @@ public class CFWCLIExecutor implements Runnable {
 			}
 		}
 			
-		
 		//because \r might be an issue
 		cliCommands = cliCommands.replaceAll("\r\n", "\n");
 		
@@ -90,8 +98,7 @@ public class CFWCLIExecutor implements Runnable {
 			}
 			
 		}
-		
-		
+			
 	}
 		
 	/***************************************************************************
@@ -101,7 +108,7 @@ public class CFWCLIExecutor implements Runnable {
 	public void execute() throws IOException, InterruptedException {
 		
 		thread = new Thread(this);
-		
+
 		thread.start();
 	}
 	
@@ -109,7 +116,7 @@ public class CFWCLIExecutor implements Runnable {
 	 * 
 	 * 
 	 ***************************************************************************/
-	public void waitForCompletionOrTimeout(long timeoutSeconds) {
+	public void waitForCompletionOrTimeout(long timeoutSeconds) throws Exception {
 		
 		long timeoutMillis = timeoutSeconds * 1000;
 		try {
@@ -122,11 +129,14 @@ public class CFWCLIExecutor implements Runnable {
 					thread.interrupt();
 					break;
 				}
-			}	
+			}
+			
+			if(exceptionDuringRun != null) {
+				throw exceptionDuringRun;
+			}
 			
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			new CFWLog(logger).severe("Thread got interrupted while executing CLI commands.", e);
 		}
 		
 		
@@ -140,6 +150,7 @@ public class CFWCLIExecutor implements Runnable {
 	public void run() {
 		
 		isCompleted = false;
+		exceptionDuringRun = null;
 		
 		try {
 			for(ArrayList<ProcessBuilder> pipeline : pipelines) {
@@ -170,7 +181,7 @@ public class CFWCLIExecutor implements Runnable {
 				}
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
+			exceptionDuringRun = e;
 		}finally {
 			isCompleted = true;
 		}

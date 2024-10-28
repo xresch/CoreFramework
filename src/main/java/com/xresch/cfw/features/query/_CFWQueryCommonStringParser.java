@@ -302,7 +302,7 @@ public class _CFWQueryCommonStringParser {
 		//------------------------------------
 		// Parse Data	
 		EnhancedJsonObject object = new EnhancedJsonObject();
-		object.addProperty("response", data);
+		object.addProperty("result", data);
 		result.add( object );
 			
 		return result;

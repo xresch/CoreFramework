@@ -6,7 +6,9 @@ import java.util.logging.Logger;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
@@ -31,9 +33,14 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 	
 	// Fields
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.extensions.cli.resources";
-
+	
 	public static final String FEATURE_NAME = "CLI Extensions";
+	
 	public static final String PERMISSION_CLI_EXTENSIONS = FEATURE_NAME;
+	
+	public static final String CONFIG_CATEGORY = FEATURE_NAME;
+	public static final String CONFIG_DEFAULT_WORKDIR = "Default Working Directory";
+	
 	public static final String WIDGET_PREFIX = "cfw_cliextensions";
 	public static final String WIDGET_CATEGORY_CLI = "CLI";
 	
@@ -94,14 +101,31 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 	@Override
 	public void initializeDB() {			
 		
-		//----------------------------------
+		//============================================================
 		// Permissions
+		//============================================================
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_CLI_EXTENSIONS, FeatureUserManagement.CATEGORY_USER)
 					.description("Allows to use the CLI Extensions(Widgets, Sources etc...)."),
 				true,
 				false);
 		
+		//============================================================
+		// CONFIGURATION
+		//============================================================
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration(CONFIG_CATEGORY, CONFIG_DEFAULT_WORKDIR)
+				.description("The default working directory. If this is not set, the default will be the working directory of the application process.")
+				.type(FormFieldType.TEXT)
+		);
 		
 	}
 	
