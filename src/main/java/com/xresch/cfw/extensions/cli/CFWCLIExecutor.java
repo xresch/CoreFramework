@@ -66,6 +66,15 @@ public class CFWCLIExecutor implements Runnable {
 			}
 		}
 			
+		parseCommandsCreatePipelines(cliCommands, directory);
+			
+	}
+	
+	/***************************************************************************
+	 * 
+	 * 
+	 ***************************************************************************/
+	private void parseCommandsCreatePipelines(String cliCommands, File directory) {
 		//because \r might be an issue
 		cliCommands = cliCommands.replaceAll("\r\n", "\n");
 		
@@ -76,7 +85,7 @@ public class CFWCLIExecutor implements Runnable {
 			
 			if(currentLine.trim().startsWith("#")) { continue; }
 			
-			ArrayList<String> commands = CFW.Utils.Text.splitQuotesAware("|", currentLine, true, true, true, false);
+			ArrayList<String> commands = CFW.Utils.Text.splitQuotesAware("|", currentLine, true, true, true, true);
 			
 			ArrayList<ProcessBuilder> pipeline = new ArrayList<>();
 			for(String command : commands) {
@@ -98,7 +107,6 @@ public class CFWCLIExecutor implements Runnable {
 			}
 			
 		}
-			
 	}
 		
 	/***************************************************************************

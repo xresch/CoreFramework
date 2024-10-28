@@ -121,7 +121,8 @@ public class CFWUtilsText {
 		char separatorFirstChar = separator.charAt(0); // performance improvement, check first char instead of doing a substring every time
 		int cursor = 0;			// position in parsing
 		int startPos = -1; 		// used as starting position of a value
-
+		char quoteChar = '½';
+		
 		ArrayList<String> result = new ArrayList<>();
 		
 		int LENGTH = textToSplit.length();
@@ -134,7 +135,6 @@ public class CFWUtilsText {
 		
 		//-----------------------------
 		// Parse String
-		outer:
 		while( cursor < LENGTH ) {
 			
 			if(cursor > 0) { previous = textToSplit.charAt(cursor-1); }
@@ -148,24 +148,22 @@ public class CFWUtilsText {
 				
 				//----------------------------
 				// Handle Quoted Text
+				quoteChar = '½';
 				if((isDoubleQuotesAware && current == '"') 
 				|| (isSingleQuotesAware && current == '\'')
 				|| (isBackticksAware && current == '`')
 				)  { 
 
-					char quote = current;
-					
-					inner:
+					quoteChar = current;
+
 					while(cursor < LENGTH-1 ) {
-						previous = current;
 						current = textToSplit.charAt(++cursor);
 		
-						if(current == quote 
-						&& previous != '\\'
+						if(current == quoteChar 
+						&& !isCharacterEscaped(textToSplit, cursor)
 						) {
 							cursor++;
-							break inner;
-							
+							break;
 						}
 					}
 				} 
@@ -175,16 +173,32 @@ public class CFWUtilsText {
 				if(cursor < LENGTH ) {
 					if(cursor > 0) { previous = textToSplit.charAt(cursor-1); }
 					current = textToSplit.charAt(cursor);
-	
-					if(current == separatorFirstChar
-					&& (!escapedSeparators || previous != '\\')
-					&& textToSplit.substring(cursor).startsWith(separator)) {
-	
-						result.add( textToSplit.substring(startPos, cursor) );
-						//cursor++;
-						break;
+
+					if(current == separatorFirstChar) {
+						
+						if( escapedSeparators && isCharacterEscaped(textToSplit, cursor) ) {
+							textToSplit = textToSplit.substring(0, cursor-1) + textToSplit.substring(cursor);
+							LENGTH = textToSplit.length();
+						}
+						
+						if( textToSplit.substring(cursor).startsWith(separator) ) {
+							//--------------------------
+							// Create Part
+							String splittedPart = textToSplit.substring(startPos, cursor);
+							if(quoteChar != '½') {		
+								splittedPart = trimCharFromText(splittedPart, quoteChar, true);
+								// a mighty sacrifice of a double-escape to the Java God of Escapades
+								splittedPart = splittedPart.replaceAll("\\\\"+quoteChar, ""+quoteChar);
+							}
+							
+							//--------------------------
+							// Add to Results
+							result.add( splittedPart );
+							//cursor++;
+							break;
+						}
+
 					}
-					
 					cursor++;
 				}
 			}
@@ -206,12 +220,68 @@ public class CFWUtilsText {
 			//----------------------------
 			// Grab Last
 			if(cursor >= LENGTH ) {
-				result.add( textToSplit.substring(startPos, cursor) );
+				//--------------------------
+				// Create Part
+				String splittedPart = textToSplit.substring(startPos, cursor);
+				if(quoteChar != '½') {		
+					splittedPart = trimCharFromText(splittedPart, quoteChar, true);
+					// a mighty sacrifice of a double-escape to the Java God of Escapades
+					splittedPart = splittedPart.replaceAll("\\\\"+quoteChar, ""+quoteChar);
+				}
+				
+				//--------------------------
+				// Add to Results
+				result.add( splittedPart );
 				break;
 			}
 		}
 	
 		return result;
+	}
+
+	/*******************************************************************
+	 * Removes the character from the start and end of the string.
+	 * 
+	 * @param text the text to be trimmed
+	 * @param quoteChar the character to remove
+	 * @param mustBeBoth true if it has to be at both start&end to be replaced
+	 *    
+	 *******************************************************************/
+	private static String trimCharFromText(String text, char quoteChar, boolean mustBeBoth) {
+		// Remove quotes at start/end
+		if(mustBeBoth) {
+			if(text.startsWith(""+quoteChar)
+			&& text.endsWith(""+quoteChar)) { 
+				text = text.substring(1);
+				text = text.substring(0, text.length() -1);
+			}
+		}else {
+			if(text.startsWith(""+quoteChar)) { text = text.substring(1); }
+			if(text.endsWith(""+quoteChar)) { text = text.substring(0, text.length() -1); }
+		}
+			
+		return text;
+	}
+	
+	/*******************************************************************
+	 * Checks if the current character at the cursor is escaped with \.
+	 * This method also checks for escaped backslashes.
+	 * 
+	 * @param text the text to check
+	 * @param cursor the position of the character
+	 *    
+	 *******************************************************************/
+	public static boolean isCharacterEscaped(String text, int cursor) {
+
+		int count = 0;
+		while(cursor >= 0 ) {
+		  cursor--;
+		  if(text.charAt(cursor) == '\\' ) { count++; }
+		  else{ break; }
+		}
+		
+		return   (count % 2) != 0 ;
+		
 	}
 	
 	/*******************************************************************
