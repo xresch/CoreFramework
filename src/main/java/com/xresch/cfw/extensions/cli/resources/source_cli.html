@@ -15,7 +15,7 @@ before the asking for more privileges takes place.
 <p>This source allows to parse the response of request in various ways, following a list of the available as-options(Default: lines):</p>
 {asOptionPlaceholder}
 
-<h2>Examples: Single Command</h2>
+<h2>Executing Single Command</h2>
 <p>Here are some very basic examples of how to execute a single command. For commands other than cmd and powershell on windows, 
 you probably need to specify a fully qualified path or execute them with cmd/powershell.</p>
 
@@ -26,9 +26,18 @@ you probably need to specify a fully qualified path or execute them with cmd/pow
 #or...
 | source cli commands=`cmd /c mvn install`</code></pre>
 
+<h2>Executing Piped Commands</h2>
+<p>The engine that executes commands allows to pipe commands together. You might need to escape the pipe symbol if you want to pass a 
+pipeline to a command:</p>
+<pre><code class="language-cfwquery">| source cli commands=`cmd /c echo "hello world" > file.txt | cmd /c type file.txt`
+# or with escaped pipe
+| source cli commands=`cmd /c echo "hello world" > file.txt \| type file.txt``</code></pre>
 
-<h2>Basic example</h2>
-<p>Here is a basic example how you can use this source: </p>
+
+<h2>Comments and Multiple Commands</h2>
+<p>Each line starting with a # is considered a command. 
+You can execute multiple commands separated by newline. 
+You can escape the newline with '\'. Blank lines are ignored: </p>
 <pre><code class="language-cfwquery">| source cli 
 	as=plain # defines how the output should be parsed
 	dir="Z:\Repositories\CoreFramework" # defines the working directory. If empty, uses the working directory of the application. 
