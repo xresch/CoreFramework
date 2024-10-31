@@ -14,6 +14,11 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -25,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.net.ssl.SSLContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +55,12 @@ import org.apache.hc.client5.http.impl.auth.NTLMSchemeFactory;
 import org.apache.hc.client5.http.impl.auth.SPNegoSchemeFactory;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
@@ -60,6 +71,9 @@ import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.ssl.SSLContexts;
+import org.apache.hc.core5.ssl.TrustStrategy;
 import org.graalvm.polyglot.Value;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSManager;
@@ -74,6 +88,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -113,6 +128,9 @@ public class CFWHttp {
 		, KERBEROS 
 	}
 
+	// done as static to increase performance
+	private static BasicHttpClientConnectionManager trustAllAndClientCertConnectionManager;
+	
 	private static final Counter outgoingHTTPCallsCounter = Counter.build()
 	         .name("cfw_http_outgoing_calls_total")
 	         .help("Number of outgoing HTTP calls executed with the CFWHTTP utils.")
@@ -1031,12 +1049,17 @@ public class CFWHttp {
 //						}
 					}
 					
+					
+
 					//----------------------------------
 					// Create HTTP Client
 					
 					HttpClientBuilder clientBuilder = HttpClientBuilder.create();
 					httpClientAddProxy(clientBuilder, URL);
+					setSSLContext(clientBuilder);
 					
+				    //----------------------------------
+					// Set Auth mechanism
 					if(username != null) {
 						
 						//---------------------------------
@@ -1146,6 +1169,7 @@ public class CFWHttp {
 					outgoingHTTPCallsCounter.labels(method).inc();
 
 					CloseableHttpClient httpClient = clientBuilder.build();
+					
 					CFWHttpResponse response = instance.new CFWHttpResponse(httpClient, requestBase);
 					return response;
 					
@@ -1159,6 +1183,83 @@ public class CFWHttp {
 		}
 	}
 	
+	
+	/**************************************************************************************
+	 * Set SSL Context
+	 * @throws KeyStoreException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws KeyManagementException 
+	 **************************************************************************************/
+    private static void addKeyStore(SSLContextBuilder builder) throws Exception {
+    	
+    	//-------------------------------------
+    	// Settings
+    	String path = CFWProperties.HTTPS_KEYSTORE_PATH; // or .p12
+    	String keystorePW = CFWProperties.HTTPS_KEYSTORE_PASSWORD;
+    	String keyManagerPW = CFWProperties.HTTPS_KEYMANAGER_PASSWORD;
+		
+    	String keystoreType = "PKCS12";
+		if(path.endsWith("jks")) {
+			keystoreType = "JKS";
+		}
+    	
+    	//-------------------------------------
+    	// Load Keystore
+		InputStream keyStoreStream = instance.getClass().getResourceAsStream(path);
+	    KeyStore keyStore = KeyStore.getInstance(keystoreType); // or "PKCS12"
+	    keyStore.load(keyStoreStream, keystorePW.toCharArray());
+
+    	//-------------------------------------
+    	// Add to Context Builder
+	    if( !Strings.isNullOrEmpty(keyManagerPW) ) {
+	    	builder.loadKeyMaterial(keyStore, keyManagerPW.toCharArray());
+	    }else {
+	    	builder.loadKeyMaterial(keyStore, null);
+	    }
+		
+		
+    }
+    
+    
+	/**************************************************************************************
+	 * Set SSL Context
+	 * 
+	 **************************************************************************************/
+	private static void setSSLContext(HttpClientBuilder builder) throws Exception {
+		
+		//-------------------------------
+		// Initialize Connection Manager
+		if(trustAllAndClientCertConnectionManager == null) {
+			//-------------------------------
+			// Trust anything
+			final TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
+		    
+			//-------------------------------
+			// Create SSL Context Builder
+			final SSLContextBuilder sslContextBuilder = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy); 
+			addKeyStore(sslContextBuilder);
+			
+			//-------------------------------
+			// Connection Factory
+			final SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContextBuilder.build(), NoopHostnameVerifier.INSTANCE);
+			
+			final Registry<ConnectionSocketFactory> socketFactoryRegistry = 
+		        RegistryBuilder.<ConnectionSocketFactory> create()
+		        .register("https", sslsf )
+		        .register("http", new PlainConnectionSocketFactory() )
+		        .build();
+			
+			//-------------------------------
+			// Connection Manager
+		    trustAllAndClientCertConnectionManager =
+		        new BasicHttpClientConnectionManager(socketFactoryRegistry);
+		}
+		
+		//-------------------------------
+		// Add to builder
+	    builder.setConnectionManager(trustAllAndClientCertConnectionManager);
+
+	}
 	
 	/******************************************************************************************************
 	 * Inner Class for HTTP Response
