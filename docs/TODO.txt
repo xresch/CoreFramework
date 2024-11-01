@@ -165,6 +165,7 @@ DONE
 
 ------- current -------
 
+
 ------- v.10.0.0 -------
 - BREAKING CODE CHANGE: Refactoring of ContextSettingsChangeListener.onDelete() to ContextSettingsChangeListener.onDeleteOrDeactivate()
 - BREAKING CODE CHANGE: Refactoring of CFW.Math.bigPercentile(), changing order of parameters
