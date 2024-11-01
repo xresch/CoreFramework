@@ -172,6 +172,7 @@ DONE
 - BREAKING CODE CHANGE: Refactoring needed for Parameter propagation
 - BREAKING CODE CHANGE: Changes of CFWHttp to use Apache HttpClient
 - NEW FEATURE: Postgres Extensions
+- NEW FEATURE: CLI Extensions
 - NEW DISPLAY: New display as option "Properties"
 
 - UI: Modal panels now have a slighty shine through backround. As you sometimes just want to see what is going on behind there.
@@ -206,6 +207,7 @@ DONE
 - Query: Added #TRACE, #PARTS and #TOKENS flag for debugging (add to first line of Query)
 - Query added sources:
 	- csv
+	- cli
 	
 - Query: Added Commands:
 	- chartfields (plus alias formatchart)
