@@ -164,6 +164,8 @@ DONE
 ====
 
 ------- current -------
+
+------- v.10.0.0 -------
 - BREAKING CODE CHANGE: Refactoring of ContextSettingsChangeListener.onDelete() to ContextSettingsChangeListener.onDeleteOrDeactivate()
 - BREAKING CODE CHANGE: Refactoring of CFW.Math.bigPercentile(), changing order of parameters
 - BREAKING CODE CHANGE: Refactoring needed for Parameter propagation
@@ -171,7 +173,7 @@ DONE
 - NEW FEATURE: Postgres Extensions
 - NEW DISPLAY: New display as option "Properties"
 
-- UI: Modal panels now have a blurred & shine through backround. As you sometimes just want to see what is going on behind there.
+- UI: Modal panels now have a slighty shine through backround. As you sometimes just want to see what is going on behind there.
 - UI: Default formats for true/false/null values take up less vertical space.
 - UI: Duration formats now show minutes and hours if they are zero when bigger intervals are not zero.
 - UI: Boolean Switches will show as labels when disabled.
