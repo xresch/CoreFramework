@@ -61,5 +61,18 @@ You can escape the newline with '\'. Blank lines are ignored: </p>
 </code></pre>
 
 
+<h2>Environment Variables</h2>
+<p>You can set additional environment variables or override existing ones using the env-parameter: </p>
+<pre><code class="language-cfwquery">| source cli 
+	env = {
+		 "MY_VAR": "Hi!"
+		,"MY_MESSAGE": "Eat more Tiramisu!" 
+	}
+	commands = `cmd /c echo %MY_VAR% %MY_MESSAGE%`
+</code></pre>
+
+
+
+
 
 

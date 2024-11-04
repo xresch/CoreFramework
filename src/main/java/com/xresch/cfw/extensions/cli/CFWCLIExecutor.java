@@ -8,16 +8,23 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * Takes one or multiple commands that should be executed on the command line of the server.
  * 
+ * The cliCommands will act as follows:
+ * <ul>
+ * 		<li><b>Lines:&nbsp;</b> Each line contains a command, or multiple commands separated with the pipe symbol "|".</li>
+ * 		<li><b>Escape Newlines:&nbsp;</b> Newlines can be escaped using '\';  </li>
+ * 		<li><b>Hash Comments:&nbsp;</b>Lines starting with a Hash are considered comments. Hashes not at the beginning of the line are handled as they would be by your operating system.</li>
+ * 		<li><b>Working Directory:&nbsp;</b> Can only be specified globally. Depending on your OS. </li>
+ * </ul>
  * 
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
@@ -27,6 +34,7 @@ public class CFWCLIExecutor implements Runnable {
 	private static Logger logger = CFWLog.getLogger(CFWCLIExecutor.class.getName());
 	
 	
+	private Map<String,String> envVariables = null;
 	private ArrayList<ArrayList<ProcessBuilder>> pipelines = new ArrayList<>();
 	
 	private OutputStream out;
@@ -36,21 +44,28 @@ public class CFWCLIExecutor implements Runnable {
 	Thread thread;
 	private Exception exceptionDuringRun = null;
 	
+	
 	/***************************************************************************
 	 * 
-	 * The cliCommands will act as follows:
-	 * <ul>
-	 * 		<li><b>Lines:&nbsp;</b> Each line contains a command, or multiple commands separated with the pipe symbol "|".</li>
-	 * 		<li><b>Escape Newlines:&nbsp;</b> Newlines can be escaped using '\';  </li>
-	 * 		<li><b>Hash Comments:&nbsp;</b>Lines starting with a Hash are considered comments. Hashes not at the beginning of the line are handled as they would be by your operating system.</li>
-	 * 		<li><b>Working Directory:&nbsp;</b> Can only be specified globally. Depending on your OS. </li>
-	 * </ul>
 	 * @param workingDir the working directory, if null or empty will use the working directory of the current process.
-	 * @param cliCommands
+	 * @param cliCommands see class documentation for details.
+	 * @param out the stream where stdout and stderr should be written.
+	 * 
 	 ***************************************************************************/
 	public CFWCLIExecutor(String workingDir, String cliCommands, OutputStream out) {
-		
+		this(workingDir, cliCommands, null, out);
+	}
+	/***************************************************************************
+	 * 
+	 * @param workingDir the working directory, if null or empty will use the working directory of the current process.
+	 * @param cliCommands see class documentation for details.
+	 * @param out the stream where stdout and stderr should be written.
+	 ***************************************************************************/
+	public CFWCLIExecutor(String workingDir, String cliCommands, Map<String,String> envVariables, OutputStream out) {
+
+		this.envVariables = envVariables;
 		this.out = out;
+		
 		//--------------------------------
 		// Directory
 		if(Strings.isNullOrEmpty(workingDir)) {
@@ -97,9 +112,10 @@ public class CFWCLIExecutor implements Runnable {
 				ProcessBuilder builder = new ProcessBuilder(commandAndParams);
 				builder.redirectErrorStream(true);
 				
-				if(directory != null) {
-					builder.directory(directory);
-				}
+				if(directory != null) {		builder.directory(directory); }
+				if(envVariables != null) { 	builder.environment().putAll(envVariables);}
+				
+				
 				pipeline.add(builder);   
 			}
 			if(!pipeline.isEmpty()) {
@@ -146,8 +162,7 @@ public class CFWCLIExecutor implements Runnable {
 		} catch (InterruptedException e) {
 			new CFWLog(logger).severe("Thread got interrupted while executing CLI commands.", e);
 		}
-		
-		
+
 	}
 	
 	/***************************************************************************

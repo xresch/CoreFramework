@@ -3,11 +3,15 @@ package com.xresch.cfw.extensions.cli;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -39,26 +43,17 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 	private static final String PARAM_DIR 		= "dir";
 	private static final String PARAM_COMMANDS 	= "commands";
 	private static final String PARAM_TIMEOUT 	= "timeout";
+	private static final String PARAM_ENV		= "env";
 	
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
 	
-	
-	private QueryPartValue listFormatter = null;
 
-	
 	/******************************************************************
 	 *
 	 ******************************************************************/
 	public CFWQuerySourceCLI(CFWQuery parent) {
 		super(parent);
-
-		JsonArray listFormatterParams = new JsonArray();
-		listFormatterParams.add("list");
-		listFormatterParams.add("none");
-		listFormatterParams.add("0px");
-		listFormatterParams.add(true);
-		listFormatter = QueryPartValue.newJson(listFormatterParams);
 	}
 
 	
@@ -156,6 +151,13 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 						)
 				
 				.addField(
+						CFWField.newString(FormFieldType.TEXT, PARAM_ENV)
+							.setDescription("(Optional)Additional environment variables which should be passed to the command line.")
+							.addValidator(new NotNullOrEmptyValidator())
+							.disableSanitization()
+					)
+				
+				.addField(
 						CFWField.newInteger(FormFieldType.TEXTAREA, PARAM_TIMEOUT)
 						.setDescription("(Optional)The timeout in seconds (default: 120).")
 						.setValue(124)
@@ -244,11 +246,25 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 			timeout = 120;
 		}
 		
+		//------------------------------------
+		// Get Environment Variables
+		String envString = (String) parameters.getField(PARAM_ENV).getValue();
+		
+		HashMap<String, String> envMap = new HashMap<>();
+		
+		if(envString != null && envString.startsWith("{")) {
+			JsonObject headersObject = CFW.JSON.fromJson(envString).getAsJsonObject();
+			
+			for(Entry<String, JsonElement> entry : headersObject.entrySet()) {
+				envMap.put(entry.getKey(), entry.getValue().getAsString());
+			}
+		}
+		
 		//----------------------------------------
 		// Execute Command
 		ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
 		
-		CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands, resultStream); 
+		CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands, envMap, resultStream); 
 		
 		//will wait until done
 		executor.execute();
