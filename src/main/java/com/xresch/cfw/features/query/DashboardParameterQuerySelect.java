@@ -52,7 +52,7 @@ public class DashboardParameterQuerySelect extends ParameterDefinition {
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
 		CFWField settingsField = CFWField.newString(FormFieldType.QUERY_EDITOR, "JSON_QUERY_RESULT")
-										 .allowHTML(true);
+										 .disableSanitization();
 
 		if(fieldValue != null) {
 			settingsField.setValueConvert(fieldValue, true);
