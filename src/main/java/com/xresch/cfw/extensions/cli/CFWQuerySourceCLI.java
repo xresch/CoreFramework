@@ -295,11 +295,10 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		
 		//will wait until done
 		executor.execute();
-		executor.waitForCompletionOrTimeout(timeout);
-		
+
 		//----------------------------------------
 		// Get Data
-		String dataString = executor.getOutputStream().readHeadAndTail(head, tail, countSkipped);
+		String dataString = executor.readOutputOrTimeout(timeout, head, tail, countSkipped);
 
 		//------------------------------------
 		// Parse Data

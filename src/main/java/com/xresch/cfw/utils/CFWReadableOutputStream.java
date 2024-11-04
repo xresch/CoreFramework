@@ -56,6 +56,10 @@ public class CFWReadableOutputStream extends OutputStream{
 	 * Method should be called after the OutputStream has received all data.
 	 * If both params are <= 0 all lines will be read.
 	 * 
+	 * @param head number of lines to read from the start of the output
+	 * @param tail number of lines to read at the end of the output
+	 * @param addSkippedCount add number of lines to the output.
+	 * 
 	 ************************************************************************/
 	public String readHeadAndTail(int head, int tail, boolean addSkippedCount) {
 		

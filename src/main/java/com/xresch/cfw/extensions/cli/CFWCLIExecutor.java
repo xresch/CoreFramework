@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.EvictingQueue;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWReadableOutputStream;
@@ -159,6 +160,7 @@ public class CFWCLIExecutor implements Runnable {
 				if( (System.currentTimeMillis() - starttime) >= timeoutMillis ) {
 					thread.interrupt();
 					break;
+					//throw new Exception("Timeout of "+timeoutSeconds+" seconds reached while executing command line.");
 				}
 			}
 			
@@ -169,6 +171,81 @@ public class CFWCLIExecutor implements Runnable {
 		} catch (InterruptedException e) {
 			new CFWLog(logger).severe("Thread got interrupted while executing CLI commands.", e);
 		}
+
+	}
+	
+	/***************************************************************************
+	 * 
+	 * 
+	 ***************************************************************************/
+	public String readOutputOrTimeout(long timeoutSeconds, int head,int tail, boolean addSkippedCount) throws Exception {
+		
+		long timeoutMillis = timeoutSeconds * 1000;
+		
+		StringBuilder result = new StringBuilder();
+		try {
+			long starttime = System.currentTimeMillis();
+			
+			int linesReadHead = 0;
+			int skippedCount = 0;
+			EvictingQueue<String> tailedLines = EvictingQueue.create(tail);
+
+			while(!isCompleted) {
+				Thread.sleep(20);
+				
+				//-----------------------------
+				// Check Timeout
+				if( (System.currentTimeMillis() - starttime) >= timeoutMillis ) {
+					thread.interrupt();
+					break;
+				}
+				
+				//----------------------------------
+				// Read Head
+				while(out.hasLine() && linesReadHead < head) {
+					result.append(out.readLine()).append("\n");
+					linesReadHead++;
+				}
+								
+				//----------------------------------
+				// Read Tail
+				if(linesReadHead >= head) {
+					
+					while(out.hasLine() ) {
+						tailedLines.add(out.readLine());
+						if(tailedLines.size() >= tail) {
+							skippedCount++;
+						}
+					}
+				}
+
+			}
+			
+			//----------------------------------
+			// Add Skipped Count
+			if(addSkippedCount) {
+				
+				if(skippedCount > 1) {
+					result.append("[... "+(skippedCount-1)+" lines skipped ...]\n");
+				}
+			}
+			
+			//----------------------------------
+			// Read Tail
+			while( ! tailedLines.isEmpty() ) {
+				result.append(tailedLines.poll()).append("\n");
+			}
+			
+			
+			if(exceptionDuringRun != null) {
+				throw exceptionDuringRun;
+			}
+			
+		} catch (InterruptedException e) {
+			new CFWLog(logger).severe("Thread got interrupted while executing CLI commands.", e);
+		}
+		
+		return result.toString();
 
 	}
 	
