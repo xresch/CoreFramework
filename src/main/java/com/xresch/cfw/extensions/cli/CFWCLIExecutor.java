@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ import java.util.logging.Logger;
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.CFWReadableOutputStream;
 
 /**************************************************************************************************************
  * Takes one or multiple commands that should be executed on the command line of the server.
@@ -37,7 +37,7 @@ public class CFWCLIExecutor implements Runnable {
 	private Map<String,String> envVariables = null;
 	private ArrayList<ArrayList<ProcessBuilder>> pipelines = new ArrayList<>();
 	
-	private OutputStream out;
+	CFWReadableOutputStream out = new CFWReadableOutputStream();
 	
 	private boolean isCompleted = false;
 	
@@ -52,8 +52,8 @@ public class CFWCLIExecutor implements Runnable {
 	 * @param out the stream where stdout and stderr should be written.
 	 * 
 	 ***************************************************************************/
-	public CFWCLIExecutor(String workingDir, String cliCommands, OutputStream out) {
-		this(workingDir, cliCommands, null, out);
+	public CFWCLIExecutor(String workingDir, String cliCommands) {
+		this(workingDir, cliCommands, null);
 	}
 	/***************************************************************************
 	 * 
@@ -61,10 +61,9 @@ public class CFWCLIExecutor implements Runnable {
 	 * @param cliCommands see class documentation for details.
 	 * @param out the stream where stdout and stderr should be written.
 	 ***************************************************************************/
-	public CFWCLIExecutor(String workingDir, String cliCommands, Map<String,String> envVariables, OutputStream out) {
+	public CFWCLIExecutor(String workingDir, String cliCommands, Map<String,String> envVariables) {
 
 		this.envVariables = envVariables;
-		this.out = out;
 		
 		//--------------------------------
 		// Directory
@@ -83,6 +82,14 @@ public class CFWCLIExecutor implements Runnable {
 			
 		parseCommandsCreatePipelines(cliCommands, directory);
 			
+	}
+	
+	/***************************************************************************
+	 * 
+	 * 
+	 ***************************************************************************/
+	public CFWReadableOutputStream getOutputStream() {
+		return out;
 	}
 	
 	/***************************************************************************
@@ -162,6 +169,39 @@ public class CFWCLIExecutor implements Runnable {
 		} catch (InterruptedException e) {
 			new CFWLog(logger).severe("Thread got interrupted while executing CLI commands.", e);
 		}
+
+	}
+	
+	/***************************************************************************
+	 * 
+	 * 
+	 ***************************************************************************/
+	public String waitForCompletionAndReadOutput(long timeoutSeconds, int headLines, int tailLines) throws Exception {
+		
+		StringBuilder result = new StringBuilder();
+		
+		long timeoutMillis = timeoutSeconds * 1000;
+		try {
+			long starttime = System.currentTimeMillis();
+			
+			while(!isCompleted) {
+				Thread.sleep(20);
+				
+				if( (System.currentTimeMillis() - starttime) >= timeoutMillis ) {
+					thread.interrupt();
+					break;
+				}
+			}
+			
+			if(exceptionDuringRun != null) {
+				throw exceptionDuringRun;
+			}
+			
+		} catch (InterruptedException e) {
+			new CFWLog(logger).severe("Thread got interrupted while executing CLI commands.", e);
+		}
+		
+		return result.toString();
 
 	}
 	

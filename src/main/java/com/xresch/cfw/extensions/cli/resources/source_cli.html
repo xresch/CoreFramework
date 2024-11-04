@@ -71,6 +71,17 @@ You can escape the newline with '\'. Blank lines are ignored: </p>
 	commands = `cmd /c echo %MY_VAR% %MY_MESSAGE%`
 </code></pre>
 
+<h2>Reading Head And Tail</h2>
+<p>To only read the head and/or tail of an output, you can specify the number of lines to be read with the parameters 'head' and tail.
+The number of lines skipped will be added to the output as like '[... 19 lines skipped ...]'. If you don't want that information 
+you can turn it off by specifying 'countSkipped=false': </p>
+<pre><code class="language-cfwquery">| source cli 
+	commands=`cmd /c ipconfig`
+	head=10
+	tail=10
+	#countSkipped=false # true is default
+</code></pre>
+
 
 
 

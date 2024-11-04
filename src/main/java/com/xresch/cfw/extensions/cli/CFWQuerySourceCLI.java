@@ -27,6 +27,7 @@ import com.xresch.cfw.features.query._CFWQueryCommonStringParser.CFWQueryStringP
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.CFWReadableOutputStream;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 	
@@ -42,8 +43,11 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 	private static final String PARAM_AS		= "as";
 	private static final String PARAM_DIR 		= "dir";
 	private static final String PARAM_COMMANDS 	= "commands";
-	private static final String PARAM_TIMEOUT 	= "timeout";
 	private static final String PARAM_ENV		= "env";
+	private static final String PARAM_HEAD		= "head";
+	private static final String PARAM_TAIL		= "tail";
+	private static final String PARAM_COUNT_SKIPPED	= "countSkipped";
+	private static final String PARAM_TIMEOUT 	= "timeout";
 	
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
@@ -138,6 +142,14 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		return new CFWObject()
 				
 				.addField(
+						CFWField.newString(FormFieldType.TEXT, PARAM_AS)
+						.setDescription("(Optional)Define how the response should be parsed, default is 'lines'. Options: "
+								 					+CFW.JSON.toJSON( CFWQueryStringParserType.getNames()))
+						.addValidator(new NotNullOrEmptyValidator())
+						.disableSanitization()
+						)
+				
+				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_DIR)
 							.setDescription("The working directory where the commands should be executed. (Default: \""+getDefaultFolderDescription()+"\")")
 							.addValidator(new NotNullOrEmptyValidator())
@@ -158,18 +170,30 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 					)
 				
 				.addField(
+						CFWField.newInteger(FormFieldType.TEXT, PARAM_HEAD)
+							.setDescription("(Optional)Number of lines that should be read from the head(start) of the output.")
+							.disableSanitization()
+							.setValue(0)
+					)
+				
+				.addField(
+						CFWField.newInteger(FormFieldType.TEXT, PARAM_TAIL)
+							.setDescription("(Optional)Number of lines that should be read from the head(start) of the output.")
+							.disableSanitization()
+							.setValue(0)
+					)
+				
+				.addField(
+						CFWField.newBoolean(FormFieldType.TEXT, PARAM_COUNT_SKIPPED)
+						.setDescription("(Optional)If parameter head or tail is set, this parameter decides if skipped line count should be added in the output.(Default:true)")
+						.disableSanitization()
+						.setValue(true)
+						)
+				
+				.addField(
 						CFWField.newInteger(FormFieldType.TEXTAREA, PARAM_TIMEOUT)
 						.setDescription("(Optional)The timeout in seconds (default: 120).")
 						.setValue(124)
-						)
-				
-							
-				.addField(
-						CFWField.newString(FormFieldType.TEXT, PARAM_AS)
-						.setDescription("(Optional)Define how the response should be parsed, default is 'lines'. Options: "
-								 					+CFW.JSON.toJSON( CFWQueryStringParserType.getNames()))
-						.addValidator(new NotNullOrEmptyValidator())
-						.disableSanitization()
 						)
 				
 				.addField(
@@ -230,7 +254,6 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		
 		CFWQueryStringParserType type = CFWQueryStringParserType.valueOf(parseAs);
 		
-		
 		//------------------------------------
 		// Get DIR
 		String dir = (String) parameters.getField(PARAM_DIR).getValue();
@@ -245,6 +268,12 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		if(timeout == null) {
 			timeout = 120;
 		}
+		
+		//------------------------------------
+		// Get Head/Tail/Skipped
+		int head = (Integer) parameters.getField(PARAM_HEAD).getValue();
+		int tail = (Integer) parameters.getField(PARAM_TAIL).getValue();
+		boolean countSkipped = (Boolean) parameters.getField(PARAM_COUNT_SKIPPED).getValue();
 		
 		//------------------------------------
 		// Get Environment Variables
@@ -262,9 +291,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		
 		//----------------------------------------
 		// Execute Command
-		ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
-		
-		CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands, envMap, resultStream); 
+		CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands, envMap); 
 		
 		//will wait until done
 		executor.execute();
@@ -272,7 +299,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		
 		//----------------------------------------
 		// Get Data
-		String dataString = new String(resultStream.toByteArray());
+		String dataString = executor.getOutputStream().readHeadAndTail(head, tail, countSkipped);
 
 		//------------------------------------
 		// Parse Data
