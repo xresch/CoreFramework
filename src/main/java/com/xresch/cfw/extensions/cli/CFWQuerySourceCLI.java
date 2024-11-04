@@ -151,14 +151,14 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_DIR)
-							.setDescription("The working directory where the commands should be executed. (Default: \""+getDefaultFolderDescription()+"\")")
+							.setDescription("(Optional)The working directory where the commands should be executed. (Default: \""+getDefaultFolderDescription()+"\")")
 							.addValidator(new NotNullOrEmptyValidator())
 							.disableSanitization()
 					)
 
 				.addField(
 						CFWField.newString(FormFieldType.TEXTAREA, PARAM_COMMANDS)
-								.setDescription("(Optional)The body contents of the request. Setting the header 'Content-Type' might be needed(e.g. 'application/json; charset=UTF-8').")
+								.setDescription("The body contents of the request. Setting the header 'Content-Type' might be needed(e.g. 'application/json; charset=UTF-8').")
 								.disableSanitization()
 						)
 				
