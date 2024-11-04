@@ -55,7 +55,8 @@ public class ParameterDefinitionChartSettings extends ParameterDefinition {
 	@Override
 	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe, JsonObject  userSelectedParamValues) {
 
-		CFWField<CFWChartSettings> settingsField = CFWField.newChartSettings("JSON_VALUE");
+		CFWField<CFWChartSettings> settingsField = CFWField.newChartSettings("JSON_VALUE")
+														   .allowHTML(true);
 
 		CFWChartSettings settings = new CFWChartSettings((String)parameterValue);
 		settingsField.setValue(settings);

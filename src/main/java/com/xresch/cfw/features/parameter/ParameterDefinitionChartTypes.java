@@ -47,6 +47,7 @@ public class ParameterDefinitionChartTypes extends ParameterDefinition {
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
 		CFWField settingsField = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, "text")
+						.allowHTML(true)
 						.setValue("area");
 
 		return settingsField;

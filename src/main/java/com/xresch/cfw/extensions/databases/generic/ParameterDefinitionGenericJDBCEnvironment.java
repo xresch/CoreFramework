@@ -42,7 +42,8 @@ public class ParameterDefinitionGenericJDBCEnvironment extends ParameterDefiniti
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
-		CFWField settingsField = GenericJDBCSettingsFactory.createEnvironmentSelectorField();
+		CFWField settingsField = GenericJDBCSettingsFactory.createEnvironmentSelectorField()
+														   .allowHTML(true);
 				
 		if(fieldValue != null) {
 			settingsField.setValueConvert(fieldValue, true);

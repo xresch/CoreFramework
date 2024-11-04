@@ -46,7 +46,7 @@ public class ParameterDefinitionSelect extends ParameterDefinition {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
-		CFWField settingsField = CFWField.newValueLabel("JSON_VALUE");
+		CFWField settingsField = CFWField.newValueLabel("JSON_VALUE").allowHTML(true);
 
 		if(fieldValue != null) {
 			settingsField.setValueConvert(fieldValue, true);
@@ -62,7 +62,7 @@ public class ParameterDefinitionSelect extends ParameterDefinition {
 	@Override
 	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe, JsonObject  userSelectedParamValues) {
 
-		CFWField settingsField = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.VALUE);
+		CFWField settingsField = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.VALUE).allowHTML(true);
 
 		if(parameterValue !=null) {
 			LinkedHashMap<String, String> options = CFW.JSON.fromJsonLinkedHashMap(parameterValue.toString());

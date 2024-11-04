@@ -42,7 +42,7 @@ public class ParameterDefinitionMSSQLEnvironment extends ParameterDefinition {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
-		CFWField settingsField = MSSQLSettingsFactory.createEnvironmentSelectorField();
+		CFWField settingsField = MSSQLSettingsFactory.createEnvironmentSelectorField().allowHTML(true);
 				
 		if(fieldValue != null) {
 			settingsField.setValueConvert(fieldValue, true);

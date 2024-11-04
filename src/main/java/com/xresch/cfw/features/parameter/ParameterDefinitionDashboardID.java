@@ -48,6 +48,7 @@ public class ParameterDefinitionDashboardID extends ParameterDefinition {
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
 		CFWField settingsField = 
 				CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, LABEL)
+				.allowHTML(true)
 				.setValue(dashboardid)
 				;
 			

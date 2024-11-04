@@ -42,7 +42,7 @@ public class ParameterDefinitionMySQLEnvironment extends ParameterDefinition {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
-		CFWField settingsField = MySQLSettingsFactory.createEnvironmentSelectorField();
+		CFWField settingsField = MySQLSettingsFactory.createEnvironmentSelectorField().allowHTML(true);
 				
 		if(fieldValue != null) {
 			settingsField.setValueConvert(fieldValue, true);

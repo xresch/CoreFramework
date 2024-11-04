@@ -42,7 +42,8 @@ public class ParameterDefinitionBoolean extends ParameterDefinition {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
-		CFWField settingsField = CFWField.newBoolean(FormFieldType.BOOLEAN, LABEL);
+		CFWField settingsField = CFWField.newBoolean(FormFieldType.BOOLEAN, LABEL)
+										 .allowHTML(true);
 		
 		if(fieldValue != null) {
 			settingsField.setValueConvert(fieldValue, true);
