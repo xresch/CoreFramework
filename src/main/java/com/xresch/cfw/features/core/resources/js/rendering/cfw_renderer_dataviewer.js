@@ -26,6 +26,8 @@ function cfw_renderer_dataviewer(renderDef) {
 			rendererIndex: -1,
 			// Defines how the menu should be rendered
 			menu: 'default', // either 'default' | 'button' | 'none' | true | false 
+			// Toggle if the menu should include a download button for the data
+			download: false, 
 			// Defines how the pagination should be rendered
 			pagination: 'both', // either 'both' | 'top' | 'botton' | 'none' | true | false 
 			// The initial page to be drawn.
@@ -482,7 +484,21 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	if(initialRendererIndex != null && initialRendererIndex > -1){
 		selectedRendererIndex = initialRendererIndex;
 	}
+	
+	//--------------------------------------
+	// Display As
+	if(dataviewerSettings.download){
 		
+		html += 
+			'<div class="float-right ml-2">'
+				+'<label for="downloadButton">&nbsp;</label>'
+				+'<div name="downloadButton">'
+					+cfw_renderer_dataviewer_createDownloadButtonHTML(dataviewerID)
+				+'</div>'
+			+'</div>'
+			;
+	}
+	
 	//--------------------------------------
 	// Display As
 	if(dataviewerSettings.renderers.length > 1){
@@ -626,7 +642,62 @@ function cfw_renderer_dataviewer_createPageListItem(dataviewerID, page, label, i
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords, pageSize, pageActive) {
+function cfw_renderer_dataviewer_triggerDownload(dataviewerID, renderer) {
+	
+	let dataviewerDiv = $("#"+dataviewerID);
+	let renderDef = dataviewerDiv.data('renderDef');
+	let data = renderDef.data;
+
+	let renderedResult = CFW.render.getRenderer(renderer).render(renderDef);
+	let formattedData = renderedResult.find('code').text();
+	
+	
+	switch(renderer){
+		
+		case "csv": 
+			CFW.utils.downloadText("data.csv", formattedData); 
+		break;
+		
+		case "json": 
+			CFW.utils.downloadText("data.json", formattedData); 
+		break;
+		
+		case "xml": 
+			CFW.utils.downloadText("data.xml", formattedData); 
+		break;
+
+	}
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_dataviewer_createDownloadButtonHTML(dataviewerID) {
+	
+	var dropDownID = 'dropdownMenuButton'+CFW.utils.randomString(12);
+	var dropdownHTML = '<div class="dropdown d-inline">'
+		+ '<button  type="button" class="btn btn-sm btn-primary"'
+				+' id="'+dropDownID+'" '
+				+' data-toggle="dropdown" '
+				+' aria-haspopup="true" '
+				+' aria-expanded="false">'
+		+ '  <i class="fas fa-download"></i>'
+		+ '</button>'
+		+ '  <div class="dropdown-menu p-2" onclick="event.stopPropagation()"  aria-labelledby="'+dropDownID+'">'
+		     	+ '<a class="dropdown-item" onclick="cfw_renderer_dataviewer_triggerDownload(\''+dataviewerID+'\', \'csv\')">CSV</a>'
+		     	+ '<a class="dropdown-item" onclick="cfw_renderer_dataviewer_triggerDownload(\''+dataviewerID+'\', \'json\')">JSON</a>'
+		     	+ '<a class="dropdown-item" onclick="cfw_renderer_dataviewer_triggerDownload(\''+dataviewerID+'\', \'xml\')">XML</a>'
+		+'   </div>'
+		+'</div>';
+		
+	return dropdownHTML;
+
+}
+	
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords, pageSize, pageActive, download) {
 	//============================================
 	// Variables
 	

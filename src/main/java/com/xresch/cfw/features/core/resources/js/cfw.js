@@ -181,6 +181,24 @@ function cfw_utils_randomInt(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
 }
 
+/************************************************************************************************
+ * Triggers a download for the given text and the specified filename.
+ ************************************************************************************************/
+function cfw_utils_downloadText(filename, text) {
+ 
+  var element = document.createElement('a');
+  
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
 /**************************************************************************************
  * Converts a string values to the appropriate value.
  * @param fieldname name of the field, if starts with "JSON_", will parse as JSON.
@@ -5822,6 +5840,7 @@ var CFW = {
 		filterItems: cfw_utils_filterItems,
 		randomString: cfw_utils_randomString,
 		chainedOnload: cfw_utils_chainedOnload,
+		downloadText: cfw_utils_downloadText,
 		isNullOrEmpty: cfw_utils_isNullOrEmpty,
 		isTrue: cfw_utils_isTrue,
 		nullTo: cfw_utils_nullTo,
@@ -5831,6 +5850,7 @@ var CFW = {
 		randomInt: cfw_utils_randomInt,
 		clipboardRead: cfw_utils_clipboardRead,
 		clipboardWrite: cfw_utils_clipboardWrite,
+		
 	},
 	ui: {
 		createToggleButton: cfw_ui_createToggleButton,

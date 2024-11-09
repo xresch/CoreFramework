@@ -1047,8 +1047,6 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	rendererIndex = cfw_query_getRendererIndex(queryResult);		
 	options.labels = cfw_query_createLables(queryResult);	
 	
-	
-	
 	options.titleFields = ((queryResult.displaySettings.titlefields != null)) ? queryResult.displaySettings.titlefields : null;
 	options.titleFormat = ((queryResult.displaySettings.titleformat != null)) ? queryResult.displaySettings.titleformat : null;
 	
@@ -1103,6 +1101,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 					pagination: queryResult.displaySettings.pagination,
 					sizes: queryResult.displaySettings.sizes,
 					defaultsize: queryResult.displaySettings.defaultsize,
+					download: queryResult.displaySettings.download,
 					sortable: false,
 					renderers: [
 						{	label: 'Table',

@@ -483,8 +483,8 @@ function cfw_renderer_csv(renderDef) {
 	//-----------------------------------
 	// Target Element
 	let pre = $('<pre ondblclick="CFW.selection.selectElementContent(this)">');
-	//let pre = $('<pre>');
-	pre.append(pre);
+	let code = $('<code>');
+	pre.append(code);
 	
 	//-----------------------------------
 	// Headers
@@ -496,7 +496,7 @@ function cfw_renderer_csv(renderDef) {
 	}
 	// remove last semicolon
 	headers = headers.substring(0, headers.length-1);
-	pre.append(headers+"\r\n");
+	code.append(headers+"\r\n");
 	
 	//-----------------------------------
 	// Print Records
@@ -533,15 +533,15 @@ function cfw_renderer_csv(renderDef) {
 		
 		//=====================================
 		// Create Colored span
-		let span = $('<span>');
-		span.html(recordCSV+'</span>\r\n')
+		//let span = $('<span>');
+		//span.html(recordCSV+'</span>\r\n')
 		
 		//=====================================
 		// Add Styles
-		renderDef.colorizeElement(currentRecord, span, "bg");
-		renderDef.colorizeElement(currentRecord, span, "text");
+		//renderDef.colorizeElement(currentRecord, span, "bg");
+		//renderDef.colorizeElement(currentRecord, span, "text");
 		
-		pre.append(span);
+		code.append(recordCSV+'\r\n');
 	}
 
 	var wrapperDiv = $('<div class="flex-grow-1">');
@@ -550,46 +550,6 @@ function cfw_renderer_csv(renderDef) {
 }
 CFW.render.registerRenderer(CFW_RENDER_NAME_CSV,  new CFWRenderer(cfw_renderer_csv));
 
-/******************************************************************
- * 
- ******************************************************************/
-function cfw_renderer_title(renderDef) {
-		 
-	//-----------------------------------
-	// Render Specific settings
-	var defaultSettings = {
-		// this renderer has no additional settings
-	};
-	
-	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.title);
-	
-	//-----------------------------------
-	// Target Element
-	let resultDiv = $('<div class="w-100 h-100">');
-	
-	//-----------------------------------
-	// Print Records
-	for(let i = 0; i < renderDef.data.length; i++ ){
-		renderDef.visiblefields
-		let currentRecord = renderDef.data[i];
-		let recordTitle = renderDef.getTitleHTML(currentRecord);;
-
-		//=====================================
-		// Create Colored span
-		let wrapper = $('<div>');
-		wrapper.html(recordTitle)
-		
-		//=====================================
-		// Add Styles
-		renderDef.colorizeElement(currentRecord, wrapper, "bg");
-		renderDef.colorizeElement(currentRecord, wrapper, "text");
-		
-		resultDiv.append(wrapper);
-	}
-
-	return resultDiv;
-}
-CFW.render.registerRenderer(CFW_RENDER_NAME_TITLE,  new CFWRenderer(cfw_renderer_title));
 
 /******************************************************************
  * 
@@ -609,8 +569,8 @@ function cfw_renderer_xml(renderDef) {
 	// Target Element
 	
 	let pre = $('<pre ondblclick="CFW.selection.selectElementContent(this)">');
-	//let pre = $('<pre>');
-	pre.append(pre);
+	let code = $('<code>');
+	pre.append(code);
 	
 	//-----------------------------------
 	// Start
@@ -652,13 +612,54 @@ function cfw_renderer_xml(renderDef) {
 	
 	html += "</data>\r\n";
 
-	pre.text(html);
+	code.text(html);
 	
 	var wrapperDiv = $('<div class="flex-grow-1">');
 	wrapperDiv.append(pre);
 	return wrapperDiv;
 }
 CFW.render.registerRenderer(CFW_RENDER_NAME_XML,  new CFWRenderer(cfw_renderer_xml));
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_title(renderDef) {
+		 
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// this renderer has no additional settings
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.title);
+	
+	//-----------------------------------
+	// Target Element
+	let resultDiv = $('<div class="w-100 h-100">');
+	
+	//-----------------------------------
+	// Print Records
+	for(let i = 0; i < renderDef.data.length; i++ ){
+		renderDef.visiblefields
+		let currentRecord = renderDef.data[i];
+		let recordTitle = renderDef.getTitleHTML(currentRecord);;
+
+		//=====================================
+		// Create Colored span
+		let wrapper = $('<div>');
+		wrapper.html(recordTitle)
+		
+		//=====================================
+		// Add Styles
+		renderDef.colorizeElement(currentRecord, wrapper, "bg");
+		renderDef.colorizeElement(currentRecord, wrapper, "text");
+		
+		resultDiv.append(wrapper);
+	}
+
+	return resultDiv;
+}
+CFW.render.registerRenderer(CFW_RENDER_NAME_TITLE,  new CFWRenderer(cfw_renderer_title));
 
 /******************************************************************
  * 
