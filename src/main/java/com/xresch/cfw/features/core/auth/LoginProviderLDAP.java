@@ -28,6 +28,16 @@ public class LoginProviderLDAP implements LoginProviderInterface {
 	@Override
 	public User checkCredentials(String username, String password) {
 
+		//-------------------------------------
+		// Check empty Passwords
+		// Some LDAP Servers do not fail on empty passwords and login will be triggered
+		if(Strings.isNullOrEmpty(password)) {
+			new CFWLog(logger).warn("Password cannot be empty.");
+			return null;
+		}
+		
+		//-------------------------------------
+		// Authenticate
 		if(CFW.DB.Users.checkUsernameExists(username)) {
 			//--------------------------------
 			// Check User in DB			
@@ -57,9 +67,12 @@ public class LoginProviderLDAP implements LoginProviderInterface {
 	 * @return true if credentials are valid, false otherwise
 	 **********************************************************************/
 	private User authenticateAgainstLDAP(String username, String password) {
+		
 		Properties props = new Properties(); 
 		InitialDirContext context = null;
 		String userInNamespace = "";
+		
+
 		
 		try {
 		    props.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -98,6 +111,7 @@ public class LoginProviderLDAP implements LoginProviderInterface {
 	            authEnv.put(Context.PROVIDER_URL, CFWProperties.LDAP_URL);
 	            authEnv.put(Context.SECURITY_PRINCIPAL, userInNamespace);
 	            authEnv.put(Context.SECURITY_CREDENTIALS, password);
+	            
 	            // fails if wrong password
 	            new InitialDirContext(authEnv);
 	            
