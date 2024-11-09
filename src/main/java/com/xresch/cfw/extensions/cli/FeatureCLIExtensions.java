@@ -46,7 +46,7 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 	 ************************************************************************************/
 	@Override
 	public String getDescriptionForFeatureManagement() {
-		return "Extensions to execute command on the CLI of the application server.(Widgets, Source ...)";
+		return "Extensions to execute commands on the CLI of the application server.(Widgets, Source ...)";
 	};
 	
 	/************************************************************************************
@@ -80,7 +80,7 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 				new ManualPage(FEATURE_NAME)
 					.faicon("fas fa-code")
 					.addPermission(FeatureCLIExtensions.PERMISSION_CLI_EXTENSIONS)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "widget_cfw_cli.html")
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "manual_cli_extensions.html")
 			);
 	}
 
