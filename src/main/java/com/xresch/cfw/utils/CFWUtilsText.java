@@ -2,6 +2,11 @@ package com.xresch.cfw.utils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.xresch.cfw.datahandling.CFWField;
 
 /**************************************************************************************************************
  * 
@@ -12,6 +17,80 @@ public class CFWUtilsText {
 	
 	private static final CFWUtilsText INSTANCE = new CFWUtilsText();
 	private static AlphanumericComparator alphanumComparator = INSTANCE.new AlphanumericComparator();
+	
+	public enum CheckType {
+		CONTAINS
+		, DOES_NOT_CONTAIN
+		, STARTS_WITH
+		, ENDS_WITH
+		, EQUALS
+		, NOT_EQUALS
+		, MATCH_REGEX
+		, DO_NOT_MATCH_REGEX
+	}
+	
+	private static LinkedHashMap<String, String> checkTypeOptions = new LinkedHashMap<>();
+	static {
+		checkTypeOptions.put(CheckType.CONTAINS.toString(), "Contains");
+		checkTypeOptions.put(CheckType.DOES_NOT_CONTAIN.toString(), "Does Not Contain");
+		checkTypeOptions.put(CheckType.STARTS_WITH.toString(), "Starts With");
+		checkTypeOptions.put(CheckType.ENDS_WITH.toString(), "Ends With");
+		checkTypeOptions.put(CheckType.EQUALS.toString(), "Equals");
+		checkTypeOptions.put(CheckType.NOT_EQUALS.toString(), "Not Equals");
+		checkTypeOptions.put(CheckType.MATCH_REGEX.toString(), "Match Regex");
+		checkTypeOptions.put(CheckType.DO_NOT_MATCH_REGEX.toString(), "Does Not Match Regex");
+	}
+	
+	/*******************************************************************
+	 * 
+	 *******************************************************************/
+	public static CFWField<String> getCheckTypeOptionField(String fieldname, String label, String description) {
+		LinkedHashMap<String, String> clone = new LinkedHashMap<>();
+		clone.putAll(checkTypeOptions);
+		
+		return CFWField.newString(CFWField.FormFieldType.SELECT, fieldname)
+				.setLabel(label)
+				.setDescription(description)
+				.setOptions(clone);
+	}
+	
+	/*******************************************************************
+	 * Returns true if the condition matches.
+	 * 
+	 *******************************************************************/
+	public static boolean checkTextForContent(String checkType, String text, String checkFor) {
+		return checkTextForContent(CheckType.valueOf(checkType), text, checkFor);
+	}
+	/*******************************************************************
+	 * Returns true if the condition matches.
+	 * 
+	 *******************************************************************/
+	public static boolean checkTextForContent(CheckType checkType, String text, String checkFor) {
+	
+		switch (checkType) {
+		
+			case STARTS_WITH:		return text.startsWith(checkFor);
+			case ENDS_WITH:			return text.endsWith(checkFor);	
+			case CONTAINS:			return text.contains(checkFor);
+			case DOES_NOT_CONTAIN:	return text.contains(checkFor);	
+			case EQUALS:			return text.equals(checkFor);
+			case NOT_EQUALS:		return text.equals(checkFor);
+			
+			case MATCH_REGEX:
+				Pattern pattern = Pattern.compile(checkFor, Pattern.MULTILINE | Pattern.DOTALL);
+				Matcher matcher = pattern.matcher(text);
+				return matcher.find();
+				
+				
+			case DO_NOT_MATCH_REGEX:
+				Pattern pattern2 = Pattern.compile(checkFor, Pattern.MULTILINE | Pattern.DOTALL);
+				Matcher matcher2 = pattern2.matcher(text);
+				return !matcher2.find();
+
+		}
+		
+		return false;
+	}
 	
 	/*******************************************************************
 	 * 

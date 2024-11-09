@@ -59,31 +59,7 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 	private static final String PARAM_CHECK_TYPE = "CHECK_TYPE";
 	
 	private static final String PARAM_DEBUG_MODE = "DEBUG_MODE";
-
-
-
-	private enum CheckType {
-		CONTAINS
-		, DOES_NOT_CONTAIN
-		, STARTS_WITH
-		, ENDS_WITH
-		, EQUALS
-		, NOT_EQUALS
-		, MATCH_REGEX
-		, DO_NOT_MATCH_REGEX
-	}
 	
-	LinkedHashMap<String, String> checkTypeOptions = new LinkedHashMap<>();
-	{
-		checkTypeOptions.put(CheckType.CONTAINS.toString(), "Contains");
-		checkTypeOptions.put(CheckType.DOES_NOT_CONTAIN.toString(), "Does Not Contain");
-		checkTypeOptions.put(CheckType.STARTS_WITH.toString(), "Starts With");
-		checkTypeOptions.put(CheckType.ENDS_WITH.toString(), "Ends With");
-		checkTypeOptions.put(CheckType.EQUALS.toString(), "Equals");
-		checkTypeOptions.put(CheckType.NOT_EQUALS.toString(), "Not Equals");
-		checkTypeOptions.put(CheckType.MATCH_REGEX.toString(), "Match Regex");
-		checkTypeOptions.put(CheckType.DO_NOT_MATCH_REGEX.toString(), "Does Not Match Regex");
-	}
 	
 	// Returns the unique name of the widget. Has to be the same unique name as used in the javascript part.
 	@Override
@@ -175,12 +151,14 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 					)
 				
 				// Labels for the URL ?
-				.addField(CFWField.newString(CFWField.FormFieldType.SELECT, PARAM_CHECK_TYPE)
-						.setLabel("{!cfw_widget_webextensions_checktype!}")
-						.setDescription("{!cfw_widget_webextensions_checktype_desc!}")
-						.setOptions(checkTypeOptions)
-						.setValue("Contains")
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
+				.addField(
+						CFW.Utils.Text.getCheckTypeOptionField(
+								  PARAM_CHECK_TYPE
+								, "{!cfw_widget_webextensions_checktype!}"
+								, "{!cfw_widget_webextensions_checktype_desc!}"
+							)
+							.setValue("Contains")
+							.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
 					)
 
 				.addField(CFWField.newString(CFWField.FormFieldType.TEXTAREA, PARAM_CHECK_FOR)
@@ -343,46 +321,7 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 			if(Strings.isNullOrEmpty(checkFor)) {
 				result = true;
 			}else {
-				switch (CheckType.valueOf(checkType) ) {
-	
-					case STARTS_WITH:
-						result = response.getResponseBody().startsWith(checkFor);
-						break;
-	
-					case ENDS_WITH:
-						result = response.getResponseBody().endsWith(checkFor);
-						break;
-	
-					case CONTAINS:
-						result = response.getResponseBody().contains(checkFor);
-						break;
-							
-					case DOES_NOT_CONTAIN:
-						result = !response.getResponseBody().contains(checkFor);
-						break;
-	
-					case EQUALS:
-						result = response.getResponseBody().equals(checkFor);
-						break;
-	
-					case NOT_EQUALS:
-						result = !response.getResponseBody().equals(checkFor);
-						break;
-	
-					case MATCH_REGEX:
-						Pattern pattern = Pattern.compile(checkFor, Pattern.MULTILINE | Pattern.DOTALL);
-						Matcher matcher = pattern.matcher(response.getResponseBody());
-						
-						result = matcher.find();
-						break;
-						
-					case DO_NOT_MATCH_REGEX:
-						Pattern pattern2 = Pattern.compile(checkFor, Pattern.MULTILINE | Pattern.DOTALL);
-						Matcher matcher2 = pattern2.matcher(response.getResponseBody());
-						
-						result = !matcher2.find();
-						break;
-				}
+				result = CFW.Utils.Text.checkTextForContent(checkType, response.getResponseBody(), checkFor);
 			}
 			
 			returnObject.addProperty("CHECK_RESULT", result);
