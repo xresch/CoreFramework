@@ -3,16 +3,16 @@ package com.xresch.cfw.features.jobs;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -27,6 +27,8 @@ import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.logging.CFWLog;
 
 public class CFWRegistryJobs {
+
+	public static final String FIELD_STARTTIME = "starttime";
 
 	private static Logger logger = CFWLog.getLogger(CFWRegistryJobs.class.getName());
 	
@@ -84,6 +86,7 @@ public class CFWRegistryJobs {
 	 * 
 	 ***********************************************************************/
 	public static JsonArray getTasksForUserAsJson()  {
+		
 		JsonArray taskArray = new JsonArray();
 		
 		for(CFWJobTask current : getAllTaskInstances()) {
@@ -221,6 +224,11 @@ public class CFWRegistryJobs {
 			new CFWLog(logger).warn("Job is not enabled and cannot be executed.");
 			return;
 		}
+
+		if( isJobCurrentlyExecuting(job) ) {
+			new CFWLog(logger).warn("Job is already running.");
+			return;
+		}
 		
 		try {
 			JobDetail jobDetail = job.createJobDetail();
@@ -271,6 +279,7 @@ public class CFWRegistryJobs {
 				try {
 					//getScheduler().scheduleJob(jobDetail, trigger);
 					Scheduler scheduler = getScheduler();
+
 					if( !scheduler.checkExists(jobDetail.getKey())) {
 						scheduler.scheduleJob(jobDetail, trigger);
 					}else {
@@ -289,6 +298,60 @@ public class CFWRegistryJobs {
 		
 		return true;
 		
+	}
+	
+	/***********************************************************************
+	 * Updates the job:
+	 *   - it is enabled
+	 *   - the schedule is valid
+	 ***********************************************************************/
+	protected static JsonObject getListOfExecutingJobs()  {
+		
+		Scheduler scheduler = getScheduler();
+		
+		 JsonObject result = new JsonObject();
+		try {
+			List<JobExecutionContext> jobsExecuting = scheduler.getCurrentlyExecutingJobs();
+			for(JobExecutionContext context : jobsExecuting) {
+				
+				String key = context.getJobDetail().getKey().getName();
+				JsonObject jobObject = new JsonObject();
+				jobObject.addProperty(FIELD_STARTTIME, context.getFireTime().getTime());
+				
+				result.add(key, jobObject);
+			}
+		} catch (SchedulerException e) {
+			new CFWLog(logger).severe("Error occured while retrieving list of executing jobs: "+e.getMessage(), e);
+		}
+		
+		return result;
+	}
+	/***********************************************************************
+	 * Returns if the job is currently executing.
+	 ***********************************************************************/
+	protected static boolean isJobCurrentlyExecuting(CFWJob job)  {
+		
+		Scheduler scheduler = getScheduler();
+		
+		JobKey key = job.createJobKey();
+		try {
+			List<JobExecutionContext> jobsExecuting = scheduler.getCurrentlyExecutingJobs();
+			
+			for(JobExecutionContext context : jobsExecuting) {
+
+				if( context.getJobDetail()
+						   .getKey()
+						   .getName()
+						   .equals(key.getName())
+				) {
+					return true;
+				}
+			}
+		} catch (SchedulerException e) {
+			new CFWLog(logger).severe("Error occured while checking if job is executing: "+e.getMessage(), e);
+		}
+		
+		return false;
 	}
 	
 	/***********************************************************************

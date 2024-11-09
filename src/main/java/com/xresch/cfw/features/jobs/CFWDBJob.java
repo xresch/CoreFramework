@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
@@ -266,10 +269,38 @@ public class CFWDBJob {
 		
 		//-------------------------------------
 		// Limit Offset and Execute
-		return query.limit(pageSize)
+		JsonArray result = query.limit(pageSize)
 			.offset(pageSize*(pageNumber-1))
-			.getAsJSON();
+			.getAsJSONArray();
+		
+		addIsRunning(result);
+		
+		return CFW.JSON.toString(result);
 				
+	}
+	
+	
+	
+	/*******************************************************
+	 * 
+	 *******************************************************/
+	public static void addIsRunning(JsonArray result) {
+		JsonObject executing = CFW.Registry.Jobs.getListOfExecutingJobs();
+		
+		for(JsonElement job : result) {
+			JsonObject jobObject = job.getAsJsonObject();
+			int jobID = jobObject.get(CFWJobFields.PK_ID.name()).getAsInt();
+			
+			if(executing.has(""+jobID)) {
+				long starttime = executing.get(""+jobID)
+										  .getAsJsonObject()
+										  .get(CFWRegistryJobs.FIELD_STARTTIME)
+										  .getAsLong();
+				
+				jobObject.addProperty("EXECUTION_START", starttime);
+			};
+		}
+		
 	}
 	
 	/*******************************************************
@@ -335,9 +366,13 @@ public class CFWDBJob {
 		
 		//-------------------------------------
 		// Limit Offset and Execute
-		return query.limit(pageSize)
+		JsonArray result = query.limit(pageSize)
 			.offset(pageSize*(pageNumber-1))
-			.getAsJSON();
+			.getAsJSONArray();
+		
+		addIsRunning(result);
+		
+		return CFW.JSON.toString(result);
 				
 	}
 	

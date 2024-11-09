@@ -7,16 +7,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -181,7 +179,9 @@ public class ServletJobs extends HttpServlet
 		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
 		|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
 			
-			jsonResponse.setPayload(CFW.Registry.Jobs.getTasksForUserAsJson());
+			JsonArray tasks = CFW.Registry.Jobs.getTasksForUserAsJson();
+
+			jsonResponse.setPayload(tasks);
 			
 			return;
 		}else {

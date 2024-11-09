@@ -181,6 +181,7 @@ public class CFWCLIExecutor implements Runnable {
 	public String readOutputOrTimeout(long timeoutSeconds, int head,int tail, boolean addSkippedCount) throws Exception {
 		
 		long timeoutMillis = timeoutSeconds * 1000;
+		boolean isReadAll = (head <= 0) && (tail <= 0);
 		
 		StringBuilder result = new StringBuilder();
 		try {
@@ -202,14 +203,14 @@ public class CFWCLIExecutor implements Runnable {
 				
 				//----------------------------------
 				// Read Head
-				while(out.hasLine() && linesReadHead < head) {
+				while(out.hasLine() && (isReadAll || linesReadHead < head ) ) {
 					result.append(out.readLine()).append("\n");
 					linesReadHead++;
 				}
 								
 				//----------------------------------
 				// Read Tail
-				if(linesReadHead >= head) {
+				if(isReadAll || linesReadHead >= head) {
 					
 					while(out.hasLine() ) {
 						tailedLines.add(out.readLine());
@@ -223,7 +224,7 @@ public class CFWCLIExecutor implements Runnable {
 			
 			//----------------------------------
 			// Add Skipped Count
-			if(addSkippedCount) {
+			if( !isReadAll && addSkippedCount) {
 				
 				if(skippedCount > 1) {
 					result.append("[... "+(skippedCount-1)+" lines skipped ...]\n");

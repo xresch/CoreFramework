@@ -1,29 +1,15 @@
 package com.xresch.cfw.extensions.cli;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.config.Configuration;
-import com.xresch.cfw.features.dashboard.DashboardWidget;
-import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
-import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
-import com.xresch.cfw.features.keyvaluepairs.KeyValuePair.KeyValuePairFields;
 import com.xresch.cfw.features.manual.ManualPage;
-import com.xresch.cfw.features.query.sources.CFWQuerySourceApplog;
-import com.xresch.cfw.features.query.sources.CFWQuerySourceAuditlog;
-import com.xresch.cfw.features.query.sources.CFWQuerySourceEmpty;
-import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
-import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
-import com.xresch.cfw.features.query.sources.CFWQuerySourceText;
-import com.xresch.cfw.features.query.sources.CFWQuerySourceThreaddump;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.features.usermgmt.Permission.PermissionFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.spi.CFWAppFeature;
 

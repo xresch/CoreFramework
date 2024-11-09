@@ -321,8 +321,8 @@ function cfwjobs_printJobs(itemType){
 	
 	//-------------------------
 	// Visible Fields
-	var fieldsWithOwner =  	 ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME']
-	var fieldsWithoutOwner = ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME']
+	var fieldsWithOwner =  	 ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'EXECUTION_START', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME']
+	var fieldsWithoutOwner = ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'JOB_NAME', 'TASK_NAME', 'EXECUTION_START', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME']
 	
 	var visiblefields;
 	if(itemType == 'adminjoblist'){
@@ -347,17 +347,21 @@ function cfwjobs_printJobs(itemType){
 		 		IS_ENABLED: "Enabled",
 		 		JSON_SCHEDULE: "Schedule",
 		 		JSON_PROPERTIES: "Properties",
+		 		EXECUTION_START: "Execution",
 		 	},
 		 	customizers: {
 		 		JSON_LASTRUN_MESSAGES: cfwjobs_formatMessages,
+		 		
 		 		DESCRIPTION: function(record, value) { 
 		 			return '<div class="word-break-word" style="max-width: 250px">'+CFW.utils.nullTo(value, "&nbsp;")+'</div>'; 
 	 			},
+		 		
 		 		IS_ENABLED: function(record, value) { 
 		 			return '<span class="badge badge-'+((value == true)? 'success' : 'danger') +'">'+value+'</span>'; 
 		 			},
 		 		//JSON_SCHEDULE: function(record, value) { return CFW.format.cfwSchedule(value); },
 		 		SCHEDULE_START: function(record, value) { return CFW.format.epochToTimestamp(value); },
+		 		
 		 		SCHEDULE_END: function(record, value) { 
 		 			if(value == null) return "&nbsp;";
 		 			if(isNaN(value)){
@@ -367,7 +371,17 @@ function cfwjobs_printJobs(itemType){
 		 			}
 		 			
 		 		},
+		 		
+		 		EXECUTION_START: function(record, value) { 
+					if(CFW.utils.isNullOrEmpty(value)){ return "&nbsp;"; }
+					
+					let millis = Date.now() - value;
+					 
+		 			return CFW.format.timeToDuration(millis); 
+		 		},
+		 		
 		 		LAST_RUN_TIME: function(record, value) { return CFW.format.epochToTimestamp(value); },
+		 		
 		 		JSON_PROPERTIES: function(record, value) { 
 		 			if(value.children != null
 		 			&& value.children.length == 0){
