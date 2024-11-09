@@ -2,7 +2,10 @@ package com.xresch.cfw.extensions.cli;
 
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.DB;
+import com.xresch.cfw._main.CFW.DB.Config;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -28,7 +31,7 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 	public static final String CONFIG_DEFAULT_WORKDIR = "Default Working Directory";
 	
 	public static final String WIDGET_PREFIX = "cfw_cliextensions";
-	public static final String WIDGET_CATEGORY_CLI = "CLI";
+	public static final String WIDGET_CATEGORY_CLI = "Command Line";
 	
 	/************************************************************************************
 	 * Override to make it managed and return something else then null.
@@ -65,7 +68,7 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 
 		//----------------------------------
 		// Register Widget
-		//CFW.Registry.Widgets.add(new WidgetCLIResults());
+		CFW.Registry.Widgets.add(new WidgetCLIResults());
 		
 		//----------------------------------
 		// Register Sources
@@ -137,5 +140,18 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 	@Override
 	public void stopFeature() {
 
+	}
+
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public static String getDefaultFolderDescription() {
+		
+		String defaultDir = CFW.DB.Config.getConfigAsString(CONFIG_CATEGORY, CONFIG_DEFAULT_WORKDIR); 
+		if(Strings.isNullOrEmpty(defaultDir)) {
+			defaultDir = "App Root Directory";
+		}
+		
+		return defaultDir;
 	}
 }

@@ -436,12 +436,14 @@ public class WidgetQueryResults extends WidgetDefinition {
 			
 			//-------------------------------
 			// Get Value 
-			if(valueFieldElement.isJsonPrimitive() 
-			&& valueFieldElement.getAsJsonPrimitive().isNumber()) {
-				value = valueFieldElement.getAsFloat();
-			}else {
-				CFW.Messages.addWarningMessage("Value was not a number: "+CFW.JSON.toString(valueFieldElement) );
-				continue;
+			if(valueFieldElement != null) {
+				if(valueFieldElement.isJsonPrimitive() 
+				&& valueFieldElement.getAsJsonPrimitive().isNumber()) {
+					value = valueFieldElement.getAsFloat();
+				}else {
+					CFW.Messages.addWarningMessage("Value was not a number: "+CFW.JSON.toString(valueFieldElement) );
+					continue;
+				}
 			}
 
 			CFWStateOption condition = CFW.Conditions.getConditionForValue(value, taskParams);

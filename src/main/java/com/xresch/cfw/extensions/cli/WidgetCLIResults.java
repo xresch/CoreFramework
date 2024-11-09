@@ -25,12 +25,16 @@ import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
+import com.xresch.cfw.features.query._CFWQueryCommonStringParser.CFWQueryStringParserType;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.utils.CFWUtilsText;
+import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
 /**************************************************************************************************************
@@ -46,44 +50,13 @@ public class WidgetCLIResults extends WidgetDefinition {
 
 	private static Logger logger = CFWLog.getLogger(WidgetCLIResults.class.getName());
 	
-	private static final String PARAM_METHOD = "METHOD";
-	private static final String PARAM_URLS = "URLS";
-	private static final String PARAM_LABELS = "LABELS";
-	private static final String PARAM_HEADERS = "JSON_HEADERS";
-	private static final String PARAM_BODY = "BODY";
-	private static final String PARAM_USERNAME = "USERNAME";
-	private static final String PARAM_PASSWORD = "PASSWORD";
-	
-	private static final String PARAM_STATUS_CODE = "STATUS_CODE";
-	private static final String PARAM_CHECK_FOR = "CHECK_FOR";
-	private static final String PARAM_CHECK_TYPE = "CHECK_TYPE";
-	
-	private static final String PARAM_DEBUG_MODE = "DEBUG_MODE";
-
-
-
-	private enum CheckType {
-		CONTAINS
-		, DOES_NOT_CONTAIN
-		, STARTS_WITH
-		, ENDS_WITH
-		, EQUALS
-		, NOT_EQUALS
-		, MATCH_REGEX
-		, DO_NOT_MATCH_REGEX
-	}
-	
-	LinkedHashMap<String, String> checkTypeOptions = new LinkedHashMap<>();
-	{
-		checkTypeOptions.put(CheckType.CONTAINS.toString(), "Contains");
-		checkTypeOptions.put(CheckType.DOES_NOT_CONTAIN.toString(), "Does Not Contain");
-		checkTypeOptions.put(CheckType.STARTS_WITH.toString(), "Starts With");
-		checkTypeOptions.put(CheckType.ENDS_WITH.toString(), "Ends With");
-		checkTypeOptions.put(CheckType.EQUALS.toString(), "Equals");
-		checkTypeOptions.put(CheckType.NOT_EQUALS.toString(), "Not Equals");
-		checkTypeOptions.put(CheckType.MATCH_REGEX.toString(), "Match Regex");
-		checkTypeOptions.put(CheckType.DO_NOT_MATCH_REGEX.toString(), "Does Not Match Regex");
-	}
+	private static final String PARAM_DIR 		= "WORKING_DIRECTORY";
+	private static final String PARAM_COMMANDS 	= "COMMANDS";
+	private static final String PARAM_ENV		= "JSON_ENV_VARIABLES";
+	private static final String PARAM_HEAD		= "HEAD";
+	private static final String PARAM_TAIL		= "TAIL";
+	private static final String PARAM_COUNT_SKIPPED	= "COUNT_SKIPPED";
+	private static final String PARAM_TIMEOUT 	= "TIMEOUT";
 	
 	// Returns the unique name of the widget. Has to be the same unique name as used in the javascript part.
 	@Override
@@ -108,7 +81,17 @@ public class WidgetCLIResults extends WidgetDefinition {
 	 * 
 	 ************************************************************/
 	@Override
-	public String widgetName() { return "Evaluate Response"; }
+	public String widgetName() { return "CLI Results"; }
+	
+	/************************************************************
+	 * Check if the current user has the required permission to create and
+	 * edit the widget. Returns true by default.
+	 * return true if has permission, false otherwise
+	 * @param user TODO
+	 ************************************************************/
+	public boolean hasPermission(User user) {
+		return user.hasPermission(FeatureCLIExtensions.PERMISSION_CLI_EXTENSIONS);
+	}
 	
 	/************************************************************
 	 * 
@@ -122,91 +105,59 @@ public class WidgetCLIResults extends WidgetDefinition {
 	@Override
 	public CFWObject getSettings() {
 		return new CFWObject()
+				
+				.addField(
+						CFWField.newString(FormFieldType.TEXT, PARAM_DIR)
+							.setDescription("(Optional)The working directory where the commands should be executed. (Default: \""+FeatureCLIExtensions.getDefaultFolderDescription()+"\")")
+							.disableSanitization()
+					)
 
-				.addField(CFWField.newString(CFWField.FormFieldType.SELECT, PARAM_METHOD)
-						.setLabel("{!cfw_widget_webextensions_method!}")
-						.setDescription("{!cfw_widget_webextensions_method_desc!}")
-						.addOptions("GET", "POST")
-						.setValue("GET")
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-					)
-				
-				.addField(CFWField.newString(CFWField.FormFieldType.TEXTAREA, PARAM_URLS)
-						.setLabel("{!cfw_widget_webextensions_urls!}")
-						.setDescription("{!cfw_widget_webextensions_urls_desc!}")
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-						.setValue("")
-					)
-				
-				.addField(CFWField.newString(CFWField.FormFieldType.TEXTAREA, PARAM_LABELS)
-						.setLabel("{!cfw_widget_webextensions_labels!}")
-						.setDescription("{!cfw_widget_webextensions_labels_desc!}")
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-						.setValue("")
+				.addField(
+						CFWField.newString(FormFieldType.TEXTAREA, PARAM_COMMANDS)
+								.setDescription("The body contents of the request. Setting the header 'Content-Type' might be needed(e.g. 'application/json; charset=UTF-8').")
+								.disableSanitization()
 						)
 				
-				.addField(CFWField.newValueLabel(PARAM_HEADERS)
-						.setLabel("{!cfw_widget_webextensions_headers!}")
-						.setDescription("{!cfw_widget_webextensions_headers_desc!}")
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-						)
-				
-				.addField(CFWField.newString(FormFieldType.TEXTAREA, PARAM_BODY)
-						.setLabel("{!cfw_widget_webextensions_body!}")
-						.setDescription("{!cfw_widget_webextensions_body_desc!}")
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-						)
-
-				.addField(CFWField.newString(CFWField.FormFieldType.TEXT, PARAM_USERNAME)
-						.setLabel("{!cfw_widget_webextensions_username!}")
-						.setDescription("{!cfw_widget_webextensions_username_desc!}")
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-						.setValue(null)
+				.addField(
+						CFWField.newValueLabel(PARAM_ENV)
+							.setLabel("Environment Variables")
+							.setDescription("(Optional)Additional environment variables which should be passed to the command line.")
+							.addValidator(new NotNullOrEmptyValidator())
+							.disableSanitization()
 					)
 				
-				.addField(CFWField.newString(CFWField.FormFieldType.PASSWORD, PARAM_PASSWORD)
-						.setLabel("{!cfw_widget_webextensions_password!}")
-						.setDescription("{!cfw_widget_webextensions_password_desc!}")
-						// DO NOT TOUCH! Changing salt will corrupt all password stored in the database
-						.enableEncryption("emp_httpextensions_encryptionSalt-fFDSgasTR1")
+				.addField(
+						CFWField.newInteger(FormFieldType.NUMBER, PARAM_HEAD)
+							.setDescription("(Optional)Number of lines that should be read from the head(start) of the output.")
+							.disableSanitization()
+							.addValidator(new NumberRangeValidator(0, 10000))
+							.setValue(100)
+					)
+				
+				.addField(
+						CFWField.newInteger(FormFieldType.NUMBER, PARAM_TAIL)
+							.setDescription("Number of lines that should be read from the tail(end) of the output.")
+							.disableSanitization()
+							.addValidator(new NumberRangeValidator(0, 10000))
+							.setValue(100)
+					)
+				
+				.addField(
+						CFWField.newBoolean(FormFieldType.BOOLEAN, PARAM_COUNT_SKIPPED)
+						.setDescription("If parameter head or tail is set, this parameter decides if skipped line count should be added in the output.(Default:true)")
 						.disableSanitization()
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-						.setValue(null)
-					)
+						.setValue(true)
+						)
 				
-				// Labels for the URL ?
-				.addField(CFWField.newString(CFWField.FormFieldType.SELECT, PARAM_CHECK_TYPE)
-						.setLabel("{!cfw_widget_webextensions_checktype!}")
-						.setDescription("{!cfw_widget_webextensions_checktype_desc!}")
-						.setOptions(checkTypeOptions)
-						.setValue("Contains")
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-					)
-
-				.addField(CFWField.newString(CFWField.FormFieldType.TEXTAREA, PARAM_CHECK_FOR)
-						.setLabel("{!cfw_widget_webextensions_matchfor!}")
-						.setDescription("{!cfw_widget_webextensions_matchfor_desc!}")
-						.setValue("")
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-					)
-
-				.addField(CFWField.newInteger(CFWField.FormFieldType.NUMBER, PARAM_STATUS_CODE)
-						.setLabel("{!cfw_widget_webextensions_statuscode!}")
-						.setDescription("{!cfw_widget_webextensions_statuscode_desc!}")
-						.addValidator(new NumberRangeValidator(0, 999))
-						.setValue(200)
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-					)
-						
-				.addField(WidgetSettingsFactory.createDefaultDisplayAsField())
-				.addAllFields(WidgetSettingsFactory.createTilesSettingsFields())
+				.addField(
+						CFWField.newInteger(FormFieldType.NUMBER, PARAM_TIMEOUT)
+						.setDescription("The timeout in seconds.")
+						.setValue(120)
+						)
 				
-				.addField(CFWField.newBoolean(CFWField.FormFieldType.BOOLEAN, PARAM_DEBUG_MODE)
-						.setLabel("{!cfw_widget_webextensions_debugmode!}")
-						.setDescription("{!cfw_widget_webextensions_debugmode_desc!}")
-						.setValue(false)
-					)
-				;
+			;
+				
+				
 
 	}
 
@@ -215,203 +166,55 @@ public class WidgetCLIResults extends WidgetDefinition {
 	public void fetchData(HttpServletRequest httpServletRequest, JSONResponse jsonResponse, CFWObject cfwObject, JsonObject jsonObject, CFWTimeframe timeframe) {
 
 		//------------------------------------
-		// Get Method
-		String method = (String) cfwObject.getField(PARAM_METHOD).getValue();
-		if(Strings.isNullOrEmpty(method)){
-			method = "GET";
-		}
-		
+		// Get Working Dir
+		String dir = (String) cfwObject.getField(PARAM_DIR).getValue();
+
 		//------------------------------------
-		// Get IRLS
-		String urls = (String) cfwObject.getField(PARAM_URLS).getValue();
-		if (Strings.isNullOrEmpty(urls)) {
+		// Get Commands
+		String commands = (String) cfwObject.getField(PARAM_COMMANDS).getValue();
+		if (Strings.isNullOrEmpty(commands)) {
 			return;
 		}
-		String[] splittedURLs = urls.trim().split("\\r\\n|\\n");
+
 		
 		//------------------------------------
-		// Get Labels
-		String labels = (String) cfwObject.getField(PARAM_LABELS).getValue();
-		String[] splittedLabels = new String[] {};
-		if (!Strings.isNullOrEmpty(labels)) {
-			splittedLabels = labels.trim().split("\\r\\n|\\n");
-		}
+		// Get Env Variables
+		LinkedHashMap<String,String> envVariables = (LinkedHashMap<String,String>) cfwObject.getField(PARAM_ENV).getValue();
 
 		//------------------------------------
-		// Get Credentials
-		String username = (String) cfwObject.getField(PARAM_USERNAME).getValue();
-		String password = (String) cfwObject.getField(PARAM_PASSWORD).getValue();
+		// Get Others
+		Integer head = (Integer) cfwObject.getField(PARAM_HEAD).getValue();
+		Integer tail = (Integer) cfwObject.getField(PARAM_TAIL).getValue();
+		Integer timeout = (Integer) cfwObject.getField(PARAM_TIMEOUT).getValue();
 
-		//------------------------------------
-		// Get Headers and Body
-		LinkedHashMap<String, String> headers = (LinkedHashMap<String, String>) cfwObject.getField(PARAM_HEADERS).getValue();
-		String bodyContents = (String) cfwObject.getField(PARAM_BODY).getValue();
 
 		//------------------------------------
 		// Get Checks
-		String checkType = (String) cfwObject.getField(PARAM_CHECK_TYPE).getValue();
-		String checkFor = (String) cfwObject.getField(PARAM_CHECK_FOR).getValue();
-
-		Integer expectedResponseCode = (Integer) cfwObject.getField(PARAM_STATUS_CODE).getValue();
-
-		//------------------------------------
-		// Get Debug Mode
-		boolean debugMode = (Boolean) cfwObject.getField(PARAM_DEBUG_MODE).getValue();
+		Boolean countSkipped = (Boolean) cfwObject.getField(PARAM_COUNT_SKIPPED).getValue();
 		
-		//------------------------------------
-		// Iterate URLs and Build Response
-		JsonArray jsonArray = new JsonArray();
 
-		int index = 0;
-		for (String splittedURL : splittedURLs) {
+		try {
+			//----------------------------------------
+			// Execute Command
+			CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands, envVariables); 
+			executor.execute();
 
 			//----------------------------------------
-			// Check URL
-			if(!splittedURL.contains("://") 
-			&& !splittedURL.startsWith("http") ) {
-				splittedURL = "https://"+splittedURL;
-			}
-			//----------------------------------------
-			// Build Request and Call URL
-			CFWHttpRequestBuilder requestBuilder = CFW.HTTP.newRequestBuilder(splittedURL);
-			
-			if(method.trim().toUpperCase().equals("POST")) {
-				requestBuilder.POST();
-			}else {
-				requestBuilder.GET();
-			}
-			
-			if(!Strings.isNullOrEmpty(username)) {
-				requestBuilder.setAuthCredentialsBasic(username, password);
-			}
-			
-			requestBuilder.headers(headers);
-			
-			if(!Strings.isNullOrEmpty(bodyContents)) {
-				requestBuilder.body(bodyContents);
-			}
-
-			CFWHttpResponse response = requestBuilder.send();
-
-			if(response.errorOccured()) {
-				CFW.Messages.addInfoMessage("Hint: Check if your URLs include the right protocol(http/https).");
-				CFW.Messages.addInfoMessage("Another Hint: The application server might not have access to the URL. Check with the application support.");
-				return;
-			}
-			
-			
-			//------------------------------------
-			// Handle Debug Mode
-			if(debugMode) {
-				JsonObject debugObject = new JsonObject();
-								
-				debugObject.addProperty("URL", requestBuilder.buildURLwithParams());
-				debugObject.addProperty("RESPONSE_STATUS", response.getStatus());
-				debugObject.add("RESPONSE_HEADERS", response.getHeadersAsJson());
-				debugObject.addProperty("RESPONSE_BODY", response.getResponseBody());
-				
-				
-				jsonArray.add(debugObject);
-				jsonResponse.setPayload(jsonArray);
-				return;
-			}
-			
+			// Get Data
+			String dataString;
+			dataString = executor.readOutputOrTimeout(timeout, head, tail, countSkipped);
 
 			//----------------------------------------
-			// Create Data Object
-			JsonObject returnObject = new JsonObject();
-
-			if(index < splittedLabels.length 
-			&& !Strings.isNullOrEmpty(splittedLabels[index])) {
-				returnObject.addProperty("LABEL", splittedLabels[index]);
-			}else {
-				
-				try {
-					returnObject.addProperty("LABEL", new URL(splittedURL).getHost());
-				} catch (MalformedURLException e) {
-					returnObject.addProperty("LABEL", splittedURL);
-				}
-			}
+			// Create Result
+			JsonObject result = new JsonObject();
+			result.addProperty("output", dataString);
+			jsonResponse.setPayload(result);
 			
-			returnObject.addProperty("URL", splittedURL);
-			returnObject.addProperty(PARAM_CHECK_TYPE, checkType);
-			returnObject.addProperty(PARAM_CHECK_FOR, checkFor);
-
-			//----------------------------------------
-			// Check response content
-			boolean result = false;
-			if(Strings.isNullOrEmpty(checkFor)) {
-				result = true;
-			}else {
-				switch (CheckType.valueOf(checkType) ) {
-	
-					case STARTS_WITH:
-						result = response.getResponseBody().startsWith(checkFor);
-						break;
-	
-					case ENDS_WITH:
-						result = response.getResponseBody().endsWith(checkFor);
-						break;
-	
-					case CONTAINS:
-						result = response.getResponseBody().contains(checkFor);
-						break;
-							
-					case DOES_NOT_CONTAIN:
-						result = !response.getResponseBody().contains(checkFor);
-						break;
-	
-					case EQUALS:
-						result = response.getResponseBody().equals(checkFor);
-						break;
-	
-					case NOT_EQUALS:
-						result = !response.getResponseBody().equals(checkFor);
-						break;
-	
-					case MATCH_REGEX:
-						Pattern pattern = Pattern.compile(checkFor, Pattern.MULTILINE | Pattern.DOTALL);
-						Matcher matcher = pattern.matcher(response.getResponseBody());
-						
-						result = matcher.find();
-						break;
-						
-					case DO_NOT_MATCH_REGEX:
-						Pattern pattern2 = Pattern.compile(checkFor, Pattern.MULTILINE | Pattern.DOTALL);
-						Matcher matcher2 = pattern2.matcher(response.getResponseBody());
-						
-						result = !matcher2.find();
-						break;
-				}
-			}
-			
-			returnObject.addProperty("CHECK_RESULT", result);
-
-			//----------------------------------------
-			// Check response code
-			int actualResponseStatusCode = response.getStatus();
-			
-			returnObject.addProperty(PARAM_STATUS_CODE, actualResponseStatusCode);
-			
-			if(expectedResponseCode != null) {
-				boolean isValid =  (expectedResponseCode == actualResponseStatusCode);
-				returnObject.addProperty("STATUS_CODE_VALID", isValid);
-				if(!isValid) {
-					returnObject.addProperty("STATUS_CODE_MESSAGE", "HTTP Status Code '"+expectedResponseCode
-							+"' was expected but '"+actualResponseStatusCode+"' was received.");
-				}
-				
-			}
-			
-			//----------------------------------------
-			// Add Object to the Result Array
-			jsonArray.add(returnObject);
-			index++;
-
+		} catch (Exception e) {
+			new CFWLog(logger).severe(widgetName()+": Error while getting data:"+e.getMessage(), e);
 		}
-
-		// Add jsonArray to the payload
-		jsonResponse.setPayload(jsonArray);
+		
+		return;
 
 	}
 
@@ -419,7 +222,7 @@ public class WidgetCLIResults extends WidgetDefinition {
 	public ArrayList<FileDefinition> getJavascriptFiles() {
 		ArrayList<FileDefinition> fileDefinitions = new ArrayList<>();
 		FileDefinition js = new FileDefinition(HandlingType.JAR_RESOURCE,
-				FeatureCLIExtensions.PACKAGE_RESOURCES, "widget_evaluateresponse.js");
+				FeatureCLIExtensions.PACKAGE_RESOURCES, "widget_"+getWidgetType()+".js");
 		fileDefinitions.add(js);
 		return fileDefinitions;
 	}
@@ -427,8 +230,6 @@ public class WidgetCLIResults extends WidgetDefinition {
 	@Override
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = new HashMap<Locale, FileDefinition>();
-		map.put(Locale.ENGLISH, new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCLIExtensions.PACKAGE_RESOURCES, "lang_en_webextensions.properties"));
-		map.put(Locale.GERMAN, new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCLIExtensions.PACKAGE_RESOURCES, "lang_de_webextensions.properties"));
 		return map;
 	}
 }

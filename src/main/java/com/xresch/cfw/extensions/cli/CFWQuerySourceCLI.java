@@ -115,7 +115,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionRequiredPermission() {
-		return "None";
+		return FeatureCLIExtensions.PERMISSION_CLI_EXTENSIONS;
 	}
 
 	/******************************************************************
@@ -151,7 +151,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_DIR)
-							.setDescription("(Optional)The working directory where the commands should be executed. (Default: \""+getDefaultFolderDescription()+"\")")
+							.setDescription("(Optional)The working directory where the commands should be executed. (Default: \""+FeatureCLIExtensions.getDefaultFolderDescription()+"\")")
 							.addValidator(new NotNullOrEmptyValidator())
 							.disableSanitization()
 					)
@@ -178,7 +178,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 				
 				.addField(
 						CFWField.newInteger(FormFieldType.TEXT, PARAM_TAIL)
-							.setDescription("(Optional)Number of lines that should be read from the head(start) of the output.")
+							.setDescription("(Optional)Number of lines that should be read from the tail(end) of the output.")
 							.disableSanitization()
 							.setValue(0)
 					)
@@ -208,21 +208,6 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 					)
 			;
 	}
-	
-	/******************************************************************
-	 *
-	 ******************************************************************/
-	private String getDefaultFolderDescription() {
-		
-		String defaultDir = CFW.DB.Config.getConfigAsString(FeatureCLIExtensions.CONFIG_CATEGORY, FeatureCLIExtensions.CONFIG_DEFAULT_WORKDIR); 
-		if(Strings.isNullOrEmpty(defaultDir)) {
-			defaultDir = "App Root Directory";
-		}
-		
-		return defaultDir;
-	}
-
-	
 	
 	/******************************************************************
 	 *
@@ -292,8 +277,6 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		//----------------------------------------
 		// Execute Command
 		CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands, envMap); 
-		
-		//will wait until done
 		executor.execute();
 
 		//----------------------------------------
