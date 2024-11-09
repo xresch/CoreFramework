@@ -12,7 +12,7 @@
 	CFW.dashboard.registerWidget("cfw_widget_queryresults",
 		{
 			category: CFW.dashboard.global.categoryAdvanced,
-			menuicon: "fas fa-terminal",
+			menuicon: "fas fa-magic",
 			menulabel: CFWL('cfw_widget_queryresults', "Display Query Results"),
 			description: CFWL('cfw_widget_queryresults_desc', "Executes a CFWQL query and display its results."), 
 			usetimeframe: true,

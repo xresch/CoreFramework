@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-import org.quartz.Job;
+import org.quartz.InterruptableJob;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.UnableToInterruptJobException;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
@@ -17,7 +18,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 import io.prometheus.client.Counter;
 
-public abstract class CFWJobTask implements Job {
+public abstract class CFWJobTask implements InterruptableJob {
 	
 	private static Logger logger = CFWLog.getLogger(CFWJobTask.class.getName());
 	
@@ -25,6 +26,8 @@ public abstract class CFWJobTask implements Job {
 	         .name("cfw_job_executions_total")
 	         .help("Number of jobs executed in total.")
 	         .register();
+	
+	private boolean isInterrupted = false;
 	
 	/*************************************************************************
 	 * Return a unique name for this executor.
@@ -77,6 +80,13 @@ public abstract class CFWJobTask implements Job {
 	}
 	
 	/*************************************************************************
+	 * Set the thread as interrupted.
+	 *************************************************************************/
+    public void interrupt() throws UnableToInterruptJobException {
+        isInterrupted = true;
+    }
+    
+	/*************************************************************************
 	 * Implement the actions your task should execute.
 	 * Do not store any values locally in the instance of the class implementing 
 	 * this method. If you need to store data related to the task, you might want
@@ -124,37 +134,64 @@ public abstract class CFWJobTask implements Job {
 			.start();
 		
 		try{
+			
+
 			//---------------------------------------
 			// Execute Task Implementation
-			executeTask(context);
+			Thread thread = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						executeTask(context);
+					}catch(JobExecutionException e) {
+						new CFWLog(logger)
+							.silent(true)
+							.contextless(true)
+							.custom("jobid", jobID)
+							.custom("taskname", uniqueName())
+							.severe("Exception while executing task '"+uniqueName()+"': "+e.getMessage(), e);
+
+					}finally {
+						//---------------------------------------
+						// Write duration
+						log.end();
+						
+						//---------------------------------------
+						// Update Last Run
+						
+						if(!CFW.DB.Jobs.updateLastRun(jobID)) {
+							new CFWLog(logger)
+								.silent(true)
+								.contextless(true)
+								.custom("jobid", jobID)
+								.custom("taskname", uniqueName())
+								.severe("Error while writing last execution time to DB.");
+						}
+						
+						executionCounter.inc();
+					}
+					}
+					 
+				});
 			
-		}catch(JobExecutionException e) {
+			thread.start();
+			
+			while(thread.isAlive()) {
+				Thread.sleep(1000);
+				if(isInterrupted) {
+					thread.interrupt();
+					thread.stop(); 
+				}
+			}
+			
+		}catch(InterruptedException e){
 			new CFWLog(logger)
 				.silent(true)
 				.contextless(true)
 				.custom("jobid", jobID)
-				.custom("taskname", this.uniqueName())
-				.severe("Exception while executing task '"+this.uniqueName()+"': "+e.getMessage(), e);
-			
-			throw e;
-		}finally {
-			//---------------------------------------
-			// Write duration
-			log.end();
-			
-			//---------------------------------------
-			// Update Last Run
-			
-			if(!CFW.DB.Jobs.updateLastRun(jobID)) {
-				new CFWLog(logger)
-					.silent(true)
-					.contextless(true)
-					.custom("jobid", jobID)
-					.custom("taskname", this.uniqueName())
-					.severe("Error while writing last execution time to DB.");
-			}
-			
-			executionCounter.inc();
+				.custom("taskname", uniqueName())
+				.severe("Job was interrupted.");
 		}
 	}
 	

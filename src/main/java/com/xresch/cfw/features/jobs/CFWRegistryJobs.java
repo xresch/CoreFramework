@@ -17,6 +17,7 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.UnableToInterruptJobException;
 import org.quartz.impl.StdSchedulerFactory;
 
 import com.google.gson.JsonArray;
@@ -245,6 +246,38 @@ public class CFWRegistryJobs {
 		CFW.Messages.addInfoMessage("Job triggered!");
 	}
 
+	/***********************************************************************
+	 * Stops a job manually.
+	 * Will write a message to inform user that the job was triggered.
+	 ***********************************************************************/
+	protected static void stopJobManually(String ID)  {
+		
+		stopJobManually(CFW.DB.Jobs.selectByID(ID));
+	}
+	
+	
+	/***********************************************************************
+	 * Stops a job manually.
+	 * Will write a message to inform user that the job was triggered.
+	 ***********************************************************************/
+	protected static void stopJobManually(CFWJob job)  {
+		
+		//if(isJobCurrentlyExecuting(job)) {
+			try {
+				boolean atLeastOneStopped = getScheduler().interrupt(job.createJobKey());
+				if(atLeastOneStopped) {
+					CFW.Messages.addSuccessMessage("Job stopped successfully.");
+				}else {
+					CFW.Messages.addInfoMessage("Job was not running.");
+				}
+			} catch (UnableToInterruptJobException e) {
+				new CFWLog(logger).severe("Error while stopping job:"+e.getMessage(), e);
+			}
+//		}else {
+//			CFW.Messages.addInfoMessage("Job was not running.");
+//		}
+		 
+	}
 	/***********************************************************************
 	 * Start the Job if:
 	 *   - it is enabled
