@@ -137,6 +137,17 @@ public class ServletJobs extends HttpServlet
 				}
 				break;	
 				
+			case "stop": 			
+				switch(item.toLowerCase()) {
+				
+					case "job": 		stopCFWJob(jsonResponse, ID);
+					break;  
+					
+					default: 			CFW.Messages.itemNotSupported(item);
+					break;
+				}
+				break;	
+				
 			case "duplicate": 			
 				switch(item.toLowerCase()) {
 
@@ -220,6 +231,14 @@ public class ServletJobs extends HttpServlet
 	private void executeCFWJob(JSONResponse jsonResponse, String ID) {
 		
 		CFW.Registry.Jobs.executeJobManually(ID);
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void stopCFWJob(JSONResponse jsonResponse, String ID) {
+		
+		CFW.Registry.Jobs.stopJobManually(ID);
 	}
 	
 	

@@ -164,6 +164,20 @@ function cfwjobs_execute(id){
 }
 
 /******************************************************************
+ * Execute
+ ******************************************************************/
+function cfwjobs_stop(id){
+	
+	params = {action: "stop", item: "job", id: id};
+	CFW.http.getJSON(CFWJOBS_URL, params, 
+		function(data) {
+			if(data.success){
+				//do nothing
+			}
+	});
+}
+
+/******************************************************************
  * Delete
  ******************************************************************/
 function cfwjobs_duplicate(id){
@@ -376,8 +390,15 @@ function cfwjobs_printJobs(itemType){
 					if(CFW.utils.isNullOrEmpty(value)){ return "&nbsp;"; }
 					
 					let millis = Date.now() - value;
-					 
-		 			return CFW.format.timeToDuration(millis); 
+					
+					return '<div>' 
+							+'<span>'+CFW.format.timeToDuration(millis)+'</span>'
+							+'<button class="btn btn-sm btn-danger" alt="Execute" title="Stop" '
+							+'onclick="CFW.ui.confirmExecute(\'Do you really want to stop the job <strong>\\\''+record.JOB_NAME.replace(/\"/g,'&quot;')+'\\\'</strong> now?\', \'Let\\\'s Go!\', \'cfwjobs_stop('+record.PK_ID+');\')">'
+							+ '<i class="fa fa-stop"></i>'
+							+ '</button>'
+						+'<div>';
+					
 		 		},
 		 		
 		 		LAST_RUN_TIME: function(record, value) { return CFW.format.epochToTimestamp(value); },
