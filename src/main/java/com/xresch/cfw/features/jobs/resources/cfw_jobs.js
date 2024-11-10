@@ -392,10 +392,10 @@ function cfwjobs_printJobs(itemType){
 					let millis = Date.now() - value;
 					
 					return '<div>' 
-							+'<span>'+CFW.format.timeToDuration(millis)+'</span>'
+							+'<span class="pr-1">'+CFW.format.timeToDuration(millis)+'</span>'
 							+'<button class="btn btn-sm btn-danger" alt="Execute" title="Stop" '
 							+'onclick="CFW.ui.confirmExecute(\'Do you really want to stop the job <strong>\\\''+record.JOB_NAME.replace(/\"/g,'&quot;')+'\\\'</strong> now?\', \'Let\\\'s Go!\', \'cfwjobs_stop('+record.PK_ID+');\')">'
-							+ '<i class="fa fa-stop"></i>'
+							+ '<i class="fa fa-ban"></i>'
 							+ '</button>'
 						+'<div>';
 					

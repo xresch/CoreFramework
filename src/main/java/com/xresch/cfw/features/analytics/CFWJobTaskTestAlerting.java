@@ -30,7 +30,7 @@ public class CFWJobTaskTestAlerting extends CFWJobTask {
 
 	@Override
 	public CFWObject getParameters() {
-		return new CFWJobsAlertObject();
+		return new CFWJobsAlertObject(false);
 	}
 
 	@Override

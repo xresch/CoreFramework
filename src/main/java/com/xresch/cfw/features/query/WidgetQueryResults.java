@@ -295,7 +295,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 	 ************************************************************/
 	public CFWObject getTasksParameters() {
 		
-		return new CFWJobsAlertObject()
+		return new CFWJobsAlertObject(false)
 				.addField(CFWField.newString(FormFieldType.TEXT, FIELDNAME_VALUEFIELD)
 						.setLabel("{!cfw_widget_jobtask_valuefield!}")
 						.setDescription("{!cfw_widget_jobtask_valuefield_desc!}")
@@ -456,7 +456,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 				
 		//----------------------------------------
 		// Handle Alerting
-		CFWJobsAlertObject alertObject = new CFWJobsAlertObject(context, this.getWidgetType());
+		CFWJobsAlertObject alertObject = new CFWJobsAlertObject(context, this.getWidgetType(), false);
 
 		alertObject.mapJobExecutionContext(context);
 

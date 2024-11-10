@@ -32,6 +32,7 @@ public class CFWJobsAlertObject extends CFWObject {
 
 	private String jobID;
 	private String taskName;
+	private boolean reportingMode = false;
 
 	private ArrayList<TextData> textDataArray = new ArrayList<>();
 	private class TextData{
@@ -53,7 +54,8 @@ public class CFWJobsAlertObject extends CFWObject {
 	public enum AlertType{
 		NONE,
 		RAISE,
-		RESOLVE
+		RESOLVE,
+		REPORT
 	}
 	
 	private CFWField<Integer> occurencesToRaise = 
@@ -121,27 +123,29 @@ public class CFWJobsAlertObject extends CFWObject {
 	
 	/**************************************************************************
 	 * Use this constructor only for getting the fields(for forms etc...)
+	 * @param reportingMode true if only fields user for reporting should be added, false if alerting fields should be included
 	 **************************************************************************/	
-	public CFWJobsAlertObject() {
-		 initialize();
+	public CFWJobsAlertObject(boolean reportingMode) {
+		 initialize(reportingMode);
 	}
 	
 	/**************************************************************************
-	 * Use this constructor to do de actual alerting.
+	 * Use this constructor to do the actual alerting.
 	 * Condition result are associated with the given Job ID.
 	 **************************************************************************/	
 	public CFWJobsAlertObject(JobExecutionContext context, CFWJobTask task) {
-		this(context, task.uniqueName());
+		this(context, task.uniqueName(), false);
 	}
 	
 	/**************************************************************************
 	 * Use this constructor to do de actual alerting.
 	 * Condition result are associated with the given Job ID.
+	 * @param reportingMode TODO
 	 **************************************************************************/	
-	public CFWJobsAlertObject(JobExecutionContext context, String  taskname) {
+	public CFWJobsAlertObject(JobExecutionContext context, String  taskname, boolean reportingMode) {
 
 		this.jobID = context.getJobDetail().getKey().getName();
-				
+			
 		//-------------------------
 		// Get Condition Results
 		if(!alertStateStore.containsKey(jobID)) {
@@ -150,12 +154,21 @@ public class CFWJobsAlertObject extends CFWObject {
 		}
 		alertStateArray = alertStateStore.get(jobID);
 		
-		initialize();
+		initialize(reportingMode);
 
 	}
 	
-	private void initialize() {
-		this.addFields(occurencesToRaise, occurencesToResolve, alertDelayMinutes, resendDelayMinutes, usersToAlert, groupsToAlert, alertChannels, customNotes);
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
+	private void initialize(boolean reportingMode) {
+		
+		this.reportingMode = reportingMode;
+		if(!reportingMode) {
+			this.addFields(occurencesToRaise, occurencesToResolve, alertDelayMinutes, resendDelayMinutes, usersToAlert, groupsToAlert, alertChannels, customNotes);
+		} else {
+			this.addFields(usersToAlert, groupsToAlert, alertChannels, customNotes);
+		}
 	}
 	
 	/**************************************************************************
@@ -177,6 +190,10 @@ public class CFWJobsAlertObject extends CFWObject {
 	 * @return true if alert triggered, false otherwise
 	 **************************************************************************/
 	public AlertType checkSendAlert(boolean conditionMatched, Properties customData) {
+		
+		if(reportingMode) {
+			return AlertType.REPORT;
+		}
 		
 		//-------------------------------------
 		// Keep Limit

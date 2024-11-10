@@ -11,6 +11,7 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.manual.ManualPage;
+import com.xresch.cfw.features.query.CFWJobTaskAlertingCFWQLQuery;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWLog;
@@ -73,7 +74,11 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 		//----------------------------------
 		// Register Sources
 		CFW.Registry.Query.registerSource(new CFWQuerySourceCLI(null));
-				
+		
+		//----------------------------------
+		// Register Job Tasks
+		CFW.Registry.Jobs.registerTask(new CFWJobTaskExecuteCommandLine());
+
 		//----------------------------------
 		// Register Manual Page
 		CFW.Registry.Manual.addManualPage(null,

@@ -47,7 +47,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 	public static CFWField createOffsetMinutesField() {
 		return CFWField.newTimeframe(PARAM_TIMEFRAME_OFFSET)
 						.setLabel("Timeframe Offset")
-						.setDescription("The offset in minutes from present time used in case the placeholders $earliest$ / $latest$ are used in your widget.")
+						.setDescription("The offset in minutes from present time used in case the placeholders $earliest$ / $latest$ are used.")
 						.setValue(new CFWTimeframe());
 			
 	}

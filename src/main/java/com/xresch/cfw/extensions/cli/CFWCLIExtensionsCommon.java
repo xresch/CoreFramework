@@ -7,6 +7,16 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
+/**************************************************************************************************************
+ * This class contains things, very specific things indeed.
+ * It contains the mightiness of all the functional creatures and beasty variables which are revered
+ * as a common denominator between a multitude of classes.
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * 
+ * @license MIT-License
+ **************************************************************************************************************/
+
 public class CFWCLIExtensionsCommon {
 	
 	public static final String PARAM_DIR 		= "WORKING_DIRECTORY";
