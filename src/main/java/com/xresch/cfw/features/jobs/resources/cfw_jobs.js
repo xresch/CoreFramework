@@ -291,6 +291,21 @@ function cfwjobs_printJobs(itemType){
 	var actionButtons = [];
 	
 	//-------------------------
+	// Stop Button
+	actionButtons.push(
+		function (record, id){ 
+			
+			if(CFW.utils.isNullOrEmpty(record.EXECUTION_START)){ return "&nbsp;"; }
+					
+			return   '<button class="btn btn-sm btn-danger" alt="Execute" title="Stop" '
+					+'onclick="CFW.ui.confirmExecute(\'Do you really want to stop the job <strong>\\\''+record.JOB_NAME.replace(/\"/g,'&quot;')+'\\\'</strong> now?\', \'Let\\\'s Go!\', \'cfwjobs_stop('+record.PK_ID+');\')">'
+					+ '<i class="fa fa-ban"></i>'
+					+ '</button>'
+				;
+
+		});
+	
+	//-------------------------
 	// Execute Button
 	actionButtons.push(
 		function (record, id){ 
@@ -335,8 +350,8 @@ function cfwjobs_printJobs(itemType){
 	
 	//-------------------------
 	// Visible Fields
-	var fieldsWithOwner =  	 ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'EXECUTION_START', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME']
-	var fieldsWithoutOwner = ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'JOB_NAME', 'TASK_NAME', 'EXECUTION_START', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME']
+	var fieldsWithOwner =  	 ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'LAST_RUN_TIME', 'EXECUTION_START']
+	var fieldsWithoutOwner = ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'JOB_NAME', 'TASK_NAME', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'LAST_RUN_TIME', 'EXECUTION_START']
 	
 	var visiblefields;
 	if(itemType == 'adminjoblist'){
@@ -361,7 +376,7 @@ function cfwjobs_printJobs(itemType){
 		 		IS_ENABLED: "Enabled",
 		 		JSON_SCHEDULE: "Schedule",
 		 		JSON_PROPERTIES: "Properties",
-		 		EXECUTION_START: "Execution",
+		 		EXECUTION_START: "Exec Duration",
 		 	},
 		 	customizers: {
 		 		JSON_LASTRUN_MESSAGES: cfwjobs_formatMessages,
@@ -383,7 +398,6 @@ function cfwjobs_printJobs(itemType){
 		 			}else{
 		 				return CFW.format.epochToTimestamp(parseInt(value)); 
 		 			}
-		 			
 		 		},
 		 		
 		 		EXECUTION_START: function(record, value) { 
@@ -391,12 +405,8 @@ function cfwjobs_printJobs(itemType){
 					
 					let millis = Date.now() - value;
 					
-					return '<div>' 
-							+'<span class="pr-1">'+CFW.format.timeToDuration(millis)+'</span>'
-							+'<button class="btn btn-sm btn-danger" alt="Execute" title="Stop" '
-							+'onclick="CFW.ui.confirmExecute(\'Do you really want to stop the job <strong>\\\''+record.JOB_NAME.replace(/\"/g,'&quot;')+'\\\'</strong> now?\', \'Let\\\'s Go!\', \'cfwjobs_stop('+record.PK_ID+');\')">'
-							+ '<i class="fa fa-ban"></i>'
-							+ '</button>'
+					return '<div class="text-right w-100 pr-1" >' 
+							+ CFW.format.timeToDuration(millis)
 						+'<div>';
 					
 		 		},
