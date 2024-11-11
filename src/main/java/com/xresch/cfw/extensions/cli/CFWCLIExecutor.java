@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -92,6 +93,29 @@ public class CFWCLIExecutor extends Thread {
 	 * 
 	 * 
 	 ***************************************************************************/
+	public CFWCLIExecutor setMonitor(CFWMonitor monitor) {
+		this.monitor = monitor;
+		return this;
+	}
+	
+	/***************************************************************************
+	 * 
+	 * 
+	 ***************************************************************************/
+	private boolean checkKeepExecuting() {
+		
+		return !isCompleted 
+			&& !Thread.interrupted()
+			&& ( monitor == null || monitor.check() ) 
+			;
+	}
+	
+	
+	
+	/***************************************************************************
+	 * 
+	 * 
+	 ***************************************************************************/
 	public CFWReadableOutputStream getOutputStream() {
 		return out;
 	}
@@ -137,7 +161,9 @@ public class CFWCLIExecutor extends Thread {
 	}
 		
 	/***************************************************************************
-	 * 
+	 * Will start this thread and returns.
+	 * Use the other methods of this class to wait for completion and/or read 
+	 * the output of the processes. 
 	 * 
 	 ***************************************************************************/
 	public void execute() throws IOException, InterruptedException {
@@ -155,7 +181,7 @@ public class CFWCLIExecutor extends Thread {
 		try {
 			long starttime = System.currentTimeMillis();
 			
-			while(!isCompleted && !Thread.interrupted()) {
+			while(checkKeepExecuting()) {
 				Thread.sleep(20);
 				
 				if( (System.currentTimeMillis() - starttime) >= timeoutMillis ) {
@@ -192,7 +218,7 @@ public class CFWCLIExecutor extends Thread {
 			int skippedCount = 0;
 			EvictingQueue<String> tailedLines = EvictingQueue.create(tail);
 
-			while(!isCompleted && !Thread.interrupted()) {
+			while(checkKeepExecuting()) {
 				Thread.sleep(20);
 				
 				//-----------------------------
@@ -262,7 +288,7 @@ public class CFWCLIExecutor extends Thread {
 		try {
 			long starttime = System.currentTimeMillis();
 			
-			while(!isCompleted && !Thread.interrupted()) {
+			while(checkKeepExecuting()) {
 				Thread.sleep(20);
 				
 				if( (System.currentTimeMillis() - starttime) >= timeoutMillis ) {
@@ -292,12 +318,13 @@ public class CFWCLIExecutor extends Thread {
 		isInterrupted = true;
 		super.interrupt();
 	}
+	
 	/***************************************************************************
 	 * 
 	 * 
 	 ***************************************************************************/
 	@Override
-	public void start() {
+	public void run() {
 		
 		isCompleted = false;
 		exceptionDuringRun = null;
@@ -305,40 +332,47 @@ public class CFWCLIExecutor extends Thread {
 		List<Process> processes = null;
 		try {
 			for(ArrayList<ProcessBuilder> pipeline : pipelines) {
-
+				
+				if( !checkKeepExecuting()) { break; }
+				
 				Process last = null;
 				try {
-					processes = ProcessBuilder.startPipeline(pipeline); 
 					
+					//------------------------------------
+					// Start Pipeline
+					processes = ProcessBuilder.startPipeline(pipeline); 
+				
+					//------------------------------------
+					// Log FINER
+					if(logger.isLoggable(Level.FINER)) {
+						for(Process p : processes) {
+							new CFWLog(logger).finer("Process Started: PID: "+ p.pid() +", INFO: "+p.info());
+						}
+					}
+					
+					//------------------------------------
+					// Read output of last Process in pipeline
 					last = processes.get(processes.size() - 1);				    
-				    
 				    BufferedReader reader = new BufferedReader( new InputStreamReader(last.getInputStream()) );
-				    InputStream lastStream = last.getInputStream();
-				  
+
 				    //---------------------
 				    // Read the Output
 				    String line;
-				    while((line = reader.readLine()) != null && !isInterrupted) {
-				    	//System.out.println("data: "+line);
+				    while((line = reader.readLine()) != null && checkKeepExecuting()) {
 				    	out.write((line+"\n").getBytes());
 				    }
 				    
-				    
-
 				}finally {
 					
 					if(processes != null) {
 						for(Process p : processes) {
-							p.destroy();
+							killProcessTree(p.toHandle());
 						}
 					}
 					
 					if(last != null) {
 						last.getInputStream().close();
 					}
-					
-
-					
 					
 				}
 			}
@@ -349,6 +383,17 @@ public class CFWCLIExecutor extends Thread {
 			isCompleted = true;
 		}
 		
+	}
+
+	/***************************************************************************
+	 * 
+	 * 
+	 ***************************************************************************/
+	private void killProcessTree(ProcessHandle p) {
+		
+		new CFWLog(logger).finer("Destroy Process with PID: "+p.pid()+", INFO: "+p.info());
+		p.descendants().forEach( handle -> { killProcessTree(handle); });
+		p.destroyForcibly();
 	}
 		
 }

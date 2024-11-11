@@ -152,7 +152,7 @@ public class WidgetCLIResults extends WidgetDefinition {
 			return "";
 		}
 		
-		commands =commands.replace("$earliest$", ""+timeframe.getEarliest())
+		commands = commands.replace("$earliest$", ""+timeframe.getEarliest())
 						  .replace("$latest$", ""+timeframe.getLatest())
 						  ;
 
@@ -169,12 +169,12 @@ public class WidgetCLIResults extends WidgetDefinition {
 		//------------------------------------
 		// Get Checks
 		Boolean countSkipped = (Boolean) widgetSettings.getField(CFWCLIExtensionsCommon.PARAM_COUNT_SKIPPED).getValue();
-		
 
 		//----------------------------------------
 		// Execute Command
 		CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands, envVariables); 
-		executor.execute();
+		executor.setMonitor(monitor)
+				.execute();
 
 		//----------------------------------------
 		// Get Data
@@ -251,7 +251,7 @@ public class WidgetCLIResults extends WidgetDefinition {
 		// Get CLI Output
 		String output;
 		try {
-			output = executeCommandsAndGetOutput(widgetSettings, offset, null);
+			output = executeCommandsAndGetOutput(widgetSettings, offset, monitor);
 		} catch (Exception e) {
 			new CFWLog(logger).severe("Task - error while getting CLI output:"+e.getMessage(), e);
 			return;
