@@ -20,6 +20,7 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.mail.CFWMailBuilder;
+import com.xresch.cfw.utils.CFWMonitor;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 public class CFWJobTaskSendMail extends CFWJobTask {
@@ -61,7 +62,7 @@ public class CFWJobTaskSendMail extends CFWJobTask {
 	}
 
 	@Override
-	public void executeTask(JobExecutionContext context) throws JobExecutionException {
+	public void executeTask(JobExecutionContext context, CFWMonitor monitor) throws JobExecutionException {
 		
 		//JobDataMap data = context.getMergedJobDataMap();
 		

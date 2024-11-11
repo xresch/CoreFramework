@@ -18,6 +18,7 @@ import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.JSONResponse;
+import com.xresch.cfw.utils.CFWMonitor;
 
 public abstract class WidgetDefinition {
 
@@ -167,9 +168,17 @@ public abstract class WidgetDefinition {
 	 * Implement the actions your task should execute.
 	 * See {@link com.xresch.cfw.features.jobs.CFWJobTask#executeTask CFWJobTask.executeTask()} to get
 	 * more details on how to implement this method.
+	 * @param monitor TODO
 	 * @param offset TODO
 	 *************************************************************************/
-	public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject widgetSettings, CFWTimeframe offset) throws JobExecutionException {
+	public void executeTask(
+				  JobExecutionContext context
+				, CFWObject taskParams
+				, DashboardWidget widget
+				, CFWObject widgetSettings
+				, CFWMonitor monitor
+				, CFWTimeframe offset
+			) throws JobExecutionException {
 		/* do nothing by default */
 	}
 	

@@ -19,6 +19,7 @@ import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.CFWMonitor;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
@@ -117,7 +118,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 	
 	@SuppressWarnings("static-access")
 	@Override
-	public void executeTask(JobExecutionContext context) throws JobExecutionException {
+	public void executeTask(JobExecutionContext context, CFWMonitor monitor) throws JobExecutionException {
 		
 		JobDataMap data = context.getMergedJobDataMap();
 		String widgetID = data.getString("WIDGET_ID");
@@ -172,7 +173,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 			
 		//------------------------------
 		// Call widget Task
-		widgetDef.executeTask(context, taskParams, widget, widgetSettings, offset);
+		widgetDef.executeTask(context, taskParams, widget, widgetSettings, monitor, offset);
 	}
 	
 }

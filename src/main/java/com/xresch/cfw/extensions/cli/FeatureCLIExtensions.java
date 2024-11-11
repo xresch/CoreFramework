@@ -128,7 +128,7 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 	 ************************************************************************************/
 	@Override
 	public void addFeature(CFWApplicationExecutor cfwApplicationExecutor) {
-
+		
 	}
 
 	/************************************************************************************

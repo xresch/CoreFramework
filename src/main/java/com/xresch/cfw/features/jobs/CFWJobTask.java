@@ -15,6 +15,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.utils.CFWMonitor;
 
 import io.prometheus.client.Counter;
 
@@ -78,6 +79,13 @@ public abstract class CFWJobTask implements InterruptableJob {
 	public boolean createableFromUI() {
 		return true;
 	}
+	/*************************************************************************
+	 * Returns if the job was interrupted.
+	 * 
+	 *************************************************************************/
+	public boolean isInterrupted() {
+		return isInterrupted;
+	}
 	
 	/*************************************************************************
 	 * Set the thread as interrupted.
@@ -115,8 +123,11 @@ public abstract class CFWJobTask implements InterruptableJob {
 	 * CFW.Messages.add*Message("Example Message INFO/SUCCESS/WARNING/ERROR");
 	 * </code></pre>
 	 * 
+	 * @param context the context of the job
+	 * @param monitor use the check()-method so monitor if the job is still running(true) or if it has been interrupted(false)
+	 * 
 	 *************************************************************************/
-	public abstract void executeTask(JobExecutionContext context) throws JobExecutionException;
+	public abstract void executeTask(JobExecutionContext context, CFWMonitor monitor) throws JobExecutionException;
 	
 	/*************************************************************************
 	 * Wraps the original method of the Job class to add logging and last run.
@@ -143,7 +154,13 @@ public abstract class CFWJobTask implements InterruptableJob {
 				@Override
 				public void run() {
 					try {
-						executeTask(context);
+						
+						CFWMonitor monitor = new CFWMonitor() {
+							@Override
+							protected boolean monitorCondition() { return !isInterrupted();}
+						};
+						
+						executeTask(context, monitor);
 					}catch(JobExecutionException e) {
 						new CFWLog(logger)
 							.silent(true)
@@ -159,7 +176,6 @@ public abstract class CFWJobTask implements InterruptableJob {
 						
 						//---------------------------------------
 						// Update Last Run
-						
 						if(!CFW.DB.Jobs.updateLastRun(jobID)) {
 							new CFWLog(logger)
 								.silent(true)
@@ -181,7 +197,7 @@ public abstract class CFWJobTask implements InterruptableJob {
 				Thread.sleep(1000);
 				if(isInterrupted) {
 					thread.interrupt();
-					thread.stop(); 
+					//thread.stop(); 
 				}
 			}
 			

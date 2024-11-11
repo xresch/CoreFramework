@@ -14,6 +14,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.utils.CFWMonitor;
 import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.validation.LengthValidator;
 
@@ -64,7 +65,7 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 	}
 
 	@Override
-	public void executeTask(JobExecutionContext context) throws JobExecutionException {
+	public void executeTask(JobExecutionContext context, CFWMonitor monitor) throws JobExecutionException {
 		
 		JobDataMap data = context.getMergedJobDataMap();
 		String folderpath = data.getString("folder");

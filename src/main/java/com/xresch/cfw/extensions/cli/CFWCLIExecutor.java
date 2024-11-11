@@ -14,6 +14,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.EvictingQueue;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.CFWMonitor;
 import com.xresch.cfw.utils.CFWReadableOutputStream;
 
 /**************************************************************************************************************
@@ -30,19 +31,20 @@ import com.xresch.cfw.utils.CFWReadableOutputStream;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWCLIExecutor implements Runnable {
+public class CFWCLIExecutor extends Thread {
 	
 	private static Logger logger = CFWLog.getLogger(CFWCLIExecutor.class.getName());
 	
 	
 	private Map<String,String> envVariables = null;
+	private CFWMonitor monitor = null;
 	private ArrayList<ArrayList<ProcessBuilder>> pipelines = new ArrayList<>();
 	
 	CFWReadableOutputStream out = new CFWReadableOutputStream();
 	
+	private boolean isInterrupted = false;
 	private boolean isCompleted = false;
 	
-	Thread thread;
 	private Exception exceptionDuringRun = null;
 	
 	
@@ -56,6 +58,7 @@ public class CFWCLIExecutor implements Runnable {
 	public CFWCLIExecutor(String workingDir, String cliCommands) {
 		this(workingDir, cliCommands, null);
 	}
+	
 	/***************************************************************************
 	 * 
 	 * @param workingDir the working directory, if null or empty will use the working directory of the current process.
@@ -139,9 +142,7 @@ public class CFWCLIExecutor implements Runnable {
 	 ***************************************************************************/
 	public void execute() throws IOException, InterruptedException {
 		
-		thread = new Thread(this);
-
-		thread.start();
+		this.start();
 	}
 	
 	/***************************************************************************
@@ -154,11 +155,11 @@ public class CFWCLIExecutor implements Runnable {
 		try {
 			long starttime = System.currentTimeMillis();
 			
-			while(!isCompleted) {
+			while(!isCompleted && !Thread.interrupted()) {
 				Thread.sleep(20);
 				
 				if( (System.currentTimeMillis() - starttime) >= timeoutMillis ) {
-					thread.interrupt();
+					this.interrupt();
 					break;
 					//throw new Exception("Timeout of "+timeoutSeconds+" seconds reached while executing command line.");
 				}
@@ -191,13 +192,13 @@ public class CFWCLIExecutor implements Runnable {
 			int skippedCount = 0;
 			EvictingQueue<String> tailedLines = EvictingQueue.create(tail);
 
-			while(!isCompleted) {
+			while(!isCompleted && !Thread.interrupted()) {
 				Thread.sleep(20);
 				
 				//-----------------------------
 				// Check Timeout
 				if( (System.currentTimeMillis() - starttime) >= timeoutMillis ) {
-					thread.interrupt();
+					this.interrupt();
 					break;
 				}
 				
@@ -219,6 +220,10 @@ public class CFWCLIExecutor implements Runnable {
 						}
 					}
 				}
+				
+				if(exceptionDuringRun != null) { throw exceptionDuringRun; }
+				
+				if(Thread.interrupted()) { this.interrupt(); }
 
 			}
 			
@@ -236,14 +241,9 @@ public class CFWCLIExecutor implements Runnable {
 			while( ! tailedLines.isEmpty() ) {
 				result.append(tailedLines.poll()).append("\n");
 			}
-			
-			
-			if(exceptionDuringRun != null) {
-				throw exceptionDuringRun;
-			}
-			
+
 		} catch (InterruptedException e) {
-			new CFWLog(logger).severe("Thread got interrupted while executing CLI commands.", e);
+			this.interrupt();
 		}
 		
 		return result.toString();
@@ -262,21 +262,21 @@ public class CFWCLIExecutor implements Runnable {
 		try {
 			long starttime = System.currentTimeMillis();
 			
-			while(!isCompleted) {
+			while(!isCompleted && !Thread.interrupted()) {
 				Thread.sleep(20);
 				
 				if( (System.currentTimeMillis() - starttime) >= timeoutMillis ) {
-					thread.interrupt();
+					this.interrupt();
 					break;
 				}
 			}
+						
+			if(exceptionDuringRun != null) { throw exceptionDuringRun; }
 			
-			if(exceptionDuringRun != null) {
-				throw exceptionDuringRun;
-			}
+			if(Thread.interrupted()) { this.interrupt(); }
 			
 		} catch (InterruptedException e) {
-			new CFWLog(logger).severe("Thread got interrupted while executing CLI commands.", e);
+			this.interrupt();
 		}
 		
 		return result.toString();
@@ -288,17 +288,27 @@ public class CFWCLIExecutor implements Runnable {
 	 * 
 	 ***************************************************************************/
 	@Override
-	public void run() {
+	public void interrupt() {
+		isInterrupted = true;
+		super.interrupt();
+	}
+	/***************************************************************************
+	 * 
+	 * 
+	 ***************************************************************************/
+	@Override
+	public void start() {
 		
 		isCompleted = false;
 		exceptionDuringRun = null;
 		
+		List<Process> processes = null;
 		try {
 			for(ArrayList<ProcessBuilder> pipeline : pipelines) {
 
 				Process last = null;
 				try {
-					List<Process> processes = ProcessBuilder.startPipeline(pipeline); 
+					processes = ProcessBuilder.startPipeline(pipeline); 
 					
 					last = processes.get(processes.size() - 1);				    
 				    
@@ -308,20 +318,32 @@ public class CFWCLIExecutor implements Runnable {
 				    //---------------------
 				    // Read the Output
 				    String line;
-				    while((line = reader.readLine()) != null) {
+				    while((line = reader.readLine()) != null && !isInterrupted) {
 				    	//System.out.println("data: "+line);
 				    	out.write((line+"\n").getBytes());
 				    }
+				    
+				    
 
 				}finally {
+					
+					if(processes != null) {
+						for(Process p : processes) {
+							p.destroy();
+						}
+					}
+					
 					if(last != null) {
 						last.getInputStream().close();
 					}
+					
+
 					
 					
 				}
 			}
 		}catch(Exception e) {
+			
 			exceptionDuringRun = e;
 		}finally {
 			isCompleted = true;

@@ -14,6 +14,7 @@ import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject.AlertType;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.utils.CFWMonitor;
 
 public class CFWJobTaskTestAlerting extends CFWJobTask {
 	
@@ -54,7 +55,7 @@ public class CFWJobTaskTestAlerting extends CFWJobTask {
 	}
 
 	@Override
-	public void executeTask(JobExecutionContext context) throws JobExecutionException {
+	public void executeTask(JobExecutionContext context, CFWMonitor monitor) throws JobExecutionException {
 		
 		//JobDataMap data = context.getMergedJobDataMap();
 		

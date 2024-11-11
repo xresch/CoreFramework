@@ -1,12 +1,9 @@
 package com.xresch.cfw.extensions.cli;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,32 +12,21 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.google.common.base.Strings;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
-import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.dashboard.CFWJobTaskWidgetTaskExecutor;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
-import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
-import com.xresch.cfw.features.jobs.CFWJobsAlertObject.AlertType;
-import com.xresch.cfw.features.query.CFWQueryExecutor;
-import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
-import com.xresch.cfw.utils.CFWState;
-import com.xresch.cfw.utils.CFWState.CFWStateOption;
-import com.xresch.cfw.validation.NotNullOrEmptyValidator;
+import com.xresch.cfw.utils.CFWMonitor;
 
 /**************************************************************************************************************
  * 
@@ -132,7 +118,7 @@ public class WidgetCLIResults extends WidgetDefinition {
 		try {
 			//----------------------------------------
 			// Get Data
-			String dataString = executeCommandsAndGetOutput(cfwObject, timeframe);
+			String dataString = executeCommandsAndGetOutput(cfwObject, timeframe, null);
 
 			//----------------------------------------
 			// Create Result
@@ -149,11 +135,12 @@ public class WidgetCLIResults extends WidgetDefinition {
 	}
 	
 	/**
+	 * @param monitor TODO
 	 * @param offset *************************************************************************************
 	 * 
 	 ***************************************************************************************/
 	@SuppressWarnings("unchecked")
-	private String executeCommandsAndGetOutput(CFWObject widgetSettings, CFWTimeframe timeframe) throws Exception {
+	private String executeCommandsAndGetOutput(CFWObject widgetSettings, CFWTimeframe timeframe, CFWMonitor monitor) throws Exception {
 		//------------------------------------
 		// Get Working Dir
 		String dir = (String) widgetSettings.getField(CFWCLIExtensionsCommon.PARAM_DIR).getValue();
@@ -255,6 +242,7 @@ public class WidgetCLIResults extends WidgetDefinition {
 						  , CFWObject taskParams
 						  , DashboardWidget widget
 						  , CFWObject widgetSettings
+						  , CFWMonitor monitor
 						  , CFWTimeframe offset) throws JobExecutionException {
 				
 		
@@ -263,7 +251,7 @@ public class WidgetCLIResults extends WidgetDefinition {
 		// Get CLI Output
 		String output;
 		try {
-			output = executeCommandsAndGetOutput(widgetSettings, offset);
+			output = executeCommandsAndGetOutput(widgetSettings, offset, null);
 		} catch (Exception e) {
 			new CFWLog(logger).severe("Task - error while getting CLI output:"+e.getMessage(), e);
 			return;

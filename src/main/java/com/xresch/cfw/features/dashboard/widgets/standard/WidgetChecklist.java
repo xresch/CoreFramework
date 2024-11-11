@@ -22,6 +22,7 @@ import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.response.JSONResponse;
+import com.xresch.cfw.utils.CFWMonitor;
 
 public class WidgetChecklist extends WidgetDefinition {
 
@@ -155,7 +156,7 @@ public class WidgetChecklist extends WidgetDefinition {
 						  , CFWObject taskParams
 						  , DashboardWidget widget
 						  , CFWObject widgetSettings
-						  , CFWTimeframe offset) throws JobExecutionException {
+						  , CFWMonitor monitor, CFWTimeframe offset) throws JobExecutionException {
 		
 		
 		//----------------------------------------
