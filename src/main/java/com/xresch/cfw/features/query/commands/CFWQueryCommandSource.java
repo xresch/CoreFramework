@@ -34,6 +34,8 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 import com.xresch.cfw.pipeline.PipelineActionListener;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
+import io.prometheus.client.Counter;
+
 /************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2023 
@@ -49,9 +51,9 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	
 	private CFWQueryFieldnameManager fieldnameManager = new CFWQueryFieldnameManager();
 	
+	private String sourceName = null;
 	private int fetchLimit = 0;
 	private int recordCounter = 0;
-	
 	boolean isSourceFetchingDone = false;
 	
 	// Cache Source instances 
@@ -66,6 +68,12 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	private ArrayList<QueryPart> parts;
 	private ArrayList<QueryPartAssignment> assignmentsArray = new ArrayList<>();
 
+	private static final Counter sourceCounter = Counter.build()
+	         .name("cfw_query_source_executions_total")
+	         .help("Number of times a source has been executed.")
+	         .labelNames("name")
+	         .register();
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -291,7 +299,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			throw new ParseException(COMMAND_NAME+": expected source name.", -1);
 		}
 		
-		String sourceName = nameValue.getAsString().trim();
+		sourceName = nameValue.getAsString().trim();
 		
 		//------------------------------------------
 		// Get Source
@@ -415,12 +423,18 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				public void run() {
 					try {
 						if(eachParameter == null) {
+							
+							increasePrometheusCounters();
+							
 							CFWObject paramsForSource = prepareParamsForSource();
 							source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
+							
 						}else {
 							for(JsonElement element : eachParameter) {
 								QueryPartValue value = QueryPartValue.newFromJsonElement(element);
 								source.getParent().getContext().addMetadata("each", value);
+								
+								increasePrometheusCounters();
 								
 								CFWObject paramsForSource = prepareParamsForSource();
 								source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
@@ -430,6 +444,11 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 						new CFWLog(logger).severe("Error while reading from source '"+source.uniqueName()+"': "+e.getMessage(), e);						
 					}
 					setSourceFetchingDone();
+				}
+
+				private void increasePrometheusCounters() {
+					sourceCounter.labels("TOTAL").inc();
+					sourceCounter.labels(sourceName).inc();
 				}
 			});
 		

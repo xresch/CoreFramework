@@ -20,6 +20,8 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+
+import io.prometheus.client.Counter;
 /**************************************************************************************************************
  * The Class used to execute CFWQL queries.
  * 
@@ -34,6 +36,11 @@ public class CFWQueryExecutor {
 	private boolean saveToHistory = false;
 
 	CFWQueryParser parser;
+	
+	private static final Counter executionCounter = Counter.build()
+	         .name("cfw_query_executions_total")
+	         .help("Number of query executions in total.")
+	         .register();
 	
 	
 	/****************************************************************
@@ -233,6 +240,10 @@ public class CFWQueryExecutor {
 		if(queryList.isEmpty()) {
 			return new CFWQueryResultList();
 		}
+		
+		//============================================
+		// Increase Count
+		executionCounter.inc();
 		
 		//============================================
 		// Save to History

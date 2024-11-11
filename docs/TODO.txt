@@ -168,6 +168,9 @@ DONE
 - CLI Extensions: New parameters head/tail/countSkipped to only read specific lines of output
 - Jobs: Now check if a job is already running before manual trigger is executed
 - Query: Command Display - new parameter 'download' to enable a download button
+- Query: Added Prometheus Counters for Queries and Query Sources
+
+
 
 ------- v.10.0.0 -------
 - BREAKING CODE CHANGE: Refactoring of ContextSettingsChangeListener.onDelete() to ContextSettingsChangeListener.onDeleteOrDeactivate()
