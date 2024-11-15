@@ -15,7 +15,12 @@ import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.core.AutocompleteList;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
+import com.xresch.cfw.features.usermgmt.CFWDBUser;
+import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -207,14 +212,14 @@ public class CFWDBJob {
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static String getPartialJobListAsJSONForUser(String pageSize, String pageNumber, String filterquery, String sortby, boolean isAscending) {
+	public static JsonArray getPartialJobListAsJSONForUser(String pageSize, String pageNumber, String filterquery, String sortby, boolean isAscending) {
 		return getPartialJobListAsJSONForUser(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, isAscending);
 	}
 	
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static String getPartialJobListAsJSONForUser(int pageSize, int pageNumber, String filterquery, String sortby, boolean isAscending) {	
+	public static JsonArray getPartialJobListAsJSONForUser(int pageSize, int pageNumber, String filterquery, String sortby, boolean isAscending) {	
 		
 		//-------------------------------------
 		// Filter with fulltext search
@@ -275,7 +280,7 @@ public class CFWDBJob {
 		
 		addIsRunning(result);
 		
-		return CFW.JSON.toString(result);
+		return result;
 				
 	}
 	
@@ -306,14 +311,14 @@ public class CFWDBJob {
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static String getPartialJobListAsJSONForAdmin(String pageSize, String pageNumber, String filterquery, String sortby, boolean isAscending) {
+	public static JsonArray getPartialJobListAsJSONForAdmin(String pageSize, String pageNumber, String filterquery, String sortby, boolean isAscending) {
 		return getPartialJobListAsJSONForAdmin(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, isAscending);
 	}
 	
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static String getPartialJobListAsJSONForAdmin(int pageSize, int pageNumber, String searchString, String sortby, boolean isAscending) {	
+	public static JsonArray getPartialJobListAsJSONForAdmin(int pageSize, int pageNumber, String searchString, String sortby, boolean isAscending) {	
 		
 		//-------------------------------------
 		// Filter with fulltext search
@@ -372,7 +377,7 @@ public class CFWDBJob {
 		
 		addIsRunning(result);
 		
-		return CFW.JSON.toString(result);
+		return result;
 				
 	}
 	
@@ -415,6 +420,60 @@ public class CFWDBJob {
 				.executeCount();
 		
 	}
+	
+	/****************************************************************
+	 * Returns a AutocompleteResult with jobs.
+	 * Only returns jobs the user has access too.
+	 * 
+	 * @param searchValue
+	 * @param maxResults
+	 * @return true if exists, false otherwise or in case of exception.
+	 ****************************************************************/
+	public static AutocompleteResult autocompleteJob(String searchValue, int maxResults) {
+		
+		if(Strings.isNullOrEmpty(searchValue)) {
+			return new AutocompleteResult();
+		}
+		
+		User user = CFW.Context.Request.getUser();
+		
+		JsonArray jobsArray = null;
+		if(user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)) {
+			jobsArray = getPartialJobListAsJSONForAdmin(
+								  maxResults
+								, 1
+								, searchValue
+								, CFWJobFields.JOB_NAME.toString()
+								, false
+								);
+		}else if(user.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
+			jobsArray = getPartialJobListAsJSONForUser(
+								maxResults
+								, 1
+								, searchValue
+								, CFWJobFields.JOB_NAME.toString()
+								, false
+								);
+		}
+		
+		AutocompleteList autocompleteList = new AutocompleteList();
+		if(jobsArray != null ) {
+			for(JsonElement element : jobsArray) {
+				JsonObject object = element.getAsJsonObject();
+				
+				Object value = object.get(CFWJobFields.PK_ID.toString());
+				Object label = object.get(CFWJobFields.JOB_NAME.toString());
+				Object description = 
+							"<b>Task Name:&nbsp;</b>"+object.get(CFWJobFields.TASK_NAME.toString())
+							;
+				autocompleteList.addItem(value, label, description);
+				
+			}
+		}
+			
+		return new AutocompleteResult(autocompleteList);
+	}
+	
 	
 	
 	

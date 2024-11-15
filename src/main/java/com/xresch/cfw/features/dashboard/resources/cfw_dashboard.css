@@ -25,6 +25,10 @@
     width: 101%;
 }
 
+#editWidgetComposite{
+	min-height: 50vh;
+}
+
 .cfw-dashboard-widget-title {
     padding: 0.4rem 0.4rem;
     font-weight: 600;

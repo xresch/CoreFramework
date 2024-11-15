@@ -16,7 +16,7 @@ public class QuartzConnectionProvider implements ConnectionProvider {
 	@Override
 	public void initialize() throws SQLException {
 		
-		String sql = CFW.Files.readPackageResource(FeatureJobs.RESOURCE_PACKAGE, "create_quartz_tables.sql");
+		String sql = CFW.Files.readPackageResource(FeatureJobs.PACKAGE_RESOURCES, "create_quartz_tables.sql");
 
 		if(CFW.DB.getDBInterface().preparedExecuteBatch(sql) == -1) {
 			new CFWLog(logger)

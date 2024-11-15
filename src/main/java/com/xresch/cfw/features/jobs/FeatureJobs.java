@@ -16,7 +16,7 @@ import com.xresch.cfw.spi.CFWAppFeature;
 public class FeatureJobs extends CFWAppFeature {
 	
 	private static final String URI_JOBS = "/app/jobs";
-	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.jobs.resources";
+	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.jobs.resources";
 	public static final String PERMISSION_JOBS_USER = "Jobs: User";
 	public static final String PERMISSION_JOBS_ADMIN = "Jobs: Admin";
 	
@@ -25,7 +25,7 @@ public class FeatureJobs extends CFWAppFeature {
 	public void register() {
 		//----------------------------------
 		// Register Package
-		CFW.Files.addAllowedPackage(RESOURCE_PACKAGE);
+		CFW.Files.addAllowedPackage(PACKAGE_RESOURCES);
 		
 		//----------------------------------
 		// Register Objects
@@ -51,6 +51,10 @@ public class FeatureJobs extends CFWAppFeature {
     	// Register Audit
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorJobTask());
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorAlertChannel());
+		
+		//----------------------------------
+		// Register Widgets
+		CFW.Registry.Widgets.add(new WidgetTriggerJobs());
 		
 		//----------------------------------
     	// Register Menu				

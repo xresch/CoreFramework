@@ -53,7 +53,7 @@ public class ServletJobs extends HttpServlet
 				handleDataRequest(request, response);	
 				
 			}else {
-				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureJobs.RESOURCE_PACKAGE, "cfw_jobs.js");
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureJobs.PACKAGE_RESOURCES, "cfw_jobs.js");
 				
 				html.addJavascriptCode("cfwjobs_initialDraw();");
 				
@@ -90,12 +90,12 @@ public class ServletJobs extends HttpServlet
 					
 				switch(item.toLowerCase()) {
 					case "myjoblist": 		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
-												jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForUser(pagesize, pagenumber, filterquery, sortby, isAscending));
+												jsonResponse.setPayload(CFW.DB.Jobs.getPartialJobListAsJSONForUser(pagesize, pagenumber, filterquery, sortby, isAscending));
 											}else { CFW.Messages.noPermission(); }
 											break;
 	  										
 					case "adminjoblist": 	if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)) {
-												jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForAdmin(pagesize, pagenumber, filterquery, sortby, isAscending));
+												jsonResponse.setPayload(CFW.DB.Jobs.getPartialJobListAsJSONForAdmin(pagesize, pagenumber, filterquery, sortby, isAscending));
 											}else { CFW.Messages.noPermission(); }
 											break;
 	  										
