@@ -40,14 +40,25 @@ public class ServletJobs extends HttpServlet
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
 		HTMLResponse html = new HTMLResponse("Jobs");
+		String action = request.getParameter("action");
+		String item = request.getParameter("item");
 		
+		//---------------------------------
+		// Widget Trigger Job (Allow all users)
+		if(action != null && item != null && item.equals("widgettriggerjob")) {
+			handleDataRequest(request, response);// allow users to execute 
+			return;
+		}
+		
+		//---------------------------------
+		// All Other Requests
 		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)
-		|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)) {
+		|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
+		){
 			
 			createForms();
 			
-			String action = request.getParameter("action");
-			
+
 			if(action != null) {
 				
 				handleDataRequest(request, response);	
@@ -129,18 +140,24 @@ public class ServletJobs extends HttpServlet
 			case "execute": 			
 				switch(item.toLowerCase()) {
 
-					case "job": 		executeCFWJob(jsonResponse, ID);
-										break;  
+					case "job": 				executeCFWJob(jsonResponse, ID);
+												break;  
+												
+					case "widgettriggerjob": 	executeCFWJob(jsonResponse, unobfuscateID(ID));
+												break;  
 										
-					default: 			CFW.Messages.itemNotSupported(item);
-										break;
+					default: 					CFW.Messages.itemNotSupported(item);
+												break;
 				}
 				break;	
 				
 			case "stop": 			
 				switch(item.toLowerCase()) {
 				
-					case "job": 		stopCFWJob(jsonResponse, ID);
+					case "job": 				stopCFWJob(jsonResponse, ID);
+					break; 
+					
+					case "widgettriggerjob": 	stopCFWJob(jsonResponse, unobfuscateID(ID));
 					break;  
 					
 					default: 			CFW.Messages.itemNotSupported(item);
@@ -177,6 +194,16 @@ public class ServletJobs extends HttpServlet
 								break;
 								
 		}
+	}
+	
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private String unobfuscateID(String ID) {
+		
+		int idnumber = Integer.parseInt(ID);
+		return ""+ ( (idnumber / 761) - 7 );
 	}
 	
 	/******************************************************************

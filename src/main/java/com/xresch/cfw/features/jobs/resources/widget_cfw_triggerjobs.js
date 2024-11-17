@@ -25,7 +25,8 @@ function cfw_widget_triggerjobs_rerender(){
  ******************************************************************/
 function cfw_widget_triggerjobs_execute(id){
 	
-	params = {action: "execute", item: "job", id: id};
+	let obfuscatedID = (id + 7) * 761;
+	params = {action: "execute", item: "widgettriggerjob", id: obfuscatedID};
 	CFW.http.getJSON(CFW_TRIGGERJOBS_URL, params, 
 		function(data) {
 			if(data.success){ 
@@ -40,7 +41,8 @@ function cfw_widget_triggerjobs_execute(id){
  ******************************************************************/
 function cfw_widget_triggerjobs_stop(id){
 	
-	params = {action: "stop", item: "job", id: id};
+	let obfuscatedID = (id + 7) * 761;
+	params = {action: "stop", item: "widgettriggerjob", id: obfuscatedID};
 	CFW.http.getJSON(CFW_TRIGGERJOBS_URL, params, 
 		function(data) {
 			if(data.success){
@@ -59,9 +61,7 @@ function cfw_widget_triggerjobs_stop(id){
 		let millis = Date.now() - startMillis;
 		clockDiv.text('[' + CFW.format.millisToDurationClock(millis)+']');
 	})
-	
-	
-	
+
 }, 1000);
 	
 (function (){
