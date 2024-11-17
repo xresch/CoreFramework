@@ -158,17 +158,17 @@ public class FeatureCore extends CFWAppFeature {
 		//============================================================
 		// TEMP: MIGRATE CFWState
 		//============================================================
-		new CFWLog(logger)
-			.off("Migration: Updating threshold fields and names in database...");
-		
-		int updateCount = new CFWSQL(null)
-			.loadSQLResource(RESOURCE_PACKAGE+".sql", "cfw_state_migration_batch_script.sql")
-			.executeBatch()
-			;
-		
-		if(updateCount != -1) {
-			new CFWLog(logger).off("Migration: Updated "+updateCount+" rows");
-		}
+//		new CFWLog(logger)
+//			.off("Migration: Updating threshold fields and names in database...");
+//		
+//		int updateCount = new CFWSQL(null)
+//			.loadSQLResource(RESOURCE_PACKAGE+".sql", "cfw_state_migration_batch_script.sql")
+//			.executeBatch()
+//			;
+//		
+//		if(updateCount != -1) {
+//			new CFWLog(logger).off("Migration: Updated "+updateCount+" rows");
+//		}
 		
 		//============================================================
 		// PERMISSIONS

@@ -164,6 +164,7 @@ DONE
 ====
 
 ------- current -------
+- REMOVED AUTO-MIGRATION: Threshold State Names
 - CLI Extensions: Now supports environment variables
 - CLI Extensions: New parameters head/tail/countSkipped to only read specific lines of output
 - Jobs: Now check if a job is already running before manual trigger is executed
