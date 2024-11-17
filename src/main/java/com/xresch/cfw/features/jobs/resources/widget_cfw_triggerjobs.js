@@ -3,16 +3,37 @@ let CFW_TRIGGERJOBS_URL = "/app/jobs";
 /******************************************************************
  * Execute
  ******************************************************************/
+function cfw_widget_triggerjobs_rerender(){
+	
+	$('div[data-type="cfw_triggerjobs"]').each(function(){
+		
+		console.log($(this).parent());
+		var widgetInstance = $(this).parent();
+		var guid = widgetInstance.attr('id');
+
+		cfw_dashboard_widget_rerender(guid, false);
+
+	});
+
+}
+
+// additional rerendering to make sure times are updated
+ window.setInterval(cfw_widget_triggerjobs_rerender, 30000);
+	
+/******************************************************************
+ * Execute
+ ******************************************************************/
 function cfw_widget_triggerjobs_execute(id){
 	
 	params = {action: "execute", item: "job", id: id};
 	CFW.http.getJSON(CFW_TRIGGERJOBS_URL, params, 
 		function(data) {
-			if(data.success){
-				//do nothing
+			if(data.success){ 
+				cfw_widget_triggerjobs_rerender();
 			}
 	});
 }
+
 
 /******************************************************************
  * Execute
@@ -23,10 +44,25 @@ function cfw_widget_triggerjobs_stop(id){
 	CFW.http.getJSON(CFW_TRIGGERJOBS_URL, params, 
 		function(data) {
 			if(data.success){
-				//do nothing
+				cfw_widget_triggerjobs_rerender();
 			}
 	});
 }
+
+/******************************************************************
+ * update Clocks
+ ******************************************************************/
+ window.setInterval(function(){
+	$('.cfw-triggerjobs-clock').each(function(){
+		let clockDiv = $(this);
+		let startMillis = clockDiv.data("EXECUTION_START");
+		let millis = Date.now() - startMillis;
+		clockDiv.text('[' + CFW.format.millisToDurationClock(millis)+']');
+	})
+	
+	
+	
+}, 1000);
 	
 (function (){
 	
@@ -100,7 +136,9 @@ function cfw_widget_triggerjobs_stop(id){
 						// Job Duration
 						if(isRunning){  
 							let millis = Date.now() - job.EXECUTION_START;
-							jobDiv.append('<div class="pl-1" >(' + CFW.format.millisToDurationClock(millis)+')<div>');
+							let clockDiv = $('<div class="cfw-triggerjobs-clock pl-1" >[' + CFW.format.millisToDurationClock(millis)+']<div>');
+							clockDiv.data("EXECUTION_START", job.EXECUTION_START);
+							jobDiv.append(clockDiv);
 						}
 						
 						targetDiv.append(jobDiv);
