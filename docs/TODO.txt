@@ -169,6 +169,7 @@ DONE
 - Jobs: Now check if a job is already running before manual trigger is executed
 - Dashboard Widget: New widget "Trigger Jobs" to allow users to trigger jobs from dashboards
 - Notifications: Increased polling interval from 2 to 5 minutes
+- Parameters: New parameter "Time Range"
 - Query: Command Display - new parameter 'download' to enable a download button
 - Query: Added Prometheus Counters for Queries and Query Sources
 
