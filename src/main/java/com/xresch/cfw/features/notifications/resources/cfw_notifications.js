@@ -141,7 +141,9 @@ function cfw_notifications_updateUnreadCountAndSeverity(){
 }
 
 cfw_notifications_updateUnreadCountAndSeverity();
-CFW.global.notificationPollInterval = window.setInterval(cfw_notifications_updateUnreadCountAndSeverity, 2*60*1000);
+
+// Disable polling, keeps sessions open endlessly
+CFW.global.notificationPollInterval = window.setInterval(cfw_notifications_updateUnreadCountAndSeverity, 5*60*1000);
 
 /******************************************************************
  * 
