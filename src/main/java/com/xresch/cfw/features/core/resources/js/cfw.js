@@ -3269,8 +3269,8 @@ function cfw_format_epochToTimestamp(epoch){
 }
 
 /**************************************************************************************
- * Create a clock string in the format HH:mm:ss
- * @param millis milliseconds
+ * Create a clock string in the format HH:mm:ss from an epoch time
+ * @param millis milliseconds of epoch date and time
  * @return clock string
  *************************************************************************************/
 function cfw_format_millisToClock(millis){
@@ -3309,6 +3309,7 @@ function cfw_format_timeToDuration(timeValue, timeUnit){
 	
 	return cfw_format_millisToDuration(millisValue);
 }
+
 /**************************************************************************************
  * Create a duration string in the format # d ##h ##m ##.#s 
  * @param millis milliseconds
@@ -3354,6 +3355,37 @@ function cfw_format_millisToDuration(millis){
 		if(isNegative){
 			clockString = "-" +clockString;
 		}
+		return clockString;
+	}
+	    
+  return "";
+}
+
+/**************************************************************************************
+ * Create a duration string in the format # d ##h ##m ##.#s 
+ * @param millis milliseconds
+ * @return clock string
+ *************************************************************************************/
+function cfw_format_millisToDurationClock(millis){
+	
+	if(millis != null){
+		var isNegative = (millis < 0);
+		millis = Math.abs(millis);
+		
+		var seconds = Math.floor((millis / 1000) % 60);
+		var minutes = Math.floor((millis / (1000 * 60)) % 60);
+		var hours = Math.floor((millis / (1000 * 60 * 60)));
+
+		hours = (hours < 10) ? "0" + hours : hours;
+		minutes = (minutes < 10) ? "0" + minutes : minutes;
+		seconds = (seconds < 10) ? "0" + seconds : seconds;
+		
+		var clockString = hours + ":" + minutes + ":" +seconds ;
+		
+		if(isNegative){
+			clockString = "-" +clockString;
+		}
+		
 		return clockString;
 	}
 	    
@@ -5782,6 +5814,7 @@ var CFW = {
 		, millisToClock: 		cfw_format_millisToClock
 		, timeToDuration: 		cfw_format_timeToDuration
 		, millisToDuration: 	cfw_format_millisToDuration
+		, millisToDurationClock: cfw_format_millisToDurationClock
 		, cfwSchedule: 			cfw_format_cfwSchedule
 		, splitCFWSchedule: 	cfw_format_splitCFWSchedule
 		, objectToHTMLList: 	cfw_format_objectToHTMLList

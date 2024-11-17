@@ -166,6 +166,7 @@ public class CFWDBJob {
 	//####################################################################################################
 	// SELECT
 	//####################################################################################################
+	
 	public static CFWJob selectByID(String id ) {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWJobFields.PK_ID.toString(), id);
 	}
@@ -207,6 +208,30 @@ public class CFWDBJob {
 				.select()
 				.getAsJSON();
 		
+	}
+	
+	/*******************************************************
+	 * 
+	 *******************************************************/
+	public static JsonArray getJobListAsJsonArray(Object... IDs) {	
+		
+		//-------------------------------------
+		// Unfiltered
+		JsonArray result = new CFWSQL(new CFWJob())
+			//.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForUser-FilterEmpty-sort-"+isAscending)
+			.columnSubqueryTotalRecords()
+			.select()
+			.whereIn(CFWJobFields.PK_ID, IDs)
+			.orderby(CFWJobFields.JOB_NAME)
+			.getAsJSONArray()
+			;
+		
+		//-------------------------------------
+		// Add Is Running	
+		addIsRunning(result);
+		
+		return result;
+				
 	}
 	
 	/*******************************************************
