@@ -83,7 +83,7 @@ public class WidgetTriggerJobs extends WidgetDefinition {
 				.addField(
 						(CFWField)CFWField.newTagsSelector(FIELDNAME_JOBS)
 						.setLabel("Jobs")
-						.setDescription("The jobs the user can trigger")
+						.setDescription("The jobs the user can trigger. Start typing to get suggestions.")
 						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
 						.setAutocompleteHandler(new CFWAutocompleteHandler() {
 							
