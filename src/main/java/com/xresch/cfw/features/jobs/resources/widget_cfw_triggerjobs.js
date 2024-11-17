@@ -91,6 +91,14 @@ function cfw_widget_triggerjobs_stop(id){
 					}
 					
 					//---------------------------------
+					// Check is Public Dashboard
+					if(CFW.http.getURLPath().includes("/public/dashboard/")){
+						callback(widgetObject, 'Cannot trigger jobs from public dashboards.');
+						return;
+					}
+					
+					
+					//---------------------------------
 					// Render Data
 					var targetDiv = $('<div class="flex-column align-items-start h-100 w-100">');
 					
