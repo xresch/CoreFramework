@@ -52,6 +52,7 @@ import com.xresch.cfw.validation.FloatValidator;
 import com.xresch.cfw.validation.IValidatable;
 import com.xresch.cfw.validation.IValidator;
 import com.xresch.cfw.validation.IntegerValidator;
+import com.xresch.cfw.validation.LongValidator;
 
 /**************************************************************************************************************
  * 
@@ -216,7 +217,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	public static CFWField<Long> newLong(FormFieldType type, String fieldName){
 		return new CFWField<Long>(Long.class, type, fieldName)
 				.setColumnDefinition("BIGINT")
-				.addValidator(new IntegerValidator());
+				.addValidator(new LongValidator());
 	}
 	
 	//===========================================
@@ -1355,6 +1356,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @return list of messages
 	 *************************************************************************/ 
 	public ArrayList<String> getInvalidationMessages() {
+		if(invalidMessages == null) { return new ArrayList<>(); }
 		return invalidMessages;
 	}
 	
@@ -2039,6 +2041,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			}
 			else if(valueClass == Integer.class) 	{ return this.changeValue(Integer.parseInt(stringValue)); }
 			else if(valueClass == BigDecimal.class) 		{ return this.changeValue(new BigDecimal(stringValue)); }
+			else if(valueClass == Long.class) 		{ return this.changeValue( Long.valueOf(Long.parseLong(stringValue)) ); }
 			else if(valueClass == Float.class) 		{ return this.changeValue( Float.valueOf(Float.parseFloat(stringValue)) ); }
 			else if(valueClass == Boolean.class) 	{ return this.changeValue(Boolean.parseBoolean( (stringValue).trim()) ); }
 			else if(valueClass == Timestamp.class)  { return this.changeValue(new Timestamp(Long.parseLong( (stringValue).trim()) )); }
@@ -2476,6 +2479,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					else if( Integer.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getObject(colName), true); }
 					else if( BigDecimal.class.isAssignableFrom(current.getValueClass()))    { current.setValueConvert(result.getBigDecimal(colName), true); }
 					else if( Float.class.isAssignableFrom(current.getValueClass()))    { current.setValueConvert(result.getFloat(colName), true); }
+					else if( Long.class.isAssignableFrom(current.getValueClass()))    { current.setValueConvert(result.getLong(colName), true); }
 					else if( Boolean.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getBoolean(colName), true); }
 					else if( Timestamp.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getTimestamp(colName), true); }
 					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getDate(colName), true); }

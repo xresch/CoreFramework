@@ -168,12 +168,13 @@ DONE
 - CLI Extensions: Now supports environment variables
 - CLI Extensions: New parameters head/tail/countSkipped to only read specific lines of output
 - Jobs: Now check if a job is already running before manual trigger is executed
-- Dashboard Widget: New widget "Trigger Jobs" to allow users to trigger jobs from dashboards
 - Notifications: Increased polling interval from 2 to 5 minutes
 - Parameters: New parameter "Time Range"
+- CFWField: fixed issues with support of Long values
+- Dashboard Widget: New widget "Trigger Jobs" to allow users to trigger jobs from dashboards
 - Query: Command Display - new parameter 'download' to enable a download button
 - Query: Added Prometheus Counters for Queries and Query Sources
-
+- Query Source: EAV - now supports custom earliest/latest
 
 ------- v.10.0.0 -------
 - BREAKING CODE CHANGE: Refactoring of ContextSettingsChangeListener.onDelete() to ContextSettingsChangeListener.onDeleteOrDeactivate()

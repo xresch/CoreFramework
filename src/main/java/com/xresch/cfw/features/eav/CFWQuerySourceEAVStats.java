@@ -117,6 +117,16 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 					.addValidator(new NotNullOrEmptyValidator())
 					.setValue(false)
 					)
+			.addField(
+					CFWField.newLong(FormFieldType.NUMBER, "earliest")
+					.setDescription("(Optional) Custom earliest time in epoch milliseconds to override the time retrieved from the timeframe picker.")
+					.setValue(null)
+					)
+			.addField(
+					CFWField.newLong(FormFieldType.NUMBER, "latest")
+					.setDescription("(Optional) Custom latest time in epoch milliseconds to override the time retrieved from the timeframe picker.")
+					.setValue(null)
+					)
 		;
 	}
 	
@@ -135,17 +145,31 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 	@Override
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
+		//--------------------------------------
+		// General Settings
 		String category = (String)parameters.getField("category").getValue();
 		String entity = (String)parameters.getField("entity").getValue();
 		String attributesString = (String)parameters.getField("attributes").getValue();
 		Boolean detailed = (Boolean)parameters.getField("detailed").getValue();
 
+		//--------------------------------------
+		// Custom Time
+		Long customEarliest = (Long)parameters.getField("earliest").getValue();
+		if(customEarliest != null) { earliestMillis = customEarliest; }
+		
+		Long customLatest = (Long)parameters.getField("latest").getValue();
+		if(customLatest != null) { latestMillis = customLatest; }
+
+		//--------------------------------------
+		// Attributes
 		LinkedHashMap<String, String> attributes = CFW.JSON.fromJsonLinkedHashMap(attributesString);
 		
 		if(attributes == null) {
 			attributes = new LinkedHashMap<>();
 		}
 		
+		//--------------------------------------
+		// Fetch Data
 		JsonArray array = CFWDBEAVStats.fetchStatsAsJsonArray(
 									category
 									, entity
@@ -155,6 +179,8 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 									, detailed
 									);
 		
+		//--------------------------------------
+		// Add to Queue
 		for(int i = 0; i < array.size(); i++) {
 			
 			EnhancedJsonObject object = new EnhancedJsonObject( array.get(i).getAsJsonObject());
