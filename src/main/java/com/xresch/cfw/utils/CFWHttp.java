@@ -71,6 +71,7 @@ import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.io.CloseMode;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.ssl.TrustStrategy;
@@ -128,9 +129,6 @@ public class CFWHttp {
 		, KERBEROS 
 	}
 
-	// done as static to increase performance
-	private static BasicHttpClientConnectionManager trustAllAndClientCertConnectionManager;
-	
 	private static final Counter outgoingHTTPCallsCounter = Counter.build()
 	         .name("cfw_http_outgoing_calls_total")
 	         .help("Number of outgoing HTTP calls executed with the CFWHTTP utils.")
@@ -1227,9 +1225,10 @@ public class CFWHttp {
 	 **************************************************************************************/
 	private static void setSSLContext(HttpClientBuilder builder) throws Exception {
 		
-		//-------------------------------
+		//=====================================================
 		// Initialize Connection Manager
-		if(trustAllAndClientCertConnectionManager == null) {
+		//=====================================================
+
 			//-------------------------------
 			// Trust anything
 			final TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
@@ -1251,12 +1250,12 @@ public class CFWHttp {
 			
 			//-------------------------------
 			// Connection Manager
-		    trustAllAndClientCertConnectionManager =
-		        new BasicHttpClientConnectionManager(socketFactoryRegistry);
-		}
+			BasicHttpClientConnectionManager trustAllAndClientCertConnectionManager =
+						new BasicHttpClientConnectionManager(socketFactoryRegistry);
 		
-		//-------------------------------
-		// Add to builder
+		//=====================================================
+		// Add to Builder
+		//=====================================================
 	    builder.setConnectionManager(trustAllAndClientCertConnectionManager);
 
 	}
@@ -1385,6 +1384,10 @@ public class CFWHttp {
 			}finally {
 				long endMillis = System.currentTimeMillis();
 				duration = endMillis - startMillis;
+				
+				if(httpClient != null) {
+					httpClient.close(CloseMode.IMMEDIATE);
+				}
 			}
 		}
 		
