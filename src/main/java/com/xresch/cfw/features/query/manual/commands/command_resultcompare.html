@@ -9,6 +9,7 @@ The comparison follows the following rules:</p>
 	<li><b>Both Values Strings&nbsp;:</b> The compare result is 'true' or 'false'.</li>
 	<li><b>Both Values Objects&nbsp;:</b> The compare result is 'true' or 'false'.</li>
 	<li><b>Both Values Arrays&nbsp;:</b> The compare result is 'true' or 'false'.</li>
+	<li><b>Old Value Zero, Other Value non Zero &nbsp;:</b> The compare result would be infinity, for the sake of sortability, such comparison will result in +/- 9'999'999%.</li>
 	<li><b>Anything Else&nbsp;:</b> The compare result will return null if the values are not compared.</li>
 </ul>
 

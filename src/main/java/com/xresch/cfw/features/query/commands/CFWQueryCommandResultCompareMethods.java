@@ -201,18 +201,18 @@ public class CFWQueryCommandResultCompareMethods {
 	public JsonArray compareJsonObjectArrays(JsonArray olderArray, JsonArray youngerArray){
 
 		JsonArray compareResults = new JsonArray();
-		//###################################################################################################
-		// Initialize identifier Fields
-		//###################################################################################################		
+		//---------------------------------------------------
+		// Initialize identifier Fields	
+		//---------------------------------------------------
 		if(identifierFields == null) {
 			identifierFields = new ArrayList<>();
 		}
 		
 		addFirstMemberNameFromArray(identifierFields, youngerArray);
 		
-		//###################################################################################################
+		//---------------------------------------------------
 		// Validation
-		//###################################################################################################
+		//---------------------------------------------------
 		
 		//compare only if the identifier Column could be found in both files
 		if(identifierFields.isEmpty() ) {
@@ -220,9 +220,9 @@ public class CFWQueryCommandResultCompareMethods {
 			errorMessage.addProperty("message", "Could not compare as no field identifier could be found in one dataset.");
 		}
 		
-		//###################################################################################################
+		//---------------------------------------------------
 		// Decide how to Compare
-		//###################################################################################################
+		//---------------------------------------------------
 		
 		compareResults = this.doCompareDefault(olderArray, youngerArray);
 		
@@ -602,8 +602,16 @@ public class CFWQueryCommandResultCompareMethods {
 							}
 							if(compareNumbersDiffPercent) {
 								fieldHasPercentage.add(fieldname);
+								
 								if(oldPart.getAsFloat() == 0f) {
-									resultObject.addProperty(fieldname+labelDiffPercent, "undefined");
+									float yFloat = youngPart.getAsFloat();
+									if(yFloat == 0f) {
+										resultObject.addProperty(fieldname+labelDiffPercent, 0);
+									}else if(yFloat > 0) {
+										resultObject.addProperty(fieldname+labelDiffPercent, 9999999);
+									}else {
+										resultObject.addProperty(fieldname+labelDiffPercent, -9999999);
+									}
 								}else {
 									BigDecimal diff = youngPart.getAsBigDecimal().subtract(oldPart.getAsBigDecimal());
 									BigDecimal diffPerc = diff.divide(oldPart.getAsBigDecimal(), 6, RoundingMode.HALF_UP);
@@ -744,11 +752,11 @@ public class CFWQueryCommandResultCompareMethods {
 			}
 		}
 		
-		//###################################################################################################
+		//---------------------------------------------------
 		// Iterate over all Columns of the youngerData, try to find a 
 		// matching column in the olderData and compare if there is 
 		// a column with the same name.
-		//###################################################################################################
+		//---------------------------------------------------
 				
 		for(ComparableData comparableData : comparableDataMap.values()){
 		
