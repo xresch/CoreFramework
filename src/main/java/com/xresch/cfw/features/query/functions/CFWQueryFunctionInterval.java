@@ -103,10 +103,18 @@ public class CFWQueryFunctionInterval extends CFWQueryFunction {
 		
 		if(cachedAmount == -1) {
 
+			//-------------------------------
+			// Get Times
 			long earliest = this.context.getEarliestMillis();
 			long latest = this.context.getLatestMillis();
 			
-			String intervalString = CFW.Time.calculateDatapointInterval(earliest, latest, 150, "-");
+			//-------------------------------
+			// Get maxDatapoints 
+			int maxDataPoints = CFWQueryFunctionIntervalPoints.getMaxDatapoints(this.context);
+			
+			//-------------------------------
+			// Get Interval Amount
+			String intervalString = CFW.Time.calculateDatapointInterval(earliest, latest, maxDataPoints, "-");
 			String amountString = intervalString.split("-")[0];
 			cachedAmount = Integer.parseInt(amountString);
 		}
