@@ -2883,6 +2883,51 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		Assertions.assertEquals(0, record.get("BOOL_ZERO").getAsInt());
 		
 	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testSplit() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| record
+	[TESTFIELD]
+	["Tira Misu"]
+| set 
+	DEFAULT = split() 					# returns null
+	SAME = split(TESTFIELD) 			# returns ["Tira Misu"]
+	FIELD = split(TESTFIELD, " ") 		# returns ["Tira", "Misu"]
+	REGEX = split("A.B;C.D", "[.;]") 	# returns ["A", "B", "C", "D"]
+	NUMBER = split(44.33, "[.]") 		# returns ["44", "33"]
+	BOOL = split(false, "l") 			# returns ["fa", "se"]
+	ARRAY = split([1, 2, '3,4'], ",") 	# returns ["[1", "2", "\"3", "4\"]"]
+	OBJECT = split({a: true}, ":") 		# returns ["[1", "2", "\"3", "4\"]"]
+	NULL = split(null, "l") 			# returns ["{\"a\"", "true}"]
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		Assertions.assertEquals(true							, record.get("DEFAULT").isJsonNull());
+		Assertions.assertEquals("[\"Tira Misu\"]"				, record.get("SAME").toString());
+		Assertions.assertEquals("[\"Tira\",\"Misu\"]"			, record.get("FIELD").toString());
+		Assertions.assertEquals("[\"A\",\"B\",\"C\",\"D\"]"		, record.get("REGEX").toString());
+		Assertions.assertEquals("[\"44\",\"33\"]"				, record.get("NUMBER").toString());
+		Assertions.assertEquals("[\"fa\",\"se\"]"				, record.get("BOOL").toString());
+		Assertions.assertEquals("[\"[1\",\"2\",\"\\\"3\",\"4\\\"]\"]" , record.get("ARRAY").toString());
+		Assertions.assertEquals("[\"{\\\"a\\\"\",\"true}\"]"	, record.get("OBJECT").toString());
+		Assertions.assertEquals(true							, record.get("NULL").isJsonNull());
+
+	}
 	
 	/****************************************************************
 	 * 

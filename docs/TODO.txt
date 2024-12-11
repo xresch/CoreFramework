@@ -177,8 +177,9 @@ DONE
 - Query: Added Prometheus Counters for Queries and Query Sources
 - Query Source: EAV - now supports custom earliest/latest
 
-- Query: Added Aunctions:
+- Query: Added Functions:
 	- intervalpoints
+	- split
 	
 ------- v.10.0.0 -------
 - BREAKING CODE CHANGE: Refactoring of ContextSettingsChangeListener.onDelete() to ContextSettingsChangeListener.onDeleteOrDeactivate()
