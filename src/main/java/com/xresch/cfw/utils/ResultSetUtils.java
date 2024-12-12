@@ -755,11 +755,9 @@ public class ResultSetUtils {
 						}else {
 							
 							Object value = resultSet.getObject(i);
-							if(value instanceof Clob) {
-								CFW.JSON.addObject(record, name, resultSet.getString(i));
-							}else if(value instanceof JdbcArray) {
-								CFW.JSON.addObject(record, name, ((JdbcArray)value).getArray());
-							} else {
+							if(value instanceof Clob) {				CFW.JSON.addObject(record, name, resultSet.getString(i)); }
+							else if(value instanceof JdbcArray) {	CFW.JSON.addObject(record, name, ((JdbcArray)value).getArray()); } 
+							else {									
 								CFW.JSON.addObject(record, name, value);
 							}
 						}
