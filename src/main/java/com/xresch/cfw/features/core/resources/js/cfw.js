@@ -3960,6 +3960,27 @@ var LOADER_MESSAGES = [
    '<i class="fa fa-location-arrow fa-spin fa-fw margin-bottom"></i> Searching for something I can display to you... ',
    '<i class="fa fa-cog fa-spin fa-fw margin-bottom"></i><i class="fa fa-cog fa-spin margin-bottom"></i><i class="fa fa-cog fa-spin fa-fw margin-bottom"></i> More gears for more loading... ',
    '<i class="fa fa-bug fa-spin fa-fw margin-bottom"></i> Loading potential buggy content... ',
+   '<i class="fa fa-horse fa-spin fa-fw margin-bottom"></i> Feeding ze unicorns... ',
+   '<i class="fa fa-bacon fa-spin fa-fw margin-bottom"></i> Frying some bacon... ',
+   '<i class="fa fa-ice-cream fa-spin fa-fw margin-bottom"></i> Melting the ice cream... ', 
+   '<i class="fa fa-dog fa-spin fa-fw margin-bottom"></i> Woof! Woof! Bark!!!',
+   '<i class="fa fa-truck-monster fa-spin fa-fw margin-bottom"></i> Whoah, look at it go!',
+   '<i class="fa fa-bell fa-spin fa-fw margin-bottom"></i> Waking up the minions...',
+   '<i class="fab fa-windows fa-spin fa-fw margin-bottom"></i> Still faster than Windows...',
+   '<i class="fa fa-music fa-spin fa-fw margin-bottom"></i> Elevator music playing...',
+   '<i class="fa fa-toilet-paper fa-spin fa-fw margin-bottom"></i> Flushing...',
+   '<i class="fa fa-wrench fa-spin fa-fw margin-bottom"></i> Doing the needful...',
+   '<i class="fa fa-dice-one fa-spin fa-fw margin-bottom"></i>&nbsp;<i class="fa fa-dice-three fa-spin-reverse margin-bottom"></i>&nbsp;<i class="fa fa-dice-six fa-spin fa-fw margin-bottom"></i> Throwing the dices... ',
+   '<i class="fa fa-puzzle-piece fa-spin fa-fw margin-bottom"></i> Putting pieces together...',
+   '<i class="fa fa-dragon fa-spin fa-fw margin-bottom"></i> Taming the dragon...',
+   '<i class="fa fa-hand-scissors fa-spin fa-fw margin-bottom"></i> Rock... paper... siccors!',
+   '<i class="fa fa-republican fa-spin fa-fw margin-bottom"></i> Manipulating elections... <i class="fa fa-democrat fa-spin fa-fw margin-bottom"></i>',
+   '<i class="fa fa-snowflake fa-spin fa-fw margin-bottom"></i> Counting snowflakes... ',
+   '<i class="fab fa-creative-commons-zero fa-spin fa-fw margin-bottom"></i> Dividing by zero... ',
+   '<i class="fa fa-utensil-spoon fa-spin fa-fw margin-bottom"></i> Bending the spoon... ',
+   '<i class="fa fa-binoculars fa-spin fa-fw margin-bottom"></i> Observing the birds... ',
+   '<i class="fa fa-mask fa-spin fa-fw margin-bottom"></i> Hiding the secrets... ',
+   '<i class="fas fa-heartbeat fa-spin fa-fw margin-bottom"></i> Measuring heart beat... ',
    ];
 
 /*******************************************************************************
@@ -4015,24 +4036,19 @@ function cfw_ui_toggleLoader(isVisible, targetID, text, icon){
 		loader = $('<div id="'+loaderID+'" class="'+cssClass+'">'
 				+'<div>'
 					+'<i class="fa fa-spin fa-1x fa-fw '+icon+' margin-bottom"></i>'
-					+'<span class="m-0">'+text+'</span>'
+					+'<span class="m-0"></span>'
 				+'</div>'
 			+'</div>');	
 		
 		var bgColor = $('body').css("background-color");
 		loader.css("background-color", bgColor);
-		
-//		loader.css("position","absolute");
-//		loader.css("top","50%");
-//		loader.css("left","50%");
-//		loader.css("transform","translateX(-50%) translateY(-50%);");
-//		loader.css("visibility","hidden");
-		
+				
 		target.prepend(loader);
 	}
 	
 	if(isVisible){
 		var parent = loader.parent();
+		loader.find("span").html(text);
 		loader.css("display", "flex");
 		
 		if(targetID != null){
