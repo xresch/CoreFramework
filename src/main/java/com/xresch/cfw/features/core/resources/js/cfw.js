@@ -3945,6 +3945,23 @@ function cfw_ui_createTOC(contentAreaSelector, resultSelector, headerTag){
 }
 
 
+var LOADER_MESSAGES = [
+   '<i class="fa fa-cog fa-spin fa-fw margin-bottom"></i> Loading...',
+   '<i class="fa fa-cogs fa-spin fa-fw margin-bottom"></i> Something is going on here... ',
+   '<i class="fa fa-certificate fa-spin fa-fw margin-bottom"></i> IIT IS SPINNING!!! ',
+   '<i class="fa fa-coffee fa-spin fa-fw margin-bottom"></i> You might want to go grab a coffee... ',
+   '<i class="fa fa-copyright fa-spin fa-fw margin-bottom"></i> This could take a while... ',
+   '<i class="fa fa-crosshairs fa-spin fa-fw margin-bottom"></i> Target locked, manifest rendering... ',
+   '<i class="fa fa-cube fa-spin fa-fw margin-bottom"></i> Algorithm is running... ',
+   '<i class="fa fa-exclamation-circle fa-spin fa-fw margin-bottom"></i> Attention! Content is being generated... ',
+   '<i class="fa fa-football-ball fa-spin fa-fw margin-bottom"></i>Yay! It\'s a football! ',
+   '<i class="fa fa-globe fa-spin fa-fw margin-bottom"></i> Sending Requests around the world... ',
+   '<i class="fa fa-hourglass fa-spin fa-fw margin-bottom"></i> Processing in Progress... ',
+   '<i class="fa fa-location-arrow fa-spin fa-fw margin-bottom"></i> Searching for something I can display to you... ',
+   '<i class="fa fa-cog fa-spin fa-fw margin-bottom"></i><i class="fa fa-cog fa-spin margin-bottom"></i><i class="fa fa-cog fa-spin fa-fw margin-bottom"></i> More gears for more loading... ',
+   '<i class="fa fa-bug fa-spin fa-fw margin-bottom"></i> Loading potential buggy content... ',
+   ];
+
 /*******************************************************************************
  * Set if the Loading animation is visible or not.
  * 
@@ -3961,13 +3978,27 @@ function cfw_ui_createTOC(contentAreaSelector, resultSelector, headerTag){
  * @param isVisible true or false
  * @param targetID the id of the element where the overlay should be loaded.
  * 				   If undefined, the loader is added to the full body.
+ * @param text the text to be displayed while loading, default is "Loading..."
+ * @param icon font awesome icon that should be spinning, will only have an
+ * 			effect if text is not null. Default: "fa-cog"
  ******************************************************************************/
-function cfw_ui_toggleLoader(isVisible, targetID){
+function cfw_ui_toggleLoader(isVisible, targetID, text, icon){
 	
-	var loaderID;
-	var target;
-	var cssClass;
-	
+	let loaderID;
+	let target;
+	let cssClass;
+
+	//------------------------------------
+	// Set Defaults
+	if(text == null){	
+		let randomIndex = Math.ceil(Math.random() * (LOADER_MESSAGES.length) )-1;
+		text = LOADER_MESSAGES[randomIndex];
+
+	}else if(icon == null){	
+		icon = "fa-cog"; 
+	}
+	//------------------------------------
+	// Get Target
 	if(targetID != null){
 		loaderID = "cfw-loader-"+targetID;
 		target = $("#"+targetID);
@@ -3983,8 +4014,8 @@ function cfw_ui_toggleLoader(isVisible, targetID){
 	if(loader.length == 0){
 		loader = $('<div id="'+loaderID+'" class="'+cssClass+'">'
 				+'<div>'
-					+'<i class="fa fa-cog fa-spin fa-1x fa-fw margin-bottom"></i>'
-					+'<span class="m-0">Loading...</span>'
+					+'<i class="fa fa-spin fa-1x fa-fw '+icon+' margin-bottom"></i>'
+					+'<span class="m-0">'+text+'</span>'
 				+'</div>'
 			+'</div>');	
 		
@@ -4002,11 +4033,11 @@ function cfw_ui_toggleLoader(isVisible, targetID){
 	
 	if(isVisible){
 		var parent = loader.parent();
+		loader.css("display", "flex");
 		
 		if(targetID != null){
 			loader.width( parent.width() );
 			loader.height( parent.height() );
-			loader.css("display", "flex");
 		}
 	}else{
 		loader.css("display", "none");
