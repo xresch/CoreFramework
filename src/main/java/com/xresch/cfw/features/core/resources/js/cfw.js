@@ -3967,7 +3967,7 @@ var LOADER_MESSAGES = [
    '<i class="fa fa-truck-monster fa-spin fa-fw margin-bottom"></i> Whoah, look at it go!',
    '<i class="fa fa-bell fa-spin fa-fw margin-bottom"></i> Waking up the minions...',
    '<i class="fab fa-windows fa-spin fa-fw margin-bottom"></i> Still faster than Windows...',
-   '<i class="fa fa-music fa-spin fa-fw margin-bottom"></i> Elevator music playing...',
+   '<i class="fa fa-music fa-spin fa-fw margin-bottom"></i> Play elevator music...',
    '<i class="fa fa-toilet-paper fa-spin fa-fw margin-bottom"></i> Flushing...',
    '<i class="fa fa-wrench fa-spin fa-fw margin-bottom"></i> Doing the needful...',
    '<i class="fa fa-dice-one fa-spin fa-fw margin-bottom"></i>&nbsp;<i class="fa fa-dice-three fa-spin-reverse margin-bottom"></i>&nbsp;<i class="fa fa-dice-six fa-spin fa-fw margin-bottom"></i> Throwing the dices... ',
@@ -4012,11 +4012,16 @@ function cfw_ui_toggleLoader(isVisible, targetID, text, icon){
 	//------------------------------------
 	// Set Defaults
 	if(text == null){	
+		icon = "";
 		let randomIndex = Math.ceil(Math.random() * (LOADER_MESSAGES.length) )-1;
 		text = LOADER_MESSAGES[randomIndex];
 
-	}else if(icon == null){	
-		icon = "fa-cog"; 
+	}else{
+		 if(icon == null){	
+			icon = '<i class="fa fa-spin fa-1x fa-fw '+icon+' margin-bottom"></i>'; 
+		}else{
+			icon = '<i class="fa fa-cog fa-spin fa-1x fa-fw margin-bottom"></i>'; 
+		}
 	}
 	//------------------------------------
 	// Get Target
@@ -4035,7 +4040,7 @@ function cfw_ui_toggleLoader(isVisible, targetID, text, icon){
 	if(loader.length == 0){
 		loader = $('<div id="'+loaderID+'" class="'+cssClass+'">'
 				+'<div>'
-					+'<i class="fa fa-spin fa-1x fa-fw '+icon+' margin-bottom"></i>'
+					+icon
 					+'<span class="m-0"></span>'
 				+'</div>'
 			+'</div>');	
