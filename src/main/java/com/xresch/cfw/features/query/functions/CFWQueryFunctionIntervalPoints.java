@@ -1,10 +1,12 @@
 package com.xresch.cfw.features.query.functions;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -16,14 +18,14 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionIntervalUnit extends CFWQueryFunction {
+public class CFWQueryFunctionIntervalPoints extends CFWQueryFunction {
 
 	
-	private static final String FUNCTION_NAME = "intervalunit";
-	
-	private String cachedUnit = null;
+	public static final String FIELDNAME_META_INTERVALPOINTS = "cfw-intervalMaxPoints";
 
-	public CFWQueryFunctionIntervalUnit(CFWQueryContext context) {
+	private static final String FUNCTION_NAME = "intervalpoints";
+
+	public CFWQueryFunctionIntervalPoints(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -50,7 +52,7 @@ public class CFWQueryFunctionIntervalUnit extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"()";
+		return FUNCTION_NAME+"(maxPoints)";
 	}
 	
 	/***********************************************************************************************
@@ -58,7 +60,7 @@ public class CFWQueryFunctionIntervalUnit extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the unit of the auto detected interval, which is based on the selected time range. ";
+		return "Sets the maximum amount of datapoints for the functions interval() and intervalunit(). ";
 	}
 	
 	/***********************************************************************************************
@@ -66,7 +68,10 @@ public class CFWQueryFunctionIntervalUnit extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "&nbsp;";
+		return   "<ul>"
+				+"<li><b>maxPoints:&nbsp;</b> Maximum number of points for interval calculations.</li>"
+				+"</ul>"
+				;
 	}
 
 	/***********************************************************************************************
@@ -100,25 +105,32 @@ public class CFWQueryFunctionIntervalUnit extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		if(cachedUnit == null) {
-
-			//-------------------------------
-			// Get Times
-			long earliest = this.context.getEarliestMillis();
-			long latest = this.context.getLatestMillis();
+		if( !parameters.isEmpty() ) {
 			
-			//-------------------------------
-			// Get maxDatapoints 
-			int maxDataPoints = CFWQueryFunctionIntervalPoints.getMaxDatapoints(this.context);
+			QueryPartValue value = parameters.get(0);
 			
-			//-------------------------------
-			// Get Unit
-			String intervalString = CFW.Time.calculateDatapointInterval(earliest, latest, maxDataPoints, "-");
-			cachedUnit = intervalString.split("-")[1];
-
+			if(value.isNumberOrNumberString()) {
+				this.context.addMetadata(FIELDNAME_META_INTERVALPOINTS, value.getAsInteger());
+			}
 		}
 		
-		return QueryPartValue.newString(cachedUnit);
+		return QueryPartValue.newNull();
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static int getMaxDatapoints(CFWQueryContext context) {
+		
+		int maxDatapoints = 150;
+
+		if(context.hasMetadata(FIELDNAME_META_INTERVALPOINTS)) {
+			JsonElement element = context.getMetadata(FIELDNAME_META_INTERVALPOINTS);
+			maxDatapoints = element.getAsInt();
+		}
+
+		return maxDatapoints;
+	}
+	
 
 }

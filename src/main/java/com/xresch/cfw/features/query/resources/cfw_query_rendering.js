@@ -584,7 +584,7 @@ function cfw_query_formatList(span, value, bulletType, paddingLeft, doLabelize){
 	if(typeof value == "object"){
 		span.append(CFW.format.objectToHTMLList(value, bulletType, paddingLeft, doLabelize));
 	}else{
-		span.append(value);
+		span.addClass('word-wrap-preline').text(value);
 	}
 }
 

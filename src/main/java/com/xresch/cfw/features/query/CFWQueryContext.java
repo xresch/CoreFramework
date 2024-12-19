@@ -222,14 +222,14 @@ public class CFWQueryContext{
 	}
 	
 	/***********************************************************************************************
-	 * Returns the object containing the metadata of the query.
+	 * Returns the object stored in the meta objects.
 	 ***********************************************************************************************/
 	public Object getMetaObject(Object key) {
 		return metaObjects.get(key);
 	}
 	
 	/***********************************************************************************************
-	 * Add the object containing the metadata of the query.
+	 * Add the object to the meta objects.
 	 ***********************************************************************************************/
 	public void addMetaObject(Object key, Object value) {
 		metaObjects.put(key, value);
@@ -243,19 +243,54 @@ public class CFWQueryContext{
 	}
 	
 	/***********************************************************************************************
-	 * Returns the object containing the metadata of the query.
+	 * Add the value to the metadata.
 	 ***********************************************************************************************/
 	public void addMetadata(String propertyName, String value) {
 		metadata.addProperty(propertyName, value);
 	}
 	
 	/***********************************************************************************************
-	 * Returns the object containing the metadata of the query.
+	 * Add the value to the metadata.
+	 ***********************************************************************************************/
+	public void addMetadata(String propertyName, Integer value) {
+		metadata.addProperty(propertyName, value);
+	}
+	
+	/***********************************************************************************************
+	 * Add the value to the metadata.
+	 ***********************************************************************************************/
+	public void addMetadata(String propertyName, Boolean value) {
+		metadata.addProperty(propertyName, value);
+	}
+	
+	/***********************************************************************************************
+	 * Add the value to the metadata.
+	 ***********************************************************************************************/
+	public void addMetadata(String propertyName, JsonElement value) {
+		metadata.add(propertyName, value);
+	}
+	
+	/***********************************************************************************************
+	 * Add the query parts value to the metadata.
 	 ***********************************************************************************************/
 	public void addMetadata(String propertyName, QueryPartValue value) {
 		if(value != null) {
 			value.addToJsonObject(propertyName, metadata);
 		}
+	}
+	
+	/***********************************************************************************************
+	 * Checks if the metadata exists for the given key.
+	 ***********************************************************************************************/
+	public boolean hasMetadata(String propertyName) {
+		return metadata.has(propertyName);
+	}
+	
+	/***********************************************************************************************
+	 * Returns the metadata for the given key.
+	 ***********************************************************************************************/
+	public JsonElement getMetadata(String propertyName) {
+		return metadata.get(propertyName);
 	}
 	
 	/***********************************************************************************************

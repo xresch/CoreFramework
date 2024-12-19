@@ -1,7 +1,6 @@
 
-<p>This function returns the unit of the auto-detected interval for the selected time range.
-This can be useful for example when limiting the amount of data points on a chart.
-Following an example using the function in combination with the crates command: </p>
+<p>This function sets the maximum amount of datapoints used in the calculation by the functions interval() and intervalunit().
+Following an example using the function in combination with the other interval commands: </p>
 
 <pre><code class="language-cfwquery">| source random records = 3000
 | execute intervalpoints(100) # set max number of datapoints

@@ -4,6 +4,7 @@ This can be useful for example when limiting the amount of data points on a char
 Following an example using the function in combination with the crates command: </p>
 
 <pre><code class="language-cfwquery">| source random records = 3000
+| execute intervalpoints(100) # set max number of datapoints
 | crates
 	name=CRATE
 	by=TIME 

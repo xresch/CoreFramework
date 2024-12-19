@@ -614,13 +614,33 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 	}
 	
 	/******************************************************************************************************
+	 * Takes the value of this QueryPartValue and wraps it into an array.
+	 * @return the same object if it is already an array, new array if it is of another type
+	 ******************************************************************************************************/
+	public QueryPartValue convertToArray() {
+		
+		if(this.isJsonArray()) {
+			return this;
+		}
+		
+		return QueryPartValue.newFromJsonElement(
+				this.getAsJsonArray()
+			);
+	}
+	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
 	public JsonArray getAsJsonArray() {
 		JsonArray array;
 		
 		switch(type) {
-			case JSON:		return ((JsonElement)value).getAsJsonArray();
+			case JSON:		if(this.isJsonArray()) {
+								return ((JsonElement)value).getAsJsonArray();
+							}else {
+								array = new JsonArray();
+				 				array.add((JsonElement)value);
+								return array;
+							}
 			
 			case NUMBER:	array = new JsonArray();
 			 				array.add((Number)value);

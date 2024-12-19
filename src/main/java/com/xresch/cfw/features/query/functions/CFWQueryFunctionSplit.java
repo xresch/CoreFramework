@@ -3,7 +3,8 @@ package com.xresch.cfw.features.query.functions;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-import com.google.gson.JsonElement;
+import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -16,14 +17,12 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionIntervalUnit extends CFWQueryFunction {
+public class CFWQueryFunctionSplit extends CFWQueryFunction {
 
 	
-	private static final String FUNCTION_NAME = "intervalunit";
-	
-	private String cachedUnit = null;
+	private static final String FUNCTION_NAME = "split";
 
-	public CFWQueryFunctionIntervalUnit(CFWQueryContext context) {
+	public CFWQueryFunctionSplit(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -41,24 +40,23 @@ public class CFWQueryFunctionIntervalUnit extends CFWQueryFunction {
 	@Override
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
-		tags.add(CFWQueryFunction.TAG_TIME);
+		tags.add(CFWQueryFunction.TAG_STRINGS);
 		return tags;
 	}
-	
+		
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"()";
+		return FUNCTION_NAME+"(stringOrFieldname, regex)";
 	}
-	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the unit of the auto detected interval, which is based on the selected time range. ";
+		return "Splits the string by a regular expression.";
 	}
 	
 	/***********************************************************************************************
@@ -66,7 +64,11 @@ public class CFWQueryFunctionIntervalUnit extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "&nbsp;";
+		return "<ul>"
+				  +"<li><b>stringOrFieldname:&nbsp;</b>The string or or a fieldname that should be substringed.</li>"
+				  +"<li><b>regex:&nbsp;</b>The delimiting regular expression.</li>"
+			  +"</ul>"
+			;
 	}
 
 	/***********************************************************************************************
@@ -100,25 +102,56 @@ public class CFWQueryFunctionIntervalUnit extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		if(cachedUnit == null) {
-
-			//-------------------------------
-			// Get Times
-			long earliest = this.context.getEarliestMillis();
-			long latest = this.context.getLatestMillis();
-			
-			//-------------------------------
-			// Get maxDatapoints 
-			int maxDataPoints = CFWQueryFunctionIntervalPoints.getMaxDatapoints(this.context);
-			
-			//-------------------------------
-			// Get Unit
-			String intervalString = CFW.Time.calculateDatapointInterval(earliest, latest, maxDataPoints, "-");
-			cachedUnit = intervalString.split("-")[1];
+		int paramCount = parameters.size();
+		
+		//----------------------------------
+		// Return null if no params
+		if(paramCount == 0) { 
+			return QueryPartValue.newNull();
+		}
+		
+		//----------------------------------
+		// Return same if value only
+		if(parameters.size() == 1 ) { 
+			return parameters.get(0).convertToArray();
 
 		}
 		
-		return QueryPartValue.newString(cachedUnit);
+		//----------------------------------
+		// Get String
+		if(paramCount > 1) { 
+			
+			//----------------------------------
+			// Get String
+			QueryPartValue initialValue = parameters.get(0);
+			String initialString = initialValue.getAsString();
+
+			if(Strings.isNullOrEmpty(initialString)) { return initialValue; }
+			
+			//----------------------------------
+			// Get regexString
+			String regexString;
+			
+			if(parameters.get(1).isNullOrEmptyString()) {
+				 return initialValue.convertToArray();
+			}
+			
+			regexString = parameters.get(1).getAsString();
+				
+			//----------------------------------
+			// Do The Split
+			String[] splitResult = initialString.split(regexString);
+			
+			JsonArray array = new JsonArray();
+			for(String part : splitResult) {
+				array.add(part);
+			}
+			
+			return QueryPartValue.newFromJsonElement(array);
+		}
+		
+		// return empty in other cases
+		return QueryPartValue.newFromJsonElement( new JsonArray() );
 	}
 
 }

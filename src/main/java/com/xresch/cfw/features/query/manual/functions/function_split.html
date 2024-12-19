@@ -1,0 +1,21 @@
+
+<p>This function splits values as a string with a regex delimiter. If there is nothing between two delimiters, an empty string will be added to the resulting array.</p>
+
+<p>Following query creates example records and does various sample split-operations:</p>
+
+<pre><code class="language-cfwquery">| source random 
+| keep VALUE, LOCATION, URL, LIKES_TIRAMISU
+| set VALUE = round( VALUE * randomFloat(), 3)
+| set 
+	# no parameters will result in null
+	DEFAULT = split()
+	# will return the value wrapped in an array
+	SPLIT_NONE = split(LOCATION)
+	# Split by blanks
+	SPLIT_LOC = split(LOCATION, " ")
+	# Splits by regular expression, in this case by dots "." and slashes "/"
+	SPLIT_URL = split(URL, "[./]")
+	# booleans and number inputs will be treated as string
+	BOOL = split(LIKES_TIRAMISU, "u")
+	NUMBER = split(VALUE, "[.]")</code></pre>
+
