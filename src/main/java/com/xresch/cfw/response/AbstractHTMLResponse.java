@@ -107,7 +107,7 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 				.append(key)
 				.append(" = ")
 				.append( CFW.JSON.toJSON(value) )
-				.append("';\n");
+				.append(";\n");
 		
 	}
 	
