@@ -2,8 +2,8 @@ package com.xresch.cfw.response;
 
 import java.util.ArrayList;
 
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.Utils;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
 
@@ -94,10 +94,21 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 				.append(" = ").append(value).append(";\n");
 
 	}
+	
 	public void addJavascriptData(String key, String value){
 		this.javascriptData.append("JSDATA.").append(key)
 				.append(" = '").append(value).append("';\n");
 
+	}
+	
+	public void addJavascriptData(String key, JsonElement value){
+		this.javascriptData
+				.append("JSDATA.")
+				.append(key)
+				.append(" = ")
+				.append( CFW.JSON.toJSON(value) )
+				.append("';\n");
+		
 	}
 	
 	public void addCSSFileTheme(FileDefinition.HandlingType type, String path, String filename){
