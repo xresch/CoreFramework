@@ -3807,7 +3807,10 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
 
 /**************************************************************************************
  * Creates an HTML ul-list out of an object
- * @param convert a json object to html
+ * @param object a json object to convert to HTML
+ * @param style the list style, e.g. "bullets"
+ * @param paddingLeft the padding of the list
+ * @param DoLabelize turn the fieldname into a camel-case label
  * @return html string
  *************************************************************************************/
 function cfw_format_objectToHTMLList(object, style, paddingLeft, doLabelize){
