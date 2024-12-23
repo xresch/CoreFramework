@@ -697,7 +697,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 	
 	//========================================
 	// Get Final Y Min Max
-	var yminFinal = 0;
+	var yminFinal = null;
 	var ymaxFinal = null;
 	if(settings.ymin != null){ yminFinal = settings.ymin; }
 	if(settings.ymax != null){ ymaxFinal = settings.ymax; }

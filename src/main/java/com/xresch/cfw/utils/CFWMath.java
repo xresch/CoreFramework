@@ -60,7 +60,31 @@ public class CFWMath {
 	}
 	
 	/***********************************************************************************************
+	 * Returns a moving average value for the last N values in the given list.
+	 * Will return null if there are not enough datapoints.
 	 * 
+	 * @param values the list of values
+	 * @param datapoints number of points that should be used for calculating the moving average
+	 * @return moving average value , null if list size is smaller than datapoints
+	 ***********************************************************************************************/
+	public static BigDecimal bigMovAvg(List<BigDecimal> values, int datapoints) {
+		
+		while( values.remove(null) ); // remove all null values
+		if(values.size() < datapoints ) { return null; }
+		
+		List<BigDecimal> partialValues = values.subList(values.size()-datapoints, values.size());
+		BigDecimal sum = bigSum(partialValues);
+		sum = sum.setScale(GLOBAL_SCALE); // won't calculate decimals if not set
+		if(sum == null) { return null; } 
+		
+		BigDecimal count = new BigDecimal(partialValues.size());
+		
+		return sum.divide(count, RoundingMode.HALF_UP);
+		
+	}
+	
+	/***********************************************************************************************
+	 * Returns the Moving Average
 	 * @return average value in the list, null if list is empty or all values are null
 	 ***********************************************************************************************/
 	public static BigDecimal bigAvg(List<BigDecimal> values) {

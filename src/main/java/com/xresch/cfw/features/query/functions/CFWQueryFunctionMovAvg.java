@@ -20,16 +20,16 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionAvg extends CFWQueryFunction {
+public class CFWQueryFunctionMovAvg extends CFWQueryFunction {
 
-	public static final String FUNCTION_NAME = "avg";
+	public static final String FUNCTION_NAME = "movavg";
 	private int count = 0; 
-	private BigDecimal sum = new BigDecimal(0); 
+	private ArrayList<BigDecimal> values = new ArrayList<>();
 	
 	private boolean isAggregated = false;
 	private int precision = 3;
 	
-	public CFWQueryFunctionAvg(CFWQueryContext context) {
+	public CFWQueryFunctionMovAvg(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -57,7 +57,7 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(valueOrFieldname, includeNulls, precision)";
+		return FUNCTION_NAME+"(valueOrFieldname, datapoints, includeNulls, precision)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -73,6 +73,7 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return "<p><b>valueOrFieldname:&nbsp;</b>The value or fieldname used for the average.</p>"
+			 + "<p><b>datapoints:&nbsp;</b>(Optional)Number of datapoints used for calculation the average(Default: 10).</p>"
 			 + "<p><b>includeNulls:&nbsp;</b>(Optional)Toggle if null values should be included in the average(Default:false).</p>"
 			 + "<p><b>precision:&nbsp;</b>(Optional)Decimal precision of the result.(Default:3)</p>"
 			 ;
@@ -103,11 +104,12 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 		
 		if(value.isNumberOrNumberString()) {
 			count++;
-			sum = sum.add(value.getAsBigDecimal());
+			values.add(value.getAsBigDecimal());
 		}else if(countNulls && value.isNull()) {
 			count++;
-			// sum + 0
+			values.add(BigDecimal.ZERO);
 		}
+		
 	}
 	
 	/***********************************************************************************************
@@ -131,21 +133,35 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
+	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters, int index) {
 		
 		isAggregated = true;
 		
 		QueryPartValue value = parameters.get(0);
-		boolean countNulls = false;
+		
+		//---------------------------------
+		// Param: Datapoints
+		int datapoints = 10;
 		if(parameters.size() > 1) {
-			countNulls = parameters.get(1).getAsBoolean();
+			datapoints = parameters.get(1).getAsInteger();
 		}
 		
-		if(parameters.size() > 2
-		&& parameters.get(2).isNumberOrNumberString()) {
-			precision = parameters.get(2).getAsInteger();
+		//---------------------------------
+		// Param: Count Nulls
+		boolean countNulls = false;
+		if(parameters.size() > 2) {
+			countNulls = parameters.get(2).getAsBoolean();
 		}
 		
+		//---------------------------------
+		// Precision
+		if(parameters.size() > 3
+		&& parameters.get(3).isNumberOrNumberString()) {
+			precision = parameters.get(3).getAsInteger();
+		}
+		
+		//---------------------------------
+		// Add Value
 		addValueToAggregation(value, countNulls);
 	
 	}
@@ -165,9 +181,19 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 		}else {
 			
 			QueryPartValue param = parameters.get(0);
+			
+			//-------------------------------
+			// Param Count Nulls
 			boolean countNulls = false;
-			if(parameters.size() > 1) {
-				countNulls = parameters.get(1).getAsBoolean();
+			if(parameters.size() > 2) {
+				countNulls = parameters.get(2).getAsBoolean();
+			}
+			
+			//-------------------------------
+			// Param Count Nulls
+			boolean countNulls = false;
+			if(parameters.size() > 2) {
+				countNulls = parameters.get(2).getAsBoolean();
 			}
 
 			if(param.isJsonArray()) {
