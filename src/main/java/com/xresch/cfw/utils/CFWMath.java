@@ -74,7 +74,7 @@ public class CFWMath {
 		
 		List<BigDecimal> partialValues = values.subList(values.size()-datapoints, values.size());
 		BigDecimal sum = bigSum(partialValues);
-		sum = sum.setScale(GLOBAL_SCALE); // won't calculate decimals if not set
+		sum = sum.setScale(GLOBAL_SCALE, RoundingMode.HALF_UP); // won't calculate decimals if not set
 		if(sum == null) { return null; } 
 		
 		BigDecimal count = new BigDecimal(partialValues.size());
@@ -93,7 +93,7 @@ public class CFWMath {
 		if(values.isEmpty()) { return null; }
 		
 		BigDecimal sum = bigSum(values);
-		sum = sum.setScale(GLOBAL_SCALE); // won't calculate decimals if not set
+		sum = sum.setScale(GLOBAL_SCALE, RoundingMode.HALF_UP); // won't calculate decimals if not set
 		if(sum == null) { return null; } 
 		
 		BigDecimal count = new BigDecimal(values.size());

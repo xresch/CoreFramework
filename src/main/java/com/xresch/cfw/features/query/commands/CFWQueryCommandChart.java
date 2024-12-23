@@ -192,6 +192,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 			QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
 			
 			if(valuePart.isString()) {
+								
 				String value = valuePart.getAsString();
 				value = CFW.Security.sanitizeHTML(value);
 				displaySettings.addProperty(propertyName, value);

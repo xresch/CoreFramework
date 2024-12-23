@@ -1,0 +1,26 @@
+
+<p>Used to calculate simple moving average values for a field.
+Can group values by 
+</p>
+
+<p>The following statsmovavg example groups by WAREHOUSE AND ITEM and calculates the multiple moving averages for the field COUNT:
+</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+	FIELD = "COUNT"
+| source random 
+	type=series 
+	seriesCount=1 
+	records=300
+| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-5" datapoints=5 precision=3
+| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-10" datapoints=10 precision=3
+| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-30" datapoints=30 precision=3
+| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-60" datapoints=60 precision=3
+| chart
+	by=meta(BY)
+	x=TIME
+	y=[META(FIELD), 'SMA-5', 'SMA-10', 'SMA-30', 'SMA-60' ]
+	ymin=null
+	height="500"</code></pre>
+
+

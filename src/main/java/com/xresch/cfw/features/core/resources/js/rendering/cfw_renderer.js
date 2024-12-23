@@ -23,71 +23,71 @@ const CFW_RENDER_NAME_PANELS = 'panels';
 class CFWRenderer{
 	
 	 constructor(renderFunction){
-		 
-		 this.renderFunction = renderFunction;
-		 
-		 this.defaultRenderDefinition = {
+		
+		this.renderFunction = renderFunction;
+		
+		this.defaultRenderDefinition = {
 			// the data that should be rendered as an array
-		 	data: null,
+			data: null,
 			// (Optional) name of the field that is used as the identifier of the data
-		 	idfield: null,
-		 	// (Optional) names of the fields that are used for a titles. Takes the first field from the first object if null. If empty array, no title
-		 	titlefields: null,
-		 	// The format of the title, use {0}, {1} ... {n} as placeholders, concatenates all title fields if null(default)
-		 	titleformat: null,
-		 	// (Optional) Names of the fields that should be rendered and in the current order. If null or undefined, will display all fields
-		 	visiblefields: null,
+			idfield: null,
+			// (Optional) names of the fields that are used for a titles. Takes the first field from the first object if null. If empty array, no title
+			titlefields: null,
+			// The format of the title, use {0}, {1} ... {n} as placeholders, concatenates all title fields if null(default)
+			titleformat: null,
+			// (Optional) Names of the fields that should be rendered and in the current order. If null or undefined, will display all fields
+			visiblefields: null,
 			// (Optional) Names of the fields that data should be sorted by. (Note: Do not set this if you enable sorting for Dataviewer to avoid performance overhead) 
-		 	sortbyfields: null,
+			sortbyfields: null,
 			// Direction of the sorting: "asc"|"desc" 
-		 	sortbydirection: "asc",
-		 	// (Optional) Custom labels for fields, add them as "{fieldname}: {label}". If a label is not defined for a field, uses the capitalized field name
-		 	labels: {},
-		 	// field containing the bootstrap style (primary, info, danger ...) that should be used as the background
-		 	bgstylefield: null,
-		    // field containing the bootstrap style (primary, info, danger ...) that should be used as for texts
-		 	textstylefield: null,
-		 	// functions that return a customized htmlString to display a customized format, add as "<fieldname>: function(record, value, rendererName, fieldname)".  Cannot return a JQuery object.
-		 	customizers: {},
-		 	// array of functions that return html for buttons, add as "<fieldname>: function(record, id)". Cannot return a JQuery object.
-		 	actions: [ ],
+			sortbydirection: "asc",
+			// (Optional) Custom labels for fields, add them as "{fieldname}: {label}". If a label is not defined for a field, uses the capitalized field name
+			labels: {},
+			// field containing the bootstrap style (primary, info, danger ...) that should be used as the background
+			bgstylefield: null,
+			// field containing the bootstrap style (primary, info, danger ...) that should be used as for texts
+			textstylefield: null,
+			// functions that return a customized htmlString to display a customized format, add as "<fieldname>: function(record, value, rendererName, fieldname)".  Cannot return a JQuery object.
+			customizers: {},
+			// array of functions that return html for buttons, add as "<fieldname>: function(record, id)". Cannot return a JQuery object.
+			actions: [ ],
 			// list of functions that should be working with multiple items. fieldname will be used as the button label
-		 	bulkActions: null,
-		 	// position of the multi actions, either top|bottom|both|none
-		 	bulkActionsPos: "top",
+			bulkActions: null,
+			// position of the multi actions, either top|bottom|both|none
+			bulkActionsPos: "top",
 			// define if the data is hierarchical (Default: false)
 			hierarchy: false,
 			// define if the hierarchy should be displayed as tree or flat
-		 	hierarchyAsTree: true, 
+			hierarchyAsTree: true, 
 			// the field containing the array with children
 			hierarchyChildrenField: "children",
 			// number of pixels used for indentation
 			hierarchyIndentation: 20,
 			// icon classes to define the icon(fontawesome)
 			hierarchyIconClasses: "fas fa-level-up-alt fa-rotate-90 mr-2",
-		 	// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
-		 	rendererSettings: {},
+			// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
+			rendererSettings: {},
 				
 			/*************************************************************
-			 * Customize The Value
-			 *************************************************************/
-		 	getCustomizedValue: function(record, fieldname, rendererName){
-		 		
-			 		var value = record[fieldname];
-			 		if(this.customizers[fieldname] == null){
+			* Customize The Value
+			*************************************************************/
+			getCustomizedValue: function(record, fieldname, rendererName){
+				
+					var value = record[fieldname];
+					if(this.customizers[fieldname] == null){
 						return value;
 					}else{
 						var customizer = this.customizers[fieldname];
 						return customizer(record, value, rendererName, fieldname);
 					}
-			 	},
+				},
 			
 			/*************************************************************
-			 * Customize The Value
-			 *************************************************************/
-		 	getLabel: function(fieldname, rendererName){
-		 		
-			 		if(this.labels[fieldname] == null){
+			* Customize The Value
+			*************************************************************/
+			getLabel: function(fieldname, rendererName){
+				
+					if(this.labels[fieldname] == null){
 						return fieldname;
 					}else if(typeof this.labels[fieldname] == 'string'){
 						return this.labels[fieldname];
@@ -95,12 +95,12 @@ class CFWRenderer{
 						var getLabelFunction = this.labels[fieldname];
 						return getLabelFunction(fieldname, rendererName);
 					}
-			 	},
+				},
 			
 			/*************************************************************
-			 * Create Title HTML (uses customized values)
-			 *************************************************************/
-		 	getTitleHTML:  function(record){
+			* Create Title HTML (uses customized values)
+			*************************************************************/
+			getTitleHTML:  function(record){
 				
 				//-------------------------
 				// Empty Title
@@ -111,16 +111,16 @@ class CFWRenderer{
 				//-------------------------
 				// Create title Base
 				var title;
-		 		if(!CFW.utils.isNullOrEmpty(this.titleformat)){
-		 			var title = this.titleformat;
-		 		}else{
+				if(!CFW.utils.isNullOrEmpty(this.titleformat)){
+					var title = this.titleformat;
+				}else{
 					title = '';
 				}
-		 		
+				
 				//-------------------------
 				// Create Title
 
-		 		for(var j = 0; j < this.titlefields.length; j++){
+				for(var j = 0; j < this.titlefields.length; j++){
 					var fieldname = this.titlefields[j];
 					var value = this.getCustomizedValue(record,fieldname);
 					
@@ -132,17 +132,17 @@ class CFWRenderer{
 						title += ' '+value;
 					}
 				}
-		 		
-		 		title = title.replace(/\{\d\}/g, '');
-		 		return title.trim();
+				
+				title = title.replace(/\{\d\}/g, '');
+				return title.trim();
 			},
 			
 			/*************************************************************
-			 * Create Title String (does not use customize values)
-			 *************************************************************/
+			* Create Title String (does not use customize values)
+			*************************************************************/
 			getTitleString:  function(record){
-		 		
-		 		//-------------------------
+				
+				//-------------------------
 				// Empty Title
 				if( this.titlefields.length == 0 ){
 					return "";
@@ -151,21 +151,21 @@ class CFWRenderer{
 				//-------------------------
 				// Create title Base
 				var title;
-		 		if(!CFW.utils.isNullOrEmpty(this.titleformat)){
-		 			var title = this.titleformat;
-		 		}else{
+				if(!CFW.utils.isNullOrEmpty(this.titleformat)){
+					var title = this.titleformat;
+				}else{
 					title = '';
 				}
-		 		
+				
 				//-------------------------
 				// Create Title
-		 		for(var j = 0; j < this.titlefields.length; j++){
+				for(var j = 0; j < this.titlefields.length; j++){
 
-		 			var fieldname = this.titlefields[j];
-		 			var value = record[fieldname];
-		 			
-		 			if( value != null){
-		 				
+					var fieldname = this.titlefields[j];
+					var value = record[fieldname];
+					
+					if( value != null){
+						
 	 					if(this.titleformat != null){
 							title = title.replace('{'+j+'}', value);
 						}else{
@@ -175,22 +175,22 @@ class CFWRenderer{
 					}
 
 				}
-		 		title = title.replace(/\{\d\}/g, '');
-		 		return title.trim();
+				title = title.replace(/\{\d\}/g, '');
+				return title.trim();
 			},
 			
 			/*************************************************************
-			 * Adds coloring to the element based on the records value and
-			 * the value added in the fields bgstylefield and textstylefield.
-			 *            - a CSS color name
-			 *            - an RGB color code starting with '#'
-			 *            - CFW color class starting with 'cfw-'
-		 	 * @param record the record associated with the element
-			 * @param element the DOM or JQuery element to colorize
-			 * @param type either 'bg' | 'text' | 'border' 
-			 * @param borderSize Optional size definition for the border.
-			 *************************************************************/
-		 	colorizeElement: function(record, element, type, borderSize){
+			* Adds coloring to the element based on the records value and
+			* the value added in the fields bgstylefield and textstylefield.
+			*            - a CSS color name
+			*            - an RGB color code starting with '#'
+			*            - CFW color class starting with 'cfw-'
+			 * @param record the record associated with the element
+			* @param element the DOM or JQuery element to colorize
+			* @param type either 'bg' | 'text' | 'border' 
+			* @param borderSize Optional size definition for the border.
+			*************************************************************/
+			colorizeElement: function(record, element, type, borderSize){
 				var $element = $(element);
 				//--------------------------------------
 				// Handle BG and Border
@@ -201,64 +201,71 @@ class CFWRenderer{
 					let color = record[this.textstylefield];
 					CFW.colors.colorizeElement(element, color, type, borderSize);
 				}
-		 		
-		 	},
-		 };
-		  
+				
+			},
+		};
+		 
 	 }
 	 
 	 /********************************************
 	  * Returns a String in the format YYYY-MM-DD
 	  ********************************************/
 	 prepareDefinition(definition){
-		 var data = definition.data;
-		 var firstObject = null;
-		 
-		 //---------------------------
-		 // get first object
-		 if(Array.isArray(data)){
-			 definition.datatype = "array";
-			 if(data.length > 0){
-				 firstObject = data[0];
-			 }
-		 }else if(typeof data == "object"){
-			 definition.datatype = "array";
-			 definition.data = [data];
-			 firstObject = data;
-		 }else {
-			 definition.datatype = typeof data;
-		 }
-		 
-		 //---------------------------
-		 // Get Visible Fields
-		 if(firstObject != null && typeof firstObject == 'object'){
+		var data = definition.data;
+		var firstObject = null;
+		
+		//---------------------------
+		// get first object
+		if(Array.isArray(data)){
+			definition.datatype = "array";
+			if(data.length > 0){
+				firstObject = data[0];
+			}
+		}else if(typeof data == "object"){
+			definition.datatype = "array";
+			definition.data = [data];
+			firstObject = data;
+		}else {
+			definition.datatype = typeof data;
+		}
+		
+		//--------------------------
+		// Make title fields a string
+		if(definition.titlefields != null
+		&& typeof definition.titlefields == "string" ){
+			definition.titlefields = [definition.titlefields];
+		} 
+		
+		//---------------------------
+		// Get Visible Fields
+		if(firstObject != null && typeof firstObject == 'object'){
+			
+			//--------------------------
+			// resolve default visible fields
+			if(definition.visiblefields == null){ 
+				definition.visiblefields = [];
+				for(let key in firstObject){
+					definition.visiblefields.push(key);
+				}
+			}
 			 
-			 //--------------------------
-			 // resolve default visible fields
-			 if(definition.visiblefields == null){ 
-				 definition.visiblefields = [];
-				 for(let key in firstObject){
-					 definition.visiblefields.push(key);
-				 }
-			 }
-			 
-			 //--------------------------
-			 // resolve title fields
-			 if(definition.titlefields == null){ 
-				 if(definition.visiblefields.length > 0){ 
-					 definition.titlefields = [definition.visiblefields[0]];
-				 }else{
-					 // Use first field for titles
-					 definition.titlefields = [Object.keys(firstObject)[0]];
-				 }
-			 }
-		 }
-		 
-		 
-		 
-		 //---------------------------
-		 // Create Labels
-		 for(let key in definition.visiblefields){
+			//--------------------------
+			// resolve title fields
+			if(definition.titlefields == null){ 
+				if(definition.visiblefields.length > 0){ 
+					definition.titlefields = [definition.visiblefields[0]];
+				}else{
+					// Use first field for titles
+					definition.titlefields = [Object.keys(firstObject)[0]];
+				}
+			}
+		}
+		
+		
+		
+		//---------------------------
+		// Create Labels
+		for(let key in definition.visiblefields){
 			let fieldname = definition.visiblefields[key];
 			if(definition.labels[fieldname] == null){
 				definition.labels[fieldname] = CFW.format.fieldNameToLabel(fieldname);
@@ -298,18 +305,18 @@ class CFWRenderer{
 			
 			definition.data = _.orderBy(definition.data, sortFunctionArray, sortDirectionArray);
 		}
-		 
+		
 	 }
 	 
 	 /********************************************
 	  * Returns a html string 
 	  ********************************************/
 	 render(renderDefinition){
-		 var definition = Object.assign({}, this.defaultRenderDefinition, renderDefinition);	
-		 
-		 this.prepareDefinition(definition);
-		 
-		 return this.renderFunction(definition);
+		var definition = Object.assign({}, this.defaultRenderDefinition, renderDefinition);	
+		
+		this.prepareDefinition(definition);
+		
+		return this.renderFunction(definition);
 	 }
 }
 
@@ -468,7 +475,7 @@ CFW.render.registerRenderer("json", new CFWRenderer(cfw_renderer_json));
  * 
  ******************************************************************/
 function cfw_renderer_csv(renderDef) {
-		 
+		
 	//-----------------------------------
 	// Render Specific settings
 	var defaultSettings = {
@@ -520,9 +527,9 @@ function cfw_renderer_csv(renderDef) {
 				}else{
 
 					value = (""+value).replaceAll('\n', '\\n')
-									  .replaceAll('\r', '\\r')
-									  .replaceAll('<', '&lt;')
-									  .replaceAll('"', '""');
+									 .replaceAll('\r', '\\r')
+									 .replaceAll('<', '&lt;')
+									 .replaceAll('"', '""');
 				}
 			}
 			
@@ -555,7 +562,7 @@ CFW.render.registerRenderer(CFW_RENDER_NAME_CSV,  new CFWRenderer(cfw_renderer_c
  * 
  ******************************************************************/
 function cfw_renderer_xml(renderDef) {
-		 
+		
 	//-----------------------------------
 	// Render Specific settings
 	var defaultSettings = {
@@ -624,7 +631,7 @@ CFW.render.registerRenderer(CFW_RENDER_NAME_XML,  new CFWRenderer(cfw_renderer_x
  * 
  ******************************************************************/
 function cfw_renderer_title(renderDef) {
-		 
+		
 	//-----------------------------------
 	// Render Specific settings
 	var defaultSettings = {
@@ -1101,7 +1108,7 @@ function cfw_renderer_statusmap_calculateSizeFactors(widthfactor, heightfactor, 
 	// landscape example: 2 / 1 = 2.0
 	// portrait example:  1 / 2 = 0.5
 	var sizeFactors = {
-		  inputWidthFactor: widthfactor
+		 inputWidthFactor: widthfactor
 		, inputHeightFactor: heightfactor
 		, inputAspectRatio: widthfactor / heightfactor
 		, finalAspectRatio: 1
@@ -1820,7 +1827,7 @@ function cfw_renderer_panels_addPanel(targetElement, currentRecord, renderDef, s
 		
 		//do not toggle panel collapse when clicking checkbox 
 		checkbox.on('click', function(e){
-			    e.stopPropagation();
+				e.stopPropagation();
 			});
 		checkboxDiv.append(checkbox);
 		
@@ -1907,7 +1914,7 @@ function cfw_renderer_cards (renderDef) {
 				body: "&nbsp;",
 				narrow: settings.narrow,
 		};
-		 
+		
 		//---------------------------
 		// Resolve Title				
 		cardSettings.title.append(renderDef.getTitleHTML(currentRecord));	
@@ -2278,35 +2285,35 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 		//--------------------------------------
 		// Append: make sure droptarget is not 
 		// a child of draggable
-	    if (dropTarget != null 
-	    && draggable.find('#'+dropTarget.attr('id')).length == 0) {
-	    	
-	    	//-------------------------------------
-	    	// Get Values for Panel Expansion
-	    	if(CFW_GLOBAL_HIERARCHYSORTER.previousDropTarget != dropTarget.attr('id')){
-	    		CFW_GLOBAL_HIERARCHYSORTER.dropTargetChangeMillis = Date.now();
-	    		CFW_GLOBAL_HIERARCHYSORTER.previousDropTarget = dropTarget.attr('id');
-	    	}
-	    	
-	    	//-------------------------------------
-	    	// Move Object
-	    	//Wait for number of millis of hovering over the element before expansion
-    	    if(Date.now() - CFW_GLOBAL_HIERARCHYSORTER.dropTargetChangeMillis > 400){
+		if (dropTarget != null 
+		&& draggable.find('#'+dropTarget.attr('id')).length == 0) {
+			
+			//-------------------------------------
+			// Get Values for Panel Expansion
+			if(CFW_GLOBAL_HIERARCHYSORTER.previousDropTarget != dropTarget.attr('id')){
+				CFW_GLOBAL_HIERARCHYSORTER.dropTargetChangeMillis = Date.now();
+				CFW_GLOBAL_HIERARCHYSORTER.previousDropTarget = dropTarget.attr('id');
+			}
+			
+			//-------------------------------------
+			// Move Object
+			//Wait for number of millis of hovering over the element before expansion
+    		if(Date.now() - CFW_GLOBAL_HIERARCHYSORTER.dropTargetChangeMillis > 400){
 				
 				//-------------------------------------
-		    	// add Color	
+				// add Color	
 				$(".cfw-droptarget-active").removeClass("cfw-droptarget-active");
 				dropTarget.prev().addClass("cfw-droptarget-active");
 				
 				//-------------------------------------
-		    	// Open panel and prepend dragged 
-				dropTarget.append(draggable);	    		
+				// Open panel and prepend dragged 
+				dropTarget.append(draggable);				
 				dropTarget.collapse('show');
-	    		
-    	    }
+				
+    		}
     		
 
-	    }
+		}
 	});
 	
 	//--------------------------------------
