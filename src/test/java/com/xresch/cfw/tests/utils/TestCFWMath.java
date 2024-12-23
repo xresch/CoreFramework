@@ -18,10 +18,11 @@ public class TestCFWMath {
 
 		ArrayList<BigDecimal> values = new ArrayList<>();
 		BigDecimal result;
+		int scale = 6;
 		
 		//----------------------------
 		// Check list empty
-		result = CFW.Math.bigMovAvg(values, 3);
+		result = CFW.Math.bigMovAvg(values, 3, scale);
 		Assertions.assertEquals(null, result);
 		
 		//----------------------------
@@ -29,26 +30,26 @@ public class TestCFWMath {
 		values.add(new BigDecimal(10));
 		values.add(new BigDecimal(20));
 		
-		result = CFW.Math.bigMovAvg(values, 3);
+		result = CFW.Math.bigMovAvg(values, 3, scale);
 		Assertions.assertEquals(null, result);
 		
 		//----------------------------
 		// Check list exactly enough
 		values.add(new BigDecimal(30));
-		result = CFW.Math.bigMovAvg(values, 3);
+		result = CFW.Math.bigMovAvg(values, 3, scale);
 		Assertions.assertEquals(20, result.intValue());
 		
 		//----------------------------
 		// Check moving average is moving
 		values.add(new BigDecimal(40));
-		result = CFW.Math.bigMovAvg(values, 3);
+		result = CFW.Math.bigMovAvg(values, 3, scale);
 		Assertions.assertEquals(30, result.intValue());
 	
 		//----------------------------
 		// Check moving average is decimal 
 		// (30 + 40 + 123.456) / 3 = 64.485333
 		values.add(new BigDecimal("123.456"));
-		result = CFW.Math.bigMovAvg(values, 3);
+		result = CFW.Math.bigMovAvg(values, 3, scale);
 		Assertions.assertEquals("64.485333", result.toPlainString());
 	}
 	

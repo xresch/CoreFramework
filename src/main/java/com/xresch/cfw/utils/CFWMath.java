@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CFWMath {
 
-	private static final int GLOBAL_SCALE = 6;
+	public static final int GLOBAL_SCALE = 6;
 	public static final BigDecimal BIGDEC_TWO = new BigDecimal(2);
 	public static final BigDecimal BIGDEC_NEG_ONE = new BigDecimal(-1);
 	
@@ -64,17 +64,18 @@ public class CFWMath {
 	 * Will return null if there are not enough datapoints.
 	 * 
 	 * @param values the list of values
-	 * @param datapoints number of points that should be used for calculating the moving average
+	 * @param period number of points that should be used for calculating the moving average
+	 * @param precision the precision of digits for the resulting values.
 	 * @return moving average value , null if list size is smaller than datapoints
 	 ***********************************************************************************************/
-	public static BigDecimal bigMovAvg(List<BigDecimal> values, int datapoints) {
+	public static BigDecimal bigMovAvg(List<BigDecimal> values, int period, int precision) {
 		
 		while( values.remove(null) ); // remove all null values
-		if(values.size() < datapoints ) { return null; }
+		if(values.size() < period ) { return null; }
 		
-		List<BigDecimal> partialValues = values.subList(values.size()-datapoints, values.size());
+		List<BigDecimal> partialValues = values.subList(values.size() - period, values.size());
 		BigDecimal sum = bigSum(partialValues);
-		sum = sum.setScale(GLOBAL_SCALE, RoundingMode.HALF_UP); // won't calculate decimals if not set
+		sum = sum.setScale(precision, RoundingMode.HALF_UP); // won't calculate decimals if not set
 		if(sum == null) { return null; } 
 		
 		BigDecimal count = new BigDecimal(partialValues.size());
@@ -193,10 +194,30 @@ public class CFWMath {
 		
 	}
 	
+	
+	/***********************************************************************************************
+	 * Returns a moving standard deviation value for the last N values in the given list.
+	 * Will return null if there are not enough datapoints.
+	 * 
+	 * @param values the list of values
+	 * @param period number of points that should be used for calculating the moving average
+	 * @param precision TODO
+	 * @return moving average value , null if list size is smaller than datapoints
+	 ***********************************************************************************************/
+	public static BigDecimal bigMovStdev(List<BigDecimal> values, int period, boolean usePopulation, int precision) {
+		
+		while( values.remove(null) ); // remove all null values
+		if(values.size() < period ) { return null; }
+		
+		List<BigDecimal> partialValues = values.subList(values.size() - period, values.size());
+		
+		return bigStdev(partialValues, usePopulation, precision);
+		
+	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public static BigDecimal bigStdev(List<BigDecimal> values, boolean usePopulation) {
+	public static BigDecimal bigStdev(List<BigDecimal> values, boolean usePopulation, int precision) {
 		
 		//while( values.remove(null) );
 		
@@ -238,7 +259,7 @@ public class CFWMath {
 		BigDecimal divided = sumDistanceSquared.divide(divisor, RoundingMode.HALF_UP);
 		
 		// TODO JDK8 Migration: should work with JDK 9
-		MathContext mc = new MathContext(GLOBAL_SCALE, RoundingMode.HALF_UP);
+		MathContext mc = new MathContext(precision, RoundingMode.HALF_UP);
 		BigDecimal standardDeviation = divided.sqrt(mc);
 		
 		return standardDeviation;

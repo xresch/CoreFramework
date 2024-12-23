@@ -118,7 +118,7 @@ public class CFWQueryFunctionStdev extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	private BigDecimal calculateStandardDeviation(boolean usePopulation) {
 		
-		BigDecimal standardDeviation = CFW.Math.bigStdev(values, usePopulation);
+		BigDecimal standardDeviation = CFW.Math.bigStdev(values, usePopulation, CFW.Math.GLOBAL_SCALE);
 		
 		//reset values when calculation is done
 		values.clear();

@@ -180,6 +180,7 @@ DONE
 
 - Query: Added Commands:
 	- statsmovavg
+	- statsbollbands
 	
 - Query: Added Functions:
 	- intervalpoints

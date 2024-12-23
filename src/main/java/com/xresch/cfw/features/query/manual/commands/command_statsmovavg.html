@@ -1,6 +1,6 @@
 
 <p>Used to calculate simple moving average values for a field.
-Can group values by 
+Can group the statistics by specific fields using the by-parameter.
 </p>
 
 <p>The following statsmovavg example groups by WAREHOUSE AND ITEM and calculates the multiple moving averages for the field COUNT:
@@ -12,10 +12,10 @@ Can group values by
 	type=series 
 	seriesCount=1 
 	records=300
-| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-5" datapoints=5 precision=3
-| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-10" datapoints=10 precision=3
-| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-30" datapoints=30 precision=3
-| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-60" datapoints=60 precision=3
+| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-5" period=5 precision=3
+| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-10" period=10 precision=3
+| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-30" period=30 precision=3
+| statsmovavg by=meta(BY) field=META(FIELD) name="SMA-60" period=60 precision=3
 | chart
 	by=meta(BY)
 	x=TIME
