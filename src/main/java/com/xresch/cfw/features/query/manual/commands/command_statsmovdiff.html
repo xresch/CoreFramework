@@ -1,0 +1,24 @@
+
+<p>Used to calculate moving difference in percent for the values for a field.
+Can group the statistics by specific fields using the by-parameter.
+This can be combined with statsmovavg to smooth out the curve. The values returned by this command indicate trend direction.
+Positive values indicate rising values, negative values indicate declining values.
+</p>
+
+<p>The following statsmovdiff example groups by WAREHOUSE AND ITEM and calculates the difference percent of the moving average:
+</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+| source random 
+	type=series 
+	seriesCount=1 
+	records=300
+| statsmovavg by=meta(BY) field="COUNT" name="sma" period=10 precision=3
+| statsmovdiff by=meta(BY) field='sma' name="movdiff" period=12 precision=3
+| chart
+	x=TIME
+	y=['sma', 'movdiff']
+	ymin=null
+	height="500"</code></pre>
+
+

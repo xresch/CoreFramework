@@ -191,7 +191,8 @@ public class CFWQueryCommandResultCopy extends CFWQueryCommand {
 
 					@Override
 					public void accept(EnhancedJsonObject e) {
-						outQueue.add(e);
+						
+						outQueue.add(e.clone());
 					}
 				});
 				

@@ -1,0 +1,24 @@
+
+<p>Used to calculate Relative Strength Index(RSI) values for a field.
+Can group the statistics by specific fields using the by-parameter.
+</p>
+
+<p>The following statsrsi example groups by WAREHOUSE AND ITEM and calculates the multiple moving averages for the field COUNT:
+</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+	FIELD = "COUNT"
+| source random 
+	type=series 
+	seriesCount=1 
+	records=300
+| statsRSI by=meta(BY) field=META(FIELD) period=6 precision=3
+| statsRSI by=meta(BY) field=META(FIELD) period=12 precision=3
+| chart
+	by=meta(BY)
+	x=TIME
+	y=[META(FIELD), 'rsi6', 'rsi12']
+	ymin=null
+	height="500"</code></pre>
+
+

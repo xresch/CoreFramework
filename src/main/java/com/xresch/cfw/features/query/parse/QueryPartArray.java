@@ -124,7 +124,12 @@ public class QueryPartArray extends QueryPart {
 			
 			for(QueryPart part : partsArray) {
 				if(part != null) {
-					jsonArray.add(part.determineValue(object).getAsJsonElement());
+					QueryPartValue value = part.determineValue(object);
+					if(value != null) {
+						jsonArray.add(value.getAsJsonElement());
+					}else {
+						jsonArray.add(JsonNull.INSTANCE);
+					}
 				}
 			}
 		}
@@ -143,6 +148,7 @@ public class QueryPartArray extends QueryPart {
 			
 			for(QueryPart part : partsArray) {
 				if(part != null) {
+					
 					stringArray.add(part.determineValue(object).getAsString());
 				}
 			}

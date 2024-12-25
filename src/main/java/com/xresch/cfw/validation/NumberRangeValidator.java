@@ -62,14 +62,14 @@ public class NumberRangeValidator extends AbstractValidator {
 		else if (value instanceof Long) { number = new BigDecimal((Long)value);}
 		else if (value instanceof Number) { number = new BigDecimal( ((Number)value).doubleValue() ); }
 				
-		if(   (number.compareTo(minValue) >= 0 || minValue.compareTo(CFW.Math.BIGDEC_NEG_ONE) == 0) 
-		   && (number.compareTo(maxValue) <= 0 || maxValue.compareTo(CFW.Math.BIGDEC_NEG_ONE) == 0) ){
+		if(   (number.compareTo(minValue) >= 0 || minValue.compareTo(CFW.Math.BIG_NEG_ONE) == 0) 
+		   && (number.compareTo(maxValue) <= 0 || maxValue.compareTo(CFW.Math.BIG_NEG_ONE) == 0) ){
 			return true;
 		}else{
-			if(minValue.compareTo(CFW.Math.BIGDEC_NEG_ONE) == 0){
+			if(minValue.compareTo(CFW.Math.BIG_NEG_ONE) == 0){
 				this.setInvalidMessage("The value of "+validateable.getLabel()+
 						" can have a maximum value of "+maxValue+".");
-			}else if(maxValue.compareTo(CFW.Math.BIGDEC_NEG_ONE) == 0){
+			}else if(maxValue.compareTo(CFW.Math.BIG_NEG_ONE) == 0){
 				this.setInvalidMessage("The value of "+validateable.getLabel()+
 						" should be at least "+minValue+".");
 			}else {
