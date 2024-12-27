@@ -36,14 +36,13 @@ public class CFWQueryCommandRSI extends CFWQueryCommand {
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
 	// Group name and values of the group
-	private LinkedHashMap<String, ArrayList<BigDecimal>> valuesMap = new LinkedHashMap<>();
+	private LinkedHashMap<String, CFWMathPeriodic> periodicMap = new LinkedHashMap<>();
 
 	private String fieldname = null;
 	private String name = null;
 	private Integer precision = null;
 	private Integer period = null;
 	
-	private CFWMathPeriodic mathPeriodic;
 	
 	/***********************************************************************************************
 	 * 
@@ -175,8 +174,6 @@ public class CFWQueryCommandRSI extends CFWQueryCommand {
 		if(precision == null) { precision = 6;}
 		if(period == null ) { period = 10;}
 		
-		mathPeriodic = CFW.Math.createPeriodic(period, precision);
-		
 		//------------------------------------------
 		// Add Detected Fields
 		this.fieldnameAdd(name);
@@ -208,18 +205,15 @@ public class CFWQueryCommandRSI extends CFWQueryCommand {
 			
 			//----------------------------
 			// Create and Get Group
-			if(!valuesMap.containsKey(groupID)) {
-				valuesMap.put(groupID, new ArrayList<>());
+			if(!periodicMap.containsKey(groupID)) {
+				periodicMap.put(groupID, CFW.Math.createPeriodic(period, precision));
 			}
 			
-			//ArrayList<BigDecimal> groupedValues = valuesMap.get(groupID);
+			CFWMathPeriodic mathPeriodic = periodicMap.get(groupID);
 			BigDecimal big = value.getAsBigDecimal();
 			if(big == null) { big = BigDecimal.ZERO; }
-			//groupedValues.add(big);
 			
-			//BigDecimal rsi = CFW.Math.bigRSI(groupedValues, period, precision);
-			
-			BigDecimal rsi = mathPeriodic.calculateRSI(big);
+			BigDecimal rsi = mathPeriodic.calcRSI(big);
 
 			record.addProperty(name, rsi);
 			

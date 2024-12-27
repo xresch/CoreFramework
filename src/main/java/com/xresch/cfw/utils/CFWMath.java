@@ -295,6 +295,7 @@ public class CFWMath {
 		return bigStdev(partialValues, usePopulation, precision);
 		
 	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -406,34 +407,7 @@ public class CFWMath {
 		}else {
 			rsi = avgGains.divide(sumAvgUpDown, ROUND_UP).multiply(BIG_100);
 		}
-		
-		//------------------------------------
-		// STEP 3: Calculate RSI - Alternative
-		// RSI = ( avgUps / (avgUps + avgDowns) ) * 100
-//		BigDecimal rsi;
-//		if(avgLosses.compareTo(ZERO) == 0) {
-//			rsi = BIG_100; 
-//		}else if(avgGains.compareTo(ZERO) == 0) {
-//			rsi = ZERO; 
-//		}else {
-//			// Formula: RSI = (100 - (100 / (1 + avgGains / avgLosses)) );
-//			
-//			BigDecimal quotient = avgGains.divide(avgLosses, ROUND_UP);
-//			BigDecimal quotientPlusOne = quotient.add(ONE);
-//			BigDecimal percent = BIG_100.divide(quotientPlusOne, ROUND_UP);
-//			rsi = BIG_100.subtract(percent);
-//			
-//			System.out.println("count:"+count.toPlainString());
-//			System.out.println("avgGains:"+avgGains.toPlainString());
-//			System.out.println("avgLosses:"+avgLosses.toPlainString());
-//			System.out.println("quotient:"+quotient.toPlainString());
-//			System.out.println("Formula: ("+ avgGains.toPlainString()
-//								+" / ("+ avgGains.toPlainString()
-//								+" + "+ avgLosses.toPlainString()
-//								+") ) * 100 "
-//								);
-//		}
-	
+			
 		return rsi.setScale(precision, ROUND_UP);
 		
 	}
@@ -465,10 +439,10 @@ public class CFWMath {
 		BigDecimal bigPeriodMinusOne = null;
 		private int precision = 3;
 		
-		private List<BigDecimal> rsiInputValues = new ArrayList<>();
-		BigDecimal rsiPreviousValue = null;
-		private BigDecimal rsiAvgGains = null;
-		private BigDecimal rsiAvgLosses = null;
+		private List<BigDecimal> movavgValues = new ArrayList<>();
+
+		private List<BigDecimal> rsiValues = new ArrayList<>();
+
 		
 		/***********************************************************************************************
 		 * 
@@ -483,8 +457,39 @@ public class CFWMath {
 			this.precision = precision;
 		}
 		
+		
 		/***********************************************************************************************
-		 * Returns the Relative Strength Index(RSI) for the last N values in the given list.
+		 * Returns a moving average value for the values subsequently passed to this method.
+		 * Will return null if there are not enough datapoints.
+		 * 
+		 * @param values the list of values
+		 * @param period number of points that should be used for calculating the moving average
+		 * @param precision the precision of digits for the resulting values.
+		 * @return moving average value , null if list size is smaller than datapoints
+		 ***********************************************************************************************/
+		public BigDecimal calcMovAvg(BigDecimal value) {
+			
+			if(value == null) { value = ZERO; }
+			
+			movavgValues.add(value);
+			
+			if(movavgValues.size() < period ) { 
+				return null; 
+			}
+			
+			List<BigDecimal> partialValues = movavgValues.subList(movavgValues.size() - period, movavgValues.size());
+			BigDecimal sum = bigSum(partialValues);
+			sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
+			if(sum == null) { return null; } 
+			
+			BigDecimal count = new BigDecimal(partialValues.size());
+			
+			return sum.divide(count, ROUND_UP);
+			
+		}
+		
+		/***********************************************************************************************
+		 * Returns the Relative Strength Index(RSI) for the values subsequently passed to this method.
 		 * Will return null if there are not enough values.
 		 * 
 		 * It is recommended to use CFW.Math.nullToZero() before using this method if the method can contain
@@ -493,19 +498,19 @@ public class CFWMath {
 		 * This method uses the calculation formulas as described here:
 		 * https://www.zaner.com/3.0/education/technicalstudies/RSI.asp#top
 		 * 
-		 * @param rsiInputValues the list of values
+		 * @param rsiValues the list of values
 		 * @param bigPeriod number of points that should be used for calculating the moving average
 		 * @param precision the precision of digits for the resulting values.
 		 * 
 		 * @return moving average value , null if list size is smaller than datapoints
 		 ***********************************************************************************************/
-		public BigDecimal calculateRSI(BigDecimal value) {
+		public BigDecimal calcRSI(BigDecimal value) {
 			
 			if(value == null) { value = ZERO; }
 			
-			rsiInputValues.add(value);
+			rsiValues.add(value);
 			
-			if(rsiInputValues.size() < period ) { 
+			if(rsiValues.size() < period ) { 
 				return null; 
 			}
 
@@ -542,14 +547,14 @@ public class CFWMath {
 			
 			//------------------------------------
 			// STEP 1: Sums of Ups & Downs
-			int i = rsiInputValues.size() - period;
-			rsiPreviousValue = rsiInputValues.get(i);
+			int i = rsiValues.size() - period;
+			BigDecimal rsiPreviousValue = rsiValues.get(i);
 			BigDecimal sumGains = ZERO.setScale(precision);
 			BigDecimal sumLosses = ZERO.setScale(precision);
 			
-			for(i++ ; i < rsiInputValues.size(); i++) {
+			for(i++ ; i < rsiValues.size(); i++) {
 				
-				BigDecimal currentValue = rsiInputValues.get(i);
+				BigDecimal currentValue = rsiValues.get(i);
 				BigDecimal diff = currentValue.subtract(rsiPreviousValue);
 
 				if(diff.compareTo(ZERO) > 0) {
@@ -563,8 +568,8 @@ public class CFWMath {
 			}
 			//------------------------------------
 			// STEP 2: Averages of Ups & Downs
-			rsiAvgGains = sumGains.divide(bigPeriod, ROUND_UP);
-			rsiAvgLosses = sumLosses.divide(bigPeriod, ROUND_UP);
+			BigDecimal rsiAvgGains = sumGains.divide(bigPeriod, ROUND_UP);
+			BigDecimal rsiAvgLosses = sumLosses.divide(bigPeriod, ROUND_UP);
 							
 			//------------------------------------
 			// STEP 3: Calculate RSI

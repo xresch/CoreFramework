@@ -18,6 +18,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
+import com.xresch.cfw.utils.CFWMath.CFWMathPeriodic;
 
 
 /************************************************************************************************************
@@ -34,12 +35,13 @@ public class CFWQueryCommandMovAvg extends CFWQueryCommand {
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
 	// Group name and vlaues of the group
-	private LinkedHashMap<String, ArrayList<BigDecimal>> valuesMap = new LinkedHashMap<>();
+	private LinkedHashMap<String, CFWMathPeriodic> periodicMap = new LinkedHashMap<>();
 
 	private String fieldname = null;
 	private String name = null;
 	private Integer precision = null;
 	private Integer period = null;
+
 	
 	/***********************************************************************************************
 	 * 
@@ -202,14 +204,15 @@ public class CFWQueryCommandMovAvg extends CFWQueryCommand {
 			
 			//----------------------------
 			// Create and Get Group
-			if(!valuesMap.containsKey(groupID)) {
-				valuesMap.put(groupID, new ArrayList<>());
+			if(!periodicMap.containsKey(groupID)) {
+				periodicMap.put(groupID, CFW.Math.createPeriodic(period, precision));
 			}
 			
-			ArrayList<BigDecimal> groupedValues = valuesMap.get(groupID);
-			groupedValues.add(value.getAsBigDecimal());
+			CFWMathPeriodic mathPeriodic = periodicMap.get(groupID);
+			BigDecimal big = value.getAsBigDecimal();
+			if(big == null) { big = BigDecimal.ZERO; }
 			
-			BigDecimal movavg = CFW.Math.bigMovAvg(groupedValues, period, precision);
+			BigDecimal movavg = mathPeriodic.calcMovAvg(big);
 
 			record.addProperty(name, movavg);
 			

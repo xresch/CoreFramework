@@ -180,9 +180,9 @@ DONE
 
 - Query: Added Commands:
 	- bollbands
-	- statsmovavg
-	- statsmovdiff
-	- statsrsi
+	- movavg
+	- movdiff
+	- rsi
 	
 - Query: Added Functions:
 	- intervalpoints
