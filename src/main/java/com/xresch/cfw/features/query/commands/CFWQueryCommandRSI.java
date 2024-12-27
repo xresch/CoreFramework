@@ -1,13 +1,11 @@
 package com.xresch.cfw.features.query.commands;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -18,9 +16,9 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
-import com.xresch.cfw.features.query.parse.QueryPartFunction;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
+import com.xresch.cfw.utils.CFWMath.CFWMathPeriodic;
 
 
 /************************************************************************************************************
@@ -28,16 +26,16 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandStatsMovDiff extends CFWQueryCommand {
+public class CFWQueryCommandRSI extends CFWQueryCommand {
 	
-	private static final String COMMAND_NAME = "statsmovdiff";
+	private static final String COMMAND_NAME = "rsi";
 	private static final BigDecimal MINUS_ONE = new BigDecimal(-1);
 	
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<>();
 	
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
-	// Group name and vlaues of the group
+	// Group name and values of the group
 	private LinkedHashMap<String, ArrayList<BigDecimal>> valuesMap = new LinkedHashMap<>();
 
 	private String fieldname = null;
@@ -45,10 +43,12 @@ public class CFWQueryCommandStatsMovDiff extends CFWQueryCommand {
 	private Integer precision = null;
 	private Integer period = null;
 	
+	private CFWMathPeriodic mathPeriodic;
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandStatsMovDiff(CFWQuery parent) {
+	public CFWQueryCommandRSI(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -57,7 +57,7 @@ public class CFWQueryCommandStatsMovDiff extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME, "movdiff"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -65,7 +65,7 @@ public class CFWQueryCommandStatsMovDiff extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Calculates a moving difference for the values of a field.";
+		return "Calculates a relative strength index for the values of a field.";
 	}
 
 	/***********************************************************************************************
@@ -85,7 +85,7 @@ public class CFWQueryCommandStatsMovDiff extends CFWQueryCommand {
 			  +"<li><b>by:&nbsp;</b>Array of the fieldnames which should be used for grouping.</li>"
 			  +"<li><b>field:&nbsp;</b>Name of the field which contains the value.</li>"
 			  +"<li><b>name:&nbsp;</b>The name of the target field to store the moving average value(Default: name+'_SMA').</li>"
-			  +"<li><b>period:&nbsp;</b>The number of datapoints used for creating the moving difference(Default: 10).</li>"
+			  +"<li><b>period:&nbsp;</b>The number of datapoints used for creating the moving average(Default: 10).</li>"
 			  +"<li><b>precision:&nbsp;</b>The decimal precision of the moving average (Default: 6, what is also the maximum).</li>"
 			  +"</ul>"
 				;
@@ -171,9 +171,11 @@ public class CFWQueryCommandStatsMovDiff extends CFWQueryCommand {
 		//------------------------------------------
 		// Sanitize
 		
-		if(name == null) { name = fieldname+"_movdiff";}
+		if(name == null) { name = "rsi"+period;}
 		if(precision == null) { precision = 6;}
 		if(period == null ) { period = 10;}
+		
+		mathPeriodic = CFW.Math.createPeriodic(period, precision);
 		
 		//------------------------------------------
 		// Add Detected Fields
@@ -210,14 +212,16 @@ public class CFWQueryCommandStatsMovDiff extends CFWQueryCommand {
 				valuesMap.put(groupID, new ArrayList<>());
 			}
 			
-			ArrayList<BigDecimal> groupedValues = valuesMap.get(groupID);
+			//ArrayList<BigDecimal> groupedValues = valuesMap.get(groupID);
 			BigDecimal big = value.getAsBigDecimal();
 			if(big == null) { big = BigDecimal.ZERO; }
-			groupedValues.add(big);
+			//groupedValues.add(big);
 			
-			BigDecimal movdiff = CFW.Math.bigMovDiff(groupedValues, period, precision);
+			//BigDecimal rsi = CFW.Math.bigRSI(groupedValues, period, precision);
+			
+			BigDecimal rsi = mathPeriodic.calculateRSI(big);
 
-			record.addProperty(name, movdiff);
+			record.addProperty(name, rsi);
 			
 			outQueue.add(record);
 			

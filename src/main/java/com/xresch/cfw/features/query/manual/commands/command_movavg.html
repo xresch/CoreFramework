@@ -1,0 +1,28 @@
+
+<p>Used to calculate simple moving average values for a field.
+Can group the statistics by specific fields using the by-parameter.
+Values should be properly sorted before using this command.
+</p>
+
+<p>The following movavg example groups by WAREHOUSE AND ITEM and calculates the multiple moving averages for the field COUNT:
+</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+	FIELD = "COUNT"
+| source random 
+	type=series 
+	seriesCount=1 
+	records=300
+| sort TIME
+| movavg by=meta(BY) field=META(FIELD) name="SMA-5" period=5 precision=3
+| movavg by=meta(BY) field=META(FIELD) name="SMA-10" period=10 precision=3
+| movavg by=meta(BY) field=META(FIELD) name="SMA-30" period=30 precision=3
+| movavg by=meta(BY) field=META(FIELD) name="SMA-60" period=60 precision=3
+| chart
+	by=meta(BY)
+	x=TIME
+	y=[META(FIELD), 'SMA-5', 'SMA-10', 'SMA-30', 'SMA-60' ]
+	ymin=null
+	height="500"</code></pre>
+
+

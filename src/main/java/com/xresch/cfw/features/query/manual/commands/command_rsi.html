@@ -1,6 +1,7 @@
 
 <p>Used to calculate Relative Strength Index(RSI) values for a field.
 Can group the statistics by specific fields using the by-parameter.
+Values should be properly sorted before using this command.
 </p>
 
 <p>The following statsrsi example groups by WAREHOUSE AND ITEM and calculates the multiple moving averages for the field COUNT:
@@ -12,8 +13,9 @@ Can group the statistics by specific fields using the by-parameter.
 	type=series 
 	seriesCount=1 
 	records=300
-| statsRSI by=meta(BY) field=META(FIELD) period=6 precision=3
-| statsRSI by=meta(BY) field=META(FIELD) period=12 precision=3
+| sort TIME
+| rsi by=meta(BY) field=META(FIELD) period=6 precision=3
+| rsi by=meta(BY) field=META(FIELD) period=12 precision=3
 | chart
 	by=meta(BY)
 	x=TIME

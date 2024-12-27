@@ -10,6 +10,8 @@ import java.util.function.UnaryOperator;
 
 public class CFWMath {
 
+	
+	private static CFWMath INSTANCE = new CFWMath();
 	public static final int GLOBAL_SCALE = 6;
 	
 	public static final BigDecimal ZERO = BigDecimal.ZERO;
@@ -19,7 +21,6 @@ public class CFWMath {
 	public static final BigDecimal BIG_100 = new BigDecimal(100);
 	
 	public static final RoundingMode ROUND_UP = RoundingMode.HALF_UP;
-	
 	
 	/***********************************************************************************************
 	 * Replaces all null values with zeros and returns a clone of the list.
@@ -126,12 +127,12 @@ public class CFWMath {
 									.divide(olderValue, mc)
 									.multiply(BIG_100, mc)
 									;
-		System.out.println("================================");
-		System.out.println("lastValue: "+youngerValue.toPlainString());
-		System.out.println("diffValue: "+olderValue.toPlainString());
-		System.out.println("diff: "+youngerValue.subtract(olderValue).toPlainString());
-		System.out.println("divide: "+youngerValue.subtract(olderValue).divide(youngerValue, mc));
-		System.out.println("diffPercent: "+diffPercent.toPlainString());
+//		System.out.println("================================");
+//		System.out.println("lastValue: "+youngerValue.toPlainString());
+//		System.out.println("diffValue: "+olderValue.toPlainString());
+//		System.out.println("diff: "+youngerValue.subtract(olderValue).toPlainString());
+//		System.out.println("divide: "+youngerValue.subtract(olderValue).divide(youngerValue, mc));
+//		System.out.println("diffPercent: "+diffPercent.toPlainString());
 		if(diffPercent == null) { return null; } 
 		diffPercent = diffPercent.setScale(precision, ROUND_UP); // won't calculate decimals if not set
 		
@@ -385,11 +386,7 @@ public class CFWMath {
 			
 			previousValue = currentValue;
 		}
-		
-		System.out.println("=================================");
-		System.out.println("sumUps:"+sumGains.toPlainString());
-		System.out.println("sumDowns:"+sumLosses.toPlainString());
-		
+
 		//------------------------------------
 		// STEP 2: Averages of Ups & Downs
 		BigDecimal count = new BigDecimal(period).setScale(precision);
@@ -437,8 +434,157 @@ public class CFWMath {
 //								);
 //		}
 	
-		return rsi.setScale(precision);
+		return rsi.setScale(precision, ROUND_UP);
 		
 	}
+	
+	
+	/***********************************************************************************************
+	 * Returns a new instance of periodic math.
+	 * 
+	 * @param period number of points that should be used for calculating the moving average
+	 * @param precision the precision of digits for the resulting values.
+	 * 
+	 * @return CFWMathPeriodic
+	 ***********************************************************************************************/
+	public static CFWMathPeriodic createPeriodic(int period, int precision) {
+		return INSTANCE.new CFWMathPeriodic(period, precision);
+	}
+	
+	/***********************************************************************************************
+	 * A class to do calculations based on periods.
+	 * This class was introduced to make the calculations more efficient by storing values and reuse them
+	 * .
+	 * @author retos
+	 *
+	 ***********************************************************************************************/
+	public class CFWMathPeriodic {
+		
+		int period = -1;
+		BigDecimal bigPeriod = null;
+		BigDecimal bigPeriodMinusOne = null;
+		private int precision = 3;
+		
+		private List<BigDecimal> rsiInputValues = new ArrayList<>();
+		BigDecimal rsiPreviousValue = null;
+		private BigDecimal rsiAvgGains = null;
+		private BigDecimal rsiAvgLosses = null;
+		
+		/***********************************************************************************************
+		 * 
+		 * @param period amount of datapoints used in the calculation
+		 * @param precision decimal precision, number of digits after the decimal point
+		 * 
+		 ***********************************************************************************************/
+		public CFWMathPeriodic(int period, int precision){
+			this.period = period;
+			this.bigPeriod = new BigDecimal(period).setScale(precision);
+			this.bigPeriodMinusOne = bigPeriod.subtract(ONE);
+			this.precision = precision;
+		}
+		
+		/***********************************************************************************************
+		 * Returns the Relative Strength Index(RSI) for the last N values in the given list.
+		 * Will return null if there are not enough values.
+		 * 
+		 * It is recommended to use CFW.Math.nullToZero() before using this method if the method can contain
+		 * null values. Null values will be removed from the list before calculations take place.
+		 * 
+		 * This method uses the calculation formulas as described here:
+		 * https://www.zaner.com/3.0/education/technicalstudies/RSI.asp#top
+		 * 
+		 * @param rsiInputValues the list of values
+		 * @param bigPeriod number of points that should be used for calculating the moving average
+		 * @param precision the precision of digits for the resulting values.
+		 * 
+		 * @return moving average value , null if list size is smaller than datapoints
+		 ***********************************************************************************************/
+		public BigDecimal calculateRSI(BigDecimal value) {
+			
+			if(value == null) { value = ZERO; }
+			
+			rsiInputValues.add(value);
+			
+			if(rsiInputValues.size() < period ) { 
+				return null; 
+			}
+
+			// this has very low performance
+			// probably because of calculating BigDecimals and also JIT compiler
+			// looping the array in STEP 1 below every time is much more efficient.
+			// The difference is as high as 4 seconds and 0.2 seconds 
+			
+//			if( rsiAvgGains != null) {
+//				
+//				//======================================================
+//				// Calculate subsequent RSI
+//				
+//				//------------------------------------
+//				// STEP 2.5: Update Averages of Ups & Downs
+//				// rsiAvgGains = ( (rsiAvgGains * (period-1) ) + currentUp) / period
+//				// rsiAvgLosses = ( (rsiAvgLosses * (period-1) ) + currentDown) / period
+//				BigDecimal diff = value.subtract(rsiPreviousValue);
+//
+//				if(diff.compareTo(ZERO) >= 0) {
+//					rsiAvgGains = rsiAvgGains.multiply(bigPeriodMinusOne).add(diff).divide(bigPeriod, ROUND_UP);
+//					rsiAvgLosses = rsiAvgLosses.multiply(bigPeriodMinusOne).divide(bigPeriod, ROUND_UP); // basically add "zero"
+//				}else{
+//					rsiAvgGains = rsiAvgGains.multiply(bigPeriodMinusOne).divide(bigPeriod, ROUND_UP); // basically add "zero"
+//					rsiAvgLosses = rsiAvgLosses.multiply(bigPeriodMinusOne).add(diff.abs()).divide(bigPeriod, ROUND_UP);
+//				}
+//				
+//				rsiPreviousValue = value;
+//								
+//			} else {
+			
+			//======================================================
+			// Calculate first RSI
+			
+			//------------------------------------
+			// STEP 1: Sums of Ups & Downs
+			int i = rsiInputValues.size() - period;
+			rsiPreviousValue = rsiInputValues.get(i);
+			BigDecimal sumGains = ZERO.setScale(precision);
+			BigDecimal sumLosses = ZERO.setScale(precision);
+			
+			for(i++ ; i < rsiInputValues.size(); i++) {
+				
+				BigDecimal currentValue = rsiInputValues.get(i);
+				BigDecimal diff = currentValue.subtract(rsiPreviousValue);
+
+				if(diff.compareTo(ZERO) > 0) {
+					sumGains = sumGains.add(diff);
+				}else{
+					sumLosses = sumLosses.add(diff.abs());
+				};
+				
+				rsiPreviousValue = currentValue;
+				
+			}
+			//------------------------------------
+			// STEP 2: Averages of Ups & Downs
+			rsiAvgGains = sumGains.divide(bigPeriod, ROUND_UP);
+			rsiAvgLosses = sumLosses.divide(bigPeriod, ROUND_UP);
+							
+			//------------------------------------
+			// STEP 3: Calculate RSI
+			// RSI = ( avgUps / (avgUps + avgDowns) ) * 100
+			BigDecimal sumAvgUpDown = rsiAvgGains.add(rsiAvgLosses);
+
+			BigDecimal rsi;
+			if(rsiAvgLosses.compareTo(ZERO) == 0) {
+				rsi = BIG_100; 
+			}else if(rsiAvgGains.compareTo(ZERO) == 0) {
+				rsi = ZERO; 
+			}else {
+				rsi = rsiAvgGains.divide(sumAvgUpDown, ROUND_UP).multiply(BIG_100);
+			}
+					
+			return rsi.setScale(precision, ROUND_UP);
+
+		}
+		
+	}
+	
 	
 }

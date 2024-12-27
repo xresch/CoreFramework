@@ -1,13 +1,11 @@
 package com.xresch.cfw.features.query.commands;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -18,7 +16,6 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
-import com.xresch.cfw.features.query.parse.QueryPartFunction;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
@@ -28,16 +25,15 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandStatsRSI extends CFWQueryCommand {
+public class CFWQueryCommandMovAvg extends CFWQueryCommand {
 	
-	private static final String COMMAND_NAME = "statsrsi";
-	private static final BigDecimal MINUS_ONE = new BigDecimal(-1);
+	private static final String COMMAND_NAME = "movavg";
 	
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<>();
 	
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
-	// Group name and values of the group
+	// Group name and vlaues of the group
 	private LinkedHashMap<String, ArrayList<BigDecimal>> valuesMap = new LinkedHashMap<>();
 
 	private String fieldname = null;
@@ -48,7 +44,7 @@ public class CFWQueryCommandStatsRSI extends CFWQueryCommand {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandStatsRSI(CFWQuery parent) {
+	public CFWQueryCommandMovAvg(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -57,7 +53,7 @@ public class CFWQueryCommandStatsRSI extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME, "rsi"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -65,7 +61,7 @@ public class CFWQueryCommandStatsRSI extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Calculates a relative strength index for the values of a field.";
+		return "Calculates a moving average for the values of a field.";
 	}
 
 	/***********************************************************************************************
@@ -171,7 +167,7 @@ public class CFWQueryCommandStatsRSI extends CFWQueryCommand {
 		//------------------------------------------
 		// Sanitize
 		
-		if(name == null) { name = "rsi"+period;}
+		if(name == null) { name = fieldname+"_SMA";}
 		if(precision == null) { precision = 6;}
 		if(period == null ) { period = 10;}
 		
@@ -211,13 +207,11 @@ public class CFWQueryCommandStatsRSI extends CFWQueryCommand {
 			}
 			
 			ArrayList<BigDecimal> groupedValues = valuesMap.get(groupID);
-			BigDecimal big = value.getAsBigDecimal();
-			if(big == null) { big = BigDecimal.ZERO; }
-			groupedValues.add(big);
+			groupedValues.add(value.getAsBigDecimal());
 			
-			BigDecimal rsi = CFW.Math.bigRSI(groupedValues, period, precision);
+			BigDecimal movavg = CFW.Math.bigMovAvg(groupedValues, period, precision);
 
-			record.addProperty(name, rsi);
+			record.addProperty(name, movavg);
 			
 			outQueue.add(record);
 			

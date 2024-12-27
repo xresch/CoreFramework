@@ -1,9 +1,10 @@
 
 <p>Used to calculate Bollinger Bands values for a field.
 Can group the statistics by specific fields using the by-parameter. 
+Values should be properly sorted before using this command.
 </p>
 
-<p>The following statsbollbands example groups by WAREHOUSE AND ITEM and calculates the bollinger bands for the field COUNT:
+<p>The following bollbands example groups by WAREHOUSE AND ITEM and calculates the bollinger bands for the field COUNT:
 </p>
 <pre><code class="language-cfwquery">| meta 
 	BY = ["WAREHOUSE", "ITEM"]
@@ -12,7 +13,8 @@ Can group the statistics by specific fields using the by-parameter.
 	type=series 
 	seriesCount=1 
 	records=300
-| statsbollbands by=meta(BY) field=META(FIELD) period=20 precision=6
+| sort TIME
+| bollbands by=meta(BY) field=META(FIELD) period=20 precision=6
 | chart
 	by=meta(BY)
 	x=TIME

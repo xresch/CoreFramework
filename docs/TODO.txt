@@ -179,7 +179,7 @@ DONE
 - Query Source: EAV - now supports custom earliest/latest
 
 - Query: Added Commands:
-	- statsbollbands
+	- bollbands
 	- statsmovavg
 	- statsmovdiff
 	- statsrsi

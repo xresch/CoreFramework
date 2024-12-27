@@ -28,9 +28,9 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandStatsMovAvg extends CFWQueryCommand {
+public class CFWQueryCommandBollBands extends CFWQueryCommand {
 	
-	private static final String COMMAND_NAME = "statsmovavg";
+	private static final String COMMAND_NAME = "bollbands";
 	private static final BigDecimal MINUS_ONE = new BigDecimal(-1);
 	
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<>();
@@ -41,14 +41,15 @@ public class CFWQueryCommandStatsMovAvg extends CFWQueryCommand {
 	private LinkedHashMap<String, ArrayList<BigDecimal>> valuesMap = new LinkedHashMap<>();
 
 	private String fieldname = null;
-	private String name = null;
+	private String prefix = null;
 	private Integer precision = null;
 	private Integer period = null;
+	private float stdevMultiplier = 2;
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandStatsMovAvg(CFWQuery parent) {
+	public CFWQueryCommandBollBands(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -57,7 +58,7 @@ public class CFWQueryCommandStatsMovAvg extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME, "movavg"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -65,7 +66,7 @@ public class CFWQueryCommandStatsMovAvg extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Calculates a moving average for the values of a field.";
+		return "Calculates the bollinger bands for the values of a field.";
 	}
 
 	/***********************************************************************************************
@@ -84,9 +85,9 @@ public class CFWQueryCommandStatsMovAvg extends CFWQueryCommand {
 		return "<ul>"
 			  +"<li><b>by:&nbsp;</b>Array of the fieldnames which should be used for grouping.</li>"
 			  +"<li><b>field:&nbsp;</b>Name of the field which contains the value.</li>"
-			  +"<li><b>name:&nbsp;</b>The name of the target field to store the moving average value(Default: name+'_SMA').</li>"
-			  +"<li><b>period:&nbsp;</b>The number of datapoints used for creating the moving average(Default: 10).</li>"
-			  +"<li><b>precision:&nbsp;</b>The decimal precision of the moving average (Default: 6, what is also the maximum).</li>"
+			  +"<li><b>prefix:&nbsp;</b>The prefix of the target fields to store the bollinger band values(Default: 'BOLL_').</li>"
+			  +"<li><b>period:&nbsp;</b>(Optional)The number of datapoints used for creating the bollinger bands(Default: 20).</li>"
+			  +"<li><b>precision:&nbsp;</b>(Optional)The decimal precision of the moving average (Default: 3, Max: 6).</li>"
 			  +"</ul>"
 				;
 	}
@@ -135,12 +136,6 @@ public class CFWQueryCommandStatsMovAvg extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void initializeAction() throws Exception {
-				
-		// by=<fieldname>
-		// target=GROUP
-		// step=10
-		// precision=1
-		// period=10
 		
 		//------------------------------------------
 		// Get Parameters
@@ -157,7 +152,7 @@ public class CFWQueryCommandStatsMovAvg extends CFWQueryCommand {
 					groupByFieldnames.addAll(fieldnames);
 				}
 				else if	 (assignmentName.equals("field")) {			fieldname = assignmentValue.getAsString(); }
-				else if	 (assignmentName.equals("name")) {			name = assignmentValue.getAsString(); }
+				else if	 (assignmentName.equals("prefix")) {		prefix = assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("precision")) {		precision = assignmentValue.getAsInteger(); }
 				else if	 (assignmentName.equals("period")) {	period = assignmentValue.getAsInteger(); }
 
@@ -168,16 +163,28 @@ public class CFWQueryCommandStatsMovAvg extends CFWQueryCommand {
 			}
 		}
 		
+		// 10 = 1.5
+		// 20 = 2
+		// 50 = 2.5
+		// etc...
+		if(period <= 20) {
+			stdevMultiplier = 1.0f + (period / 20.0f);
+		}else {
+			stdevMultiplier = (period / 20.0f);
+		}
+
 		//------------------------------------------
 		// Sanitize
 		
-		if(name == null) { name = fieldname+"_SMA";}
+		if(prefix == null) { prefix = "boll-";}
 		if(precision == null) { precision = 6;}
-		if(period == null ) { period = 10;}
+		if(period == null ) { period = 20;}
 		
 		//------------------------------------------
 		// Add Detected Fields
-		this.fieldnameAdd(name);
+		this.fieldnameAdd(prefix+"upper");
+		this.fieldnameAdd(prefix+"movavg");
+		this.fieldnameAdd(prefix+"lower");
 	}
 	
 	/***********************************************************************************************
@@ -214,8 +221,20 @@ public class CFWQueryCommandStatsMovAvg extends CFWQueryCommand {
 			groupedValues.add(value.getAsBigDecimal());
 			
 			BigDecimal movavg = CFW.Math.bigMovAvg(groupedValues, period, precision);
+			BigDecimal movstdev = CFW.Math.bigMovStdev(groupedValues, period, false, precision);
+			
+			BigDecimal bollUpper = null;
+			BigDecimal bollLower = null;
+			
+			if(movstdev != null) {
+				BigDecimal offset = movstdev.multiply(new BigDecimal(stdevMultiplier));
+				bollUpper = movavg.add(offset);
+				bollLower = movavg.subtract(offset);
+			}
 
-			record.addProperty(name, movavg);
+			record.addProperty(prefix+"upper", bollUpper);
+			record.addProperty(prefix+"movavg", movavg);
+			record.addProperty(prefix+"lower", bollLower);
 			
 			outQueue.add(record);
 			
