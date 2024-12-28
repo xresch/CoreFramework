@@ -183,6 +183,7 @@ DONE
 	- bollbands
 	- movavg
 	- movdiff
+	- movstdev
 	- rsi
 	
 - Query: Added Functions:
