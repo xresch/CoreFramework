@@ -378,9 +378,9 @@ public class EAVStats extends CFWObject {
 			
 			// this.count is already calculated 
 			this.min.setValue( CFW.Math.bigMin( statisticsCustomArray.get(EAVStatsFields.MIN) ) );
-			this.avg.setValue( CFW.Math.bigAvg( statisticsCustomArray.get(EAVStatsFields.AVG) ) );
+			this.avg.setValue( CFW.Math.bigAvg( statisticsCustomArray.get(EAVStatsFields.AVG), CFW.Math.GLOBAL_SCALE ) );
 			this.max.setValue( CFW.Math.bigMax( statisticsCustomArray.get(EAVStatsFields.MAX) ) );
-			this.sum.setValue( CFW.Math.bigSum( statisticsCustomArray.get(EAVStatsFields.SUM) ) );
+			this.sum.setValue( CFW.Math.bigSum( statisticsCustomArray.get(EAVStatsFields.SUM), CFW.Math.GLOBAL_SCALE ) );
 			this.p50.setValue( CFW.Math.bigPercentile(50, statisticsCustomArray.get(EAVStatsFields.P50) ) );
 			this.p95.setValue( CFW.Math.bigPercentile(95, statisticsCustomArray.get(EAVStatsFields.P95) ) );
 			

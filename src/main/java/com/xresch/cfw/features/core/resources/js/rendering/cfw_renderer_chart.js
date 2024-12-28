@@ -806,7 +806,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 	if(settings.indexAxis != 'y'){
 		chartOptions.scales.y.ticks.callback =
 				function(value, index, values) {
-					return cfw_format_numbersInThousands(value, 1, false, false);
+					return CFW.format.numbersInThousands(value, 1, false, false);
 				};
 	}
 	
@@ -944,7 +944,8 @@ function cfw_renderer_chart_customTooltip(context) {
     // Set Text
     if (tooltipModel.body) {
         
-    	
+
+
     	var titleLines = tooltipModel.title || [];
         var bodyLines = tooltipModel.body.map(getBody);
 
@@ -960,7 +961,9 @@ function cfw_renderer_chart_customTooltip(context) {
         //---------------------------------
         // Body Lines
         bodyLines.forEach(function(body, i) {
-            var colors = tooltipModel.labelColors[i];
+            let colors = tooltipModel.labelColors[i];
+            let label = tooltipModel.dataPoints[i].dataset.label;
+    		let value = tooltipModel.dataPoints[i].parsed.y
 
             var div = '<div class="cfw-color-box" '
             			  +'style=" background:' + colors.backgroundColor
@@ -969,7 +972,7 @@ function cfw_renderer_chart_customTooltip(context) {
             
             //---------------------------------
             // Handle Special Cases
-            finalBody = body;
+            finalBody = label + ":" + CFW.format.numbersInThousands(value, 1, false, false);
             if( Array.isArray(body)
             && body.length > 0){
             	

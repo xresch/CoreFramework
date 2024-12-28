@@ -155,7 +155,7 @@ public class CFWMath {
 		if(values.size() < period ) { return null; }
 		
 		List<BigDecimal> partialValues = values.subList(values.size() - period, values.size());
-		BigDecimal sum = bigSum(partialValues);
+		BigDecimal sum = bigSum(partialValues, precision);
 		sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
 		if(sum == null) { return null; } 
 		
@@ -167,15 +167,16 @@ public class CFWMath {
 	
 	/***********************************************************************************************
 	 * Returns the Moving Average
+	 * @param precision TODO
 	 * @return average value in the list, null if list is empty or all values are null
 	 ***********************************************************************************************/
-	public static BigDecimal bigAvg(List<BigDecimal> values) {
+	public static BigDecimal bigAvg(List<BigDecimal> values, int precision) {
 		
 		while( values.remove(null) ); // remove all null values
 		if(values.isEmpty()) { return null; }
 		
-		BigDecimal sum = bigSum(values);
-		sum = sum.setScale(GLOBAL_SCALE, ROUND_UP); // won't calculate decimals if not set
+		BigDecimal sum = bigSum(values, precision);
+		sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
 		if(sum == null) { return null; } 
 		
 		BigDecimal count = new BigDecimal(values.size());
@@ -186,14 +187,15 @@ public class CFWMath {
 	
 	/***********************************************************************************************
 	 * 
+	 * @param precision TODO
 	 * @return sum value in the list, null if list is empty or all values are null
 	 ***********************************************************************************************/
-	public static BigDecimal bigSum(List<BigDecimal> values) {
+	public static BigDecimal bigSum(List<BigDecimal> values, int precision) {
 		
 		while( values.remove(null) ); // remove all null values
 		if(values.isEmpty()) { return null; }
 		
-		BigDecimal sum = ZERO.setScale(GLOBAL_SCALE);
+		BigDecimal sum = ZERO.setScale(precision);
 
 		for(BigDecimal current : values) {
 			if(sum == null) { sum = current; continue; }
@@ -319,7 +321,7 @@ public class CFWMath {
 		// STEP 1: Find Average
 		BigDecimal count = new BigDecimal(values.size());
 		
-		BigDecimal average = bigAvg(values);
+		BigDecimal average = bigAvg(values, precision);
 
 		BigDecimal sumDistanceSquared = ZERO;
 		
@@ -440,6 +442,7 @@ public class CFWMath {
 		private int precision = 3;
 		
 		private List<BigDecimal> movavgValues = new ArrayList<>();
+		private List<BigDecimal> movstdevValues = new ArrayList<>();
 
 		private List<BigDecimal> rsiValues = new ArrayList<>();
 
@@ -478,13 +481,38 @@ public class CFWMath {
 			}
 			
 			List<BigDecimal> partialValues = movavgValues.subList(movavgValues.size() - period, movavgValues.size());
-			BigDecimal sum = bigSum(partialValues);
+			BigDecimal sum = bigSum(partialValues, precision);
 			sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
 			if(sum == null) { return null; } 
 			
 			BigDecimal count = new BigDecimal(partialValues.size());
 			
 			return sum.divide(count, ROUND_UP);
+			
+		}
+		
+		/***********************************************************************************************
+		 * Returns a moving standard deviation value for the last N values in the given list.
+		 * Will return null if there are not enough datapoints.
+		 * 
+		 * @param values the list of values
+		 * @param period number of points that should be used for calculating the moving average
+		 * @param precision TODO
+		 * @return moving average value , null if list size is smaller than datapoints
+		 ***********************************************************************************************/
+		public BigDecimal calcMovStdev(BigDecimal value, boolean usePopulation) {
+			
+			if(value == null) { value = ZERO; }
+			
+			movstdevValues.add(value);
+			
+			if(movstdevValues.size() < period ) { 
+				return null; 
+			}
+			
+			List<BigDecimal> partialValues = movstdevValues.subList(movstdevValues.size() - period, movstdevValues.size());
+			
+			return bigStdev(partialValues, usePopulation, precision);
 			
 		}
 		

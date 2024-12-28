@@ -1,13 +1,11 @@
 package com.xresch.cfw.features.query.commands;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -18,7 +16,6 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
-import com.xresch.cfw.features.query.parse.QueryPartFunction;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 

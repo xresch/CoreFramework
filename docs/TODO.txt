@@ -173,6 +173,7 @@ DONE
 - Notifications: Increased polling interval from 2 to 5 minutes
 - Parameters: New parameter "Time Range"
 - CFWField: fixed issues with support of Long values
+- Charts: Tiny numbers on yAxis are displayed better
 - Dashboard Widget: New widget "Trigger Jobs" to allow users to trigger jobs from dashboards
 - Query: Command Display - new parameter 'download' to enable a download button
 - Query: Added Prometheus Counters for Queries and Query Sources

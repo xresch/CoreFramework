@@ -664,9 +664,9 @@ public class CFWRandom {
 
 				currentItem.addProperty("COUNT", count );
 				currentItem.addProperty("MIN", CFW.Math.bigMin(values) );
-				currentItem.addProperty("AVG", CFW.Math.bigAvg(values) );
+				currentItem.addProperty("AVG", CFW.Math.bigAvg(values, CFW.Math.GLOBAL_SCALE) );
 				currentItem.addProperty("MAX", CFW.Math.bigMax(values) );
-				currentItem.addProperty("SUM", CFW.Math.bigSum(values) );
+				currentItem.addProperty("SUM", CFW.Math.bigSum(values, CFW.Math.GLOBAL_SCALE) );
 				currentItem.addProperty("MEDIAN", CFW.Math.bigMedian(values) );
 				currentItem.addProperty("STDEV", CFW.Math.bigStdev(values,true, CFW.Math.GLOBAL_SCALE) );
 				currentItem.addProperty("P90", CFW.Math.bigPercentile(90, values) );

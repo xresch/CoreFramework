@@ -3626,17 +3626,56 @@ function cfw_format_numbersInThousands(value, decimals, addBlank, isBytes) {
 		return value;
 	}
 	
-	if (value > 1000000000000) {
-		return (value / 1000000000000).toFixed(decimals)+ blankString + "T" + bytesString;
-	} else if (value > 1000000000) {
-		return (value / 1000000000).toFixed(decimals)+ blankString + "G" + bytesString;
-	} else if (value > 1000000) {
-		return (value / 1000000).toFixed(decimals)+ blankString + "M"+bytesString;
-	} else if (value > 1000) {
-		return (value / 1000).toFixed(decimals)+ blankString + "K"+bytesString;
-	} else {
-		return value.toFixed(decimals)+blankString+((addBlank)?"&nbsp;":"")+bytesString;
-	}
+	if (value != 0 && value < 1 && value > -1 ) {
+		
+
+		//---------------------------------------
+		// Analyze Value
+		let stringValue = ""+value;
+
+		if(stringValue.includes("e")){
+			// Handle scientific madness
+			value = value.toFixed( parseInt(stringValue.split('-')[1]) + decimals );
+			
+			stringValue = ""+value;
+
+		}
+		
+		let splittedString = stringValue.split('.');
+		let regularPart = splittedString[0];
+		let decimalsPart = splittedString[1];
+		
+		//---------------------------------------
+		// Count Zeros
+				let zeroCount = 0;
+
+		for( ; zeroCount < decimalsPart.length; zeroCount++ ){
+			if(decimalsPart.charAt(zeroCount) != '0'){
+				break;
+			}
+		}
+
+		//---------------------------------------
+		// Format number
+		let subZeroDecimals = 3 + decimals;
+		if(zeroCount < 3){
+			return value.toFixed(zeroCount + subZeroDecimals);
+		}else{
+						
+			let valuePart = decimalsPart.substring(zeroCount);
+			if ( valuePart.length > subZeroDecimals ){
+				valuePart = valuePart.substring(0, subZeroDecimals);
+			}
+			let formatted = regularPart + ".0{"+ (zeroCount) +"}"+valuePart;
+			return formatted;
+		}
+		
+		
+	} else if (value < 1000) {			return value.toFixed(decimals) 				+ blankString + bytesString; }
+	else if (value < 1000000) {			return (value / 1000).toFixed(decimals) 	+ blankString + "K"+bytesString; }
+	else if (value < 1000000000) {		return (value / 1000000).toFixed(decimals) 	+ blankString + "M"+bytesString; }
+	else if (value < 1000000000000) {	return (value / 1000000000).toFixed(decimals) + blankString + "G"+bytesString; }
+	else {								return (value / 1000000000000).toFixed(decimals) + blankString + "T"+bytesString; }  
 }
 
 /**************************************************************************************

@@ -31,8 +31,7 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 public class CFWQueryCommandBollBands extends CFWQueryCommand {
 	
 	private static final String COMMAND_NAME = "bollbands";
-	private static final BigDecimal MINUS_ONE = new BigDecimal(-1);
-	
+
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<>();
 	
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
