@@ -428,6 +428,18 @@ public class CFWMath {
 	}
 	
 	/***********************************************************************************************
+	 * Returns a new instance of the parabolic SAR math object.
+	 * 
+	 * @param acceleration the acceleration, e.g. 0.02
+	 * @param acceleration the maximum acceleration, e.g. 0.2
+	 * 
+	 * @return CFWMathParabolicSAR
+	 ***********************************************************************************************/
+	public static CFWMathParabolicSAR createParabolicSAR(double acceleration, double accelerationMax, int precision) {
+		return INSTANCE.new CFWMathParabolicSAR(acceleration, accelerationMax, precision);
+	}
+	
+	/***********************************************************************************************
 	 * A class to do calculations based on periods.
 	 * This class was introduced to make the calculations more efficient by storing values and reuse them
 	 * .
@@ -466,7 +478,7 @@ public class CFWMath {
 		 * Will return null if there are not enough datapoints.
 		 * 
 		 * @param values the list of values
-		 * @param period number of points that should be used for calculating the moving average
+		 * @param acceleration number of points that should be used for calculating the moving average
 		 * @param precision the precision of digits for the resulting values.
 		 * @return moving average value , null if list size is smaller than datapoints
 		 ***********************************************************************************************/
@@ -496,7 +508,7 @@ public class CFWMath {
 		 * Will return null if there are not enough datapoints.
 		 * 
 		 * @param values the list of values
-		 * @param period number of points that should be used for calculating the moving average
+		 * @param acceleration number of points that should be used for calculating the moving average
 		 * @param precision TODO
 		 * @return moving average value , null if list size is smaller than datapoints
 		 ***********************************************************************************************/
@@ -527,7 +539,7 @@ public class CFWMath {
 		 * https://www.zaner.com/3.0/education/technicalstudies/RSI.asp#top
 		 * 
 		 * @param rsiValues the list of values
-		 * @param bigPeriod number of points that should be used for calculating the moving average
+		 * @param bigAcceleration number of points that should be used for calculating the moving average
 		 * @param precision the precision of digits for the resulting values.
 		 * 
 		 * @return moving average value , null if list size is smaller than datapoints
@@ -615,6 +627,316 @@ public class CFWMath {
 					
 			return rsi.setScale(precision, ROUND_UP);
 
+		}
+		
+	}
+	
+	/***********************************************************************************************
+	 * A class to do calculations based on periods.
+	 * This class was introduced to make the calculations more efficient by storing values and reuse them
+	 * .
+	 * @author retos
+	 *
+	 ***********************************************************************************************/
+	public class CFWMathParabolicSAR {
+		
+		double acceleration = -1;
+		double accelerationMax = -1;
+		private int precision = 3;
+		
+		BigDecimal bigAcceleration = null;
+		BigDecimal bigAccelerationMax = null;
+		BigDecimal accelerationFactor = ZERO;
+		
+		BigDecimal extremePoint;
+		
+		//-------------------------------------------
+		// Parabolic SAR
+		private List<BigDecimal> parabolicSars = new ArrayList<>();
+		private List<Integer> trends = new ArrayList<>();
+		private List<Boolean> trendFlip = new ArrayList<>();
+		private List<BigDecimal> psarHighs = new ArrayList<>();
+		private List<BigDecimal> psarLows = new ArrayList<>();
+
+		/***********************************************************************************************
+		 * 
+		 * @param acceleration amount of datapoints used in the calculation
+		 * @param precision decimal precision, number of digits after the decimal point
+		 * 
+		 ***********************************************************************************************/
+		public CFWMathParabolicSAR(double acceleration, double accelerationMax, int precision){
+			this.acceleration = acceleration;
+			this.accelerationMax = accelerationMax;
+			
+			this.bigAcceleration = new BigDecimal(acceleration).setScale(precision, ROUND_UP);
+			this.bigAccelerationMax = new BigDecimal(accelerationMax).setScale(precision, ROUND_UP);
+
+			this.precision = precision;
+		}
+		
+		/***********************************************************************************************
+		 * Calculate PSAR
+		 * 
+		 * Uptrend Formula:  		PSAR(i) = (HIGH(i-1) - PSAR(i-1)) * AF+PSAR(i-1)
+		 * Downtrend Formula: 	PSAR(i) = (LOW(i-1) - PSAR(i-1)) * AF+PSAR(i-1)
+		 * AF Formula: 			АF = 0,02 + ix*K
+		 * 
+		 * PSAR is the Parabolic value. With index (i) it’s the current value, and with (i – 1) it’s the value preceding the calculated one.
+		 * 
+		 * Definitions:
+		 * - HIGH:	is the price high.
+		 * - LOW:		is the price low.
+		 * - AF:		is the acceleration factor. Its value grows with a step set for each period when new extreme price values ​​are reached. Wilder recommends using an initial factor of 0.02, which increases by 0.02 with each new bar until it reaches a maximum value of 0.2.
+		 * - ix: 		is the number of periods accumulated since the beginning of counting;
+         * - K:		is the step of price change, which by default is 0.02.
+	     *     
+		 * @param high values
+		 * @param low values
+		 * 
+		 * @return null for the first value pair, afterwards PSAR for every successive call
+		 * 
+		 ***********************************************************************************************/
+		public BigDecimal calcPSAR(BigDecimal high, BigDecimal low) {
+
+			//-----------------------------------
+			// Sanitize
+			if(high == null) { high = ZERO; }
+			if(low == null) { low = ZERO; }
+			
+			//-----------------------------------
+			// Is first call
+			psarHighs.add(high);
+			psarLows.add(low);
+			
+			if(psarHighs.size() == 1) {
+				trends.add(0);
+				trendFlip.add(false);
+				return null;
+			}
+			
+			//-----------------------------------
+			// On Second Call: Initialize
+			if(psarHighs.size() == 2) {
+				BigDecimal firstHigh = psarHighs.get(0);
+				BigDecimal secondHigh = psarHighs.get(1);
+				BigDecimal firstLow = psarHighs.get(0);
+				BigDecimal secondLow = psarHighs.get(1);
+				
+				//int trend = (high[1] >= high[0] || low[0] <= low[1]) ? +1 : -1;
+				int trend = (secondHigh.compareTo(firstHigh) >= 0 || firstLow.compareTo(secondLow) <= 0) ? +1 : -1;
+				
+				BigDecimal parabolicSar = (trend > 0) ? firstLow : firstHigh;
+				extremePoint = (trend > 0) ? firstHigh : firstLow;
+				
+				parabolicSars.add(parabolicSar);
+				trends.add(trend);
+			}
+
+
+			//-----------------------------------
+			// Init first Parabolic Sar and Trend values
+			// SAR Results
+
+			//-----------------------------------
+			// Up Trend if trend is bigger then 0 else it's a down trend
+			BigDecimal nextSar;
+			BigDecimal lastPSAR = parabolicSars.get(parabolicSars.size()-1);
+			
+			BigDecimal currentHigh = psarHighs.get( psarHighs.size()-1 );
+			BigDecimal lastHigh = psarHighs.get( psarHighs.size()-2 );
+			BigDecimal currentLow = psarLows.get( psarLows.size()-1 );
+			BigDecimal lastLow = psarLows.get( psarLows.size()-2 );
+			
+			Integer currentTrend = trends.get(trends.size()-1);
+			
+			//-----------------------------------
+			// Detect Trend switch
+			// Rule: If Parabolic SAR crosses tomorrow's price range, the trend switches.
+//			if (currentTrend > 0) {
+//				if (lastPSAR.compareTo(currentLow) > 0) {
+//					currentTrend = -1;
+//					nextSar = extremePoint;
+//					extremePoint = currentLow;
+//					accelerationFactor = bigAcceleration;
+//				}
+//			}else {
+//				
+//			}
+//			
+//			this.trends.add(currentTrend);
+//			
+//			//-----------------------------------
+//			// Detect Trend switch
+//			boolean isTrendFlip = (trends.get(trends.size()-2) != currentTrend) ? true : false;
+//			this.trendFlip.add(isTrendFlip);	
+
+			if (currentTrend > 0) {
+
+				//-----------------------------------
+				// Higher highs, accelerate
+				if (currentHigh.compareTo(extremePoint) > 0) {
+					extremePoint = currentHigh;
+					accelerationFactor = bigAccelerationMax.min( accelerationFactor.add(bigAcceleration) );
+				}
+
+				//-----------------------------------
+				// Next Parabolic SAR based on today's close/price value
+				// nextSar = parabolicSar + accelerationFactor * (extremePoint - parabolicSar);
+				
+				BigDecimal diffEPtoSAR = extremePoint.subtract(lastPSAR).setScale(precision, ROUND_UP);
+				nextSar = lastPSAR.add(accelerationFactor).multiply(diffEPtoSAR);
+				
+				//-----------------------------------
+				// Rule: Parabolic SAR can not be above prior period's low or
+				// the current low.
+				nextSar = currentLow.min(lastLow).min(nextSar);
+
+				//-----------------------------------
+				// Rule: If Parabolic SAR crosses tomorrow's price range, the
+				// trend switches.
+				if (nextSar.compareTo(currentLow) > 0) {
+					currentTrend = -1;
+					nextSar = extremePoint;
+					extremePoint = currentLow;
+					accelerationFactor = bigAcceleration;
+				}
+
+			} else {
+				//-----------------------------------
+				// Making lower lows: accelerate
+				if (currentLow.compareTo(extremePoint) > 0) {
+					extremePoint = currentLow;
+					accelerationFactor = bigAccelerationMax.min( accelerationFactor.add(bigAcceleration) );
+				}
+
+				//-----------------------------------
+				// Next Parabolic SAR based on today's close/price value
+				// nextSar = lastPSAR + accelerationFactor * (extremePoint - lastPSAR);
+				BigDecimal diffEPtoSAR = extremePoint.subtract(lastPSAR).setScale(precision, ROUND_UP);
+				nextSar = lastPSAR.add(accelerationFactor).multiply(diffEPtoSAR);
+				
+				//-----------------------------------
+				// Rule: Parabolic SAR can not be below prior period's high or
+				// the current high.
+				//nextSar = (i > 0) ? Math.max(Math.max(high[i], high[i - 1]), nextSar) : Math.max(high[i], nextSar);
+				nextSar = currentHigh.max(lastHigh).max(nextSar);
+				
+				//-----------------------------------
+				// Rule: If Parabolic SAR crosses tomorrow's price range, the
+				// trend switches.
+				if (nextSar.compareTo(currentHigh) < 0) {
+					currentTrend = +1;
+					nextSar = extremePoint;
+					extremePoint = currentHigh;
+					accelerationFactor = bigAcceleration;
+				}
+			}
+
+			//-----------------------------------
+			// System.out.println(extremePoint + " " + accelerationFactor);
+
+			this.parabolicSars.add(nextSar); 
+			
+			return nextSar;
+		
+
+			/* Original
+			 
+			//-----------------------------------
+			// Variables
+
+			int trend = (high[1] >= high[0] || low[0] <= low[1]) ? +1 : -1;
+
+			double parabolicSar = (trend > 0) ? low[0] : high[0];
+
+			double extremePoint = (trend > 0) ? high[0] : low[0];
+
+			double accelerationFactor = 0;
+
+			//-----------------------------------
+			// Init first Parabolic Sar and Trend values
+			this.parabolicSars[1] = parabolicSar; // SAR Results
+			this.trends[1] = trend; // Trend Directions
+
+			int ct = this.parabolicSars.length - 1;
+
+			for (int i = 1; i < ct; i++) {
+
+				double nextSar;
+
+				//-----------------------------------
+				// Up Trend if trend is bigger then 0 else it's a down trend
+				if (trend > 0) {
+
+					//-----------------------------------
+					// Higher highs, accelerate
+					if (high[i] > extremePoint) {
+						extremePoint = high[i];
+						accelerationFactor = Math.min(accelerationMax, accelerationFactor + acceleration);
+					}
+
+					//-----------------------------------
+					// Next Parabolic SAR based on today's close/price value
+					nextSar = parabolicSar + accelerationFactor * (extremePoint - parabolicSar);
+
+					//-----------------------------------
+					// Rule: Parabolic SAR can not be above prior period's low or
+					// the current low.
+					nextSar = (i > 0) ? Math.min(Math.min(low[i], low[i - 1]), nextSar) : Math.min(low[i], nextSar);
+
+					//-----------------------------------
+					// Rule: If Parabolic SAR crosses tomorrow's price range, the
+					// trend switches.
+					if (nextSar > low[i + 1]) {
+						trend = -1;
+						nextSar = extremePoint;
+						extremePoint = low[i + 1];
+						accelerationFactor = acceleration;
+					}
+
+				} else {
+					//-----------------------------------
+					// Making lower lows: accelerate
+					if (low[i] < extremePoint) {
+						extremePoint = low[i];
+						accelerationFactor = Math.min(accelerationMax, accelerationFactor + acceleration);
+					}
+
+					//-----------------------------------
+					// Next Parabolic SAR based on today's close/price value
+					nextSar = parabolicSar + accelerationFactor * (extremePoint - parabolicSar);
+
+					//-----------------------------------
+					// Rule: Parabolic SAR can not be below prior period's high or
+					// the current high.
+					nextSar = (i > 0) ? Math.max(Math.max(high[i], high[i - 1]), nextSar) : Math.max(high[i], nextSar);
+
+					//-----------------------------------
+					// Rule: If Parabolic SAR crosses tomorrow's price range, the
+					// trend switches.
+					if (nextSar < high[i + 1]) {
+						trend = +1;
+						nextSar = extremePoint;
+						extremePoint = high[i + 1];
+						accelerationFactor = acceleration;
+					}
+				}
+
+				//-----------------------------------
+				// System.out.println(extremePoint + " " + accelerationFactor);
+
+				this.parabolicSars[i + 1] = Math.round(nextSar); // TODO round BigDecimal precision 2
+				this.trends[i + 1] = trend;
+				
+				if(this.trends[i] != this.trends[i+1]) {
+					this.trendFlip[i+1] = true;	
+				} else {
+					this.trendFlip[i+1] = false;	
+				}
+
+				parabolicSar = nextSar;
+			}
+			 */
 		}
 		
 	}
