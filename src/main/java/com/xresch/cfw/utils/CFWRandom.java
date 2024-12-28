@@ -925,7 +925,7 @@ public class CFWRandom {
 		object.addProperty("UUID", UUID.randomUUID().toString());
 		object.addProperty("THOUSANDS",   thousands);
 		object.addProperty("FLOAT",   CFW.Random.randomFloatInRange(1, 10000000));
-		object.addProperty("TINY_FLOAT",   tiny);
+		object.addProperty("TINY_DECIMAL",   tiny);
 		object.addProperty("BIG_DECIMAL",   CFW.Random.randomBigDecimalInRange(1, 1000000, 2));
 		
 
