@@ -36,6 +36,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandMimic;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandMovAvg;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandMovDiff;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandMovStdev;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandNullTo;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandParamDefaults;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandPercentiles;
@@ -235,6 +236,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandMimic(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandMovAvg(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandMovDiff(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandMovStdev(null));
 		//CFW.Registry.Query.registerCommand(new CFWQueryCommandNoMessage(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandNullTo(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandParamDefaults(null));

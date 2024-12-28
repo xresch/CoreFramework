@@ -1,0 +1,28 @@
+
+<p>Used to calculate moving standard deviation values for a field.
+Can group the statistics by specific fields using the by-parameter.
+Values should be properly sorted before using this command.
+</p>
+
+<p>The following movstdev example groups by WAREHOUSE AND ITEM and calculates the multiple moving standard deviations for the field COUNT:
+</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+	FIELD = "COUNT"
+| source random 
+	type=series 
+	seriesCount=1 
+	records=300
+| sort TIME
+| movstdev by=meta(BY) field=META(FIELD) name="stdev-5" period=5 precision=3
+| movstdev by=meta(BY) field=META(FIELD) name="stdev-10" period=10 precision=3
+| movstdev by=meta(BY) field=META(FIELD) name="stdev-30" period=30 precision=3
+| movstdev by=meta(BY) field=META(FIELD) name="stdev-60" period=60 precision=3
+| chart
+	by=meta(BY)
+	x=TIME
+	y=[META(FIELD), 'stdev-5', 'stdev-10', 'stdev-30', 'stdev-60' ]
+	ymin=null
+	height="500"</code></pre>
+
+
