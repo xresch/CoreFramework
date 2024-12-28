@@ -47,6 +47,178 @@ public class CFWRandom {
 	private static final String[] statisticsTitleObject = new String[] { "Letters", "People", "Apples", "Tiramisus", "Pillows", "Pens", "Contracts", "Customers", "Patients", "Chairs", "Castles", "Dragons", "Fairies", "Gnomes", "Chemicals", "Elves", "Horses", "Magicians", "Spirits", "Trees", "Books", "Backpacks", "Angels", "Gods", "Devils", "Demons", "Heros", "Soldiers", "Papers", "Games", "Rooms", "Liquids", "Materials" };
 	private static final String[] statisticsTitleVerb = new String[] { "Sent", "Written", "Glued", "Woreshipped", "Banned", "Cuddled", "Destroyed", "Hidden", "Stolen", "Horrified", "Made", "Created", "Impressed", "Fortified", "Mixed", "Hunted", "Befriended", "Educated", "Bewitched", "Cursed", "Enchanted", "Backed", "Sold", "Combusted", "Briefed", "Registered", "Educated", "Eradicated", "Engaged", "Divorced", "Played", "Tested", "Documented" };
 	
+	private static final String[] companyTitleFirst = new String[] { 
+			  "Rockford"
+			, "Battlefield" 
+			, "First" 
+			, "Second" 
+			, "Ultimate" 
+			, "Omega" 
+			, "Best" 
+			, "Expensive" 
+			, "Luxus" 
+			, "Traders" 
+			, "More" 
+			, "Over" 
+			, "Super" 
+			, "Allyn" 
+			, "O'Sullivan" 
+			, "O'Brian" 
+			, "O'Connor" 
+			, "O'Deorian" 
+			, "McGregor" 
+			, "Sister's" 
+			, "Brother's" 
+			, "Mother's" 
+			, "Father's" 
+			, "My" 
+			, "Expert" 
+			, "Cheap" 
+			, "Heavy" 
+			, "Virtual" 
+			, "Internet" 
+			, "War" 
+			, "Real" 
+			, "Unreal" 
+			, "Fairy" 
+			, "Dragon" 
+			, "Dungeon" 
+			, "Slave" 
+			, "Master" 
+			, "Elves" 
+			, "Goblin" 
+			, "Wyvern" 
+			, "Centaur" 
+			, "Minotaur" 
+			, "Dwarven" 
+			, "Custom" 
+			, "Lamia" 
+			, "Pixie" 
+			, "Demon" 
+			, "Angel" 
+			, "Rocker" 
+			, "Magician" 
+			, "Knight" 
+			, "Sorceress" 
+			, "Lizardman" 
+			, "Mermaid" 
+			, "Zeus" 
+			, "Goddess" 
+			, "Mythical" 
+			, "Magical" 
+			, "Fantastic" 
+			};
+	
+	private static final String[] companyTitleSecond = new String[] { 
+			  "Wood"
+			, "Plastics"
+			, "Metals"
+			, "Silver"
+			, "Gold"
+			, "Platinum"
+			, "Ceramics"
+			, "Fun"
+			, "Brothers"
+			, "Sisters"
+			, "and Family"
+			, "and Daughters" 
+			, "and Sons" 
+			, "and Mothers" 
+			, "and Father's" 
+			, "IT"
+			, "Digital" 
+			, "Backery" 
+			, "Industry" 
+			, "Supermarket" 
+			, "Trading" 
+			, "Finance" 
+			, "Army" 
+			, "Weapons" 
+			, "Games" 
+			, "Gaming" 
+			, "Packaging" 
+			, "Technology" 
+			, "Care" 
+			, "Health" 
+			, "Computer" 
+			, "Specialist" 
+			, "Printing" 
+			, "3D" 
+			, "Stealth" 
+			, "Helicopter" 
+			, "Aircraft" 
+			, "Archeology" 
+			, "Astronomy" 
+			, "Geology" 
+			, "Mathematics" 
+			, "Language" 
+			, "Housing" 
+			, "Fabrics" 
+			, "Clothing" 
+			, "Underwear" 
+			, "Toys" 
+			, "Insanity" 
+			, "Estate" 
+			, "Lumber" 
+			, "Meat" 
+			, "Fruit" 
+			, "Shepherd" 
+			, "Dogs" 
+			, "Cats" 
+			, "Parrots" 
+			, "Animals" 
+			, "Lamas" 
+			, "Elefants" 
+			, "Restaurant" 
+			, "Take-Away" 
+			, "Food" 
+			, "Marriage" 
+			, "Stories" 
+			, "City" 
+			, "Tools" 
+			, "Crafting" 
+			, "Dirt" 
+			, "Cleaning" 
+			, "Dust" 
+			, "Soil" 
+			, "Fertilizer" 
+			, "Litterbox" 
+			, "Security"
+			, "Guard"
+			, "Floor"
+			, "Cooking"
+			, "Extermination"
+			, "Book"
+			};
+	
+	private static final String[] companyTitleThird = new String[] { 
+			  "AG"
+			, "GmbH"
+			, "Inc."
+			, "Ltd."
+			, "LCC"
+			, "PLCC"
+			, "Corp."
+			, "Co-Op"
+			, "S.A."
+			, "S.L."
+			, "Business"
+			, "Company"
+			, "Group"
+			, "Corporation"
+			, "Services"
+			, "Shop"
+			, "Store"
+			, "School"
+			, "University"
+			, "Counselor"
+			, "Solicitors"
+			, "Trader"
+			, "Industry"
+			, "Industries"
+			, "Agency"
+			};
+	
 	private static final String[] firstWorldProblemTitles = 
 			new String[] {
 				  "User cannot start Session - Cannot find Login Page"
@@ -319,6 +491,16 @@ public class CFWRandom {
 			; 
 	}
 	
+	public static String randomCompanyTitle(int nullRatioPercent) { 
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		return randomFromArray(companyTitleFirst)
+		+ " " +randomFromArray(companyTitleSecond)
+		+ " " +randomFromArray(companyTitleThird)
+			; 
+	}
+	
 	
 	//==============================================================================
 	// Overload methonds for above with 0% null ratio
@@ -335,7 +517,7 @@ public class CFWRandom {
 	public static String randomMessageOfObedience() { return randomMessageOfObedience(0); }
 	public static String randomJobTitle() { return randomJobTitle(0); }
 	public static String randomStatisticsTitle() { return randomStatisticsTitle(0); }
-	
+	public static String randomCompanyTitle() { return randomCompanyTitle(0); }
 
 	/******************************************************************************
 	 * Creates a random Message Type.
@@ -672,6 +854,58 @@ public class CFWRandom {
 				currentItem.addProperty("P90", CFW.Math.bigPercentile(90, values) );
 				currentItem.addProperty("P95", CFW.Math.bigPercentile(95, values) );
 				
+				//--------------------------------------
+				// Additional Values
+				array.add(currentItem);
+			}
+		}
+		
+		return array;
+	}
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param valuesCount
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfTradingData(int seriesCount, int valuesCount, long earliest, long latest) { 
+		JsonArray array = new JsonArray();
+		
+		long timerange = latest - earliest;
+		long timestep = timerange / valuesCount;
+		
+		//--------------------------------------
+		// Create Series 
+		for(int i = 0; i < seriesCount; i++) {
+			String symbol = randomString(3).toUpperCase();
+			String stockName = randomCompanyTitle();
+			
+			float open = randomFloatInRange(0, randomFromArray(new Integer[]{1,10, 50, 100, 100, 100, 200, 500, 1000, 3000}) );
+			float volatilityPercent = randomFloatInRange(0.01f, 0.1f);
+			float lowerVolatility = 1.0f - volatilityPercent;
+			float highervolatility = 1.0f + volatilityPercent;
+			
+			//--------------------------------------
+			// Create Values for Series
+			for(int j = 0; j < valuesCount; j++) {
+				
+				JsonObject currentItem = new JsonObject();
+				
+				float close = randomFloatInRange(open * lowerVolatility, open * highervolatility);
+				float high = randomFloatInRange(Math.max(open, close), Math.max(open, close) * 1.1f);
+				float low = randomFloatInRange(Math.min(open, close), Math.min(open, close) * 0.9f);
+				
+
+				currentItem.addProperty("TIME", earliest+(timestep*j));
+				currentItem.addProperty("SYMBOL", symbol);
+				currentItem.addProperty("NAME", stockName);
+				
+				currentItem.addProperty("OPEN",  new BigDecimal(open).setScale(3, CFW.Math.ROUND_UP) );
+				currentItem.addProperty("CLOSE", new BigDecimal(close).setScale(3, CFW.Math.ROUND_UP) );
+				currentItem.addProperty("HIGH",  new BigDecimal(high).setScale(3, CFW.Math.ROUND_UP) );
+				currentItem.addProperty("LOW",   new BigDecimal(low).setScale(3, CFW.Math.ROUND_UP) );
+
+				
+				open = close;
 				//--------------------------------------
 				// Additional Values
 				array.add(currentItem);

@@ -1,0 +1,21 @@
+
+<p>Used to calculate Parabolic SAR (stop and reverse) values for high and low fields.
+Can group the statistics by specific fields using the by-parameter.
+Values should be properly sorted before using this command.
+</p>
+
+<p>The following psar example groups by NAME and calculates the PSAR for the fields HIGH and LOW:
+</p>
+<pre><code class="language-cfwquery">| source random 
+	type = trading 
+	seriesCount = 2
+| psar 
+	by=[NAME]
+	high="HIGH" low="LOW" name="PSAR" acceleration=0.2 accelerationMax=0.2 precision=3
+| chart
+	by= [NAME]
+	x = TIME
+	y = [CLOSE, PSAR]
+	height = 500</code></pre>
+
+

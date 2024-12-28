@@ -188,6 +188,16 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				
 				if( isLimitReached(limit, i)) { break; }
 			}
+		}else if(type.equals("trading")) {
+			JsonArray array = CFW.Random.randomJSONArrayOfTradingData(seriesCount, records, earliest, latest);
+			
+			for(int i = 0; i < array.size(); i++) {
+				
+				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
+				outQueue.add(object);
+				
+				if( isLimitReached(limit, i)) { break; }
+			}
 		}else if(type.equals("tickets")) {
 			
 			JsonArray array = CFW.Random.randomJSONArrayOfSupportTickets(records);

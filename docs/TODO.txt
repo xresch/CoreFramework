@@ -184,6 +184,7 @@ DONE
 	- movavg
 	- movdiff
 	- movstdev
+	- psar
 	- rsi
 	
 - Query: Added Functions:
