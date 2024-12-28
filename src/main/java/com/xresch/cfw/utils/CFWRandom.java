@@ -918,12 +918,14 @@ public class CFWRandom {
 		// Prepare values in thousand steps
 		double multiplier = Math.pow(1000, randomIntegerInRange(0, 4));
 		double thousands = randomIntegerInRange(0, 1000) * multiplier;
+		BigDecimal tiny = randomBigDecimalInRange(0, 1000).setScale(12).divide( new BigDecimal(multiplier+1000), CFW.Math.ROUND_UP );
 		
 		JsonObject object = new JsonObject();
 		
 		object.addProperty("UUID", UUID.randomUUID().toString());
 		object.addProperty("THOUSANDS",   thousands);
 		object.addProperty("FLOAT",   CFW.Random.randomFloatInRange(1, 10000000));
+		object.addProperty("TINY_FLOAT",   tiny);
 		object.addProperty("BIG_DECIMAL",   CFW.Random.randomBigDecimalInRange(1, 1000000, 2));
 		
 

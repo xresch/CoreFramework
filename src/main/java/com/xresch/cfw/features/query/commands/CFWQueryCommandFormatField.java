@@ -420,7 +420,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				"Displays numbers in kilos, megas, gigas and terras.",
 				new Object[][] {
 					  new Object[] {"isBytes", false, "If true, appends a 'B' to the formatted string."}
-					 , new Object[] {"decimals", "1", "Number of decimal places to display."}
+					 , new Object[] {"decimals", 1, "Number of decimal places to display."}
 					 , new Object[] {"addBlank", true, "If true, adds a blank between number and the K/M/G/T."}
 				}
 			).example(

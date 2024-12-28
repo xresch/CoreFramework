@@ -3611,6 +3611,10 @@ function cfw_format_numberSeparators(value, separator, eachDigit) {
 
 /**************************************************************************************
  * Formats numbers as kilos, megas, gigas and terras.
+ * Formats tiny values with a placeholder for nulls like:
+ * 	- original: 0.0000001234
+ *  - formatted: 0.0{6}1234
+ * 
  * @param value the value to format
  * @param decimals number of decimal places
  * @param addBlank if true, adds a blank between number and the K/M/G/T
@@ -3618,17 +3622,27 @@ function cfw_format_numberSeparators(value, separator, eachDigit) {
  **************************************************************************************/
 function cfw_format_numbersInThousands(value, decimals, addBlank, isBytes) {
 	
-	blankString = (addBlank) ? "&nbsp;" : "";
+	//------------------------------
+	// Sanitize
+	if(typeof decimals == 'string' ){
+		if(isNaN(decimals)){
+			decimals = 1;
+		}else{
+			decimals = parseInt(decimals);
+		}
+	}
 	
+	blankString = (addBlank) ? "&nbsp;" : "";
 	bytesString = (isBytes) ? "B" : "";
 	
 	if(isNaN(value)){
 		return value;
 	}
 	
+	//------------------------------
+	// Check is tiny Value
 	if (value != 0 && value < 1 && value > -1 ) {
 		
-
 		//---------------------------------------
 		// Analyze Value
 		let stringValue = ""+value;
