@@ -670,6 +670,7 @@ public class CFWMath {
 			
 			this.bigAcceleration = new BigDecimal(acceleration).setScale(precision, ROUND_UP);
 			this.bigAccelerationMax = new BigDecimal(accelerationMax).setScale(precision, ROUND_UP);
+			this.accelerationFactor = bigAcceleration;
 
 			this.precision = precision;
 		}
@@ -723,13 +724,16 @@ public class CFWMath {
 				BigDecimal secondLow = psarHighs.get(1);
 				
 				//int trend = (high[1] >= high[0] || low[0] <= low[1]) ? +1 : -1;
-				int trend = (secondHigh.compareTo(firstHigh) >= 0 || firstLow.compareTo(secondLow) <= 0) ? +1 : -1;
+				int trend = (secondHigh.compareTo(firstHigh) >= 0 
+						  || firstLow.compareTo(secondLow) <= 0) ? +1 : -1;
 				
 				BigDecimal parabolicSar = (trend > 0) ? firstLow : firstHigh;
 				extremePoint = (trend > 0) ? firstHigh : firstLow;
 				
 				parabolicSars.add(parabolicSar);
 				trends.add(trend);
+				trendFlip.add(false);
+				return null;
 			}
 
 
@@ -737,39 +741,21 @@ public class CFWMath {
 			// Init first Parabolic Sar and Trend values
 			// SAR Results
 
-			//-----------------------------------
-			// Up Trend if trend is bigger then 0 else it's a down trend
 			BigDecimal nextSar;
 			BigDecimal lastPSAR = parabolicSars.get(parabolicSars.size()-1);
 			
-			BigDecimal currentHigh = psarHighs.get( psarHighs.size()-1 );
-			BigDecimal lastHigh = psarHighs.get( psarHighs.size()-2 );
-			BigDecimal currentLow = psarLows.get( psarLows.size()-1 );
-			BigDecimal lastLow = psarLows.get( psarLows.size()-2 );
+			BigDecimal tomorrowsHigh = psarHighs.get( psarHighs.size()-1 );
+			BigDecimal currentHigh = psarHighs.get( psarHighs.size()-2 );
+			BigDecimal lastHigh = psarHighs.get( psarHighs.size()-3 );
+			
+			BigDecimal tomorrowsLow = psarLows.get( psarLows.size()-1 );
+			BigDecimal currentLow = psarLows.get( psarLows.size()-2 );
+			BigDecimal lastLow = psarLows.get( psarLows.size()-3 );
 			
 			Integer currentTrend = trends.get(trends.size()-1);
 			
 			//-----------------------------------
-			// Detect Trend switch
-			// Rule: If Parabolic SAR crosses tomorrow's price range, the trend switches.
-//			if (currentTrend > 0) {
-//				if (lastPSAR.compareTo(currentLow) > 0) {
-//					currentTrend = -1;
-//					nextSar = extremePoint;
-//					extremePoint = currentLow;
-//					accelerationFactor = bigAcceleration;
-//				}
-//			}else {
-//				
-//			}
-//			
-//			this.trends.add(currentTrend);
-//			
-//			//-----------------------------------
-//			// Detect Trend switch
-//			boolean isTrendFlip = (trends.get(trends.size()-2) != currentTrend) ? true : false;
-//			this.trendFlip.add(isTrendFlip);	
-
+			// Up Trend if trend is bigger then 0 else it's a down trend
 			if (currentTrend > 0) {
 
 				//-----------------------------------
@@ -781,10 +767,11 @@ public class CFWMath {
 
 				//-----------------------------------
 				// Next Parabolic SAR based on today's close/price value
-				// nextSar = parabolicSar + accelerationFactor * (extremePoint - parabolicSar);
+				// nextSar = parabolicSar + (accelerationFactor * (extremePoint - parabolicSar) );
 				
 				BigDecimal diffEPtoSAR = extremePoint.subtract(lastPSAR).setScale(precision, ROUND_UP);
-				nextSar = lastPSAR.add(accelerationFactor).multiply(diffEPtoSAR);
+				BigDecimal accelarated = diffEPtoSAR.multiply(accelerationFactor);
+				nextSar = lastPSAR.add(accelarated);
 				
 				//-----------------------------------
 				// Rule: Parabolic SAR can not be above prior period's low or
@@ -794,26 +781,27 @@ public class CFWMath {
 				//-----------------------------------
 				// Rule: If Parabolic SAR crosses tomorrow's price range, the
 				// trend switches.
-				if (nextSar.compareTo(currentLow) > 0) {
+				if (nextSar.compareTo(tomorrowsLow) > 0) {
 					currentTrend = -1;
 					nextSar = extremePoint;
-					extremePoint = currentLow;
+					extremePoint = tomorrowsLow;
 					accelerationFactor = bigAcceleration;
 				}
 
 			} else {
 				//-----------------------------------
 				// Making lower lows: accelerate
-				if (currentLow.compareTo(extremePoint) > 0) {
+				if (currentLow.compareTo(extremePoint) < 0) {
 					extremePoint = currentLow;
 					accelerationFactor = bigAccelerationMax.min( accelerationFactor.add(bigAcceleration) );
 				}
 
 				//-----------------------------------
 				// Next Parabolic SAR based on today's close/price value
-				// nextSar = lastPSAR + accelerationFactor * (extremePoint - lastPSAR);
+				// nextSar = lastPSAR + ( accelerationFactor * (extremePoint - lastPSAR));
 				BigDecimal diffEPtoSAR = extremePoint.subtract(lastPSAR).setScale(precision, ROUND_UP);
-				nextSar = lastPSAR.add(accelerationFactor).multiply(diffEPtoSAR);
+				BigDecimal accelarated = diffEPtoSAR.multiply(accelerationFactor);
+				nextSar = lastPSAR.add(accelarated);
 				
 				//-----------------------------------
 				// Rule: Parabolic SAR can not be below prior period's high or
@@ -824,19 +812,25 @@ public class CFWMath {
 				//-----------------------------------
 				// Rule: If Parabolic SAR crosses tomorrow's price range, the
 				// trend switches.
-				if (nextSar.compareTo(currentHigh) < 0) {
+				if (nextSar.compareTo(tomorrowsHigh) < 0) {
 					currentTrend = +1;
 					nextSar = extremePoint;
-					extremePoint = currentHigh;
+					extremePoint = tomorrowsHigh;
 					accelerationFactor = bigAcceleration;
 				}
 			}
 
-			//-----------------------------------
-			// System.out.println(extremePoint + " " + accelerationFactor);
 
-			this.parabolicSars.add(nextSar); 
+			//-----------------------------------
+			// Handle Trend
+			this.trends.add(currentTrend);
 			
+			boolean isTrendFlip = (trends.get(trends.size()-2) != currentTrend) ? true : false;
+			this.trendFlip.add(isTrendFlip);	
+			
+			//-----------------------------------
+			// Return Value
+			this.parabolicSars.add(nextSar); 
 			return nextSar;
 		
 
