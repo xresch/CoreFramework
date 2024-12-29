@@ -149,6 +149,7 @@ public class CFWQueryParser {
 		public QueryPartEnd(CFWQueryContext context) { super(); }
 		@Override public QueryPartValue determineValue(EnhancedJsonObject object) { return null; }
 		@Override public JsonObject createDebugObject(EnhancedJsonObject object) { return null; }
+		@Override public QueryPart clone() { return null; }
 	};
 	
 	

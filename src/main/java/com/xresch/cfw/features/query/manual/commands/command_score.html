@@ -1,0 +1,73 @@
+
+<p>The score command can be used to calculate a score based on multiple weighted evaluations.
+The scores are specified like:
+</p>
+<pre><code class="language-cfwquery"># name: is the name of the score
+# weight: the importance relative to other scores
+# scoreValue: the value for the score
+name = [weight, scoreValue] 
+
+# example
+'myScore' = [ 1.0, if( (VALUE > 50), 100, 0) ]</code></pre>
+
+
+
+<p>The final score of a record is calculated by having a sum of all weighted scores (score * weight) divided by the sum of all weights.
+Here is some pseudo code to demonstrate what is calculated by this command:
+</p>
+<pre><code class="language-cfwquery">foreach(scoreRule) {
+	sumWeights += scoreRule.weight;
+	sumWeightedScores += (scoreRule.value * scoreRule.weight);
+}
+totalScore = sumWeightedScores / sumWeights;
+</code></pre>
+
+
+
+<p>In following example, the score will be 82, as the score 'two' has a much higher weight than 'one' ( 410 / 5.0 = 82 ): </p>
+<pre><code class="language-cfwquery">| source empty
+| score
+	'one' 	= [ 1.0, 10]
+	'two'	= [ 4.0, 100 ]
+| formatfield
+	scoredetails = ['list', "bullets", "10px", false]</code></pre>
+
+
+
+<p>The following is a more extensive example on how you can use the score command:.</p>
+<pre><code class="language-cfwquery">| record
+	[GROUP, VALUE] 
+	['A', 100]
+	['A', 50]
+	['B', 50]
+	['XXX', 999] # other group between 'B' to show that prev() works grouped
+	['B', 100]
+| score
+	by=[GROUP]
+	scorefield="SCORE"
+	detailsfield="DETAILS"
+	'simple'= [ 1, VALUE ]
+	'calc' 	= [ 2.0, VALUE-50 ]
+	'if'	= [ 1.0, if(VALUE > 50, 100, 0) ]
+	'prev' 	= [ 0.5, if( prev(VALUE) &lt; VALUE, 100, 0)  ]
+	'case' 	= [ 3.5
+			  , case(
+			  		VALUE >= 90
+			  			, 100
+			  	  , VALUE >= 80
+			  	 		, 90
+			  	  , VALUE >= 50
+			  	 		, 75
+			  	  , true
+			  	 		, 0
+			  	) 
+			]
+| formatfield
+	SCORE = ['align', 'right']
+	SCORE = ['postfix', ' %']
+	DETAILS = ['list', "bullets", "10px", false]</code></pre>
+
+
+
+
+

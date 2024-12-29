@@ -103,6 +103,7 @@ Potential TODOs
 	- command formatcss
 	- command formatdisplay
 	- command percentile
+	- command score
 	- metadata template
 	- function array
 	- function distinct
@@ -187,6 +188,7 @@ DONE
 	- movstdev
 	- psar
 	- rsi
+	- score
 	
 - Query: Added Functions:
 	- intervalpoints

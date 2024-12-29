@@ -45,8 +45,8 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 			clonedParts.add(part.clone());
 		}
 		
-		QueryPartGroup clone = new QueryPartGroup(context, clonedParts);
-
+		QueryPartGroup clone = new QueryPartGroup(context);
+		clone.partsGroup = clonedParts;
 		return clone;
 	}
 	
@@ -76,15 +76,6 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 			this.add(part);
 		}
 	}
-	
-	/******************************************************************************************************
-	 *  Creates an index expression
-	 ******************************************************************************************************/
-//	public QueryPartGroup(CFWQueryContext context, int index) {
-//		this(context);
-//		this.add(QueryPartValue.newNumber(index));
-//	}
-//	
 	
 	/******************************************************************************************************
 	 * Returns the number of elements in the group.
