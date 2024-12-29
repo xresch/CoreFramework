@@ -191,6 +191,7 @@ DONE
 - Query: Added Functions:
 	- intervalpoints
 	- prev
+	- record
 	- split
 	
 ------- v.10.0.0 -------

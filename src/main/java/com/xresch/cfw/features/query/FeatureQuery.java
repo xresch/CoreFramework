@@ -115,6 +115,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionPrev;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandom;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandomFloat;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandomFrom;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionRecord;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRecords;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionReplace;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRound;
@@ -318,6 +319,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandom(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandomFloat(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandomFrom(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRecord(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRecords(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionReplace(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRound(null));

@@ -15,14 +15,11 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionPrev extends CFWQueryFunction {
+public class CFWQueryFunctionRecord extends CFWQueryFunction {
 
-	
-	public static final String FUNCTION_NAME = "prev";
+	public static final String FUNCTION_NAME = "record";
 
-	ArrayList<QueryPartValue> previousList = new ArrayList<>();
-	
-	public CFWQueryFunctionPrev(CFWQueryContext context) {
+	public CFWQueryFunctionRecord(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -40,26 +37,23 @@ public class CFWQueryFunctionPrev extends CFWQueryFunction {
 	@Override
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
-		tags.add(CFWQueryFunction.TAG_GENERAL);
-		tags.add(CFWQueryFunction.TAG_MATH);
+		tags.add(CFWQueryFunction.TAG_OBJECTS);
 		return tags;
 	}
-	
-	
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(fieldname, offset, default)";
+		return FUNCTION_NAME+"()";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns a previous value given to this function.";
+		return "Returns the current record as an object.";
 	}
 	
 	/***********************************************************************************************
@@ -67,12 +61,7 @@ public class CFWQueryFunctionPrev extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return 
-			 "<ul>"
-			+"<li><b>fieldname:&nbsp;</b>The number you want the absolute value for.</li>"
-			+"<li><b>offset:&nbsp;</b>The number of values you want to go back. If there are not enough values will returns null. (Default: 1)</li>"
-			+"<li><b>default:&nbsp;</b>The value that should be returned if there are not enough values yet. (Default: null)</li>"
-			+"</ul>"
+		return "&nbsp;"
 			;
 	}
 
@@ -83,7 +72,6 @@ public class CFWQueryFunctionPrev extends CFWQueryFunction {
 	public String descriptionHTML() {
 		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
-
 
 	/***********************************************************************************************
 	 * 
@@ -106,39 +94,9 @@ public class CFWQueryFunctionPrev extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
-		
-		//-------------------------------------------
-		// Check Has Params
-		int paramCount = parameters.size();
-		if(paramCount == 0) {
-			return QueryPartValue.newNull();
-		}
-		
-		//-------------------------------------------
-		// Add Current Value
-		QueryPartValue currentValue = parameters.get(0);
-		previousList.add(currentValue);
-		
-		//-------------------------------------------
-		// Get Offset
-		int offset = 1;
-		if(paramCount > 1) {
-			offset = parameters.get(1).getAsInteger();
-		}
 
-		//-------------------------------------------
-		// Return Previous
-		if(previousList.size() > offset) {
-			return previousList.get( previousList.size() - 1 - offset );
-		}
 		
-		//-------------------------------------------
-		// Return Null or Default
-		if(paramCount > 2) {
-			return parameters.get(2);
-		}else {
-			return QueryPartValue.newNull();
-		}
+		return QueryPartValue.newJson(object.getWrappedObject().deepCopy());
 	}
 
 }

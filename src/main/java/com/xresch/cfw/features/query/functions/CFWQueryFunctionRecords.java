@@ -112,7 +112,7 @@ public class CFWQueryFunctionRecords extends CFWQueryFunction {
 		//-------------------------------
 		// Do Not Aggregated
 		if(!isAggregated) {
-			return QueryPartValue.newFromJsonElement(object.getWrappedObject());
+			return QueryPartValue.newFromJsonElement(object.getWrappedObject().deepCopy());
 		}
 			
 		//-------------------------------

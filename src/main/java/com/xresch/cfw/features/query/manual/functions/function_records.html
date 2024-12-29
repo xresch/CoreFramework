@@ -1,0 +1,70 @@
+
+<p>This function is used to create an array of records in aggregation function. 
+This is useful in case you want to group records and format them in a table cell.
+In most cases this function is combined with the displayfields and chartfields command.</p>
+
+<p>Following is an example on how to use this function in aggregation commands:</p>
+<pre><code class="language-cfwquery"># set metadata
+| meta 
+	BY = [WAREHOUSE, ITEM]
+	HEIGHT = "50px"
+	WIDTH = "25vw"
+
+# create sample records
+| source random records=100 type=series
+
+# Add formats before aggregating
+| formatrecord
+	[(COUNT == null), "cfw-gray"] 
+	[(COUNT &lt; 20), "cfw-red"] 
+	[(COUNT &lt; 40), "cfw-orange"]  
+	[(COUNT &lt; 60), "cfw-yellow"] 
+	[(COUNT &lt; 80), "cfw-limegreen"] 
+	[true, "cfw-green"] 
+# Aggregate the records into multiple array
+| stats
+	by = meta(BY)
+	"Status Bar" = records() # makes an array of the records
+	"Count Chart" = records()
+	"Price Chart" = records() 
+	
+| displayfields # format one records-array as status bar
+	fields = "Status Bar" 
+	as = statusbar
+	height = meta(HEIGHT)
+	width = meta(WIDTH)
+	
+| chartfields # format another records-array as a count chart
+	fields = "Count Chart" 
+	by = meta(BY)
+	type = sparkarea
+	x = TIME
+	y = COUNT
+	height = meta(HEIGHT)
+	width = meta(WIDTH)
+	
+| chartfields  # format the last records-array as a price chart
+	fields = "Price Chart" 
+	by = meta(BY)
+	type = sparkarea
+	x = TIME
+	y = PRICE
+	height = meta(HEIGHT)
+	width = meta(WIDTH)</code></pre>
+	
+<p>Following uses the records function outside of an aggregation context. This will just return a copy of the current record:</p>
+<pre><code class="language-cfwquery">| source json data=`
+[
+	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } }
+	,{index: 1, array: [1,null,3], object: {a: 11, b: 22, c: null} }
+	,{index: 2, array: [null,null,3], object: {a: null, b: 22, c: null} }
+	,{index: 3, array: [null,null,null], object: {a: null, b: null, c: null} }
+	,{index: 3, array: [1,2,3, "StringsAndBooleans_ignored"], object: {a: 11, b: 22, c: 33, string: "ignored"} }
+]
+`
+| set 
+	# return number of items in array that are null
+	record=records()</code></pre>
+
+
+
