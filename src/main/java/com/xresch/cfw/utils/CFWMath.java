@@ -678,9 +678,9 @@ public class CFWMath {
 		/***********************************************************************************************
 		 * Calculate PSAR
 		 * 
-		 * Uptrend Formula:  		PSAR(i) = (HIGH(i-1) - PSAR(i-1)) * AF+PSAR(i-1)
-		 * Downtrend Formula: 	PSAR(i) = (LOW(i-1) - PSAR(i-1)) * AF+PSAR(i-1)
-		 * AF Formula: 			АF = 0,02 + ix*K
+		 * Uptrend Formula:  	PSAR(i) =  PSAR(i-1) + ( AF * (HIGH(i-1) - PSAR(i-1)) )
+		 * Downtrend Formula: 	PSAR(i) =  PSAR(i-1) + ( AF * (LOW(i-1)  - PSAR(i-1)) )
+		 * AF Formula: 			АF = 0,02 + (ix * K)
 		 * 
 		 * PSAR is the Parabolic value. With index (i) it’s the current value, and with (i – 1) it’s the value preceding the calculated one.
 		 * 
