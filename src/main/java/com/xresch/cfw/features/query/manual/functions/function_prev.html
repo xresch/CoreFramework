@@ -1,0 +1,40 @@
+
+<p>This function returns a previous value that was passed to the function. 
+This is useful for comparing current record data to previous record data.
+The offset can be defined with the second parameter, so you can as well get values further back.
+By default, the function returns null if there are not yet enough values. This default value can be set with the third parameter. </p>
+
+
+<p>Following query uses the prev function and does various calculations:</p>
+<pre><code class="language-cfwquery">| source random type=trading
+| set
+	PREV_CLOSE = prev(CLOSE) # get previous value
+	PREV_PREV = prev(CLOSE, 2) # offset by 2, get value before previous value
+	DEFAULT_ZERO = prev(CLOSE, 10, 0) # offset by 10, return 0 for the first 10 values
+	
+	INCREASED = (PREV_CLOSE &lt; CLOSE) # check has value increased
+	
+	# check has increased twice
+	INCREASED_TWICE = (
+				PREV_PREV &lt; PREV_CLOSE 
+			AND PREV_CLOSE &lt; CLOSE
+			) 
+	
+	# calculating is value up or down
+	TREND = if( (PREV_CLOSE - CLOSE) == 0
+			  , 0
+			  , if( (PREV_CLOSE - CLOSE) &lt; 0, 1, -1 )
+			)
+			
+	# Calculating time difference
+	PREV_TIME = prev(TIME)
+	TIME_DIFF = if(PREV_TIME == null, null, (TIME - PREV_TIME) )
+	
+| formatfield
+	TIME_DIFF = ['duration', "ms"]
+	PREV_TIME = timestamp
+	TREND = ['align', "right"]
+	TREND = ['threshold', 1, 0.5, 0, -0.5, -1, "bg"]</code></pre>
+
+
+

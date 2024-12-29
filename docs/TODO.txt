@@ -110,6 +110,7 @@ Potential TODOs
 	- function interval
 	- function intervalunit
 	- function object
+	- function prev
 	- function records
 	
 - Charts Renderer: Add description to manual page "working with render".
@@ -189,6 +190,7 @@ DONE
 	
 - Query: Added Functions:
 	- intervalpoints
+	- prev
 	- split
 	
 ------- v.10.0.0 -------

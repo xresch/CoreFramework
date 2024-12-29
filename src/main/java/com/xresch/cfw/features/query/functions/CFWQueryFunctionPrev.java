@@ -15,11 +15,14 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionClone extends CFWQueryFunction {
+public class CFWQueryFunctionPrev extends CFWQueryFunction {
 
-	public static final String FUNCTION_NAME = "clone";
+	
+	public static final String FUNCTION_NAME = "prev";
 
-	public CFWQueryFunctionClone(CFWQueryContext context) {
+	ArrayList<QueryPartValue> previousList = new ArrayList<>();
+	
+	public CFWQueryFunctionPrev(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -37,24 +40,25 @@ public class CFWQueryFunctionClone extends CFWQueryFunction {
 	@Override
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
-		tags.add(CFWQueryFunction.TAG_ARRAYS);
-		tags.add(CFWQueryFunction.TAG_OBJECTS);
+		tags.add(CFWQueryFunction.TAG_MATH);
 		return tags;
 	}
+	
+	
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(valueOrFieldname)";
+		return FUNCTION_NAME+"(fieldname, offset, default)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns a clone of an array or JSON object.";
+		return "Returns a previous value given to this function.";
 	}
 	
 	/***********************************************************************************************
@@ -62,7 +66,12 @@ public class CFWQueryFunctionClone extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>valueOrFieldname:&nbsp;</b>The value to get create a clone from.</p>"
+		return 
+			 "<ul>"
+			+"<li><b>fieldname:&nbsp;</b>The number you want the absolute value for.</li>"
+			+"<li><b>offset:&nbsp;</b>The number of values you want to go back. If there are not enough values will returns null. (Default: 1)</li>"
+			+"<li><b>default:&nbsp;</b>The value that should be returned if there are not enough values yet. (Default: null)</li>"
+			+"</ul>"
 			;
 	}
 
@@ -97,19 +106,38 @@ public class CFWQueryFunctionClone extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
+		//-------------------------------------------
+		// Check Has Params
 		int paramCount = parameters.size();
 		if(paramCount == 0) {
 			return QueryPartValue.newNull();
 		}
-
-		QueryPartValue valueToClone = parameters.get(0);
 		
-		if(valueToClone != null) {
-			return valueToClone.getAsClone();
+		//-------------------------------------------
+		// Add Current Value
+		QueryPartValue currentValue = parameters.get(0);
+		previousList.add(currentValue);
+		
+		//-------------------------------------------
+		// Get Offset
+		int offset = 1;
+		if(paramCount > 1) {
+			offset = parameters.get(1).getAsInteger();
+		}
+
+		//-------------------------------------------
+		// Return Previous
+		if(previousList.size() > offset) {
+			return previousList.get( previousList.size() - 1 - offset );
 		}
 		
-		// return null in other cases
-		return QueryPartValue.newNull();
+		//-------------------------------------------
+		// Return Null or Default
+		if(paramCount > 2) {
+			return parameters.get(2);
+		}else {
+			return QueryPartValue.newNull();
+		}
 	}
 
 }

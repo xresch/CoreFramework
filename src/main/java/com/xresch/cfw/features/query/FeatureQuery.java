@@ -111,6 +111,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionNullTo;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionObject;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionParam;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionPerc;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionPrev;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandom;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandomFloat;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandomFrom;
@@ -313,6 +314,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionObject(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionParam(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionPerc(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionPrev(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandom(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandomFloat(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandomFrom(null));
@@ -550,7 +552,6 @@ public class FeatureQuery extends CFWAppFeature {
 				.faicon("fas fa-code")
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "900_query_api.html")
 			);
-		
 		
 		//----------------------------------
 		// Source Main Page

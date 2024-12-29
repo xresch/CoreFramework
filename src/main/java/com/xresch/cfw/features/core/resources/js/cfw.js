@@ -3290,11 +3290,12 @@ function cfw_format_millisToClock(millis){
  * @return clock string
  *************************************************************************************/
 function cfw_format_timeToDuration(timeValue, timeUnit){
+	
 	var millisValue = timeValue;
 	
 	//--------------------------------
 	// If null, assume is milliseconds
-	if(timeUnit != null ){
+	if(timeUnit != null && timeValue != null ){
 		switch(timeUnit){
 			case 'ns':	millisValue = timeValue / 1000000; break
 			case 'us':	millisValue = timeValue / 1000; break
