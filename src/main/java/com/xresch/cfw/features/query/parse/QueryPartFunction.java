@@ -3,12 +3,15 @@ package com.xresch.cfw.features.query.parse;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
@@ -18,6 +21,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @license MIT-License
  **************************************************************************************************************/
 public class QueryPartFunction extends QueryPart {
+	
+	private static final Logger logger = CFWLog.getLogger(QueryPartFunction.class.getName());
 	
 	private CFWQueryContext context;
 	private ArrayList<QueryPart> functionParameters = new ArrayList<>();
@@ -29,44 +34,44 @@ public class QueryPartFunction extends QueryPart {
 	
 	
 	/******************************************************************************************************
+	 * Creates a clone of the QueryPart.
 	 * 
-	 * @throws ParseException if function is unknown
 	 ******************************************************************************************************/
-	public QueryPartFunction(CFWQueryContext context, String functionName, QueryPart functionParameter) throws ParseException {
-		this.context=context;
-		this.functionName = functionName;
-		this.internalfunctionInstance = getFunctionInstance();
-		this.add(functionParameter);
-	}
-	
-	
-	/******************************************************************************************************
-	 * 
-	 * @throws ParseException if function is unknown
-	 ******************************************************************************************************/
-	public QueryPartFunction(CFWQueryContext context, String functionName, QueryPart... functionParams) throws ParseException {
-		this.context=context;
-		this.functionName = functionName;
-		this.internalfunctionInstance = getFunctionInstance();
-		for(QueryPart part : functionParams) {
-			this.add(part);
+	@Override
+	public QueryPartFunction clone() {
+		
+		ArrayList<QueryPart> clonedFunctionParams = new ArrayList<>();
+		for(QueryPart part : functionParameters) {
+			clonedFunctionParams.add(part.clone());
 		}
+		
+		
+		QueryPartFunction clone;
+		try {
+			clone = new QueryPartFunction(context, functionName, clonedFunctionParams);
+			return clone;
+		} catch (ParseException e) {
+			// Let's assume this will never happen... ever!!!
+			// Assumption based on the fact that function was already successfully parsed.
+			new CFWLog(logger).severe("Error cloning function: "+e.getMessage(), e);
+		}
+		
+		return null;
 	}
+		
 	
 	/******************************************************************************************************
 	 * 
 	 * @throws ParseException if function is unknown
 	 ******************************************************************************************************/
-	public QueryPartFunction(CFWQueryContext context, String functionName, QueryPartGroup paramGroup) throws ParseException {
+	public QueryPartFunction(CFWQueryContext context, String functionName, ArrayList<QueryPart> functionParams) throws ParseException {
 		this.context=context;
 		this.functionName = functionName;
 		this.internalfunctionInstance = getFunctionInstance();
 		
-		ArrayList<QueryPart> partsArray = paramGroup.getQueryPartsArray();
-
-		if(this.internalfunctionInstance.validateQueryParts(partsArray, context.checkPermissions())) {
-		
-			for(QueryPart part : partsArray) {
+		if(this.internalfunctionInstance.validateQueryParts(functionParams, context.checkPermissions())) {
+			
+			for(QueryPart part : functionParams) {
 				if(part instanceof QueryPartArray) {
 					QueryPartArray array = (QueryPartArray)part;
 					if(!array.isEmbracedArray()) {
@@ -79,6 +84,14 @@ public class QueryPartFunction extends QueryPart {
 				}	
 			}
 		}
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 * @throws ParseException if function is unknown
+	 ******************************************************************************************************/
+	public QueryPartFunction(CFWQueryContext context, String functionName, QueryPartGroup paramGroup) throws ParseException {
+		this(context,functionName, paramGroup.getQueryPartsArray());
 	}
 	
 	

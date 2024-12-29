@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
+import java.util.ArrayList;
+
 import com.google.gson.JsonObject;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryMemoryException;
@@ -14,7 +16,24 @@ public class QueryPartAssignment extends QueryPart {
 	
 	private QueryPart leftside;
 	private QueryPart rightside = null;
+	
+	private CFWQueryContext context;
+	
+	/******************************************************************************************************
+	 * Creates a clone of the QueryPart.
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public QueryPartAssignment clone() {
 		
+		QueryPart cloneLeft = leftside.clone();
+		QueryPart cloneRight = rightside.clone();
+		
+		QueryPartAssignment clone = new QueryPartAssignment(context, cloneLeft, cloneRight);
+		
+		return clone;
+	}
+	
 	/******************************************************************************************************
 	 * 
 	 * @param leftside The name on the left side of the assignment operation.
@@ -22,6 +41,7 @@ public class QueryPartAssignment extends QueryPart {
 	 ******************************************************************************************************/
 	public QueryPartAssignment(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
 		super();
+		this.context = context;
 		this.leftside = leftside;
 		this.rightside = rightside;
 	}

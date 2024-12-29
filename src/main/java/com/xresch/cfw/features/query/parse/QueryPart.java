@@ -32,13 +32,18 @@ public abstract class QueryPart {
 	public abstract QueryPartValue determineValue(EnhancedJsonObject object);
 		
 
-	
 	/***********************************************************************************************
 	 * Return a debug object, the object must at least contain a property with the name
 	 * QueryPart.FIELD_PARTTYPE.
 	 * 
 	 ***********************************************************************************************/
 	public abstract JsonObject createDebugObject(EnhancedJsonObject object);
+	
+	/***********************************************************************************************
+	 * Creates a clone of the QueryPart.
+	 * 
+	 ***********************************************************************************************/
+	public abstract QueryPart clone();
 		
 
 	/***********************************************************************************************

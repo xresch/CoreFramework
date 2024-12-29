@@ -22,8 +22,8 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 public class QueryPartArray extends QueryPart {
 	
 	private ArrayList<QueryPart> partsArray;
-	private JsonArray jsonArray = null;
-	private ArrayList<String> stringArray = null;
+	private JsonArray cachedJsonArray = null;
+	private ArrayList<String> cachedStringArray = null;
 	
 	//holds index if this array is a index access expression(e.g. [1])
 	private Integer arrayIndex = null;
@@ -32,11 +32,36 @@ public class QueryPartArray extends QueryPart {
 	// Used in add()-method to determine whether the array should be unwrapped when added
 	private boolean embracedArray = false;
 	
+	private CFWQueryContext context = null;
+	
+	/******************************************************************************************************
+	 * Creates a clone of the QueryPart.
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public QueryPartArray clone() {
+		
+		ArrayList<QueryPart> clonedParts = new ArrayList<>();
+		for(QueryPart part : partsArray) {
+			clonedParts.add(part.clone());
+		}
+		
+		QueryPartArray clone = new QueryPartArray(context, clonedParts);
+		
+		clone.arrayIndex = arrayIndex;
+		clone.embracedArray = embracedArray;
+		// clone.cachedJsonArray = null; // can be ignored
+		// clone.cachedStringArray = null; // can be ignored
+		
+		return clone;
+	}
+	
 	/******************************************************************************************************
 	 *  
 	 ******************************************************************************************************/
 	public QueryPartArray(CFWQueryContext context, ArrayList<QueryPart> parts) {
 		super();
+		this.context = context;
 		this.partsArray = parts;
 	}
 	
@@ -119,21 +144,21 @@ public class QueryPartArray extends QueryPart {
 	public JsonArray getAsJsonArray(EnhancedJsonObject object, boolean getFromCache) {
 		
 		//cache instance
-		if(!getFromCache || jsonArray == null) {
-			jsonArray = new JsonArray();
+		if(!getFromCache || cachedJsonArray == null) {
+			cachedJsonArray = new JsonArray();
 			
 			for(QueryPart part : partsArray) {
 				if(part != null) {
 					QueryPartValue value = part.determineValue(object);
 					if(value != null) {
-						jsonArray.add(value.getAsJsonElement());
+						cachedJsonArray.add(value.getAsJsonElement());
 					}else {
-						jsonArray.add(JsonNull.INSTANCE);
+						cachedJsonArray.add(JsonNull.INSTANCE);
 					}
 				}
 			}
 		}
-		return jsonArray;
+		return cachedJsonArray;
 	}
 	
 	/******************************************************************************************************
@@ -143,17 +168,17 @@ public class QueryPartArray extends QueryPart {
 	public ArrayList<String> getAsStringArray(EnhancedJsonObject object, boolean getFromCache) {
 		
 		//cache instance
-		if(!getFromCache || stringArray == null) {
-			stringArray = new ArrayList<>();
+		if(!getFromCache || cachedStringArray == null) {
+			cachedStringArray = new ArrayList<>();
 			
 			for(QueryPart part : partsArray) {
 				if(part != null) {
 					
-					stringArray.add(part.determineValue(object).getAsString());
+					cachedStringArray.add(part.determineValue(object).getAsString());
 				}
 			}
 		}
-		return stringArray;
+		return cachedStringArray;
 	}
 	
 	/******************************************************************************************************
@@ -239,7 +264,9 @@ public class QueryPartArray extends QueryPart {
 		return JsonNull.INSTANCE;
 	}
 	
-	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
 	@Override
 	public JsonObject createDebugObject(EnhancedJsonObject object) {
 		
@@ -255,6 +282,8 @@ public class QueryPartArray extends QueryPart {
 		
 		return debugObject;
 	}
+
+
 
 	
 	

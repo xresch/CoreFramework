@@ -29,11 +29,26 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 	private CFWQueryContext context;
 	private ArrayList<QueryPart> partsGroup;
 	private JsonArray jsonArray = null;
-	private ArrayList<String> stringArray = null;
+	//private ArrayList<String> stringArray = null;
 	
 	//holds index if this array is a index access expression(e.g. [1])
-	private Integer arrayIndex = null;
-	
+
+	/******************************************************************************************************
+	 * Creates a clone of the QueryPart.
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public QueryPartGroup clone() {
+		
+		ArrayList<QueryPart> clonedParts = new ArrayList<>();
+		for(QueryPart part : partsGroup) {
+			clonedParts.add(part.clone());
+		}
+		
+		QueryPartGroup clone = new QueryPartGroup(context, clonedParts);
+
+		return clone;
+	}
 	
 	/******************************************************************************************************
 	 *  
@@ -43,20 +58,19 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 		this.partsGroup = new ArrayList<>();
 	}
 	
+//	/******************************************************************************************************
+//	 *  
+//	 ******************************************************************************************************/
+//	public QueryPartGroup(CFWQueryContext context, QueryPart initialPart) {
+//		this(context);
+//		partsGroup.add(initialPart);
+//	}
+//	
 	
 	/******************************************************************************************************
 	 *  
 	 ******************************************************************************************************/
-	public QueryPartGroup(CFWQueryContext context, QueryPart initialPart) {
-		this(context);
-		partsGroup.add(initialPart);
-	}
-	
-	
-	/******************************************************************************************************
-	 *  
-	 ******************************************************************************************************/
-	public QueryPartGroup(CFWQueryContext context, QueryPart... parts) {
+	public QueryPartGroup(CFWQueryContext context, ArrayList<QueryPart> parts) {
 		super();
 		for(QueryPart part : parts) {
 			this.add(part);
@@ -66,10 +80,11 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 	/******************************************************************************************************
 	 *  Creates an index expression
 	 ******************************************************************************************************/
-	public QueryPartGroup(CFWQueryContext context, int index) {
-		this(context);
-		this.add(QueryPartValue.newNumber(index));
-	}
+//	public QueryPartGroup(CFWQueryContext context, int index) {
+//		this(context);
+//		this.add(QueryPartValue.newNumber(index));
+//	}
+//	
 	
 	/******************************************************************************************************
 	 * Returns the number of elements in the group.
@@ -210,20 +225,20 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 	 * Returns the values as JsonArray.
 	 * 
 	 ******************************************************************************************************/
-	public ArrayList<String> getAsStringArray(EnhancedJsonObject object, boolean getFromCache) {
-		
-		//cache instance
-		if(!getFromCache || stringArray == null) {
-			stringArray = new ArrayList<>();
-			
-			for(QueryPart part : partsGroup) {
-				if(part != null) {
-					stringArray.add(part.determineValue(object).getAsString());
-				}
-			}
-		}
-		return stringArray;
-	}
+//	public ArrayList<String> getAsStringArray(EnhancedJsonObject object, boolean getFromCache) {
+//		
+//		//cache instance
+//		if(!getFromCache || stringArray == null) {
+//			stringArray = new ArrayList<>();
+//			
+//			for(QueryPart part : partsGroup) {
+//				if(part != null) {
+//					stringArray.add(part.determineValue(object).getAsString());
+//				}
+//			}
+//		}
+//		return stringArray;
+//	}
 	
 	/******************************************************************************************************
 	 * 
@@ -232,54 +247,10 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 		return partsGroup;
 	}
 	
-	/******************************************************************************************************
-	 * Returns the values as QueryPartValue of type JSON containing a JsonArray
-	 * 
-	 ******************************************************************************************************/
-	public boolean isIndex() {
-		
-		if(partsGroup.size() == 1) {
-			QueryPartValue value = partsGroup.get(0).determineValue(null);
-			if(value.isNumber() && value.isInteger()) {
-				arrayIndex = value.getAsInteger();
-				return true;
-			}
-		}
-		
-		return false;
-	}
 	
 	/******************************************************************************************************
-	 * isIndex() has to be called first before this method will return a correct result.
 	 * 
 	 ******************************************************************************************************/
-	public Integer getIndex() {
-		return arrayIndex;
-	}
-	
-	/******************************************************************************************************
-	 * Returns the element in the array represented by the index of this QueryPartArray.
-	 * Returns a JsonNull object if not resolvable.
-	 * 
-	 ******************************************************************************************************/
-	public JsonElement getElementOfJsonArray(JsonArray array) {
-		
-		if(this.isIndex()) {
-			int index = this.getIndex();
-			
-			if(index < array.size()) {
-				return array.get(index);
-			}else {
-				CFW.Messages.addWarningMessage("Array index out of bounds.");
-			}
-		}else {
-			CFW.Messages.addWarningMessage("Array Expression is not an index.");
-		}
-		
-		return JsonNull.INSTANCE;
-	}
-	
-	
 	@Override
 	public JsonObject createDebugObject(EnhancedJsonObject object) {
 		

@@ -35,6 +35,22 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	private QueryPart rightside = null;
 	private CFWQueryContext context;
 	
+	
+	/******************************************************************************************************
+	 * Creates a clone of the QueryPart.
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public QueryPartJsonMemberAccess clone() {
+		
+		QueryPart cloneLeft = leftside.clone();
+		QueryPart cloneRight = rightside.clone();
+		
+		QueryPartJsonMemberAccess clone = new QueryPartJsonMemberAccess(context, cloneLeft, cloneRight);
+		
+		return clone;
+	}
+	
 	/******************************************************************************************************
 	 * 
 	 * @param leftside The name on the left side of the assignment operation.

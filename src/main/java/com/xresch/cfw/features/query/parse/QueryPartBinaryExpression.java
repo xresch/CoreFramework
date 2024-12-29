@@ -25,10 +25,25 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 	private CFWQueryTokenType type;
 	private QueryPart rightside = null;
 	
-	private BigDecimal BIG_ZERO = new BigDecimal(0);
+	private static BigDecimal BIG_ZERO = new BigDecimal(0);
 	
 	private CFWQueryContext context;
+	
+	/******************************************************************************************************
+	 * Creates a clone of the QueryPart.
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public QueryPart clone() {
 		
+		QueryPart cloneLeft = leftside.clone();
+		QueryPart cloneRight = rightside.clone();
+		
+		QueryPartBinaryExpression clone = new QueryPartBinaryExpression(context, cloneLeft, type, cloneRight);
+		
+		return clone;
+	}
+	
 	/******************************************************************************************************
 	 * Create an instance of the Binary Expression.
 	 * In case of an expression that has only one side(e.g. OPERATOR_NOT), leave left side null and add value 
@@ -113,6 +128,7 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 			case OPERATOR_PLUS:				
 			case OPERATOR_MINUS:			
 				 return 1;
+				 
 			default: 
 				return -1;
 		}

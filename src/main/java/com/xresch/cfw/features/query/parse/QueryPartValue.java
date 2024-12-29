@@ -38,6 +38,15 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 		, JSON
 		, NULL
 	}
+	
+	/******************************************************************************************************
+	 * Creates a clone of the QueryPart.
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public QueryPartValue clone() {
+		return this.getAsClone();
+	}
 			
 	/******************************************************************************************************
 	 * Private Constructor to enforce correct types.
@@ -677,11 +686,8 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 		switch(type) {
 			case NULL:		return QueryPartValue.newNull();
 			
-			case JSON:		String jsonString = CFW.JSON.toJSON((JsonElement)value);
-							JsonElement clone = CFW.JSON.fromJson(jsonString);
-							return QueryPartValue.newJson(clone);
+			case JSON:		return QueryPartValue.newJson( ((JsonElement)value).deepCopy());
 							
-			
 			case NUMBER:	double myDouble = ((Number)value).doubleValue();
 							return QueryPartValue.newNumber(myDouble);
 
