@@ -458,7 +458,10 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 				}else {
 					if(bothNumbers(leftValue, rightValue)) {
 						try {
-							evalResult = new JsonPrimitive(leftDeci.divide(rightDeci, 6, RoundingMode.HALF_UP));
+							int biggerScale = leftDeci.scale();
+							if(biggerScale < rightDeci.scale()) { biggerScale = rightDeci.scale(); }
+							
+							evalResult = new JsonPrimitive(leftDeci.divide(rightDeci, biggerScale, RoundingMode.HALF_UP));
 						}catch(Exception e) {
 							context.addMessage(MessageType.ERROR, e.getMessage());
 						}
