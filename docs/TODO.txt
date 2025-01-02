@@ -102,6 +102,7 @@ Potential TODOs
 	- command if, else, end
 	- command formatcss
 	- command formatdisplay
+	- command maparrays 
 	- command percentile
 	- command score
 	- metadata template
@@ -183,6 +184,7 @@ DONE
 
 - Query: Added Commands:
 	- bollbands
+	- maparrays
 	- movavg
 	- movdiff
 	- movstdev

@@ -21,8 +21,8 @@ public abstract class CFWQueryFunction{
 	
 	public static final String TAG_AGGREGATION = "aggregation";
 	public static final String TAG_ARRAYS = "arrays";
-	public static final String TAG_GENERAL = "general";
 	public static final String TAG_CODING = "coding";
+	public static final String TAG_GENERAL = "general";
 	public static final String TAG_MATH = "math";
 	public static final String TAG_OBJECTS = "objects";
 	public static final String TAG_STRINGS = "strings";

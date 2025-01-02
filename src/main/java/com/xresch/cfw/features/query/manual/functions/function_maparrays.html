@@ -1,0 +1,27 @@
+
+<p>This command will take two or more array fields of a record and merge their values into a new array of objects.
+This command was introduced to be able to map arrays returned from web APIs. This allows to unbox the arrays while not causing an explosion in the record count.</p>
+
+
+<p>Following query uses the maparrays function to map 4 different arrays into an array of objects:</p>
+<pre><code class="language-cfwquery">| source random type = arrays
+| maparrays 
+	ARRAY_NUMBERS, ARRAY_CHARACTERS, ARRAY_STRINGS, ARRAY_MIXED
+	name="merged"
+| formatfield
+	merged = list</code></pre>
+
+
+
+<p>Following example uses the map arrays command to unbox arrays that have been index-mapped-merged or whatever you wanna call it:</p>
+<pre><code class="language-cfwquery">| source random type = arrays
+| maparrays 
+	ARRAY_NUMBERS, ARRAY_CHARACTERS, ARRAY_STRINGS, ARRAY_MIXED
+	name="merged"
+	replace=true
+| unbox merged 
+| unbox merged replace=true
+| formatfield
+	merged = list</code></pre>
+	
+
