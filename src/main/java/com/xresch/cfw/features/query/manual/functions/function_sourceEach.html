@@ -1,0 +1,11 @@
+
+<p>This function can be used in the source-command to retrieve the current each value.</p>
+
+<p>The following example executes the source "text" and creates a hello message to greet the beautiful ladies:</p>
+<pre><code class="language-cfwquery">| source text 
+	each = ["Freya"
+		,"Hera"
+		,"Eclypsia"
+	]
+	text="Hello " + sourceEach()</code></pre>
+

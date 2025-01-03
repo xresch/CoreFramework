@@ -114,6 +114,9 @@ Potential TODOs
 	- function object
 	- function prev
 	- function records
+	- function sourceeach
+	- function sourcepage
+	- function split
 	
 - Charts Renderer: Add description to manual page "working with render".
 
@@ -196,6 +199,8 @@ DONE
 	- intervalpoints
 	- prev
 	- record
+	- sourceeach
+	- sourcepage
 	- split
 	
 ------- v.10.0.0 -------

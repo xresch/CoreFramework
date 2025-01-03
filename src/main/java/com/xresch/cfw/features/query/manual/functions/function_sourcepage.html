@@ -1,0 +1,12 @@
+
+<p>This function can be used in the source-command to retrieve the current page value for pagination.</p>
+
+<p>The following example sets the various pagination parameters and uses the page-value acquired with the sourcepage()-function to execute the random source several times:</p>
+<pre><code class="language-cfwquery">| source random 
+	records = sourcepage() # for demonstration, take page value as number of records
+	pagination = true # enable pagination
+	pageinitial = 1 # initial page value 
+	page = sourcepage() + 1 # adjust the initial value every time
+	pageend = ( sourcepage() >= 5 ) # return true when end condition has been reached
+	pagemax = 20 # the max number of pages to fetch, prevents endless loops</code></pre>
+

@@ -18,6 +18,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public abstract class CFWQueryFunction{
 
 	protected CFWQueryContext context;
+	protected CFWQueryCommand parent;
 	
 	public static final String TAG_AGGREGATION = "aggregation";
 	public static final String TAG_ARRAYS = "arrays";
@@ -122,4 +123,20 @@ public abstract class CFWQueryFunction{
 		return context;
 	}
 
+	/***********************************************************************************************
+	 * Returns the parent command of this function.
+	 ***********************************************************************************************/
+	public CFWQueryCommand getParentCommand() {
+		return parent;
+	}
+
+	/***********************************************************************************************
+	 * INTERNAL USE
+	 * Set the command which is the parent of the function.
+	 ***********************************************************************************************/
+	public void setParentCommand(CFWQueryCommand parent) {
+		this.parent = parent;
+	}
+
+	
 }

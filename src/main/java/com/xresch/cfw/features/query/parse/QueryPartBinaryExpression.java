@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
@@ -40,6 +41,7 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 		QueryPart cloneRight = rightside.clone();
 		
 		QueryPartBinaryExpression clone = new QueryPartBinaryExpression(context, cloneLeft, type, cloneRight);
+		clone.parent = this.parent;
 		
 		return clone;
 	}
@@ -536,6 +538,18 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 		}
 		debugObject.addProperty("determinedValue", determineValue(object).toString());
 		return debugObject;
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public void setParentCommand(CFWQueryCommand parent) {
+		
+		this.parent = parent;
+		this.leftside.setParentCommand(parent);
+		this.rightside.setParentCommand(parent);
+		
 	}
 
 }

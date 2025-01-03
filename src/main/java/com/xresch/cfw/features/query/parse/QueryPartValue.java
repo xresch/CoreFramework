@@ -13,6 +13,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
 /**************************************************************************************************************
@@ -917,6 +918,14 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 	@Override
 	public int compareTo(QueryPartValue o) {
 		return CFW.Utils.Text.compareStringsAlphanum(this.getAsString(), o.getAsString());
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public void setParentCommand(CFWQueryCommand parent) {
+		this.parent = parent;
 	}
 	
 	

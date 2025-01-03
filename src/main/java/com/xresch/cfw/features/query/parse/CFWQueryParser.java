@@ -150,6 +150,7 @@ public class CFWQueryParser {
 		@Override public QueryPartValue determineValue(EnhancedJsonObject object) { return null; }
 		@Override public JsonObject createDebugObject(EnhancedJsonObject object) { return null; }
 		@Override public QueryPart clone() { return null; }
+		@Override public void setParentCommand(CFWQueryCommand parent) { /*do nothing */}
 	};
 	
 	
@@ -676,6 +677,10 @@ public class CFWQueryParser {
 			if(this.enableTrackParts) {
 				allqueryParts.add(command);
 				allqueryParts.addAll(parts);
+			}
+			
+			for(QueryPart part : parts) {
+				part.setParentCommand(command);
 			}
 			
 			command.setAndValidateQueryParts(this, parts);

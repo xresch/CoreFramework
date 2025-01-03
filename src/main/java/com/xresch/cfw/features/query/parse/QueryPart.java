@@ -1,8 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
-import java.util.Objects;
-
 import com.google.gson.JsonObject;
+import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
@@ -16,6 +15,9 @@ public abstract class QueryPart {
 	public static final String FIELD_PARTTYPE = "partType";
 	
 	private int cursorPosition = 0;
+	
+	// The command which this query part is part of, will be set by the parser
+	protected CFWQueryCommand parent;
 	
 	/***********************************************************************************************
 	 * 
@@ -45,6 +47,11 @@ public abstract class QueryPart {
 	 ***********************************************************************************************/
 	public abstract QueryPart clone();
 		
+	/***********************************************************************************************
+	 * Implement this method so that it sets the Parent command of itself and all it's child parts.
+	 ***********************************************************************************************/
+	public abstract void setParentCommand(CFWQueryCommand parent);
+	
 
 	/***********************************************************************************************
 	 * 
@@ -86,6 +93,15 @@ public abstract class QueryPart {
 	public boolean equals(Object obj) {
 		return super.equals(obj);
 	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	protected CFWQueryCommand getParentCommand() {
+		return parent;
+	}
+
+	
 	
 	
 	

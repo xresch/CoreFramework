@@ -61,23 +61,24 @@ The values will be set in the metadata and can be retrieved by using the meta-fu
 
 <p>The following example executes the source "text" and creates a hello message to greet the beautiful ladies:</p>
 <pre><code class="language-cfwquery">| source text 
-	each=["Freya"
+	each = ["Freya"
 		,"Hera"
 		,"Eclypsia"
 	]
-	text="Hello "+meta('each')</code></pre>
+	text="Hello " + sourceEach()</code></pre>
 
 
 <p>The following example executes the source "web" for each of the defined url:</p>
 <pre><code class="language-cfwquery">| source web 
-	as="http"
-	method="GET"
-	each=["https://www.xresch.com"
+	as = "http"
+	method = "GET"
+	each = [
+		 "https://www.xresch.com"
 		,"https://github.com/xresch"
-		,"https://www.google.com" ]
-	url=meta('each') # here the URL will be taken 
+		,"https://www.google.com" 
+	]
+	url = sourceEach() # use the sourceEach()-function to get the value from the source
 | keep status, url, headers
-| set each=meta("each") # after the source, 'each' will always be the last element: 'https://www.google.com'
 | formatfield headers = list
 | formatrecord 	
     [(status == null), "cfw-gray"] 
@@ -86,6 +87,31 @@ The values will be set in the metadata and can be retrieved by using the meta-fu
 	[(status &lt; 400), "cfw-yellow"] 
 	[true, "cfw-red"] 
 | display as=panels menu=false titlefields=[url]</code></pre>
+
+
+<h2>Pagination</h2>
+<p>Some sources like 'web' might require the use of pagination to be able to fetch all the data from a source.
+Typical example would be a web API that limits the amount of data returned. </p>
+
+<p>The following example sets the various pagination parameters and uses the page-value acquired with the sourcepage()-function to execute the random source several times:</p>
+<pre><code class="language-cfwquery">| source random 
+	records = sourcepage() # for demonstration, take page value as number of records
+	pagination = true # enable pagination
+	pageinitial = 1 # initial page value 
+	page = sourcepage() + 1 # adjust the initial value every time
+	pageend = ( sourcepage() >= 5 ) # return true when end condition has been reached
+	pagemax = 20 # the max number of pages to fetch, prevents endless loops</code></pre>
+
+
+<p>Pagination can be combined with the each-parameter, in this case pagination is done for every each value:</p>
+<pre><code class="language-cfwquery">| source random 
+	each = [10, 10, 10] # every each-value will be fetched in a paginated manner 
+	records = sourceEach() # get the each-value
+	pagination = true 
+	pageinitial = 1 
+	page = sourcepage() + 1 
+	pageend = ( sourcepage() >= 5 ) 
+	pagemax = 20 </code></pre>
 
 
 

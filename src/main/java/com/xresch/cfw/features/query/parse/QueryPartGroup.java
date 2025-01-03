@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
@@ -47,6 +48,8 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 		
 		QueryPartGroup clone = new QueryPartGroup(context);
 		clone.partsGroup = clonedParts;
+		clone.parent = this.parent;
+		
 		return clone;
 	}
 	
@@ -260,6 +263,20 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 		}
 		
 		return debugObject;
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public void setParentCommand(CFWQueryCommand parent) {
+		
+		this.parent = parent;
+		
+		for(QueryPart part : partsGroup) {
+			part.setParentCommand(parent);
+		}
+		
 	}
 	
 }

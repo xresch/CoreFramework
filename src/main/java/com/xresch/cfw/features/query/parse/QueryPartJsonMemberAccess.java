@@ -8,6 +8,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -47,6 +48,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		QueryPart cloneRight = rightside.clone();
 		
 		QueryPartJsonMemberAccess clone = new QueryPartJsonMemberAccess(context, cloneLeft, cloneRight);
+		clone.parent = this.parent;
 		
 		return clone;
 	}
@@ -436,6 +438,18 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		debugObject.add("leftEvaluated", leftside.determineValue(object).getAsJsonElement());
 		debugObject.add("rightEvaluated", rightside.determineValue(object).getAsJsonElement());
 		return debugObject;
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public void setParentCommand(CFWQueryCommand parent) {
+		
+		this.parent = parent;
+		this.leftside.setParentCommand(parent);
+		this.rightside.setParentCommand(parent);
+		
 	}
 	
 

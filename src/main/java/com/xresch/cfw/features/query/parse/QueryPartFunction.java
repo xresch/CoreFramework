@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -49,6 +50,7 @@ public class QueryPartFunction extends QueryPart {
 		QueryPartFunction clone;
 		try {
 			clone = new QueryPartFunction(context, functionName, clonedFunctionParams);
+			clone.parent = this.parent;
 			return clone;
 		} catch (ParseException e) {
 			// Let's assume this will never happen... ever!!!
@@ -106,6 +108,8 @@ public class QueryPartFunction extends QueryPart {
 		if(instance == null) {
 			context.addMessage(MessageType.ERROR, "There is no such method with the name '"+functionName+"'");
 		}
+		
+		instance.setParentCommand(this.parent);
 		
 		String instanceID = CFW.Random.randomStringAlphaNumerical(32);
 		managedInstances.put(instanceID, instance);
@@ -252,6 +256,8 @@ public class QueryPartFunction extends QueryPart {
 	@Override
 	public QueryPartValue determineValue(EnhancedJsonObject object) {
 		
+		internalfunctionInstance.setParentCommand(this.parent);
+		
 		return executeFunctionInstance(internalfunctionInstance, object);
 		
 	}
@@ -271,7 +277,9 @@ public class QueryPartFunction extends QueryPart {
 		return functionName;
 	}
 	
-	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
 	@Override
 	public JsonObject createDebugObject(EnhancedJsonObject object) {
 		
@@ -290,6 +298,21 @@ public class QueryPartFunction extends QueryPart {
 		}
 		
 		return debugObject;
+	}
+	
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public void setParentCommand(CFWQueryCommand parent) {
+		
+		this.parent = parent;
+		
+		for(QueryPart part : functionParameters) {
+			part.setParentCommand(parent);
+		}
+		
 	}
 
 	

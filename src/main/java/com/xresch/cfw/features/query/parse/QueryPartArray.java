@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
@@ -50,6 +51,7 @@ public class QueryPartArray extends QueryPart {
 		
 		clone.arrayIndex = arrayIndex;
 		clone.embracedArray = embracedArray;
+		clone.parent = this.parent;
 		// clone.cachedJsonArray = null; // can be ignored
 		// clone.cachedStringArray = null; // can be ignored
 		
@@ -289,6 +291,20 @@ public class QueryPartArray extends QueryPart {
 		}
 		
 		return debugObject;
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public void setParentCommand(CFWQueryCommand parent) {
+		
+		this.parent = parent;
+		
+		for(QueryPart part : partsArray) {
+			part.setParentCommand(parent);
+		}
+		
 	}
 
 

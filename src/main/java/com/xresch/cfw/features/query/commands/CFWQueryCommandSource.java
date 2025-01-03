@@ -61,7 +61,16 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 
 	private CFWQuerySource source = null;
 
-	JsonArray eachParameter;
+	private JsonArray paramEach;
+	private QueryPartValue currentEachValue;
+	
+	// Pagination
+	private boolean doPagination = false;
+	QueryPartValue pageinitalValue = QueryPartValue.newNumber(0);
+	QueryPart pageValuePart = null;
+	QueryPart pageEndPart = null;
+	int pagemax = 10;
+	String currentPageValue = null;
 	
 	private CFWContextAwareExecutor sourceExecutor = CFWContextAwareExecutor.createExecutor("QuerySource", 1, 2, 500, TimeUnit.MILLISECONDS);
 	
@@ -102,7 +111,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" <sourcename> [limit=<integer>] [each=<array>] [param1=abc param2=xyz ...]";
+		return COMMAND_NAME+" <sourcename> [limit=<limit>] [each=<each>] [param1=abc param2=xyz ...]";
 	}
 	
 	/***********************************************************************************************
@@ -111,9 +120,16 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return 	"<ul>"
-					+"<li><b>source:&nbsp;</b> The query source to fetch the data from</li>"
-					+"<li><b>limit:&nbsp;</b> The max number of records to fetch from the source. The default and max limit is configured by your administrator.</li>"
-					+"<li><b>each:&nbsp;</b>An array of values the source should be called for. Values are retrieved with the meta-function.</li>"
+					+"<li><b>sourcename:&nbsp;</b> The query source to fetch the data from.</li>"
+					+"<li><b>limit:&nbsp;</b>(Optional) The max number of records to fetch from the source. The default and max limit is configured by your administrator.</li>"
+					+"<li><b>each:&nbsp;</b>(Optional) An array of values the source should be called for. Values are retrieved with the meta-function.</li>"
+					
+					+"<li><b>pagination:&nbsp;</b>(Optional) Toggle if pagination is used for this source, default false.</li>"
+					+"<li><b>pageinitial:&nbsp;</b>(Optional) The initial page for the pagination, default is 0.</li>"
+					+"<li><b>page:&nbsp;</b>(Optional) An expression that should be executed to determine the next page.</li>"
+					+"<li><b>pageend:&nbsp;</b>(Optional) An expression returning a boolean to determine if the last page has been reached.</li>"
+					+"<li><b>pagemax:&nbsp;</b>(Optional) The maximum amount of pages to fetch, prevents endless loops, default 10.</li>"
+					
 					+"<li><b>param1, param2 ...:&nbsp;</b> The parameters that are specific to the source you choose.</li>"
 				+"</ul>";
 	}
@@ -132,6 +148,20 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	public int getLimit() {
 		return fetchLimit;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public String getPage() {
+		return currentPageValue;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public QueryPartValue getEachValue() {
+		return currentEachValue;
 	}
 
 	/***********************************************************************************************
@@ -323,8 +353,8 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				if(paramName == null) { continue; }
 				
 				//------------------------------------
-				// Handle parameters for this command
-				if(paramName.equals("limit")) {
+				// Param Limit
+				if(paramName.toLowerCase().equals("limit")) {
 					QueryPartValue limitValue = assignment.getRightSide().determineValue(null);
 					if(limitValue.isInteger()) {
 						int newLimit = limitValue.getAsInteger();
@@ -336,12 +366,61 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 						}
 					}
 					continue;
-				}else if(paramName.equals("each")) {
+				}
+				
+				//------------------------------------
+				// Param Each
+				if(paramName.toLowerCase().equals("each")) {
 					QueryPartValue eachValue = assignment.getRightSide().determineValue(null);
 					if(eachValue.isJsonArray()) {
-						eachParameter = eachValue.getAsJsonArray();
+						paramEach = eachValue.getAsJsonArray();
 					}else {
 						throw new ParseException(COMMAND_NAME+": The value specified for the each-parameter must be an array.", assignment.position());
+					}
+					continue;
+				}
+				
+				//------------------------------------
+				// Param Pagination
+				if(paramName.toLowerCase().equals("pagination")) {
+					QueryPartValue paginationValue = assignment.getRightSide().determineValue(null);
+					if(paginationValue.isBoolOrBoolString()) {
+						doPagination = paginationValue.getAsBoolean();
+					}else {
+						throw new ParseException(COMMAND_NAME+": The value specified for the each-parameter must be a boolean.", assignment.position());
+					}
+					continue;
+				}
+				
+				//------------------------------------
+				// Param Page Initial
+				if(paramName.toLowerCase().equals("pageinitial")) {
+					pageinitalValue = assignment.getRightSide().determineValue(null);
+					continue;
+				}
+				
+				//------------------------------------
+				// Param Page 
+				if(paramName.toLowerCase().equals("page")) {
+					pageValuePart = assignment.getRightSide();
+					continue;
+				}
+				
+				//------------------------------------
+				// Param Page End
+				if(paramName.toLowerCase().equals("pageend")) {
+					pageEndPart = assignment.getRightSide();
+					continue;
+				}
+				
+				//------------------------------------
+				// Param Page Max
+				if(paramName.toLowerCase().equals("pagemax")) {
+					QueryPartValue pagemaxValue = assignment.getRightSide().determineValue(null);
+					if(pagemaxValue.isNumberOrNumberString()) {
+						pagemax = pagemaxValue.getAsInteger();
+					}else {
+						throw new ParseException(COMMAND_NAME+": The value specified for the each-parameter must be a number.", assignment.position());
 					}
 					continue;
 				}
@@ -375,6 +454,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	private CFWObject prepareParamsForSource() throws ParseException {
+		
 		EnhancedJsonObject parameters = new EnhancedJsonObject();
 		for(QueryPartAssignment assignment : assignmentsArray) {
 			assignment.assignToJsonObject(parameters);	
@@ -415,29 +495,24 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		
 		LinkedBlockingQueue<EnhancedJsonObject> localQueue = new LinkedBlockingQueue<>();
 
-		//use source Executor this to propagate Context
+		//use source Executor to propagate Context
 		sourceExecutor.submit(
 			new Runnable() {
 				
 				@Override
 				public void run() {
 					try {
-						if(eachParameter == null) {
+						if(paramEach == null) {
 							
-							increasePrometheusCounters();
-							
-							CFWObject paramsForSource = prepareParamsForSource();
-							source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
+							executeSource(earliestMillis, latestMillis, localQueue);
 							
 						}else {
-							for(JsonElement element : eachParameter) {
-								QueryPartValue value = QueryPartValue.newFromJsonElement(element);
-								source.getParent().getContext().addMetadata("each", value);
+							for(JsonElement element : paramEach) {
+								currentEachValue = QueryPartValue.newFromJsonElement(element);
+								// Depreciated, will not work properly if multiple sources use each in the same query
+								source.getParent().getContext().addMetadata("each", currentEachValue);
 								
-								increasePrometheusCounters();
-								
-								CFWObject paramsForSource = prepareParamsForSource();
-								source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
+								executeSource(earliestMillis, latestMillis, localQueue);
 							}
 						}
 					} catch (Exception e) {
@@ -445,11 +520,45 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 					}
 					setSourceFetchingDone();
 				}
+				
+				//------------------------------------------
+				// Execute Source
+				private void executeSource(long earliestMillis, long latestMillis,
+						LinkedBlockingQueue<EnhancedJsonObject> localQueue) throws ParseException, Exception {
+					
 
+					
+					//---------------------------------
+					// Pagination or No Pagination
+					currentPageValue = pageinitalValue.determineValue(null).getAsString();
+					
+					if( !doPagination ) {
+						CFWObject paramsForSource = prepareParamsForSource();
+						source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
+						increasePrometheusCounters();
+					}else {
+						boolean lastPageReached = false;
+						int pageCounter = 0;
+						
+						while(!lastPageReached && pageCounter < pagemax) {
+							CFWObject paramsForSource = prepareParamsForSource();
+							source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
+							
+							lastPageReached = pageEndPart.determineValue(null).getAsBoolean();
+							currentPageValue = pageValuePart.determineValue(null).getAsString();
+							increasePrometheusCounters();
+							pageCounter++;
+						}
+					}
+				}
+				//---------------------------------
+				// Increase Counters
 				private void increasePrometheusCounters() {
 					sourceCounter.labels("TOTAL").inc();
 					sourceCounter.labels(sourceName).inc();
 				}
+
+				
 			});
 		
 		
@@ -471,7 +580,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				outQueue.add(item);
 				
 			}
-						
+			
 			//---------------------------
 			// Wait for more input
 			this.waitForInput(100);	

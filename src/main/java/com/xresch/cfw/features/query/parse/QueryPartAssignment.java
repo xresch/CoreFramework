@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.parse;
 import java.util.ArrayList;
 
 import com.google.gson.JsonObject;
+import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -30,6 +31,7 @@ public class QueryPartAssignment extends QueryPart {
 		QueryPart cloneRight = rightside.clone();
 		
 		QueryPartAssignment clone = new QueryPartAssignment(context, cloneLeft, cloneRight);
+		clone.parent = this.parent;
 		
 		return clone;
 	}
@@ -137,6 +139,18 @@ public class QueryPartAssignment extends QueryPart {
 		debugObject.add("rightside", rightside.createDebugObject(object));
 		
 		return debugObject;
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public void setParentCommand(CFWQueryCommand parent) {
+		
+		this.parent = parent;
+		this.leftside.setParentCommand(parent);
+		this.rightside.setParentCommand(parent);
+		
 	}
 
 }

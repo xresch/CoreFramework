@@ -364,9 +364,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 			_CFWQueryCommon.createHTTPResponseExceptionResult(this.parent.getContext(), outQueue, response, e);
 			return;
 		}
-		
-
-				
+			
 	}
 
 
