@@ -2045,7 +2045,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	each=["Freya"
 		,"Hera"
 		,"Eclypsia" ]
-	text="Hello "+meta('each')
+	text="Hello " + sourceEach()
 				"""
 				;
 		
