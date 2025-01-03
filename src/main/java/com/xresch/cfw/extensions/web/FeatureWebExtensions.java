@@ -79,6 +79,10 @@ public class FeatureWebExtensions extends CFWAppFeature {
 		CFW.Registry.Query.registerSource(new CFWQuerySourceWeb(null));
 				
 		//----------------------------------
+		// Register Functions
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSourceWebResponse(null));
+		
+		//----------------------------------
 		// Register Manual Page
 		CFW.Registry.Manual.addManualPage(null,
 				new ManualPage(FEATURE_NAME)

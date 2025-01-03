@@ -52,6 +52,8 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
 	
+	private QueryPartValue lastHTTPResponse = null;
+	
 
 	/******************************************************************
 	 *
@@ -246,6 +248,14 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	/******************************************************************
 	 *
 	 ******************************************************************/
+	protected QueryPartValue getLastHTTPResponse() {
+		return lastHTTPResponse;
+	}
+
+
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
@@ -336,6 +346,12 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 			return;
 		}
 		
+		//------------------------------------
+		// Set Last Response
+		ArrayList<EnhancedJsonObject> lastResponseArray = _CFWQueryCommonStringParser.parseAsHTTP(response);
+		JsonObject lastResponseObject = lastResponseArray.get(0).getWrappedObject();
+		lastHTTPResponse = QueryPartValue.newJson(lastResponseObject);
+
 		//------------------------------------
 		// Parse Data
 		try {

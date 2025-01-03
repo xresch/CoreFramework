@@ -1,0 +1,25 @@
+
+<p>The function sourceWebResponse() can be used inside of the source 'web' command to get the last http response.
+It was introduced to give a possibility to check for the end of pages when using pagination.
+It will return an object containing the same data you would get if you would set the parameter 'as=http'. As of the time when this documentation was written, the following fields where available:</p>
+<ul>
+	<li>url</li>
+	<li>status</li>
+	<li>duration</li>
+	<li>headers</li>
+	<li>body</li>
+</ul>
+
+<p>Following loads the content of the developers rarely updated blog and uses the sourceWebResponse()-function in the pageend-condition:</p>
+<pre><code class="language-cfwquery">| source web 
+	as = "http"
+	method = "GET"
+	url = "https://www.xresch.com"
+	pagination = true 
+	pageinitial = 1 
+	page = 1 
+	pagemax = 5 
+	pageend = (
+			   sourceWebResponse().status >= 400  # stop pagination if status is bad
+			OR contains(sourceWebResponse().body, "js/jquery")# stop pagination if body contains the string
+			)</code></pre>

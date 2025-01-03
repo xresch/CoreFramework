@@ -1,0 +1,27 @@
+
+<p>The message()-function lets you add messages to the response which will be displayed as toast messages in the browser.
+The initial purpose for this function was for debugging values. The return value if this function is the message itself.
+This allows you to wrap any value in your query and get it displayed on the screen for debugging.
+Another thing that is useful to know in this regard, is that you can view disappeared messages in the browser by pressing Ctry + Alt + I.</p>
+
+
+
+<p>Here a simple example where the message()-function is used to display the each-value:</p>
+<pre><code class="language-cfwquery">| source random
+	each = [1, 2, 3]
+	records = message(sourceEach())</code></pre>
+
+
+
+<p>With the second parameter you can specify the message type, 
+what is useful to make distinctions if you have multiple instances of message().
+The same message will only be printed once, so if you have two SUCCESS-messages saying "true" it will only be printed once. </p>
+<pre><code class="language-cfwquery">| paramdefaults OBJECT = {a: true}
+| source random records = 2
+| set
+	A = message( "" + VALUE / 2.5, "INFO")
+	B = message( round(sin(VALUE), 3) , "SUCCESS")
+	C = message( [1,2,3], "WARNING")
+	D = message( param(OBJECT).a , "ERROR")5</code></pre>
+	
+

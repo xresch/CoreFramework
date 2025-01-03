@@ -114,7 +114,6 @@ Potential TODOs
 	- function object
 	- function prev
 	- function records
-	- function sourceeach
 	- function sourcepage
 	- function split
 	
@@ -197,10 +196,12 @@ DONE
 	
 - Query: Added Functions:
 	- intervalpoints
+	- message
 	- prev
 	- record
-	- sourceeach
-	- sourcepage
+	- sourceEach
+	- sourcePage
+	- sourceWebResponse
 	- split
 	
 ------- v.10.0.0 -------

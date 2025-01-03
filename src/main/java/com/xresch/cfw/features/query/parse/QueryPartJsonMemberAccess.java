@@ -124,17 +124,13 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 ******************************************************************************************************/
 	@Override
 	public QueryPartValue determineValue(EnhancedJsonObject object) throws CFWQueryMemoryException {	
-
-		if(object == null) {
-			
-			if(!(rightside instanceof QueryPartArray)) {
-				return QueryPartValue.newString(leftside+"."+rightside.determineValue(null));
-			}else {
-				return QueryPartValue.newString(leftside +""+ rightside.determineValue(null));
-			}
-		}else {				
+	
+		if(object != null) {
 			return getValueOfMember(object, object.getWrappedObject());
+		}else {
+			return getValueOfMember(null, null);
 		}
+
 	}
 	
 	/******************************************************************************************************
@@ -163,13 +159,13 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		//#############################################################################
 		
 		JsonElement nextElement = null;	
-		
+
 		//--------------------------
 		// Handle Function Call
 		if(leftside instanceof QueryPartFunction){
 			QueryPartValue functionResult = leftside.determineValue(rootObject);
 			QueryPartValueType type = functionResult.type();
-			
+
 			if( type.equals(QueryPartValueType.JSON) ) {
 				nextElement = functionResult.getAsJsonElement();
 			}else {
@@ -186,49 +182,63 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			QueryPartJsonMemberAccess accessExpression = (QueryPartJsonMemberAccess)leftside;
 			nextElement = accessExpression.accessMemberRecursively(rootObject, currentElement);
 		}
-		
 		//--------------------------
-		// Handle JsonArray
-		else if(currentElement.isJsonArray() && (leftside instanceof QueryPartArray) ){
+		// Handle Null
+		else if(rootObject == null) {
 			
-			QueryPartArray arrayExpression = (QueryPartArray)leftside;
-			nextElement = arrayExpression.getElementOfJsonArray(
-				currentElement.getAsJsonArray()
-			);
-		}
-		
-		//--------------------------
-		// JsonObject: access with object.fieldname
-		else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
-			
-			JsonObject jsonObject = currentElement.getAsJsonObject();
-			String memberName = ((QueryPart)leftside).determineValue(rootObject).getAsString();
-			
-			if(jsonObject.has(memberName)) {
-
-				nextElement = jsonObject.get(memberName);
+			if(!(rightside instanceof QueryPartArray)) {
+				return new JsonPrimitive(leftside+"."+rightside.determineValue(null));
 			}else {
-				return JsonNull.INSTANCE;
+				return new JsonPrimitive(leftside+"."+rightside.determineValue(null));
+			}
+		}
+		//--------------------------
+		// Handle Not Null
+		else if(currentElement != null) {
+
+			//--------------------------
+			// Handle JsonArray
+			if(currentElement.isJsonArray() && (leftside instanceof QueryPartArray) ){
+				
+				QueryPartArray arrayExpression = (QueryPartArray)leftside;
+				nextElement = arrayExpression.getElementOfJsonArray(
+					currentElement.getAsJsonArray()
+				);
 			}
 			
-		}
-		//--------------------------
-		// JsonObject: access member with object.[fieldname]...
-		else if(currentElement.isJsonObject() && (leftside instanceof QueryPartArray) ) {
-			ArrayList<QueryPart> partsArray = ((QueryPartArray)leftside).getAsParts();
-			nextElement = getMemberByFieldnameInArray(rootObject, currentElement, partsArray);
-		}
-		
-		//--------------------------
-		// Use current if Leftside is null
-		else if(leftside == null){
-			nextElement = currentElement;
-		}
-		
-		//--------------------------
-		// Mighty Error Expression
-		else {
-			context.addMessage(MessageType.ERROR,"Could not access object member: "+leftside+"."+rightside);
+			//--------------------------
+			// JsonObject: access with object.fieldname
+			else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
+				
+				JsonObject jsonObject = currentElement.getAsJsonObject();
+				String memberName = ((QueryPart)leftside).determineValue(rootObject).getAsString();
+				
+				if(jsonObject.has(memberName)) {
+	
+					nextElement = jsonObject.get(memberName);
+				}else {
+					return JsonNull.INSTANCE;
+				}
+				
+			}
+			//--------------------------
+			// JsonObject: access member with object.[fieldname]...
+			else if(currentElement.isJsonObject() && (leftside instanceof QueryPartArray) ) {
+				ArrayList<QueryPart> partsArray = ((QueryPartArray)leftside).getAsParts();
+				nextElement = getMemberByFieldnameInArray(rootObject, currentElement, partsArray);
+			}
+			
+			//--------------------------
+			// Use current if Leftside is null
+			else if(leftside == null){
+				nextElement = currentElement;
+			}
+			
+			//--------------------------
+			// Mighty Error Expression
+			else {
+				context.addMessage(MessageType.ERROR,"Could not access object member: "+leftside+"."+rightside);
+			}
 		}
 		
 		//#############################################################################
@@ -267,7 +277,10 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		//maybe change or add warning?
 		return null;
 	}
-
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
 	private JsonElement getMemberByFieldnameInArray(EnhancedJsonObject rootObject, JsonElement theElement, ArrayList<QueryPart> partsArray) {
 		JsonObject jsonObject = theElement.getAsJsonObject();
 		

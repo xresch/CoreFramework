@@ -163,6 +163,14 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	public QueryPartValue getEachValue() {
 		return currentEachValue;
 	}
+	
+	/***********************************************************************************************
+	 * Returns the instance of the source associated with this command.
+	 ***********************************************************************************************/
+	public CFWQuerySource getSource() {
+		return source;
+	}
+
 
 	/***********************************************************************************************
 	 * 
@@ -337,6 +345,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			throw new ParseException(COMMAND_NAME+": the source does not exist: '"+sourceName+"'", -1);
 		}
 		
+		// cannot be cached!
 		this.source = CFW.Registry.Query.createSourceInstance(this.parent, sourceName);
 
 		//------------------------------------------
