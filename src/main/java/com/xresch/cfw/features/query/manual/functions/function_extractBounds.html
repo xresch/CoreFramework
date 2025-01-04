@@ -1,0 +1,27 @@
+
+<p>Extracts one or more values using a left bound and a right bound without using regular expression. The result is either null, a string or an array for multiple results.
+This function is first searching the right bound, then searches backwards for the left bound.
+This makes it easier to specify the left bound as it leads to less false extractions that are far to long.</p>
+<p>Good to know:</p>
+<ul>
+	<li><b>Same Bounds:&nbsp;</b> When the left and right bound are the same, the function will consider the last right bound as the next left bound.</li>
+	<li><b>Get First Value:&nbsp;</b> You can use 'extractBounds(...)[0]' to always get the first value. This also works when the result is null or not an array.</li>
+	<li><b>Match Beginning/End of String:&nbsp;</b> You can add your bounds to the beginning and end of the string to also have a match on those.</li>
+	<li><b>Complex Extractions:&nbsp;</b> For more complex extractions use the extract()-function, which also supports regular expressions.</li>
+</ul>
+
+<p>Following query extracts, extracts and extracts a bit more using the extractBounds()-function:</p>
+<pre><code class="language-cfwquery">| source random records= 10
+| keep ID
+| set
+	# example ID: "edc79766-5213-4ce8-a65"
+	ID_PART 		= extractBounds(ID, '-', '-') 			# returns array with two parts, e.g. ["af14", "48ff"]
+	START_END 		= extractBounds('-'+ID+'-', '-', '-') 	# Tip: add bounds to begin and end to match full string 
+	NUMBER 			= extractBounds('&lt;a href="./page/3">Next&lt;/a>', 'page/', '">Next') 		# returns "3"
+	NUMBER_AS_WELL 	= extractBounds('&lt;a href="./page/3">Next&lt;/a>', 'page/', '">Next')[0] 	# returns first result("3"), works also if not an array
+	ARRAY 			= extractBounds('&lt;p> &lt;p>A&lt;/p> &lt;p>BB&lt;/p> &lt;p>CCC&lt;/p> &lt;/p>', '&lt;p>', '&lt;/p>')# returns ["A", "BB", "CCC"]
+	PARTIAL_MATCH	= extractBounds('a} {bb} ccc} {dddd}', '{', '}') # returns ["bb", "dddd"]
+	NOT_FOUND 		= extractBounds('a b c', 'd', 'e') 	# returns null
+	MISSING_PARAMS 	= extractBounds(' 1 2 ' , ' ') 		# returns null
+	INPUT_NULL		= extractBounds(null , '1', '2') 	# returns null</code></pre>
+
