@@ -331,7 +331,7 @@ public class CFWJobTaskReportingCFWQLQuery extends CFWJobTask {
 
 		//----------------------------------------
 		// Prepare Message
-		String baseMessage = "Following "+resultArray.size()+" records has been collected by your scheduled reporting task: ";
+		String baseMessage = "Following "+resultArray.size()+" record(s) resulted by your scheduled query reporting task: ";
 		String messagePlaintext = baseMessage+" "+metricListText;
 		String messageHTML = widgetLinkHTML;
 		messageHTML += "<p>"+baseMessage+"</p>";
