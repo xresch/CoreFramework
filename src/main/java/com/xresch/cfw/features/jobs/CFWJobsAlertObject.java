@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.quartz.JobExecutionContext;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -49,6 +50,7 @@ public class CFWJobsAlertObject extends CFWObject {
 		JSON_ALERTING_GROUPS_TO_ALERT,
 		JSON_ALERTING_ALERT_CHANNEL,
 		ALERTING_CUSTOM_NOTES,
+		ALERTING_CUSTOM_TITLE,
 	}
 	
 	public enum AlertType{
@@ -108,15 +110,22 @@ public class CFWJobsAlertObject extends CFWObject {
 	
 	private CFWField<LinkedHashMap<String, String>> alertChannels = 
 				CFWField.newCheckboxes(AlertObjectFields.JSON_ALERTING_ALERT_CHANNEL)
-						.setLabel("Alert Channels")
-						.setDescription("Choose the channels the alert should be sent through.")
+						.setLabel("Channels")
+						.setDescription("Choose the channels the report should be sent through.")
 						.setOptions(CFWJobsAlerting.getChannelNamesForUI())
 						.setValue(null);
+	
+	private CFWField<String> customTitle = 
+			CFWField.newString(FormFieldType.TEXT, AlertObjectFields.ALERTING_CUSTOM_TITLE)
+					.setLabel("Custom Title")
+					.setDescription("Add a custom title that can be added to the report.")
+					.addValidator(new LengthValidator(-1, 1000))
+					.setValue(null);
 	
 	private CFWField<String> customNotes = 
 			CFWField.newString(FormFieldType.TEXTAREA, AlertObjectFields.ALERTING_CUSTOM_NOTES)
 					.setLabel("Custom Notes")
-					.setDescription("Add custom notes that can be added to the alert notification.")
+					.setDescription("Add custom notes that can be added to the report.")
 					.allowHTML(true)
 					.addValidator(new LengthValidator(-1, 100000))
 					.setValue(null);
@@ -165,9 +174,25 @@ public class CFWJobsAlertObject extends CFWObject {
 		
 		this.reportingMode = reportingMode;
 		if(!reportingMode) {
-			this.addFields(occurencesToRaise, occurencesToResolve, alertDelayMinutes, resendDelayMinutes, usersToAlert, groupsToAlert, alertChannels, customNotes);
+			this.addFields(
+					occurencesToRaise
+					, occurencesToResolve
+					, alertDelayMinutes
+					, resendDelayMinutes
+					, usersToAlert
+					, groupsToAlert
+					, alertChannels
+					, customTitle
+					, customNotes
+					);
 		} else {
-			this.addFields(usersToAlert, groupsToAlert, alertChannels, customNotes);
+			this.addFields(
+					usersToAlert
+					, groupsToAlert
+					, alertChannels
+					, customTitle
+					, customNotes
+					);
 		}
 	}
 	
@@ -294,7 +319,7 @@ public class CFWJobsAlertObject extends CFWObject {
 	 * You have to create the content for raising or lifting the content yourself.
 	 * @param context the Job Execution Context
 	 * @param messageType the type of the message
-	 * @param subject the title for your alert
+	 * @param subject the default title for your alert, will be used of custom title is not set.
 	 * @param content plain text of your alert(mandatory)
 	 * @param contentHTML html version of your alert(optional, some alert 
 	 * channels might use the HTML version if not null)
@@ -305,6 +330,17 @@ public class CFWJobsAlertObject extends CFWObject {
 						, String content
 						, String contentHTML) {
 		
+		
+		//--------------------------
+		// Title
+		String customTitle = this.customTitle.getValue();
+		
+		if( ! Strings.isNullOrEmpty(customTitle) ) {
+			subject = customTitle;
+		}
+
+		//--------------------------
+		// Send to Channels
 		HashMap<Integer, User> uniqueUsers = this.doSendAlert_getMergedListOfUsersToAlert();
 		ArrayList<CFWJobsAlertingChannel> channelsToAlert = this.doSendAlert_getListOfAlertChannels();
 		

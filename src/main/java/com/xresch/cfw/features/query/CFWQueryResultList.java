@@ -38,7 +38,7 @@ public class CFWQueryResultList {
 	}
 	
 	/****************************************************
-	 * Returns an array of recrods
+	 * Returns an array of records
 	 ****************************************************/
 	public JsonArray toJsonRecords() {
 		

@@ -110,7 +110,6 @@ public class WidgetQueryResults extends WidgetDefinition {
 						.setDescription("{!cfw_widget_queryresults_query_desc!}")
 						.disableSanitization()
 						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-						//.addCssClass("textarea-nowrap")	
 						// validation is done using canSave() method in this class
 						//.addValidator()
 				)
@@ -491,6 +490,11 @@ public class WidgetQueryResults extends WidgetDefinition {
 				String tableHeader = "<tr>";
 				tableHeader = "<td>Item</td>";
 				for (String fieldname : detailFields.split(",")) {
+					
+					if( urlColumn != null && fieldname.trim().equals(urlColumn.trim())) {
+						continue;
+					}
+					
 					tableHeader += "<td>"+fieldname+"</td>";
 				}
 				tableHeader += "</tr>";
@@ -509,7 +513,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 					for (String fieldname : labelFields.split(" *, *")) {
 						JsonElement labelField = current.get(fieldname.trim());
 						if( labelField != null && !labelField.isJsonNull()) {
-							labelString += CFW.JSON.toString(labelField);
+							labelString += CFW.JSON.toString(labelField) + " ";
 						}else {
 							labelString += " ";
 						}
@@ -538,11 +542,11 @@ public class WidgetQueryResults extends WidgetDefinition {
 						//String detailsString = "";
 						for (String fieldname : detailFields.trim().split(",")) {
 							
-							if( !Strings.isNullOrEmpty(fieldname) 
-							&& ( urlColumn == null 
-							    || !fieldname.trim().equals(urlColumn.trim())
-							   ) 
-							) {
+							if( urlColumn != null && fieldname.trim().equals(urlColumn.trim())) {
+								continue;
+							}
+							
+							if( !Strings.isNullOrEmpty(fieldname)) {
 								JsonElement detailsField = current.get(fieldname.trim());
 								if(detailsField != null && !detailsField.isJsonNull()) {
 									String detailsValue = CFW.JSON.toString(detailsField);
