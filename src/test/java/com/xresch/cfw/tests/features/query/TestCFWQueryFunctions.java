@@ -1218,6 +1218,53 @@ source json data=`
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testExtractBounds() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source random records = 1
+| keep ID
+| set
+	ID_PART 		= extractBounds(ID, '-', '-') 			# returns array with two parts, e.g. ["af14", "48ff"]
+	START_END 		= extractBounds('-'+ID+'-', '-', '-') 	# Tip: add bounds to begin and end to match full string 
+	NUMBER 			= extractBounds('<a href="./page/3">Next</a>', 'page/', '">Next') 		# returns "3"
+	NUMBER_AS_WELL 	= extractBounds('<a href="./page/3">Next</a>', 'page/', '">Next')[0] 	# returns first result("3"), works also if not an array
+	ARRAY 			= extractBounds('<p> <p>A</p> <p>BB</p> <p>CCC</p> </p>', '<p>', '</p>')# returns ["A", "BB", "CCC"]
+	PARTIAL_MATCH	= extractBounds('a} {bb} ccc} {dddd}', '{', '}') # returns ["bb", "dddd"]
+	NOT_FOUND 		= extractBounds('a b c', 'd', 'e') 	# returns null
+	MISSING_PARAMS 	= extractBounds(' 1 2 ' , ' ') 		# returns null
+	INPUT_NULL		= extractBounds(null , '1', '2') 	# returns null
+	""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		Assertions.assertEquals(2, record.get("ID_PART").getAsJsonArray().size());
+		Assertions.assertEquals(4, record.get("START_END").getAsJsonArray().size());
+		Assertions.assertEquals("3", record.get("NUMBER").getAsString());
+		Assertions.assertEquals("3", record.get("NUMBER_AS_WELL").getAsString());
+		Assertions.assertEquals("[\"A\",\"BB\",\"CCC\"]", record.get("ARRAY").toString());
+		Assertions.assertEquals("[\"bb\",\"dddd\"]", record.get("PARTIAL_MATCH").toString());
+		Assertions.assertEquals(true, record.get("NOT_FOUND").isJsonNull());
+		Assertions.assertEquals(true, record.get("MISSING_PARAMS").isJsonNull());
+		Assertions.assertEquals(true, record.get("INPUT_NULL").isJsonNull());
+
+
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testFields() throws IOException {
 		
 		//---------------------------------

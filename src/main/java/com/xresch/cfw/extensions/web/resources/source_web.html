@@ -193,6 +193,22 @@ The following query uses the unbox command to keep some of the original fields(f
 		    "userId": 2
 		}</code></pre>	
 		
+	
+<h2>Pagination</h2>
+<p>You can also handle cases where you need pagination, using the pagination capabilities of the source-command.
+A helper function called sourceWebResponse() was created so you can extract values needed to fetch the next page(e.g. 'pageKey') and check if the last page has been reached. 
+For a demo, the following loads pages of the developers rarely updated blog and uses the sourceWebResponse()-function in the extracting the page value and the pageend-condition:</p>
+<pre><code class="language-cfwquery">| source web 
+	as = "http"
+	method = "GET"
+	url = "https://www.xresch.com/page/"+sourcepage()
+	pagination = true 
+	pageinitial = 1 
+	page = message( extractBounds(sourceWebResponse().body, 'page/', '/" >Older Posts') ) # extract next page, stop if not found(null)
+	pagemax = 10
+	pageend = (sourceWebResponse().status >= 400  # stop pagination if status is bad
+			OR contains(sourceWebResponse().body, "blog-post-title") == false ) # stop pagination if body does not contains the string</code></pre>
+			
 		
 		
 <h2>Parse As HTML</h2>
@@ -285,7 +301,6 @@ The following query uses the unbox command to keep some of the original fields(f
 	value = extract(line, "^.* (.*)")
 	fields = tojson(replace(fields, ",}", "}"))
 | formatfield fields=list</code></pre>	
-
 
 
 <h2>Fetching Data From JIRA</h2>

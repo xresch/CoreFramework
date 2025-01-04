@@ -24,6 +24,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class CFWQueryFunctionExtract extends CFWQueryFunction {
 
 	
+	private static final String FUNCTION_NAME = "extract";
+
 	public CFWQueryFunctionExtract(CFWQueryContext context) {
 		super(context);
 	}
@@ -33,7 +35,7 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "extract";
+		return FUNCTION_NAME;
 	}
 	
 	/***********************************************************************************************
@@ -51,7 +53,7 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "extract(stringOrFieldname, regex, groupIndex)";
+		return FUNCTION_NAME+"(stringOrFieldname, regex, groupIndex)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -66,9 +68,11 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>stringOrFieldname:&nbsp;</b>The string or or a fieldname, the value in which a string should be searched.</p>"
-			  +"<p><b>regex:&nbsp;</b>The regex string to use.</p>"
-			  +"<p><b>groupIndex:&nbsp;</b> (Optional) The index of the group to extract the value from (Default: 0).</p>"
+		return "<ul>"
+					+"<li><b>stringOrFieldname:&nbsp;</b>The string or or a fieldname, the value in which a string should be searched.</li>"
+					+"<li><b>regex:&nbsp;</b>The regex string to use.</li>"
+					+"<li><b>groupIndex:&nbsp;</b> (Optional) The index of the group to extract the value from (Default: 0).</li>"
+				+"</ul>"
 			;
 	}
 
@@ -77,7 +81,7 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_extract.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 
@@ -142,7 +146,7 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 			if(m.groupCount() > groupIndex && groupIndex >= -1) {
 				return QueryPartValue.newString(m.group(groupIndex+1));
 			}else {
-				this.getContext().addMessage(MessageType.WARNING, "extract: could not match group with index: "+groupIndex);
+				this.getContext().addMessage(MessageType.WARNING, FUNCTION_NAME+": could not match group with index: "+groupIndex);
 				QueryPartValue.newNull();
 			}
 		}

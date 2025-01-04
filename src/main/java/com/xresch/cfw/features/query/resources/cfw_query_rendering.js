@@ -112,7 +112,7 @@ function cfw_query_customizerCreateDefault(){
 			if(trimmed == ""){	return "&nbsp;"; }
 			if(trimmed.startsWith('http')){	return '<a href="'+value+'" target="blank" style="color: unset;">'+value+'</a>'; }
 			
-			return $('<span class="word-wrap-preline">').text(value);
+			return $('<span class="format-base word-wrap-preline">').text(value);
 			
 		}else if(_.isNumber(value)){
 			
@@ -149,7 +149,8 @@ function cfw_query_customizerCreateDefault(){
 		//----------------------------------------------
 		// Arrays and Objects
 		if(typeof value === 'object'){
-			return JSON.stringify(value).replaceAll(',',', ');
+			let span = $('<span class="format-base word-wrap-preline">');
+			return span.text( JSON.stringify(value).replaceAll(',',', ') );
 		}
 
 		return value;

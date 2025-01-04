@@ -137,8 +137,29 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public QueryPartValue getValueOfMember(EnhancedJsonObject rootObject, JsonElement currentElement) {
-		return QueryPartValue.newFromJsonElement(accessMemberRecursively(rootObject, currentElement)
-		);
+		
+		//----------------------------------
+		// Special Case: function()[0] : Return the value of the function
+		// Will not apply to: object.function()[0]
+		if(leftside instanceof QueryPartFunction
+		&& (rightside instanceof QueryPartArray) ){
+			QueryPartValue functionResult = leftside.determineValue(rootObject);
+			QueryPartValueType type = functionResult.type();
+
+			if( ! type.equals(QueryPartValueType.JSON) ) {
+				QueryPartArray array = ((QueryPartArray)rightside);
+				if(array.size() == 1 ) {
+					QueryPartValue indexValue = array.getAsParts().get(0).determineValue(rootObject);
+					if(indexValue.isNumberOrNumberString()) {
+						return functionResult;
+					}
+				}
+			}
+		}
+		
+		//----------------------------------
+		// All Other Cases
+		return QueryPartValue.newFromJsonElement( accessMemberRecursively(rootObject, currentElement) );
 		
 	}
 	
@@ -169,9 +190,10 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			if( type.equals(QueryPartValueType.JSON) ) {
 				nextElement = functionResult.getAsJsonElement();
 			}else {
+				
 				nextElement = currentElement;
 				rightside = new QueryPartJsonMemberAccess(context, functionResult.determineValue(rootObject), rightside);
-
+				
 			}
 		}
 		
@@ -182,6 +204,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			QueryPartJsonMemberAccess accessExpression = (QueryPartJsonMemberAccess)leftside;
 			nextElement = accessExpression.accessMemberRecursively(rootObject, currentElement);
 		}
+
 		//--------------------------
 		// Handle Null
 		else if(rootObject == null) {
@@ -241,6 +264,8 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			}
 		}
 		
+
+		
 		//#############################################################################
 		// Handle Rightside, resolve value or next level
 		//#############################################################################
@@ -270,9 +295,9 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 					return getMemberByFieldnameInArray(rootObject, nextElement, partsArray);
 					
 				}
+				
 			}
-		}
-		
+		}	
 		
 		//maybe change or add warning?
 		return null;

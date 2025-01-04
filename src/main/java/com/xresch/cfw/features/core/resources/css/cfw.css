@@ -186,12 +186,25 @@ pre {
   color: #000;
   background: var(--cfw-yellow)!important;
 }
+
+
+
+  
  /*************************************************************************
  * Bootstrap overwrite & extensions
  *************************************************************************/
 
 .table-sm thead th {
     line-height: 1.0rem;
+}
+
+.table-sm th,
+.table-sm td {
+  padding: 0.2rem;
+}
+
+label {
+    margin-bottom: 0.1rem;
 }
 
 .btn-xs {
@@ -1060,7 +1073,7 @@ pre {
     justify-content: flex-end !important;
     flex-flow: row wrap;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 3px;
 }
 
 .cfw-dataviewer-settings-button {
@@ -1287,7 +1300,7 @@ pre {
  *************************************************************************/
 .format-base {
     display: inline-block;
-    padding: 0.2em 0.3em;
+    padding: 0.1em 0.2em;
     line-height: 1.0;
     white-space: nowrap;
     vertical-align: text-top;

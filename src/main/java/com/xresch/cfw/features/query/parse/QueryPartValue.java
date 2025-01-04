@@ -167,6 +167,21 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 		return newJson(value);	
 		
 	}
+	
+	/******************************************************************************************************
+	 * Creates a new QueryPart based on the type of the JsonElement
+	 ******************************************************************************************************/
+	public static QueryPartValue newFromStringArray(ArrayList<String> array){
+		
+		JsonArray newArray = new JsonArray();
+		
+		for(String current : array) {
+			newArray.add(current);
+		}
+		
+		return newJson(newArray);	
+		
+	}
 	/******************************************************************************************************
 	 * Creates a new QueryPart based on the type of the JsonElement
 	 ******************************************************************************************************/

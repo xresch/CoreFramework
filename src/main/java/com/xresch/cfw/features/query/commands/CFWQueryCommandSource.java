@@ -535,8 +535,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				private void executeSource(long earliestMillis, long latestMillis,
 						LinkedBlockingQueue<EnhancedJsonObject> localQueue) throws ParseException, Exception {
 					
-
-					
 					//---------------------------------
 					// Pagination or No Pagination
 					currentPageValue = pageinitalValue.determineValue(null).getAsString();
@@ -555,6 +553,9 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 							
 							lastPageReached = pageEndPart.determineValue(null).getAsBoolean();
 							currentPageValue = pageValuePart.determineValue(null).getAsString();
+							if(currentPageValue == null) {
+								break; // stop processing
+							}
 							increasePrometheusCounters();
 							pageCounter++;
 						}

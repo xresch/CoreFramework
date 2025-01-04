@@ -10,16 +10,15 @@ It will return an object containing the same data you would get if you would set
 	<li>body</li>
 </ul>
 
-<p>Following loads the content of the developers rarely updated blog and uses the sourceWebResponse()-function in the pageend-condition:</p>
+<p>The following loads pages of the developers rarely updated blog and uses the sourceWebResponse()-function in the extracting the page value and the pageend-condition:</p>
 <pre><code class="language-cfwquery">| source web 
 	as = "http"
 	method = "GET"
-	url = "https://www.xresch.com"
+	url = "https://www.xresch.com/page/"+sourcepage()
 	pagination = true 
 	pageinitial = 1 
-	page = 1 
-	pagemax = 5 
-	pageend = (
-			   sourceWebResponse().status >= 400  # stop pagination if status is bad
-			OR contains(sourceWebResponse().body, "js/jquery")# stop pagination if body contains the string
-			)</code></pre>
+	page = message( extractBounds(sourceWebResponse().body, 'page/', '/" >Older Posts') ) # extract next page, stop if not found(null)
+	pagemax = 10
+	pageend = (sourceWebResponse().status >= 400  # stop pagination if status is bad
+			OR contains(sourceWebResponse().body, "blog-post-title") == false ) # stop pagination if body does not contains the string</code></pre>
+			
