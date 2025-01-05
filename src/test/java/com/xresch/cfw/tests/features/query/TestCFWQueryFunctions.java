@@ -1100,6 +1100,107 @@ source json data=`
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testDistinct() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source empty
+| set
+	DISTINCT_EMPTY		= distinct() 		#returns null
+	DISTINCT_NULL		= distinct(null) 	#returns null
+	DISTINCT_NUMBER		= distinct(123) 	#returns 123
+	DISTINCT_BOOLEAN	= distinct(true) 	#returns true
+	DISTINCT_STRING		= distinct("for fluff's sake") # returns "for fluff's sake"
+	DISTINCT_ARRAY		= distinct(['a', 'a', 'B', 'B', 'C!', 'C!'], true, true) 		# returns ["a", "B", "C!"]
+	DISTINCT_OBJECT		= distinct({a: "one", b: true, c: 3, c: "one", d: true, e: 3}) 	# returns [3, "one", true]
+	NO_NULLS			= distinct(['a', 'a', 'b', null, null ], false) 				# returns ["a", "b"]
+	NULLS				= distinct(['a', 'a', 'b', null, null ], true) 					# returns ["a", "b", null]
+	DO_SORT 			= distinct(['c', 'a', 'b', null ], false) 						# returns ["a", "b", "c"]
+	DO_NOT_SORT			= distinct(['c', 'a', 'b', null ], false, false) 				# returns ["c", "a", "b"]
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		Assertions.assertEquals(true, record.get("DISTINCT_EMPTY").isJsonNull());
+		Assertions.assertEquals(true, record.get("DISTINCT_NULL").isJsonNull());
+		Assertions.assertEquals(123, record.get("DISTINCT_NUMBER").getAsInt());
+		Assertions.assertEquals(true, record.get("DISTINCT_BOOLEAN").getAsBoolean());
+		Assertions.assertEquals("for fluff's sake", record.get("DISTINCT_STRING").getAsString());
+		Assertions.assertEquals("[\"a\",\"B\",\"C!\"]", record.get("DISTINCT_ARRAY").toString());
+		Assertions.assertEquals("[3,\"one\",true]", record.get("DISTINCT_OBJECT").toString());
+		Assertions.assertEquals("[\"a\",\"b\"]", record.get("NO_NULLS").toString());
+		Assertions.assertEquals("[\"a\",\"b\",null]", record.get("NULLS").toString());
+		Assertions.assertEquals("[\"a\",\"b\",\"c\"]", record.get("DO_SORT").toString());
+		Assertions.assertEquals("[\"c\",\"a\",\"b\"]", record.get("DO_NOT_SORT").toString());
+
+
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testDistinct_Aggr() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| record
+	[NAME, VALUE]
+	["Aurora", "A"]
+	["Aurora", "C"]
+	["Aurora", "C"]
+	["Aurora", "C"]
+	["Aurora", "B"]
+	["Aurora", "B"]
+	["Aurora", null]
+	["Aurora", null]
+	["Evagelina", "Z"]
+	["Evagelina", "Z"]
+	["Evagelina", "Z"]
+	["Evagelina", "X"]
+	["Evagelina", "Y"]
+	["Evagelina", "Y"]
+	["Evagelina", null]
+	["Evagelina", null]
+| stats by=[NAME] 
+	DISTINCT=distinct(VALUE) 	# returns a sorted array of distinct values
+	DISTINCT_NULLS=distinct(VALUE, true) # returns a sorted array of distinct values, including null values
+	DISTINCT_NOSORT=distinct(VALUE, false, false) # returns an unsorted array of distinct values
+| sort FIRSTNAME reverse=true
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(2, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		Assertions.assertEquals("Aurora", record.get("NAME").getAsString());
+		Assertions.assertEquals("[\"A\",\"B\",\"C\"]", record.get("DISTINCT").toString());
+		Assertions.assertEquals("[\"A\",\"B\",\"C\",null]", record.get("DISTINCT_NULLS").toString());
+		Assertions.assertEquals("[\"A\",\"C\",\"B\"]", record.get("DISTINCT_NOSORT").toString());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testEarliest_and_EarliestSet() throws IOException {
 		
 		//---------------------------------

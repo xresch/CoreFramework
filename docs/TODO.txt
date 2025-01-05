@@ -107,7 +107,6 @@ Potential TODOs
 	- command score
 	- metadata template
 	- function array
-	- function distinct
 	- function fields
 	- function interval
 	- function intervalunit
