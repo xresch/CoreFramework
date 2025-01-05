@@ -177,6 +177,7 @@ DONE
 - Charts: Tiny numbers on yAxis are displayed better
 - Dashboard Widget: New widget "Trigger Jobs" to allow users to trigger jobs from dashboards
 - Query: Command Display - new parameter 'download' to enable a download button
+- Query Command Source: Now supports parameters for pagination 
 - Query: Added Prometheus Counters for Queries and Query Sources
 - Query: Fixed a bug where JSON member access like "function().name" would not work
 - Query Source: EAV - now supports custom earliest/latest
