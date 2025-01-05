@@ -45,9 +45,9 @@ public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
 		String customNotes = alertObject.getCustomNotes();
 		if( !Strings.isNullOrEmpty(customNotes) 
 		 && !customNotes.trim().toLowerCase().equals("null") ) {
-			mailContent = "<h3>Custom Notes</h3><p>"
-							+alertObject.getCustomNotes()
-							+"</p>"
+			mailContent = "<span><b>Custom Notes:</b></span>"
+							+"<br>"
+							+ "<span>" + alertObject.getCustomNotes() + "</span>"
 							+"<hr>"
 							+ mailContent;
 		}

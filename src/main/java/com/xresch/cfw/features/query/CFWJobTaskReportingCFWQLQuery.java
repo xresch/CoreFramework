@@ -48,7 +48,9 @@ public class CFWJobTaskReportingCFWQLQuery extends CFWJobTask {
 	private static final String FIELDNAME_LABELFIELDS = "labelfields";
 	private static final String FIELDNAME_VALUEFIELD = "valuefield";
 	private static final String FIELDNAME_URLFIELD = "urlfield";
+	private static final String FIELDNAME_CREATE_TABLE = "createtable";
 	private static final String FIELDNAME_ATTACH_CSV = "attachcsv";
+	private static final String FIELDNAME_ATTACH_HTML = "attachhtml";
 	private static final String FIELDNAME_ATTACH_JSON = "attachjson";
 	private static final String FIELDNAME_ATTACH_XML = "attachxml";
 	
@@ -107,11 +109,24 @@ public class CFWJobTaskReportingCFWQLQuery extends CFWJobTask {
 						.setDescription("{!cfw_widget_jobtask_urlfield_desc!}")
 				)
 				
+				.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_CREATE_TABLE)
+						.setLabel("{!cfw_widget_jobtask_create_table!}")
+						.setDescription("{!cfw_widget_jobtask_create_table_desc!}")
+						.setValue(true)
+						)
+				
 				.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_ATTACH_CSV)
 						.setLabel("{!cfw_widget_jobtask_attach_csv!}")
 						.setDescription("{!cfw_widget_jobtask_attach_csv_desc!}")
 						.setValue(true)
 				)
+				
+				.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_ATTACH_HTML)
+						.setLabel("{!cfw_widget_jobtask_attach_html!}")
+						.setDescription("{!cfw_widget_jobtask_attach_html_desc!}")
+						.setValue(false)
+						)
+				
 				.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_ATTACH_JSON)
 						.setLabel("{!cfw_widget_jobtask_attach_json!}")
 						.setDescription("{!cfw_widget_jobtask_attach_json_desc!}")
@@ -178,7 +193,9 @@ public class CFWJobTaskReportingCFWQLQuery extends CFWJobTask {
 		String labelFields = (String)taskParams.getField(FIELDNAME_LABELFIELDS).getValue();
 		String detailFields = (String)taskParams.getField(FIELDNAME_DETAILFIELDS).getValue();
 		String urlColumn = (String)taskParams.getField(FIELDNAME_URLFIELD).getValue();
+		Boolean createTable = (Boolean)taskParams.getField(FIELDNAME_CREATE_TABLE).getValue();
 		Boolean attachCSV = (Boolean)taskParams.getField(FIELDNAME_ATTACH_CSV).getValue();
+		Boolean attachHTML = (Boolean)taskParams.getField(FIELDNAME_ATTACH_HTML).getValue();
 		Boolean attachJSON = (Boolean)taskParams.getField(FIELDNAME_ATTACH_JSON).getValue();
 		Boolean attachXML = (Boolean)taskParams.getField(FIELDNAME_ATTACH_XML).getValue();
 		
@@ -331,11 +348,14 @@ public class CFWJobTaskReportingCFWQLQuery extends CFWJobTask {
 
 		//----------------------------------------
 		// Prepare Message
-		String baseMessage = "Following "+resultArray.size()+" record(s) resulted by your scheduled query reporting task: ";
-		String messagePlaintext = baseMessage+" "+metricListText;
+		String baseMessage = "Your scheduled report contains "+resultArray.size()+" record(s)";
+		String messagePlaintext = baseMessage+": "+metricListText;
 		String messageHTML = widgetLinkHTML;
-		messageHTML += "<p>"+baseMessage+"</p>";
-		messageHTML += metricTableHTML;
+		messageHTML += "<p>"+baseMessage+".</p>";
+		
+		if(createTable) {
+			messageHTML += metricTableHTML;
+		}
 
 		String defaultTitle =  "Job: Query Results Report";
 		String menuTitle = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_MENU_TITLE);
@@ -349,6 +369,7 @@ public class CFWJobTaskReportingCFWQLQuery extends CFWJobTask {
 		alertObject.mapJobExecutionContext(context);
 		
 		if(attachCSV) {		alertObject.addTextData("data", "csv", CFW.JSON.toCSV(resultArray, ";") ); }
+		if(attachHTML) {	alertObject.addTextData("data", "html", "<html><body>"+metricTableHTML+"</body></html>"); }
 		if(attachJSON) {	alertObject.addTextData("data", "json", CFW.JSON.toJSONPretty(resultArray) ); }
 		if(attachXML) {		alertObject.addTextData("data", "xml", CFW.JSON.toXML(resultArray) ); }
 		

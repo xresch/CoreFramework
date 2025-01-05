@@ -37,7 +37,7 @@ public class CFWJobsAlertingChannelNotification extends CFWJobsAlertingChannel {
 		CFWJob job = CFW.DB.Jobs.selectByID(jobID);
 		
 		//----------------------------------------
-		// Create Mail Content
+		// Create Message Content
 		String messageContent = Strings.isNullOrEmpty(contentHTML) ? "<p>"+content+"</p>" : contentHTML;
 		
 		//------------------------
@@ -45,7 +45,15 @@ public class CFWJobsAlertingChannelNotification extends CFWJobsAlertingChannel {
 		String customNotes = alertObject.getCustomNotes();
 		if( !Strings.isNullOrEmpty(customNotes) 
 		 && !customNotes.trim().toLowerCase().equals("null") ) {
-			messageContent += "<h3>Custom Notes</h3><p>"+alertObject.getCustomNotes()+"</p>";
+			messageContent = 
+					"<br>"
+					+"<span><b>Job:&nbsp;</b>"+job.jobname()+" (ID: "+jobID+")</span>"
+					+"<br>"
+					+"<span><b>Custom Notes:</b></span>"
+					+"<br>"
+					+ "<span>" + alertObject.getCustomNotes() + "</span>"
+					+"<hr>"
+					+ messageContent;
 		}
 				
 		//----------------------------------------
