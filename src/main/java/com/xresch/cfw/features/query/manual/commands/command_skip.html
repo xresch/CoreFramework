@@ -1,0 +1,21 @@
+
+<p>This command skips a certain amount of records at the end or beginning of all records.</p>
+
+
+<p>Following query creates 10 records and skips the last:</p>
+<pre><code class="language-cfwquery">| source random records = 10
+| set INDEX = INDEX + 1
+| skip </code></pre>
+
+
+<p>Following query creates 10 records and skips the last 3:</p>
+<pre><code class="language-cfwquery">| source random records = 10
+| set INDEX = INDEX + 1
+| skip 3 </code></pre>
+
+
+<p>Following query creates 10 records and skips the first 3:</p>
+<pre><code class="language-cfwquery">| source random records = 10
+| set INDEX = INDEX + 1
+| skip 3 
+	first = true</code></pre>

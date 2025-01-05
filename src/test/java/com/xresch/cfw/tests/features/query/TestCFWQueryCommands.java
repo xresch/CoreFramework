@@ -2280,6 +2280,49 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertEquals(0, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(320, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
 	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void test_Skip() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source random records = 10
+| set INDEX = INDEX + 1
+| skip 
+;
+| source random records = 10
+| set INDEX = INDEX + 1
+| skip 3 
+	first = true
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(2, resultArray.size());
+		
+		//---------------------------
+		// First Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		JsonArray queryResultsArray = queryResults.getRecordsAsJsonArray();
+		
+		Assertions.assertEquals(9, queryResultsArray.size());
+		Assertions.assertEquals(1, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
+		Assertions.assertEquals(9, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
+		
+		//---------------------------
+		// Second Result
+		queryResults = resultArray.get(1);
+		queryResultsArray = queryResults.getRecordsAsJsonArray();
+		
+		Assertions.assertEquals(7, queryResultsArray.size());
+		Assertions.assertEquals(4, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
+		Assertions.assertEquals(10, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
+		
+	}
 		
 	
 	/****************************************************************

@@ -190,6 +190,7 @@ DONE
 	- psar
 	- rsi
 	- score
+	- skip
 	
 - Query: Added Functions:
 	- extractBounds
