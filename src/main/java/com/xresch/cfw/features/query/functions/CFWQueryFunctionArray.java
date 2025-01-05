@@ -171,8 +171,7 @@ public class CFWQueryFunctionArray extends CFWQueryFunction {
 				}
 
 			}else {
-				// just return the value
-				return param;
+				valuesList.add(param);
 			}
 			
 		}

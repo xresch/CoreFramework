@@ -88,6 +88,107 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testArray() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source empty
+| set
+	EMPTY		= array() 		#returns null
+	NULL		= array(null) 	#returns null
+	NUMBER		= array(123) 	#returns 123
+	BOOLEAN		= array(true) 	#returns true
+	STRING		= array("for fluff's sake") 					# returns "for fluff's sake"
+	ARRAY		= array(['a', 'B', 'C!']) 						# returns ["a", "B", "C!"]
+	OBJECT		= array({a: "one", b: true, c: 3, d: null}) 	# returns [3, "one", true, null]
+	NO_NULLS	= array(['a', 'b', null], false) 				# returns ["a", "b"]
+	NULLS		= array(['a', 'b', null], true) 				# returns ["a", "b", null]
+	DO_SORT 	= array(['c', 'a', 'b', null ], false) 			# returns ["a", "b", "c"]
+	DO_NOT_SORT	= array(['c', 'a', 'b', null ], false, false) 	# returns ["c", "a", "b"]
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
+		Assertions.assertEquals("[null]", record.get("NULL").toString());
+		Assertions.assertEquals("[123]", record.get("NUMBER").toString());
+		Assertions.assertEquals("[true]", record.get("BOOLEAN").toString());
+		Assertions.assertEquals("[\"for fluff's sake\"]", record.get("STRING").toString());
+		Assertions.assertEquals("[\"a\",\"B\",\"C!\"]", record.get("ARRAY").toString());
+		Assertions.assertEquals("[3,\"one\",true,null]", record.get("OBJECT").toString());
+		Assertions.assertEquals("[\"a\",\"b\"]", record.get("NO_NULLS").toString());
+		Assertions.assertEquals("[\"a\",\"b\",null]", record.get("NULLS").toString());
+		Assertions.assertEquals("[\"a\",\"b\",\"c\"]", record.get("DO_SORT").toString());
+		Assertions.assertEquals("[\"c\",\"a\",\"b\"]", record.get("DO_NOT_SORT").toString());
+
+
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testArray_Aggr() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| record
+	[NAME, VALUE]
+	["Aurora", "A"]
+	["Aurora", "C"]
+	["Aurora", "C"]
+	["Aurora", "C"]
+	["Aurora", "B"]
+	["Aurora", "B"]
+	["Aurora", null]
+	["Aurora", null]
+	["Evangelina", "Z"]
+	["Evangelina", "Z"]
+	["Evangelina", "Z"]
+	["Evangelina", "X"]
+	["Evangelina", "Y"]
+	["Evangelina", "Y"]
+	["Evangelina", null]
+	["Evangelina", null]
+| stats by=[NAME] 
+	ARRAY=array(VALUE) 	# returns a sorted array of distinct values
+	NULLS=array(VALUE, true) # returns a sorted array of distinct values, including null values
+	NOSORT=array(VALUE, false, false) # returns an unsorted array of distinct values
+| sort FIRSTNAME reverse=true
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(2, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		Assertions.assertEquals("Aurora", record.get("NAME").getAsString());
+		Assertions.assertEquals("[\"A\",\"B\",\"B\",\"C\",\"C\",\"C\"]", record.get("ARRAY").toString());
+		Assertions.assertEquals("[\"A\",\"B\",\"B\",\"C\",\"C\",\"C\",null,null]", record.get("NULLS").toString());
+		Assertions.assertEquals("[\"A\",\"C\",\"C\",\"C\",\"B\",\"B\"]", record.get("NOSORT").toString());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testAvg() throws IOException {
 		
 		//---------------------------------
@@ -1164,14 +1265,14 @@ source json data=`
 	["Aurora", "B"]
 	["Aurora", null]
 	["Aurora", null]
-	["Evagelina", "Z"]
-	["Evagelina", "Z"]
-	["Evagelina", "Z"]
-	["Evagelina", "X"]
-	["Evagelina", "Y"]
-	["Evagelina", "Y"]
-	["Evagelina", null]
-	["Evagelina", null]
+	["Evangelina", "Z"]
+	["Evangelina", "Z"]
+	["Evangelina", "Z"]
+	["Evangelina", "X"]
+	["Evangelina", "Y"]
+	["Evangelina", "Y"]
+	["Evangelina", null]
+	["Evangelina", null]
 | stats by=[NAME] 
 	DISTINCT=distinct(VALUE) 	# returns a sorted array of distinct values
 	DISTINCT_NULLS=distinct(VALUE, true) # returns a sorted array of distinct values, including null values

@@ -106,7 +106,6 @@ Potential TODOs
 	- command percentile
 	- command score
 	- metadata template
-	- function array
 	- function fields
 	- function interval
 	- function intervalunit

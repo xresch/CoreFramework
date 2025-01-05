@@ -1,0 +1,36 @@
+
+<p>This function is used to create arrays of values. It supports aggregation and can be used in aggregation commands.
+When used outside of an aggregation command, this function will convert non-array values into arrays.</p>
+
+<p>Following query creates random records and uses the array-function for aggregation:</p>
+<pre><code class="language-cfwquery">| source random records=100
+| set
+	VALUE = if(random() < 90, VALUE, null) # add 10% of nulli-ness
+| stats by=[FIRSTNAME] 
+	COUNT=count() 
+	MIN=min(VALUE) 
+	AVG=avg(VALUE) 
+	MAX=max(VALUE)
+	DISTINCT=array(VALUE) # returns a sorted array 
+	DISTINCT_NULLS=array(VALUE, true) # returns a sorted array, including null values
+	DISTINCT_NOSORT=array(VALUE, false, false) # returns an unsorted array without nulls</code></pre>
+
+<p>Here some examples of the array-function when used outside of an aggregation command:</p>
+<pre><code class="language-cfwquery">| source empty
+| set
+	EMPTY		= array() 		# returns null
+	NULL		= array(null) 	# returns [null]
+	NUMBER		= array(123) 	# returns [123]
+	BOOLEAN		= array(true) 	# returns [true]
+	STRING		= array("for fluff's sake") 					# returns ["for fluff's sake"]
+	ARRAY		= array(['a', 'B', 'C!']) 						# returns ["a", "B", "C!"]
+	OBJECT		= array({a: "one", b: true, c: 3, d: null}) 	# returns [3, "one", true, null]
+	NO_NULLS	= array(['a', 'b', null], false) 				# returns ["a", "b"]
+	NULLS		= array(['a', 'b', null], true) 				# returns ["a", "b", null]
+	DO_SORT 	= array(['c', 'a', 'b', null ], false) 			# returns ["a", "b", "c"]
+	DO_NOT_SORT	= array(['c', 'a', 'b', null ], false, false) 	# returns ["c", "a", "b"]</code></pre>
+
+
+
+
+
