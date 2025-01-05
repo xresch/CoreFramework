@@ -31,8 +31,17 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	
 	private static final String PACKAGE_FUNCTIONS = "com.xresch.cfw.tests.features.query.testdata.functions";
 	
-	private static long earliest = new Instant().minus(1000*60*30).getMillis();
-	private static long latest = new Instant().getMillis();
+	// 30 Minutes
+	private static long earliest_30m = new Instant().minus(1000 * 60 * 30).getMillis();
+	
+	// 1 hour
+	private static long earliest_1h = new Instant().minus(1000 * 60 * 60).getMillis();
+	
+	// 24 hours
+	private static long earliest_24h = new Instant().minus(1000 * 60 * 60 * 24).getMillis();
+	
+	// now
+	private static long latest_now = new Instant().getMillis();
 	
 	@BeforeAll
 	public static void setup() {
@@ -42,8 +51,8 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 		CFW.Files.addAllowedPackage(PACKAGE_FUNCTIONS);
 
-		context.setEarliest(earliest);
-		context.setLatest(latest);
+		context.setEarliest(earliest_30m);
+		context.setLatest(latest_now);
 	}
 	
 	/****************************************************************
@@ -65,7 +74,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -108,7 +117,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -168,7 +177,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -220,7 +229,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 					
@@ -267,7 +276,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -332,7 +341,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -373,7 +382,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -408,7 +417,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -465,7 +474,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -529,7 +538,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -593,7 +602,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -667,7 +676,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -743,7 +752,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -806,7 +815,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -857,7 +866,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -899,7 +908,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -947,7 +956,7 @@ source json data=`
 	COUNT_FLOAT=count(float) # returns 4""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -987,7 +996,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1047,7 +1056,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1092,7 +1101,7 @@ source json data=`
 						""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1146,7 +1155,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1183,7 +1192,7 @@ source json data=`
 				;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1221,7 +1230,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1281,7 +1290,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1324,7 +1333,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, -60);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, -60);
 		
 		Assertions.assertEquals(1, resultArray.size());
 									
@@ -1367,7 +1376,7 @@ source json data=`
 				;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1400,7 +1409,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1439,7 +1448,7 @@ source json data=`
 	""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1482,7 +1491,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1515,7 +1524,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1553,7 +1562,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(2, resultArray.size());
 		
@@ -1602,7 +1611,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1653,7 +1662,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1701,7 +1710,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1745,7 +1754,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1787,7 +1796,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1831,7 +1840,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1849,6 +1858,62 @@ source json data=`
 		Assertions.assertEquals("zero", record.get("J4").getAsString());
 		Assertions.assertEquals(true, 	record.get("J5").isJsonNull());
 				
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testInterval_IntervalUnit_IntervalPoints() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source empty
+| set
+	INTERVAL 	= interval() # returns 30 (for 1 hour timeframe)
+	UNIT 		= intervalunit() # returns "s" (for 1 hour timeframe)
+	TEMP 		= intervalpoints(30) # returns null
+	INTERVAL_B 	= interval() # returns 5 (for 1 hour timeframe)
+	UNIT_B 		= intervalunit() # returns "m" (for 1 hour timeframe)
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest_1h, latest_now, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		
+		Assertions.assertEquals(30, 	record.get("INTERVAL").getAsInt());
+		Assertions.assertEquals("s", 	record.get("UNIT").getAsString());
+		Assertions.assertEquals(true, 	record.get("TEMP").isJsonNull());
+		Assertions.assertEquals(5, 		record.get("INTERVAL_B").getAsInt());
+		Assertions.assertEquals("m", 	record.get("UNIT_B").getAsString());
+		
+		
+
+		//------------------------------
+		// Check With 24 Hours time frame
+		resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest_24h, latest_now, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		record = queryResults.getRecordAsObject(0);
+		
+		Assertions.assertEquals(10, 	record.get("INTERVAL").getAsInt());
+		Assertions.assertEquals("m", 	record.get("UNIT").getAsString());
+		Assertions.assertEquals(true, 	record.get("TEMP").isJsonNull());
+		Assertions.assertEquals(1, 		record.get("INTERVAL_B").getAsInt());
+		Assertions.assertEquals("h", 	record.get("UNIT_B").getAsString());
+		
 	}
 	
 	/****************************************************************
@@ -1873,7 +1938,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1919,7 +1984,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -1962,7 +2027,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2002,7 +2067,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2044,7 +2109,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2089,7 +2154,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2133,7 +2198,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2171,7 +2236,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2215,7 +2280,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, -120);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, -120);
 		
 		Assertions.assertEquals(1, resultArray.size());
 									
@@ -2262,7 +2327,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, -0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, -0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2302,7 +2367,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, -0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, -0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2347,7 +2412,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 							
@@ -2391,7 +2456,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2435,7 +2500,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2484,7 +2549,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2527,7 +2592,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2575,7 +2640,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 							
@@ -2619,7 +2684,7 @@ source json data=`
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2651,7 +2716,7 @@ source json data=`
 			""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		// truncate to minutes to make this test work, except in cases when the minute changes.
 		long presentTime = CFWTimeUnit.m.truncate(new Date().getTime());
@@ -2700,7 +2765,7 @@ STAYS_NULL = null
 			;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		Assertions.assertEquals(1, resultArray.size());
 		
 		//------------------------------
@@ -2743,7 +2808,7 @@ STAYS_NULL = null
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 							
@@ -2799,7 +2864,7 @@ STAYS_NULL = null
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 			
@@ -2875,7 +2940,7 @@ STAYS_NULL = null
 			""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2912,7 +2977,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2952,7 +3017,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -2991,7 +3056,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -3033,7 +3098,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -3071,7 +3136,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -3112,7 +3177,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -3156,7 +3221,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -3214,7 +3279,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -3307,7 +3372,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 			""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -3341,7 +3406,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 							
@@ -3383,7 +3448,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 							
@@ -3425,7 +3490,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -3476,7 +3541,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, -120);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, -120);
 		
 		Assertions.assertEquals(1, resultArray.size());
 							
@@ -3519,7 +3584,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		// 2 results for 
 		Assertions.assertEquals(2, resultArray.size());
@@ -3571,7 +3636,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, -120);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, -120);
 		
 		Assertions.assertEquals(1, resultArray.size());
 							
@@ -3620,7 +3685,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, -120);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, -120);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -3679,7 +3744,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		//---------------------------------
 		// Executione
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, -120);
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, -120);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
