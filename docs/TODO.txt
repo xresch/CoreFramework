@@ -109,6 +109,7 @@ Potential TODOs
 	- function object
 	- function prev
 	- function records
+	- function replaceRegex
 	- function sourcepage
 	- function split
 	
@@ -201,6 +202,7 @@ DONE
 	- message
 	- prev
 	- record
+	- replaceRegex
 	- sourceEach
 	- sourcePage
 	- sourceWebResponse

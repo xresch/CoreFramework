@@ -1,0 +1,17 @@
+
+<p>Use this function whenever you need to replace a regular expression in a string.</p>
+
+<p>Following query creates example records and does various sample replaceRegex operations:</p>
+
+<pre><code class="language-cfwquery">| source random 
+| keep VALUE, FIRSTNAME, LASTNAME, LOCATION, URL, LIKES_TIRAMISU
+| set
+	DEFAULT = replaceRegex()					# no parameters will result in null 
+	NO_REPLACE = replaceRegex(LASTNAME) 		# only one parameter will return the same value
+	REMOVE = replaceRegex(LASTNAME, "[s]*on") 	# if no replacement is provided the occurences will be removed from the string
+	REPLACE = replaceRegex(LASTNAME, "[s]*on", "ddaughter") 		# replace with ddaughter
+	URL = replaceRegex(URL, "....example.*?\/", "test.acme.com/")	# replacement will replace all the occurences of the searched string
+	URL = replaceRegex(URL, "mightyperson", "/godlikeMortal") 		# if more than one thing has to be replaced just use the function again
+	BOOL = replaceRegex(LIKES_TIRAMISU, "true", "maybe") 			# booleans inputs will be treated as string
+	NUMBER = replaceRegex(VALUE, "8", "-eight-") 					# number inputs will be treated as string</code></pre>
+

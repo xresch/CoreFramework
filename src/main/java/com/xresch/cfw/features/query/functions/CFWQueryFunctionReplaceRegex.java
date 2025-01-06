@@ -16,12 +16,12 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionReplace extends CFWQueryFunction {
+public class CFWQueryFunctionReplaceRegex extends CFWQueryFunction {
 
 	
-	private static final String FUNCTION_NAME = "replace";
+	private static final String FUNCTION_NAME = "replaceRegex";
 
-	public CFWQueryFunctionReplace(CFWQueryContext context) {
+	public CFWQueryFunctionReplaceRegex(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -48,7 +48,7 @@ public class CFWQueryFunctionReplace extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(stringOrFieldname, searchString, replacement)";
+		return FUNCTION_NAME+"(stringOrFieldname, searchRegex, replacement)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -64,8 +64,8 @@ public class CFWQueryFunctionReplace extends CFWQueryFunction {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return "<p><b>stringOrFieldname:&nbsp;</b>The input value for the replacement.</p>"
-			  +"<p><b>searchString:&nbsp;</b>The string to search for.</p>"
-			  +"<p><b>replacement:&nbsp;</b>(Optional)The replacement for the findings.</p>"
+			  +"<p><b>searchRegex:&nbsp;</b>the regular expression to which this string is to be matched.</p>"
+			  +"<p><b>replacement:&nbsp;</b>(Optional)The replacement for the matches.</p>"
 			;
 	}
 
@@ -144,7 +144,7 @@ public class CFWQueryFunctionReplace extends CFWQueryFunction {
 			
 			//----------------------------------
 			// Do Replacement
-			String result = initialString.replace(searchString, replacement);
+			String result = initialString.replaceAll(searchString, replacement);
 			return QueryPartValue.newString(result);
 		}
 		
