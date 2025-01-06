@@ -448,7 +448,7 @@ function cfw_renderer_json(renderDef) {
 		highlight: false,
 	};
 	
-	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.csv);
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.json);
 	
 	//-----------------------------------
 	// Create JSON 
@@ -499,7 +499,7 @@ function cfw_renderer_csv(renderDef) {
 	for(var key in renderDef.visiblefields){
 		var fieldname = renderDef.visiblefields[key];
 		
-		headers += '"' +renderDef.getLabel(fieldname, CFW_RENDER_NAME_CSV) + '"' + settings.delimiter;
+		headers += '"' +renderDef.getLabel(fieldname, CFW_RENDER_NAME_CSV).replace('"', '""') + '"' + settings.delimiter;
 	}
 	// remove last semicolon
 	headers = headers.substring(0, headers.length-1);
@@ -529,11 +529,11 @@ function cfw_renderer_csv(renderDef) {
 					value = (""+value).replaceAll('\n', '\\n')
 									 .replaceAll('\r', '\\r')
 									 .replaceAll('<', '&lt;')
-									 .replaceAll('"', '""');
+									 ;
 				}
 			}
 			
-			recordCSV += '"' + value + '"' + settings.delimiter;
+			recordCSV += '"' + value.replaceAll('"', '""') + '"' + settings.delimiter;
 		}
 		// remove last semicolon
 		recordCSV = recordCSV.substring(0, recordCSV.length-1);

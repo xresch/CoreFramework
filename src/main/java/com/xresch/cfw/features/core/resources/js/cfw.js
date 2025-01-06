@@ -3883,7 +3883,10 @@ function cfw_format_objectToHTMLList(object, style, paddingLeft, doLabelize){
 	if(Array.isArray(object)){
 		for(var i = 0; i < object.length; i++ ){
 			var currentItem = object[i];
-			if(typeof currentItem == "object"){
+			
+			if(currentItem == null){
+				htmlString += '<li>null</li>';
+			}else if(typeof currentItem == "object"){
 				htmlString += '<li><b>Object:&nbsp;</b>'
 					+ cfw_format_objectToHTMLList(currentItem, style, paddingLeft, doLabelize)
 				+'</li>';
@@ -3897,7 +3900,10 @@ function cfw_format_objectToHTMLList(object, style, paddingLeft, doLabelize){
 		for(var key in object){
 			var currentValue = object[key];
 			var key = (!doLabelize) ? key : CFW.format.fieldNameToLabel(key);
-			if(typeof currentValue == "object"){
+			
+			if(currentValue == null){
+				htmlString += '<li>null</li>';
+			}else if(typeof currentValue == "object"){
 				htmlString += '<li><strong>'+key+':&nbsp;</strong>'
 					+ cfw_format_objectToHTMLList(currentValue, style, paddingLeft, doLabelize)
 				+'</li>';

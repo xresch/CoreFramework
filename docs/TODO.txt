@@ -171,13 +171,15 @@ DONE
 - Jobs: Now check if a job is already running before manual trigger is executed
 - Jobs: Added Task "Reporting: Query Results"
 - Renderer: Fixed issues with titlefields when specifying only one as string
+- Renderer: CSV - fixed issue with escaping double quotes for object and array values
 - Notifications: Increased polling interval from 2 to 5 minutes
 - Parameters: New parameter "Time Range"
 - CFWField: fixed issues with support of Long values
 - Charts: Tiny numbers on yAxis are displayed better
 - Dashboard Widget: New widget "Trigger Jobs" to allow users to trigger jobs from dashboards
-- Query: Command Display - new parameter 'download' to enable a download button
-- Query Command Source: Now supports parameters for pagination 
+- Query: Command display - new parameter 'download' to enable a download button
+- Query: Command formatfield - improved list formatter
+- Query Command source - Now supports parameters for pagination 
 - Query: Added Prometheus Counters for Queries and Query Sources
 - Query: Fixed a bug where JSON member access like "function().name" would not work
 - Query Source: EAV - now supports custom earliest/latest
