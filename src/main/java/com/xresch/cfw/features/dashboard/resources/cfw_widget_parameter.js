@@ -14,17 +14,28 @@
 				
 				CFW.dashboard.fetchWidgetData(widgetObject, params, function(data){
 					
+					//---------------------------------
+					// Clear Global Params Here
+					// Reason: Else initialization of fields will
+					// happen on existing fields, which would be deleted and new ones will not be initialized
+					$('#globalParams').html('');
+					
+					//---------------------------------
+					// Check Has Payload
 					if(data.payload == null){
 						callback(widgetObject, '');
 						return;
 					}
-					var settings = widgetObject.JSON_SETTINGS;
-					var formHTML = data.payload.html;
+					
+					//---------------------------------
+					// Initialize Variables
+					let settings = widgetObject.JSON_SETTINGS;
+					let formHTML = data.payload.html;
 					
 					
-					var parentDiv = $('<div class="d-flex flex-column cfw-parameter-widget-parent w-100" data-widget-id="'+widgetObject.PK_ID+'">');
+					let parentDiv = $('<div class="d-flex flex-column cfw-parameter-widget-parent w-100" data-widget-id="'+widgetObject.PK_ID+'">');
 
-					var noflexDiv = $('<div class="d-block w-100">');
+					let noflexDiv = $('<div class="d-block w-100">');
 					noflexDiv.append(settings.description);
 					parentDiv.append(noflexDiv);
 					
@@ -40,12 +51,12 @@
 					// Apply Custom Viewer Settings from
 					// Browser Store
 					if(settings.load_previous_values){
-						var storedViewerParams = cfw_parameter_getStoredUserParams();
+						let storedViewerParams = cfw_parameter_getStoredUserParams();
 						
 						parentDiv.find('input, textarea, select').each(function (){
-							var inputField = $(this);
-							var name = inputField.attr('name');
-							var type = inputField.attr('type');
+							let inputField = $(this);
+							let name = inputField.attr('name');
+							let type = inputField.attr('type');
 							
 							//--------------------
 							// Skip Hidden Fields
@@ -56,8 +67,8 @@
 							
 							//--------------------
 							// Do others
-							var viewerCustomValue = storedViewerParams[name];
-							
+							let viewerCustomValue = storedViewerParams[name];
+
 							if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
 								if(type == 'radio'){
 									//$('input[name="'+name+'"]').prop("checked", false);
@@ -91,28 +102,28 @@
 								//----------------------------------------------
 								// Tag Selectors
 								else if (inputField.hasClass('cfw-tags-selector')){
-									var tagsInputValues = JSON.parse(viewerCustomValue);
+									let tagsInputValues = JSON.parse(viewerCustomValue);
 									//must be initialized to add values
 									inputField.tagsinput('removeAll');
-									for(var key in tagsInputValues){
+									for(let key in tagsInputValues){
 										inputField.tagsinput('add', { "value": key , "label": tagsInputValues[key] });
 									}
 									
 								//----------------------------------------------
 								// Tags
 								}else if(inputField.hasClass('cfw-tags')){
-									var tagsInputValues = viewerCustomValue.split(',');
+									let tagsInputValues = viewerCustomValue.split(',');
 									//must be initialized to add values
 									inputField.tagsinput('removeAll');
-									for(var index in tagsInputValues){
+									for(let index in tagsInputValues){
 										inputField.tagsinput('add', tagsInputValues[index]);
 									}
 									
 								//----------------------------------------------
 								// Chart Settings
 								}else if(inputField.data("role") == "chartsettings"){
-									var chartsettingsValues = JSON.parse(viewerCustomValue);
-									var wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');
+									let chartsettingsValues = JSON.parse(viewerCustomValue);
+									let wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');
 									 cfw_internal_applyChartSettings(inputField.attr('id'), wrapper, chartsettingsValues);
 								}else{
 									// stringify value, else it won't work properly with booleans
@@ -124,7 +135,7 @@
 					
 					//----------------------------------
 					// Callback
-					$('#globalParams').html('');
+					
 					if( settings.addtotop != true ){
 						callback(widgetObject, parentDiv);
 					}else{
@@ -138,7 +149,7 @@
 								.removeClass('mt-2')
 								.append(parentDiv)
 								;
-						callback(widgetObject, "<span>Added next to title</span>");
+						callback(widgetObject, "<span>Parameters added next to title</span>");
 					}
 					
 					
