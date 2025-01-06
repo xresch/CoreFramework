@@ -987,23 +987,24 @@ function cfw_initializeExpandableTextareaField(fieldID){
  *************************************************************************************/
 function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
 	
-	var id = '#'+fieldID;
+	let id = '#'+fieldID;
 
-	var originalField = $(id);
-	var selectedValue = originalField.val();
+	let originalField = $(id);
+	let selectedValue = originalField.val();
+	
 	originalField.css('display', 'none');
 	
 	//--------------------------
 	// Create Wrapper
-	var wrapper = $('<div id="'+fieldID+'-cfw-select" class="cfw-select w-100">');
+	let wrapper = $('<div id="'+fieldID+'-cfw-select" class="cfw-select w-100">');
 	wrapper.data('options', valueLabelOptions);
 	originalField.before(wrapper);
 	wrapper.append(originalField);	
 		
 	//--------------------------
 	// Create Dropdown
-	var classes = originalField.attr('class');
-	var dropdownHTML = `<div class="dropdown">
+	let classes = originalField.attr('class');
+	let dropdownHTML = `<div class="dropdown">
 			<button id="${id}-dropdownMenuButton" class="form-control mb-2 dropdown-toggle dropdown-toggle-wide ${classes}" style="text-align: start;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			   &nbsp;
 			</button>
@@ -1013,9 +1014,12 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
 	
 	//--------------------------
 	// Create Options
+	let containsSelectedValue = false;
 	if(valueLabelOptions != null){
 		for(let i = 0; i < valueLabelOptions.length; i++){
 			let currentOption = valueLabelOptions[i];
+			
+			if(selectedValue == currentOption.value){ containsSelectedValue = true; }
 			
 			let label = '&nbsp;';
 			if( !CFW.utils.isNullOrEmpty(currentOption.label) ) {
@@ -1032,7 +1036,13 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
 	
 	dropdownHTML += '</div> </div>';
 	
-
+	//--------------------------------
+	// Select first if not Selected
+	if( ! containsSelectedValue
+	&& valueLabelOptions.length > 0 ){
+		selectedValue = valueLabelOptions[i].value;
+	}
+	
 	//--------------------------------
 	// Finishing Touch
 	wrapper.append(dropdownHTML);
