@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -461,7 +462,11 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 					if(bothNumbers(leftValue, rightValue)) {
 						try {
 							int biggerScale = leftDeci.scale();
+							
+							// this is needed to support very small numbers
 							if(biggerScale < rightDeci.scale()) { biggerScale = rightDeci.scale(); }
+							// this is needed to get actual precision when dividing numbers
+							biggerScale += 3;
 							
 							evalResult = new JsonPrimitive(leftDeci.divide(rightDeci, biggerScale, RoundingMode.HALF_UP));
 						}catch(Exception e) {
