@@ -547,8 +547,8 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 	public void setParentCommand(CFWQueryCommand parent) {
 		
 		this.parent = parent;
-		this.leftside.setParentCommand(parent);
-		this.rightside.setParentCommand(parent);
+		if(leftside != null) {	this.leftside.setParentCommand(parent); }
+		if(rightside != null) {	this.rightside.setParentCommand(parent); }
 		
 	}
 

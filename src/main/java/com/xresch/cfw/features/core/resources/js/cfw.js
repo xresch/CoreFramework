@@ -1039,8 +1039,9 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
 	//--------------------------------
 	// Select first if not Selected
 	if( ! containsSelectedValue
+	&& valueLabelOptions != null
 	&& valueLabelOptions.length > 0 ){
-		selectedValue = valueLabelOptions[i].value;
+		selectedValue = valueLabelOptions[0].value;
 	}
 	
 	//--------------------------------

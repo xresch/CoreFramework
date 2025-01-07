@@ -310,7 +310,7 @@ public class QueryPartFunction extends QueryPart {
 		this.parent = parent;
 		
 		for(QueryPart part : functionParameters) {
-			part.setParentCommand(parent);
+			if(part != null) { part.setParentCommand(parent); }
 		}
 		
 	}

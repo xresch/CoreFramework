@@ -148,8 +148,8 @@ public class QueryPartAssignment extends QueryPart {
 	public void setParentCommand(CFWQueryCommand parent) {
 		
 		this.parent = parent;
-		this.leftside.setParentCommand(parent);
-		this.rightside.setParentCommand(parent);
+		if(leftside != null) {	this.leftside.setParentCommand(parent); }
+		if(rightside != null) {	this.rightside.setParentCommand(parent); }
 		
 	}
 

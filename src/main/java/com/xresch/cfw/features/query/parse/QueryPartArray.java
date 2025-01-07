@@ -302,7 +302,7 @@ public class QueryPartArray extends QueryPart {
 		this.parent = parent;
 		
 		for(QueryPart part : partsArray) {
-			part.setParentCommand(parent);
+			if(part != null) { part.setParentCommand(parent); }
 		}
 		
 	}

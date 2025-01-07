@@ -274,7 +274,7 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 		this.parent = parent;
 		
 		for(QueryPart part : partsGroup) {
-			part.setParentCommand(parent);
+			if(part != null) { part.setParentCommand(parent); }
 		}
 		
 	}
