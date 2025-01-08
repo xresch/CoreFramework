@@ -120,7 +120,8 @@ public class QueryPartArray extends QueryPart {
 	@Override
 	public QueryPartValue determineValue(EnhancedJsonObject object) {
 		
-		JsonArray array = getAsJsonArray(object, true);
+		// cannot cache here, even if it would be nice
+		JsonArray array = getAsJsonArray(object, false);
 		
 		return QueryPartValue.newJson(array);
 	}

@@ -185,6 +185,7 @@ DONE
 - Query Command source - Now supports parameters for pagination 
 - Query: Added Prometheus Counters for Queries and Query Sources
 - Query: Fixed a bug where JSON member access like "function().name" would not work
+- Query: Fixed a bug where array values where cached and not updated
 - Query Source: EAV - now supports custom earliest/latest
 
 - Query: Added Commands:
@@ -200,6 +201,7 @@ DONE
 	
 - Query: Added Functions:
 	- extractBounds
+	- g (shorthand for globals)
 	- intervalpoints
 	- message
 	- prev

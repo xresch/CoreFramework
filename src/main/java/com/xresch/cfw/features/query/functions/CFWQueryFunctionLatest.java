@@ -121,6 +121,7 @@ public class CFWQueryFunctionLatest extends CFWQueryFunction {
 		//----------------------------------
 		// Create Time and Format
 		long millis = this.context.getLatestMillis();
+
 		if(dateformat == null) {
 			return QueryPartValue.newNumber(millis);
 		}else {

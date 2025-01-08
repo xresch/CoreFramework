@@ -95,15 +95,15 @@ Typical example would be a web API that limits the amount of data returned. </p>
 
 <p>The following example sets the various pagination parameters and uses the page-value acquired with the sourcepage()-function to execute the random source several times:</p>
 <pre><code class="language-cfwquery">| source random 
-	records = sourcepage() # for demonstration, take page value as number of records
-	pagination = true # enable pagination
-	pageinitial = 1 # initial page value 
-	page = sourcepage() + 1 # adjust the initial value every time
-	pageend = ( sourcepage() >= 5 ) # return true when end condition has been reached
-	pagemax = 20 # the max number of pages to fetch, prevents endless loops</code></pre>
+	records = sourcepage() 			# for demonstration, take page value as number of records
+	pagination = true 				# enable pagination
+	pageinitial = 1 				# initial page value, retrievable with sourcepage() 
+	page = sourcepage() + 1 		# adjust the initial value after every page
+	pageend = ( sourcepage() >= 5 ) # checked after page values has been adjusted, return true when last page has been reached
+	pagemax = 20 					# the max number of pages to fetch, prevents endless loops</code></pre>
 
 
-<p>Pagination can be combined with the each-parameter, in this case pagination is done for every each value:</p>
+<p><b>Each:&nbsp;</b> Pagination can be combined with the each-parameter, in this case pagination is done for every each value:</p>
 <pre><code class="language-cfwquery">| source random 
 	each = [10, 10, 10] # every each-value will be fetched in a paginated manner 
 	records = sourceEach() # get the each-value
@@ -112,6 +112,37 @@ Typical example would be a web API that limits the amount of data returned. </p>
 	page = sourcepage() + 1 
 	pageend = ( sourcepage() >= 5 ) 
 	pagemax = 20 </code></pre>
+
+<p><b>Using Time Steps:&nbsp;</b> You can use pagination to step through a timeframe. 
+In this case you won't use the sourcepage()-function to retrieve the page, 
+but you will use earliest() / latest() for fetching parts of the timeframe.
+This approach can be useful if you have for example a Web API that highly limits the number of records it returns per call, 
+but allows you to filter the data by time. One disadvantage of this is that you have to choose a timeframe which does not reach the APIs data limit.
+Following is an example on how to setup a pagination with time steps:</p>
+<pre><code class="language-cfwquery">| globals
+	"INITIAL_LATEST" = latest() # store the initial latest()
+	STEP = 60  # amount to shift the timeframe for each page
+	UNIT = 'm' # unit for STEP
+| source json 
+	# this is what the source will create
+	data = object(
+			  "INDEX", count() 
+			, "INITIAL_LATEST", g("INITIAL_LATEST")			 # will stay the same
+			, "earliest", earliest() 						 # use earliest() and latest() to get the time
+			, "latest", min([latest(), g("INITIAL_LATEST")]) # makes sure to not overstep latest while still fetching full timeframe
+		 )
+	pagination 	= true	
+	
+	pageinitial	= latestSet(earliest(), g(STEP), g(UNIT)) 	# set latest to earliest() +
+	
+	page 		= timeframeOffset(0, g(STEP), g(UNIT))		# each page, shift the timeframe to the future by PAGE_STEP
+	
+	pageend		= earliest() >= g("INITIAL_LATEST")	# check if earliest is outside the timeframe
+				   
+	pagemax = 10 # will define the max timeframe: (pagemax * STEP) - for Example: 
+	
+| formatfield
+	[earliest, latest, INITIAL_LATEST] = timestamp</code></pre>
 
 
 

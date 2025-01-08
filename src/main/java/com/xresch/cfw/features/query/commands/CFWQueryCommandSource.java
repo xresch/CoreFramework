@@ -551,11 +551,18 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 							CFWObject paramsForSource = prepareParamsForSource();
 							source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
 							
-							lastPageReached = pageEndPart.determineValue(null).getAsBoolean();
+							//-----------------------------
+							// Update Current Page
 							currentPageValue = pageValuePart.determineValue(null).getAsString();
 							if(currentPageValue == null) {
 								break; // stop processing
 							}
+							
+							//-----------------------------
+							// Check Last Page Reached
+							lastPageReached = pageEndPart.determineValue(null).getAsBoolean();
+							
+
 							increasePrometheusCounters();
 							pageCounter++;
 						}
