@@ -139,7 +139,7 @@ Following is an example on how to setup a pagination with time steps:</p>
 	
 	pageend		= earliest() >= g("INITIAL_LATEST")	# check if earliest is outside the timeframe
 				   
-	pagemax = 10 # will define the max timeframe: (pagemax * STEP) - for Example: 
+	pagemax = 100 # will define the max timeframe: (pagemax * STEP) - for Example: 
 	
 | formatfield
 	[earliest, latest, INITIAL_LATEST] = timestamp</code></pre>
