@@ -32,8 +32,10 @@ import com.xresch.cfw.validation.LengthValidator;
  **************************************************************************************************************/
 public class CFWCredentials extends CFWObject {
 	
-	// !!! IMPORTANT !!! never change this salt-string! 
+	// !!! IMPORTANT !!! never change these salt-string! 
 	private static final String CREDENTIALS_PW_SALT = "CredentialsPW-Default-Salt"; 
+	private static final String CREDENTIALS_TOKEN_SALT = "CredentialsToken-Default-Salt"; 
+	private static final String CREDENTIALS_SECRET_SALT = "CredentialsSecret-Default-Salt"; 
 
 	public static final String TABLE_NAME = "CFW_CREDENTIALS";
 	
@@ -56,6 +58,8 @@ public class CFWCredentials extends CFWObject {
 		, DESCRIPTION
 		, ACCOUNT
 		, PASSWORD
+		, TOKEN
+		, SECRET
 		, DOMAIN
 		, HOSTNAME
 		, URL
@@ -105,6 +109,16 @@ public class CFWCredentials extends CFWObject {
 	private CFWField<String> password = CFWField.newString(FormFieldType.PASSWORD, CFWCredentialsFields.PASSWORD)
 			.setDescription("(Optional)The password of the credentials.")
 			.enableEncryption(CREDENTIALS_PW_SALT) // !!! IMPORTANT !!! never change this string! 
+			;
+	
+	private CFWField<String> token = CFWField.newString(FormFieldType.PASSWORD, CFWCredentialsFields.TOKEN)
+			.setDescription("(Optional)The token of the credentials.")
+			.enableEncryption(CREDENTIALS_TOKEN_SALT) // !!! IMPORTANT !!! never change this string! 
+			;
+	
+	private CFWField<String> secret = CFWField.newString(FormFieldType.PASSWORD, CFWCredentialsFields.SECRET)
+			.setDescription("(Optional)The secret of the credentials.")
+			.enableEncryption(CREDENTIALS_SECRET_SALT) // !!! IMPORTANT !!! never change this string! 
 			;
 	
 	private CFWField<String> salt = CFWField.newString(FormFieldType.NONE, CFWCredentialsFields.SALT)
@@ -204,6 +218,8 @@ public class CFWCredentials extends CFWObject {
 				, description
 				, account
 				, password
+				, token
+				, secret
 				, salt
 				, domain
 				, hostname
@@ -497,6 +513,8 @@ public class CFWCredentials extends CFWObject {
 		result.addProperty("name", name.getValue());
 		result.addProperty("account", account.getValue());
 		result.addProperty("password", password.getValue());
+		result.addProperty("token", token.getValue());
+		result.addProperty("secret", secret.getValue());
 		result.addProperty("domain", domain.getValue());
 		result.addProperty("hostname", hostname.getValue());
 		result.addProperty("url", url.getValue());
@@ -554,6 +572,32 @@ public class CFWCredentials extends CFWObject {
 		String salt = this.salt.getValue();
 		String encryptedValue = CFW.Security.encryptValue(value, salt);
 		this.password.setValue(encryptedValue);
+		return this;
+	}
+	
+	public String getTokenDecrypted() {
+		String salt = this.salt.getValue();
+		String decryptedValue = CFW.Security.decryptValue(token.getValue(), salt);
+		return decryptedValue;
+	}
+	
+	public CFWCredentials setTokenEncrypted(String value) {
+		String salt = this.salt.getValue();
+		String encryptedValue = CFW.Security.encryptValue(value, salt);
+		this.token.setValue(encryptedValue);
+		return this;
+	}
+	
+	public String getSecretDecrypted() {
+		String salt = this.salt.getValue();
+		String decryptedValue = CFW.Security.decryptValue(secret.getValue(), salt);
+		return decryptedValue;
+	}
+	
+	public CFWCredentials setSecretEncrypted(String value) {
+		String salt = this.salt.getValue();
+		String encryptedValue = CFW.Security.encryptValue(value, salt);
+		this.secret.setValue(encryptedValue);
 		return this;
 	}
 	

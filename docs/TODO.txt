@@ -178,6 +178,7 @@ DONE
 - Select Fields: Select first value by default if nothing is selected
 - CFWField: fixed issues with support of Long values
 - Charts: Tiny numbers on yAxis are displayed better
+- Credentials: Added fields token and secret
 - Dashboard Widget: New widget "Trigger Jobs" to allow users to trigger jobs from dashboards
 - Dashboard Widget: Parameters - Fixed issue with refresh when parameters are added to top
 - Query: Command display - new parameter 'download' to enable a download button
