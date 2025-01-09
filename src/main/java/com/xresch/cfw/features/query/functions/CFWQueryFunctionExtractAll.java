@@ -5,6 +5,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -21,12 +22,12 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * (c) Copyright 2022 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWQueryFunctionExtract extends CFWQueryFunction {
+public class CFWQueryFunctionExtractAll extends CFWQueryFunction {
 
 	
-	private static final String FUNCTION_NAME = "extract";
+	private static final String FUNCTION_NAME = "extractAll";
 
-	public CFWQueryFunctionExtract(CFWQueryContext context) {
+	public CFWQueryFunctionExtractAll(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -60,7 +61,7 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Extract a single value with regular expressions.";
+		return "Extract all matching values with regular expressions.";
 	}
 	
 	/***********************************************************************************************
@@ -142,16 +143,21 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 		// Extract
 		Pattern p = Pattern.compile(regex.getAsString(), Pattern.MULTILINE | Pattern.DOTALL);
 		Matcher m = p.matcher(valueToSearch.getAsString());
-		if(m.matches()) {
+		
+		JsonArray array = new JsonArray();
+		
+		while (m.find()) {
+			
 			if(m.groupCount() > groupIndex && groupIndex >= -1) {
-				return QueryPartValue.newString(m.group(groupIndex+1));
+				array.add( m.group(groupIndex+1) );
 			}else {
 				this.getContext().addMessage(MessageType.WARNING, FUNCTION_NAME+": could not match group with index: "+groupIndex);
 				QueryPartValue.newNull();
 			}
 		}
 		
-		return QueryPartValue.newNull();
+		
+		return QueryPartValue.newJson(array);
 	}
 
 }

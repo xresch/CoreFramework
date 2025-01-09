@@ -1,0 +1,20 @@
+
+<p>Extracts multiple values using regular expressions. The return value is defined using a regex group.
+The return value of this function is always an array, and is empty if there are no matches.</p>
+<p>Good to know:</p>
+<ul>
+	<li><b>Multi Line Support:&nbsp;</b> The regular expressions can be used for strings containing multiple lines.</li>
+	<li><b>Dot Matches Newline:&nbsp;</b> The dot separator matches line break characters.</li>
+</ul>
+
+<p>Following query creates example records and extracts various values:</p>
+
+<pre><code class="language-cfwquery">| source random records=100
+| keep ID, URL
+| set
+	# example ID: f60be92b-194c-472c-afa
+	PARTS 		= extractAll(ID, "-?([^-]+)")				# Extracts Part of an ID, results like ["f60be92b", "194c", "472c", "afa"]
+	HOST		= extractAll(URL, ".*?www.(.*?).url.*")		# extracts the host from the url
+	ID_FROM_URL	= extractAll(URL, ".*?www.(.*?).url/.*?id=(.*)", 1) 	# use group index if you have more then one group in your regular expression
+	ESCAPE		= extractAll(`test(1); foo("true"); bar('three'); acme() `, `\(["']?(.*?)["']?\)`, 0) # here an example that escapes '(' and ')' extract parameters from functions </code></pre>
+

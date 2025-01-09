@@ -201,6 +201,7 @@ DONE
 	- skip
 	
 - Query: Added Functions:
+	- extractAll
 	- extractBounds
 	- g (shorthand for globals)
 	- intervalpoints
