@@ -33,16 +33,22 @@ public class CFWJobsReporting {
 	}
 	
 	/*************************************************************************
-	 * Register a channel with the given name
+	 * Register a channel with a unique name.
+	 * The name will be used to identify the channel and should never be changed.
+	 * 
+	 * @param finalUniqueName a unique name that should never be changed that is 
+	 * 		  is used to identify this channel.
+	 * 		  This name can be retrieved from the channel using "getUniqueName".
+	 * 
 	 *************************************************************************/
-	public static void registerChannel(CFWJobsReportingChannel channel) {
+	public static void registerChannel(String finalUniqueName, CFWJobsReportingChannel channel) {
 		
-		if( channelMap.containsKey(channel.getUniqueName()) ) {
+		if( channelMap.containsKey(finalUniqueName) ) {
 			new CFWLog(logger).severe("An alert channel with the name '"+channel.getUniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
 			return;
 		}
 		
-		channelMap.put(channel.getUniqueName(), channel.getClass());
+		channelMap.put(finalUniqueName, channel.getClass());
 		
 		resetCache();
 	}
@@ -113,6 +119,7 @@ public class CFWJobsReporting {
 		try {
 			if(clazz != null) {
 				instance = clazz.getDeclaredConstructor().newInstance();
+				instance.setUniqueName(uniqueName); // give back the love so that others can enjoy it too with getUniqueName()
 			}
 		} catch (Exception e) {
 			new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);

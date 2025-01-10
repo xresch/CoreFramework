@@ -42,7 +42,7 @@ public class FeatureNotifications extends CFWAppFeature {
 		
 		//----------------------------------
     	// Register Alerting Channel
-		CFW.Registry.JobsReporting.registerChannel(new CFWJobsReportingChannelNotification());
+		CFW.Registry.JobsReporting.registerChannel(CFWJobsReportingChannelNotification.UNIQUE_NAME, new CFWJobsReportingChannelNotification());
 		
     	//----------------------------------
     	// Register Button Menu

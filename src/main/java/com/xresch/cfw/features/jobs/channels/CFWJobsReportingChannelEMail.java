@@ -22,11 +22,9 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class CFWJobsReportingChannelEMail extends CFWJobsReportingChannel {
 
-	LinkedHashMap<String,String> attachments = new LinkedHashMap<>();
+	public static final String UNIQUE_NAME = "eMail";
 	
-	public CFWJobsReportingChannelEMail() {
-		this.setUniqueName("eMail");
-	}
+	LinkedHashMap<String,String> attachments = new LinkedHashMap<>();
 	
 	@Override
 	public String getLabel() {

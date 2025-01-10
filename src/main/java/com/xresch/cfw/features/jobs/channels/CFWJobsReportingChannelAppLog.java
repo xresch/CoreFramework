@@ -21,9 +21,8 @@ public class CFWJobsReportingChannelAppLog extends CFWJobsReportingChannel {
 
 	private static Logger logger = CFWLog.getLogger(CFWJobsReportingChannelAppLog.class.getName());
 	
-	public CFWJobsReportingChannelAppLog() {
-		this.setUniqueName("Application Log");
-	}
+	public static final String UNIQUE_NAME = "Application Log";
+	
 	
 	@Override
 	public String getLabel() {

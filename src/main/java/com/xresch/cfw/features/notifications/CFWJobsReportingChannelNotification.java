@@ -20,10 +20,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWJobsReportingChannelNotification extends CFWJobsReportingChannel {
-
-	public CFWJobsReportingChannelNotification() {
-		this.setUniqueName("Notification");
-	}
+	
+	public static final String UNIQUE_NAME = "Notification";
 
 	@Override
 	public String getLabel() {
