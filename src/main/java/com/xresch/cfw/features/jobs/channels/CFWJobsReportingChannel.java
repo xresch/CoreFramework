@@ -1,9 +1,10 @@
-package com.xresch.cfw.features.jobs;
+package com.xresch.cfw.features.jobs.channels;
 
 import java.util.HashMap;
 
 import org.quartz.JobExecutionContext;
 
+import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -14,14 +15,17 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public abstract class CFWJobsReportingChannel {
 	
+	String uniqueName = "";
+	
 	/*************************************************************************
-	 * Return a unique name for this channel.
+	 * Set a unique name for this channel.
 	 * This will be used in the UI and as ID.
 	 * Changing this name afterwards will corrupt existing Alerts.
 	 *************************************************************************/
-	public abstract String uniqueName();
-	
-	
+	public void setUniqueName(String uniqueName) {
+		this.uniqueName = uniqueName;
+	}
+		
 	/*************************************************************************
 	 * Return a description for this channel.
 	 *************************************************************************/
@@ -38,14 +42,33 @@ public abstract class CFWJobsReportingChannel {
 	
 	/*************************************************************************
 	 * Send the alerts.
-	 * @param context TODO
-	 * @param messageType TODO
+	 * @param context the context of the job
+	 * @param uniqueName the name of the Reporting Channel
+	 * @param messageType type of the message
+	 * @param alertObject the alerting object
+	 * @param uniqueUsers the users to alert
+	 * @param content the report content as plain text
+	 * @param contentHTML the report content as HTML
 	 *************************************************************************/
-	public abstract void sendAlerts(JobExecutionContext context, MessageType messageType, CFWJobsAlertObject alertObject, HashMap<Integer, User> uniqueUsers, String subject, String content, String contentHTML);
+	public abstract void sendAlerts(JobExecutionContext context, String uniqueName, MessageType messageType, CFWJobsAlertObject alertObject, HashMap<Integer, User> uniqueUsers, String subject, String content, String contentHTML);
 	
 	/*************************************************************************
 	 * Return if the user is able to select this channel.
 	 *************************************************************************/
 	public abstract boolean hasPermission(User user);
+	
+	/*************************************************************************
+	 * Returns the unique name for this channel.
+	 * This will be used in the UI and as ID.
+	 * Changing this name afterwards might corrupt existing Alerts.
+	 *************************************************************************/
+	public String getUniqueName() {
+		return uniqueName;
+	};
+	
+	/*************************************************************************
+	 * Returns the label for this channel that should be shown on the UI.
+	 *************************************************************************/
+	public abstract String getLabel();
 	
 }

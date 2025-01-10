@@ -8,6 +8,8 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannelAppLog;
+import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannelEMail;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;

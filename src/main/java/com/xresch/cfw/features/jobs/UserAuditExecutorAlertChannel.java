@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannel;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.UserAuditExecutor;
@@ -44,7 +45,7 @@ public class UserAuditExecutorAlertChannel implements UserAuditExecutor {
 		for(CFWJobsReportingChannel current : channelArray) {
 			
 			JsonObject widgetObject = new JsonObject();
-			widgetObject.addProperty("CHANNEL", current.uniqueName());
+			widgetObject.addProperty("CHANNEL", current.getUniqueName());
 			widgetObject.addProperty("HAS_PERMISSION", current.hasPermission(user));
 			
 			result.add(widgetObject);

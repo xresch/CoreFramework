@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.jobs;
+package com.xresch.cfw.features.jobs.channels;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -8,6 +8,9 @@ import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.jobs.CFWJob;
+import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
+import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -21,9 +24,13 @@ public class CFWJobsReportingChannelEMail extends CFWJobsReportingChannel {
 
 	LinkedHashMap<String,String> attachments = new LinkedHashMap<>();
 	
+	public CFWJobsReportingChannelEMail() {
+		this.setUniqueName("eMail");
+	}
+	
 	@Override
-	public String uniqueName() {
-		return "eMail";
+	public String getLabel() {
+		return getUniqueName()+"!!!!";
 	}
 
 	@Override
@@ -33,10 +40,10 @@ public class CFWJobsReportingChannelEMail extends CFWJobsReportingChannel {
 
 	@Override
 	public void sendAlerts(JobExecutionContext context
+			, String uniqueName
 			, MessageType messageType
-			, CFWJobsAlertObject alertObject
-			, HashMap<Integer, User> usersToAlert, String subject
-			, String content, String contentHTML) {
+			, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert
+			, String subject, String content, String contentHTML) {
 				
 		String jobID = context.getJobDetail().getKey().getName();
 		CFWJob job = CFW.DB.Jobs.selectByID(jobID);

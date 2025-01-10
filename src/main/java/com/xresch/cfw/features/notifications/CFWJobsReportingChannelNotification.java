@@ -8,8 +8,8 @@ import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
-import com.xresch.cfw.features.jobs.CFWJobsReportingChannel;
 import com.xresch.cfw.features.jobs.FeatureJobs;
+import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannel;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -21,11 +21,15 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class CFWJobsReportingChannelNotification extends CFWJobsReportingChannel {
 
-	@Override
-	public String uniqueName() {
-		return "Notification";
+	public CFWJobsReportingChannelNotification() {
+		this.setUniqueName("Notification");
 	}
 
+	@Override
+	public String getLabel() {
+		return getUniqueName();
+	}
+	
 	@Override
 	public String channelDescription() {
 		return "Sends the alerts to the users by adding a notification to their notification list.";
@@ -33,10 +37,10 @@ public class CFWJobsReportingChannelNotification extends CFWJobsReportingChannel
 
 	@Override
 	public void sendAlerts(JobExecutionContext context
+			, String uniqueName
 			, MessageType messageType
-			, CFWJobsAlertObject alertObject
-			, HashMap<Integer, User> usersToAlert, String subject
-			, String content, String contentHTML) {
+			, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert
+			, String subject, String content, String contentHTML) {
 				
 		String jobID = context.getJobDetail().getKey().getName();
 		CFWJob job = CFW.DB.Jobs.selectByID(jobID);

@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.jobs;
+package com.xresch.cfw.features.jobs.channels;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
+import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
+import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -19,9 +21,13 @@ public class CFWJobsReportingChannelAppLog extends CFWJobsReportingChannel {
 
 	private static Logger logger = CFWLog.getLogger(CFWJobsReportingChannelAppLog.class.getName());
 	
+	public CFWJobsReportingChannelAppLog() {
+		this.setUniqueName("Application Log");
+	}
+	
 	@Override
-	public String uniqueName() {
-		return "Application Log";
+	public String getLabel() {
+		return getUniqueName();
 	}
 
 	@Override
@@ -30,7 +36,7 @@ public class CFWJobsReportingChannelAppLog extends CFWJobsReportingChannel {
 	}
 
 	@Override
-	public void sendAlerts(JobExecutionContext context, MessageType messageType, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert, String subject, String content, String contentHTML) {
+	public void sendAlerts(JobExecutionContext context, String uniqueName, MessageType messageType, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert, String subject, String content, String contentHTML) {
 				
 		CFWLog logEvent = new CFWLog(logger)
 				.silent(true)

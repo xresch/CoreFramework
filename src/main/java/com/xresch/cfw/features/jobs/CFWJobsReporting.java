@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannel;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -22,28 +23,45 @@ public class CFWJobsReporting {
 	// UniqueName and JobTask
 	private static LinkedHashMap<String, Class<? extends CFWJobsReportingChannel>> channelMap = new LinkedHashMap<>();
 
-	private static ArrayList<CFWJobsReportingChannel> instanceArray;
+	private static ArrayList<CFWJobsReportingChannel> cachedInstanceArray;
 
 	/*************************************************************************
 	 * 
 	 *************************************************************************/
+	private static void resetCache() {
+		cachedInstanceArray = null;
+	}
+	
+	/*************************************************************************
+	 * Register a channel with the given name
+	 *************************************************************************/
 	public static void registerChannel(CFWJobsReportingChannel channel) {
 		
-		if( channelMap.containsKey(channel.uniqueName()) ) {
-			new CFWLog(logger).severe("An alert channel with the name '"+channel.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
+		if( channelMap.containsKey(channel.getUniqueName()) ) {
+			new CFWLog(logger).severe("An alert channel with the name '"+channel.getUniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
 			return;
 		}
 		
-		channelMap.put(channel.uniqueName(), channel.getClass());
-		instanceArray = null;
+		channelMap.put(channel.getUniqueName(), channel.getClass());
+		
+		resetCache();
+	}
+	
+	/*************************************************************************
+	 * 
+	 *************************************************************************/
+	public static void removeChannel(String uniqueName) {
+		channelMap.remove(uniqueName);
+		
+		resetCache();
 	}
 	
 	/***********************************************************************
-	 * Get a list of all task names that the current user has access to.
+	 * Returns a map with uniqueName/channelLabel.
 	 * 
 	 ***********************************************************************/
-	public static Set<String> getChannelNamesForUI()  {
-		Set<String> channelNames = new HashSet<>();
+	public static LinkedHashMap<String,String> getChannelOptionsForUI()  {
+		LinkedHashMap<String,String> channelNames = new LinkedHashMap<>();
 		
 		User user = CFW.Context.Request.getUser();
 		
@@ -54,7 +72,7 @@ public class CFWJobsReporting {
 				if(channel.hasPermission(CFW.Context.Request.getUser())
 				|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)	
 				) {
-					channelNames.add(channel.uniqueName());
+					channelNames.put(channel.getUniqueName(), channel.getLabel());
 				}
 			}
 		}
@@ -66,21 +84,22 @@ public class CFWJobsReporting {
 	 * 
 	 ***********************************************************************/
 	public static ArrayList<CFWJobsReportingChannel> getAllChannelInstances()  {
-		if(instanceArray != null) {
-			return instanceArray;
+		
+		if(cachedInstanceArray != null) {
+			return cachedInstanceArray;
 		}
 		
-		instanceArray = new ArrayList<>();
+		cachedInstanceArray = new ArrayList<>();
 		
-		for(Class<? extends CFWJobsReportingChannel> clazz : channelMap.values()) {
-			try {
-				CFWJobsReportingChannel instance = clazz.newInstance();
-				instanceArray.add(instance);
-			} catch (Exception e) {
-				new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
+		for(String channelName : channelMap.keySet()) {
+
+			CFWJobsReportingChannel instance = createChannelInstance(channelName);
+			if(instance != null) {
+				cachedInstanceArray.add(instance);
 			}
+
 		}
-		return instanceArray;
+		return cachedInstanceArray;
 	}
 	
 	/***********************************************************************
@@ -93,7 +112,7 @@ public class CFWJobsReporting {
 		Class<? extends CFWJobsReportingChannel> clazz =  channelMap.get(uniqueName);
 		try {
 			if(clazz != null) {
-				instance = clazz.newInstance();
+				instance = clazz.getDeclaredConstructor().newInstance();
 			}
 		} catch (Exception e) {
 			new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
