@@ -39,9 +39,9 @@ public class UserAuditExecutorAlertChannel implements UserAuditExecutor {
 		
 		//---------------------------------
 		// Fetch Data
-		ArrayList<CFWJobsAlertingChannel> channelArray = CFWJobsAlerting.getAllChannelInstances();
+		ArrayList<CFWJobsReportingChannel> channelArray = CFWJobsReporting.getAllChannelInstances();
 		
-		for(CFWJobsAlertingChannel current : channelArray) {
+		for(CFWJobsReportingChannel current : channelArray) {
 			
 			JsonObject widgetObject = new JsonObject();
 			widgetObject.addProperty("CHANNEL", current.uniqueName());

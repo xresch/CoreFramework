@@ -19,6 +19,11 @@ import com.xresch.cfw.utils.CFWMonitor;
 
 import io.prometheus.client.Counter;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
 public abstract class CFWJobTask implements InterruptableJob {
 	
 	private static Logger logger = CFWLog.getLogger(CFWJobTask.class.getName());

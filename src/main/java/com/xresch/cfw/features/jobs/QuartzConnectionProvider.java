@@ -9,6 +9,11 @@ import org.quartz.utils.ConnectionProvider;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
 public class QuartzConnectionProvider implements ConnectionProvider {
 	
 	private static Logger logger = CFWLog.getLogger(QuartzConnectionProvider.class.getName());

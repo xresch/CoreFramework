@@ -22,6 +22,11 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.validation.LengthValidator;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
 public class CFWJobsAlertObject extends CFWObject {
 
 	private int MAX_OCCURENCE_CHECK = 24;
@@ -112,7 +117,7 @@ public class CFWJobsAlertObject extends CFWObject {
 				CFWField.newCheckboxes(AlertObjectFields.JSON_ALERTING_ALERT_CHANNEL)
 						.setLabel("Channels")
 						.setDescription("Choose the channels the report should be sent through.")
-						.setOptions(CFWJobsAlerting.getChannelNamesForUI())
+						.setOptions(CFWJobsReporting.getChannelNamesForUI())
 						.setValue(null);
 	
 	private CFWField<String> customTitle = 
@@ -342,9 +347,9 @@ public class CFWJobsAlertObject extends CFWObject {
 		//--------------------------
 		// Send to Channels
 		HashMap<Integer, User> uniqueUsers = this.doSendAlert_getMergedListOfUsersToAlert();
-		ArrayList<CFWJobsAlertingChannel> channelsToAlert = this.doSendAlert_getListOfAlertChannels();
+		ArrayList<CFWJobsReportingChannel> channelsToAlert = this.doSendAlert_getListOfAlertChannels();
 		
-		for(CFWJobsAlertingChannel channel : channelsToAlert) {
+		for(CFWJobsReportingChannel channel : channelsToAlert) {
 			for(TextData textData : textDataArray) {
 				channel.addTextData(textData.name, textData.filetype, textData.data);
 			}
@@ -358,8 +363,8 @@ public class CFWJobsAlertObject extends CFWObject {
 	 * Returns a HashMap containing a list of unique users that are the mighty
 	 * chosen ones who will get the important alerts.
 	 **************************************************************************/
-	private ArrayList<CFWJobsAlertingChannel> doSendAlert_getListOfAlertChannels(){
-		ArrayList<CFWJobsAlertingChannel> channelsToAlert = new ArrayList<>();
+	private ArrayList<CFWJobsReportingChannel> doSendAlert_getListOfAlertChannels(){
+		ArrayList<CFWJobsReportingChannel> channelsToAlert = new ArrayList<>();
 		
 		LinkedHashMap<String, String> channelSelection = alertChannels.getValue();
 		
@@ -367,7 +372,7 @@ public class CFWJobsAlertObject extends CFWObject {
 			for(Entry<String, String> entry : channelSelection.entrySet()) {
 				if(entry.getValue().toLowerCase().equals("true")) {
 					String channelUniqueName = entry.getKey();
-					channelsToAlert.add(CFWJobsAlerting.createChannelInstance(channelUniqueName));
+					channelsToAlert.add(CFWJobsReporting.createChannelInstance(channelUniqueName));
 				}
 			}
 		}

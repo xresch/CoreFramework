@@ -10,9 +10,14 @@ import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
-public class CFWJobsAlertingChannelAppLog extends CFWJobsAlertingChannel {
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
+public class CFWJobsReportingChannelAppLog extends CFWJobsReportingChannel {
 
-	private static Logger logger = CFWLog.getLogger(CFWJobsAlertingChannelAppLog.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWJobsReportingChannelAppLog.class.getName());
 	
 	@Override
 	public String uniqueName() {

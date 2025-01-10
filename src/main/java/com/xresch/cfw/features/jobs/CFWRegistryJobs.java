@@ -27,6 +27,11 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.logging.CFWLog;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
 public class CFWRegistryJobs {
 
 	public static final String FIELD_STARTTIME = "starttime";

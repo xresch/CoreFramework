@@ -16,7 +16,8 @@ import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
  **************************************************************************************************************/
 public class Notification extends CFWObject {
 	

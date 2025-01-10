@@ -30,7 +30,8 @@ import com.xresch.cfw.validation.ScheduleValidator;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
  **************************************************************************************************************/
 public class CFWJob extends CFWObject {
 	

@@ -12,7 +12,12 @@ import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
-public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
+public class CFWJobsReportingChannelEMail extends CFWJobsReportingChannel {
 
 	LinkedHashMap<String,String> attachments = new LinkedHashMap<>();
 	

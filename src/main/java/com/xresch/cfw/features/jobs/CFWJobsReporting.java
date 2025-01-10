@@ -10,19 +10,24 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 
-public class CFWJobsAlerting {
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
+public class CFWJobsReporting {
 
-	private static Logger logger = CFWLog.getLogger(CFWJobsAlerting.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWJobsReporting.class.getName());
 	
 	// UniqueName and JobTask
-	private static LinkedHashMap<String, Class<? extends CFWJobsAlertingChannel>> channelMap = new LinkedHashMap<>();
+	private static LinkedHashMap<String, Class<? extends CFWJobsReportingChannel>> channelMap = new LinkedHashMap<>();
 
-	private static ArrayList<CFWJobsAlertingChannel> instanceArray;
+	private static ArrayList<CFWJobsReportingChannel> instanceArray;
 
 	/*************************************************************************
 	 * 
 	 *************************************************************************/
-	public static void registerChannel(CFWJobsAlertingChannel channel) {
+	public static void registerChannel(CFWJobsReportingChannel channel) {
 		
 		if( channelMap.containsKey(channel.uniqueName()) ) {
 			new CFWLog(logger).severe("An alert channel with the name '"+channel.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
@@ -44,7 +49,7 @@ public class CFWJobsAlerting {
 		
 		//only return for UI, ignore if run by job
 		if(user != null) {
-			for(CFWJobsAlertingChannel channel : getAllChannelInstances()) {
+			for(CFWJobsReportingChannel channel : getAllChannelInstances()) {
 	
 				if(channel.hasPermission(CFW.Context.Request.getUser())
 				|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)	
@@ -60,16 +65,16 @@ public class CFWJobsAlerting {
 	 * Get a list of all executor instances.
 	 * 
 	 ***********************************************************************/
-	public static ArrayList<CFWJobsAlertingChannel> getAllChannelInstances()  {
+	public static ArrayList<CFWJobsReportingChannel> getAllChannelInstances()  {
 		if(instanceArray != null) {
 			return instanceArray;
 		}
 		
 		instanceArray = new ArrayList<>();
 		
-		for(Class<? extends CFWJobsAlertingChannel> clazz : channelMap.values()) {
+		for(Class<? extends CFWJobsReportingChannel> clazz : channelMap.values()) {
 			try {
-				CFWJobsAlertingChannel instance = clazz.newInstance();
+				CFWJobsReportingChannel instance = clazz.newInstance();
 				instanceArray.add(instance);
 			} catch (Exception e) {
 				new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
@@ -82,10 +87,10 @@ public class CFWJobsAlerting {
 	 * Get a new instance for the specified task.
 	 * Returns null if the task is undefined.
 	 ***********************************************************************/
-	public static CFWJobsAlertingChannel createChannelInstance(String uniqueName)  {
+	public static CFWJobsReportingChannel createChannelInstance(String uniqueName)  {
 		
-		CFWJobsAlertingChannel instance = null;
-		Class<? extends CFWJobsAlertingChannel> clazz =  channelMap.get(uniqueName);
+		CFWJobsReportingChannel instance = null;
+		Class<? extends CFWJobsReportingChannel> clazz =  channelMap.get(uniqueName);
 		try {
 			if(clazz != null) {
 				instance = clazz.newInstance();
@@ -101,7 +106,7 @@ public class CFWJobsAlerting {
 	 * Return the class for the specified task.
 	 * Returns null if the task is undefined.
 	 ***********************************************************************/
-	public static Class<? extends CFWJobsAlertingChannel> getChannelClass(String uniqueName)  {
+	public static Class<? extends CFWJobsReportingChannel> getChannelClass(String uniqueName)  {
 		
 		return channelMap.get(uniqueName);
 	}

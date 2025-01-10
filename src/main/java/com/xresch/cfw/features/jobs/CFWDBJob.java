@@ -24,7 +24,9 @@ import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
- * @author Reto Scheiwiller
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
  **************************************************************************************************************/
 public class CFWDBJob {
 	

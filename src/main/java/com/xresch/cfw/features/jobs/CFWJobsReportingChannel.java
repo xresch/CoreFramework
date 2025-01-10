@@ -7,7 +7,12 @@ import org.quartz.JobExecutionContext;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
-public abstract class CFWJobsAlertingChannel {
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
+public abstract class CFWJobsReportingChannel {
 	
 	/*************************************************************************
 	 * Return a unique name for this channel.

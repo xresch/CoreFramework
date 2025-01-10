@@ -26,6 +26,7 @@ import com.xresch.cfw.utils.CFWRandom;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2021
+ * @license MIT-License
  **************************************************************************************************************/
 public class ServletNotification extends HttpServlet
 {

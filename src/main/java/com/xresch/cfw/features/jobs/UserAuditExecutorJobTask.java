@@ -11,6 +11,11 @@ import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.UserAuditExecutor;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
 public class UserAuditExecutorJobTask implements UserAuditExecutor {
 
 	@Override

@@ -23,6 +23,11 @@ import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.utils.CFWMonitor;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2024
+ * @license MIT-License
+ **************************************************************************************************************/
 public class CFWJobTaskSendMail extends CFWJobTask {
 	
 

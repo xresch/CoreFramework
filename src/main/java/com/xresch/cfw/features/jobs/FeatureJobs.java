@@ -44,8 +44,8 @@ public class FeatureJobs extends CFWAppFeature {
 
 		//----------------------------------
     	// Register Alerting Channel
-		CFW.Registry.JobsAlerting.registerChannel(new CFWJobsAlertingChannelEMail());
-		CFW.Registry.JobsAlerting.registerChannel(new CFWJobsAlertingChannelAppLog());
+		CFW.Registry.JobsReporting.registerChannel(new CFWJobsReportingChannelEMail());
+		CFW.Registry.JobsReporting.registerChannel(new CFWJobsReportingChannelAppLog());
 
 		//----------------------------------
     	// Register Audit
