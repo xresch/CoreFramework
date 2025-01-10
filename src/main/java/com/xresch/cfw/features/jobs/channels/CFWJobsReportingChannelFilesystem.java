@@ -17,14 +17,16 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2024
+ * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWJobsReportingChannelEMail extends CFWJobsReportingChannel {
+public class CFWJobsReportingChannelFilesystem extends CFWJobsReportingChannel {
 
-	public static final String UNIQUE_NAME = "eMail";
-	
 	LinkedHashMap<String,String> attachments = new LinkedHashMap<>();
+	
+	public CFWJobsReportingChannelFilesystem() {
+		this.setUniqueName("Filesystem");
+	}
 	
 	@Override
 	public String getLabel() {
