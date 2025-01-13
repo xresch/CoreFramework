@@ -352,17 +352,29 @@ public class CFWDBContextSettings {
 	
 	/***************************************************************
 	 * Returns a map with ID/Name values for select options for
-	 * the current user
+	 * the current user.
+	 * 
 	 * @param type of the context setting
 	 * @param options for user, empty map if user is null.
 	 ****************************************************************/
 	public static HashMap<Integer, Object> getSelectOptionsForTypeAndUser(String type) {
 		
+		User user = CFW.Context.Request.getUser();
+
+		return getSelectOptionsForTypeAndUser(type, user);
+	}
+	
+	/***************************************************************
+	 * Returns a map with ID/Name values for select options for
+	 * the specified user.
+	 * 
+	 * @param type of the context setting
+	 * @param options for user, empty map if user is null.
+	 ****************************************************************/
+	public static HashMap<Integer, Object> getSelectOptionsForTypeAndUser(String type, User user) {
+		
 		HashMap<Integer, Object> objects = new LinkedHashMap<>();
 		
-		//----------------------------------
-		// Get User
-		User user = CFW.Context.Request.getUser();
 		if (user == null) { return objects; }
 		
 		objects = createQueryForTypeAndUser(type, user)

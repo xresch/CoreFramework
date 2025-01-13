@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -13,6 +14,7 @@ import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
 import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.jobs.FeatureJobs;
@@ -162,17 +164,22 @@ public class CFWJobsReportingChannelFilesystem extends CFWJobsReportingChannel {
 	@Override
 	public boolean hasPermission(User user) {
 		
-		CFWJobsReportingChannelFilesystemSettings filesystemSettings = getContextSettings();
-		
-		return ( 
-				   user.hasPermission(FeatureJobs.PERMISSION_JOBS_USER) 
-				|| user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
-			) 
-//			&& (
-//					filesystemSettings.
-//			)
+
+		if( user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN) ){
+			return true;
+		}else {
+			CFWJobsReportingChannelFilesystemSettings filesystemSettings = getContextSettings();
 			
-				;
+			
+			HashMap<Integer, Object> settingsMap = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(
+					CFWJobsReportingChannelFilesystemSettings.SETTINGS_TYPE
+					, user
+				);
+			
+			return settingsMap.containsKey(filesystemSettings.getDefaultObject().id() );
+			
+		}
+			
 	}
 	
 	/************************************************************************************
