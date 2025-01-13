@@ -17,8 +17,9 @@ import com.xresch.cfw.logging.CFWLog;
  * 
  **************************************************************************************************************/
 public class CFWJobsReportingChannelFilesystemSettingsManagement {
-	private static Logger logger = CFWLog.getLogger(CFWJobsReportingChannelFilesystemSettingsManagement.class.getName());
 	
+	private static Logger logger = CFWLog.getLogger(CFWJobsReportingChannelFilesystemSettingsManagement.class.getName());
+		
 	private static boolean isInitialized = false;
 	
 	// Contains ContextSettings id and the associated database interface
@@ -49,8 +50,9 @@ public class CFWJobsReportingChannelFilesystemSettingsManagement {
 				
 				//-------------------------------------
 				// Check for Name change
-				CFW.Registry.JobsReporting.removeChannel(oldSettings.createReportChannelLabel());
-				
+				if(oldSettings != null) {
+					CFW.Registry.JobsReporting.removeChannel(oldSettings.createChannelUniqueName());
+				}
 				CFWJobsReportingChannelFilesystemSettingsManagement.createChannelSettings(newSettings);
 			}
 
@@ -58,7 +60,7 @@ public class CFWJobsReportingChannelFilesystemSettingsManagement {
 			public void onDeleteOrDeactivate(AbstractContextSettings typeSettings) {
 				CFWJobsReportingChannelFilesystemSettings oldSettings = environments.remove(typeSettings.getDefaultObject().id());
 				
-				CFW.Registry.JobsReporting.removeChannel(oldSettings.createReportChannelLabel());
+				CFW.Registry.JobsReporting.removeChannel(oldSettings.createChannelUniqueName());
 				
 			}
 		};
@@ -93,11 +95,12 @@ public class CFWJobsReportingChannelFilesystemSettingsManagement {
 		Integer id = channelSettings.getDefaultObject().id();
 		
 		environments.remove(id);
-		
+
 		if(channelSettings.isProperlyDefined()) {
 			
-			
-			// TODO add channel from registry by channelLabel
+			CFW.Registry.JobsReporting.registerChannel(
+					  channelSettings.createChannelUniqueName()
+					,  new CFWJobsReportingChannelFilesystem());
 			
 			environments.put(id, channelSettings);
 		}else {

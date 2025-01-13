@@ -358,7 +358,7 @@ public class CFWJobsAlertObject extends CFWObject {
 			for(TextData textData : textDataArray) {
 				channel.addTextData(textData.name, textData.filetype, textData.data);
 			}
-			channel.sendAlerts(context, uniqueName, messageType, this, uniqueUsers, subject, content, contentHTML);
+			channel.sendReport(context, messageType, this, uniqueUsers, subject, content, contentHTML);
 		}
 		
 	}

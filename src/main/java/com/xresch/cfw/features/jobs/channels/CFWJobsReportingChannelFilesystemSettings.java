@@ -15,9 +15,10 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWJobsReportingChannelFilesystemSettings extends AbstractContextSettings {
 	
-	public static final String LABEL_PREFIX = "Filesystem: ";
+	public static final String PREFIX_LABEL = "Filesystem: ";
+	public static final String PREFIX_CHANNEL_NAME = "channel-";
 
-	public static final String SETTINGS_TYPE = "Reporting Channel: Filesystem";
+	public static final String SETTINGS_TYPE = "Report Channel: Filesystem";
 	
 	private CFWJobsReportingChannelFilesystemSettings INSTANCE;
 	private static Logger logger = CFWLog.getLogger(CFWJobsReportingChannelFilesystemSettings.class.getName());
@@ -65,22 +66,29 @@ public class CFWJobsReportingChannelFilesystemSettings extends AbstractContextSe
 	/*********************************************************************
 	 * 
 	 *********************************************************************/
-	public String createReportChannelLabel() {
-		return LABEL_PREFIX + this.getDefaultObject().name();
+	public String createChannelLabel() {
+		return PREFIX_LABEL + this.getDefaultObject().name();
 	}
 	
 	/*********************************************************************
 	 * 
 	 *********************************************************************/
-	public String extractSettingsNameFromLabel(String label) {
-		return label.replace(LABEL_PREFIX, "");
+	public String createChannelUniqueName() {
+		return  PREFIX_CHANNEL_NAME + this.getDefaultObject().id();
+	}
+	
+	/*********************************************************************
+	 * 
+	 *********************************************************************/
+	public static int extractIDFromUniqueName(String uniqueName) {
+		return Integer.parseInt( uniqueName.replace(PREFIX_CHANNEL_NAME, "") );
 	}
 	
 	/*********************************************************************
 	 * 
 	 *********************************************************************/
 	public String getName() {
-		return LABEL_PREFIX + this.getDefaultObject().name();
+		return PREFIX_LABEL + this.getDefaultObject().name();
 	}
 	
 	/*********************************************************************

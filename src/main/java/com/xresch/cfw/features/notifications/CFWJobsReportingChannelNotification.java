@@ -34,11 +34,11 @@ public class CFWJobsReportingChannelNotification extends CFWJobsReportingChannel
 	}
 
 	@Override
-	public void sendAlerts(JobExecutionContext context
-			, String uniqueName
+	public void sendReport(JobExecutionContext context
 			, MessageType messageType
-			, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert
-			, String subject, String content, String contentHTML) {
+			, CFWJobsAlertObject alertObject
+			, HashMap<Integer, User> usersToAlert, String subject
+			, String content, String contentHTML) {
 				
 		String jobID = context.getJobDetail().getKey().getName();
 		CFWJob job = CFW.DB.Jobs.selectByID(jobID);

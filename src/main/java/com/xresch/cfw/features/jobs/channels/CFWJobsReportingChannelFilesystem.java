@@ -1,8 +1,13 @@
 package com.xresch.cfw.features.jobs.channels;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import org.quartz.JobExecutionContext;
 
@@ -12,7 +17,7 @@ import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.mail.CFWMailBuilder;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
@@ -22,71 +27,157 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class CFWJobsReportingChannelFilesystem extends CFWJobsReportingChannel {
 
+	private static Logger logger = CFWLog.getLogger(CFWJobsReportingChannelFilesystem.class.getName());
+	
 	LinkedHashMap<String,String> attachments = new LinkedHashMap<>();
 	
-	public CFWJobsReportingChannelFilesystem() {
-		this.setUniqueName("Filesystem");
-	}
-	
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	@Override
 	public String getLabel() {
-		return getUniqueName();
+		return this.getContextSettings().getName();
 	}
 
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	@Override
 	public String channelDescription() {
 		return "Sends the alerts to the users eMail addresses.";
 	}
 
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	@Override
-	public void sendAlerts(JobExecutionContext context
-			, String uniqueName
+	public void sendReport(JobExecutionContext context
 			, MessageType messageType
-			, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert
-			, String subject, String content, String contentHTML) {
+			, CFWJobsAlertObject alertObject
+			, HashMap<Integer, User> usersToAlert
+			, String subject
+			, String content
+			, String contentHTML
+			){
 				
 		String jobID = context.getJobDetail().getKey().getName();
 		CFWJob job = CFW.DB.Jobs.selectByID(jobID);
 		
+		CFWJobsReportingChannelFilesystemSettings filesystemSettings = getContextSettings();
+		
+		//----------------------------------------
+		// Make Ze Path De Folder
+		String timestamp = CFW.Time.currentTimestamp().replace(":", ".");
+		String folderPath = filesystemSettings.folderPath()+"/"+timestamp;
+				
 		//----------------------------------------
 		// Create Mail Content
-		String mailContent = Strings.isNullOrEmpty(contentHTML) ? content : contentHTML;
-		
-		//------------------------
-		// Handle Custom Notes
-		String customNotes = alertObject.getCustomNotes();
-		if( !Strings.isNullOrEmpty(customNotes) 
-		 && !customNotes.trim().toLowerCase().equals("null") ) {
-			mailContent = "<span><b>Custom Notes:</b></span>"
-							+"<br>"
-							+ "<span>" + alertObject.getCustomNotes() + "</span>"
-							+"<hr>"
-							+ mailContent;
+		String reportContent = Strings.isNullOrEmpty(contentHTML) ? content : contentHTML;
+				
+		try {
+			
+			//----------------------------------------
+			// Create Dir
+			Path path = Paths.get(folderPath);
+			
+			if( !Files.isDirectory(path) ){
+				Files.createDirectories(path);
+			}
+
+			//----------------------------------------
+			// Create report.html
+			try {
+				Path htmlPath = Paths.get(folderPath, "/report.html");
+				Files.write(htmlPath, reportContent.getBytes());
+			}catch(IOException e) { 
+				writeError(jobID, e); 
+			}
+			
+			//------------------------
+			// Custom Notes
+			String customNotes = alertObject.getCustomNotes();
+			try {
+				
+				if( !Strings.isNullOrEmpty(customNotes) 
+				 && !customNotes.trim().toLowerCase().equals("null") ) {
+					Path customNotesPath = Paths.get(folderPath, "/customNotes.txt");
+					Files.write(customNotesPath, customNotes.getBytes());
+				}
+				
+			} catch(IOException e) { 
+				writeError(jobID, e); 
+			}
+			//----------------------------------------
+			// Create jobdetails.json
+			try {
+				Path jobdetailsPath = Paths.get(folderPath, "/jobdetails.json");
+				Files.write(jobdetailsPath, CFW.JSON.toJSONPretty(job).getBytes());
+			} catch(IOException e) { 
+				writeError(jobID, e); 
+			}
+			
+			//----------------------------------------
+			// Create attachment files
+			for(Entry<String, String> entry : attachments.entrySet()) {
+				
+				try {
+					Path currentPath = Paths.get(folderPath, "/", entry.getKey());
+					Files.write(currentPath, entry.getValue().getBytes());
+				}catch(IOException e) { 
+					writeError(jobID, e); 
+				}
+
+			}
+			
+		}catch(IOException e) { 
+			writeError(jobID, e); 
 		}
-		
-		
-		//----------------------------------------
-		// Create and Send Mail 
-		CFWMailBuilder builder = new CFWMailBuilder(subject)
-				.addMessage(mailContent, true)
-				.fromNoReply()
-				.recipientsBCC(usersToAlert)
-				.addAttachment("jobdetails.json", CFW.JSON.toJSONPretty(job));
-		
-		for(Entry<String, String> entry : attachments.entrySet()) {
-			builder.addAttachment(entry.getKey(), entry.getValue());
-		}
-		
-		builder.send();
 		
 	}
+	
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
+	private CFWJobsReportingChannelFilesystemSettings getContextSettings() {
+		int environmentID = CFWJobsReportingChannelFilesystemSettings.extractIDFromUniqueName(uniqueName);
+		CFWJobsReportingChannelFilesystemSettings fileSystemSettings =
+				CFWJobsReportingChannelFilesystemSettingsManagement.getEnvironment(environmentID);
+		return fileSystemSettings;
+	}
+	
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
+	private void writeError(String jobID, IOException e) {
+		new CFWLog(logger).severe(
+				  "Filesystem(Job ID: "+jobID+"): Error while writing report: "
+				+ e.getMessage()
+				, e
+				);
+	}
 
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	@Override
 	public boolean hasPermission(User user) {
 		
-		return user.hasPermission(FeatureJobs.PERMISSION_JOBS_USER) || user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN);
+		CFWJobsReportingChannelFilesystemSettings filesystemSettings = getContextSettings();
+		
+		return ( 
+				   user.hasPermission(FeatureJobs.PERMISSION_JOBS_USER) 
+				|| user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
+			) 
+//			&& (
+//					filesystemSettings.
+//			)
+			
+				;
 	}
 	
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	@Override
 	public void addTextData(String name, String filetype, String data) {
 		attachments.put(name+"."+filetype, data);

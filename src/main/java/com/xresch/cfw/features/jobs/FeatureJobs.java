@@ -10,6 +10,8 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannelAppLog;
 import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannelEMail;
+import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannelFilesystemSettings;
+import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannelFilesystemSettingsManagement;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -43,6 +45,13 @@ public class FeatureJobs extends CFWAppFeature {
 		//----------------------------------
 		// Register Job Tasks
 		CFW.Registry.Jobs.registerTask(new CFWJobTaskSendMail());
+		
+		//----------------------------------
+		// Register Context Settings
+		CFW.Registry.ContextSettings.register(
+				  CFWJobsReportingChannelFilesystemSettings.SETTINGS_TYPE
+				, CFWJobsReportingChannelFilesystemSettings.class
+			);
 
 		//----------------------------------
     	// Register Alerting Channel
@@ -93,6 +102,12 @@ public class FeatureJobs extends CFWAppFeature {
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
+		//----------------------------------
+    	// Create Environments
+		CFWJobsReportingChannelFilesystemSettingsManagement.initialize();
+		
+		//----------------------------------
+    	// Add Servlets
 		app.addAppServlet(ServletJobs.class,  URI_JOBS);
 		
 	}

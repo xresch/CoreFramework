@@ -35,7 +35,7 @@ public class CFWJobsReportingChannelAppLog extends CFWJobsReportingChannel {
 	}
 
 	@Override
-	public void sendAlerts(JobExecutionContext context, String uniqueName, MessageType messageType, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert, String subject, String content, String contentHTML) {
+	public void sendReport(JobExecutionContext context, MessageType messageType, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert, String subject, String content, String contentHTML) {
 				
 		CFWLog logEvent = new CFWLog(logger)
 				.silent(true)

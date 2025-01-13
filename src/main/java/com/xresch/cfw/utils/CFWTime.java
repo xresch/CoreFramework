@@ -551,7 +551,7 @@ public class CFWTime {
 	}
 	
 	/********************************************************************************************
-	 * 
+	 * Get a string representation of the date in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
 	 * 
 	 ********************************************************************************************/
 	public static String currentTimestamp(){
