@@ -17,9 +17,9 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWJobsReportingChannelAppLog extends CFWJobsReportingChannel {
+public class CFWJobsChannelAppLog extends CFWJobsChannel {
 
-	private static Logger logger = CFWLog.getLogger(CFWJobsReportingChannelAppLog.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWJobsChannelAppLog.class.getName());
 	
 	public static final String UNIQUE_NAME = "Application Log";
 	

@@ -8,10 +8,10 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
-import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannelAppLog;
-import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannelEMail;
-import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannelFilesystemSettings;
-import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannelFilesystemSettingsManagement;
+import com.xresch.cfw.features.jobs.channels.CFWJobsChannelAppLog;
+import com.xresch.cfw.features.jobs.channels.CFWJobsChannelEMail;
+import com.xresch.cfw.features.jobs.channels.CFWJobsChannelFilesystemSettings;
+import com.xresch.cfw.features.jobs.channels.CFWJobsChannelFilesystemSettingsManagement;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -49,14 +49,14 @@ public class FeatureJobs extends CFWAppFeature {
 		//----------------------------------
 		// Register Context Settings
 		CFW.Registry.ContextSettings.register(
-				  CFWJobsReportingChannelFilesystemSettings.SETTINGS_TYPE
-				, CFWJobsReportingChannelFilesystemSettings.class
+				  CFWJobsChannelFilesystemSettings.SETTINGS_TYPE
+				, CFWJobsChannelFilesystemSettings.class
 			);
 
 		//----------------------------------
     	// Register Alerting Channel
-		CFW.Registry.JobsReporting.registerChannel(CFWJobsReportingChannelEMail.UNIQUE_NAME, new CFWJobsReportingChannelEMail());
-		CFW.Registry.JobsReporting.registerChannel(CFWJobsReportingChannelAppLog.UNIQUE_NAME, new CFWJobsReportingChannelAppLog());
+		CFW.Registry.JobsReporting.registerChannel(CFWJobsChannelEMail.UNIQUE_NAME, new CFWJobsChannelEMail());
+		CFW.Registry.JobsReporting.registerChannel(CFWJobsChannelAppLog.UNIQUE_NAME, new CFWJobsChannelAppLog());
 
 		//----------------------------------
     	// Register Audit
@@ -104,7 +104,7 @@ public class FeatureJobs extends CFWAppFeature {
 	public void addFeature(CFWApplicationExecutor app) {	
 		//----------------------------------
     	// Create Environments
-		CFWJobsReportingChannelFilesystemSettingsManagement.initialize();
+		CFWJobsChannelFilesystemSettingsManagement.initialize();
 		
 		//----------------------------------
     	// Add Servlets

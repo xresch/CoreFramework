@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannel;
+import com.xresch.cfw.features.jobs.channels.CFWJobsChannel;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -21,9 +21,9 @@ public class CFWJobsReporting {
 	private static Logger logger = CFWLog.getLogger(CFWJobsReporting.class.getName());
 	
 	// UniqueName and JobTask
-	private static LinkedHashMap<String, Class<? extends CFWJobsReportingChannel>> channelMap = new LinkedHashMap<>();
+	private static LinkedHashMap<String, Class<? extends CFWJobsChannel>> channelMap = new LinkedHashMap<>();
 
-	private static ArrayList<CFWJobsReportingChannel> cachedInstanceArray;
+	private static ArrayList<CFWJobsChannel> cachedInstanceArray;
 
 	/*************************************************************************
 	 * 
@@ -41,7 +41,7 @@ public class CFWJobsReporting {
 	 * 		  This name can be retrieved from the channel using "getUniqueName".
 	 * 
 	 *************************************************************************/
-	public static void registerChannel(String finalUniqueName, CFWJobsReportingChannel channel) {
+	public static void registerChannel(String finalUniqueName, CFWJobsChannel channel) {
 		
 		if( channelMap.containsKey(finalUniqueName) ) {
 			new CFWLog(logger).severe("An alert channel with the name '"+channel.getUniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
@@ -73,7 +73,7 @@ public class CFWJobsReporting {
 		
 		//only return for UI, ignore if run by job
 		if(user != null) {
-			for(CFWJobsReportingChannel channel : getAllChannelInstances()) {
+			for(CFWJobsChannel channel : getAllChannelInstances()) {
 	
 				if(channel.hasPermission(CFW.Context.Request.getUser())
 				|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)	
@@ -89,7 +89,7 @@ public class CFWJobsReporting {
 	 * Get a list of all executor instances.
 	 * 
 	 ***********************************************************************/
-	public static ArrayList<CFWJobsReportingChannel> getAllChannelInstances()  {
+	public static ArrayList<CFWJobsChannel> getAllChannelInstances()  {
 		
 		if(cachedInstanceArray != null) {
 			return cachedInstanceArray;
@@ -99,7 +99,7 @@ public class CFWJobsReporting {
 		
 		for(String channelName : channelMap.keySet()) {
 
-			CFWJobsReportingChannel instance = createChannelInstance(channelName);
+			CFWJobsChannel instance = createChannelInstance(channelName);
 			if(instance != null) {
 				cachedInstanceArray.add(instance);
 			}
@@ -112,10 +112,10 @@ public class CFWJobsReporting {
 	 * Get a new instance for the specified task.
 	 * Returns null if the task is undefined.
 	 ***********************************************************************/
-	public static CFWJobsReportingChannel createChannelInstance(String uniqueName)  {
+	public static CFWJobsChannel createChannelInstance(String uniqueName)  {
 		
-		CFWJobsReportingChannel instance = null;
-		Class<? extends CFWJobsReportingChannel> clazz =  channelMap.get(uniqueName);
+		CFWJobsChannel instance = null;
+		Class<? extends CFWJobsChannel> clazz =  channelMap.get(uniqueName);
 		try {
 			if(clazz != null) {
 				instance = clazz.getDeclaredConstructor().newInstance();
@@ -132,7 +132,7 @@ public class CFWJobsReporting {
 	 * Return the class for the specified task.
 	 * Returns null if the task is undefined.
 	 ***********************************************************************/
-	public static Class<? extends CFWJobsReportingChannel> getChannelClass(String uniqueName)  {
+	public static Class<? extends CFWJobsChannel> getChannelClass(String uniqueName)  {
 		
 		return channelMap.get(uniqueName);
 	}

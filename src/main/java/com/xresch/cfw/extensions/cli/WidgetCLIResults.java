@@ -89,6 +89,7 @@ public class WidgetCLIResults extends WidgetDefinition {
 	// Creates an object with fields that will be used as the settings for this particular widget.
 	@Override
 	public CFWObject getSettings() {
+		
 		return new CFWObject()
 				.addField(CFWCLIExtensionsCommon.createSettingsFieldWorkingDir())
 				.addField(CFWCLIExtensionsCommon.createSettingsFieldCommands())
@@ -134,9 +135,7 @@ public class WidgetCLIResults extends WidgetDefinition {
 
 	}
 	
-	/**
-	 * @param monitor TODO
-	 * @param offset *************************************************************************************
+	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
 	@SuppressWarnings("unchecked")

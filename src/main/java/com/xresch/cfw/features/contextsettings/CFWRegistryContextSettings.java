@@ -2,6 +2,7 @@ package com.xresch.cfw.features.contextsettings;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.logging.CFWLog;
@@ -15,7 +16,7 @@ public class CFWRegistryContextSettings {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWRegistryContextSettings.class.getName());
 	
-	private static LinkedHashMap<String, Class<? extends AbstractContextSettings>> contextSettings = new LinkedHashMap<String, Class<? extends AbstractContextSettings>>();
+	private static TreeMap<String, Class<? extends AbstractContextSettings>> contextSettings = new TreeMap<String, Class<? extends AbstractContextSettings>>();
 	
 	/***********************************************************************
 	 * Adds a CFWObject class to the registry.
@@ -37,7 +38,7 @@ public class CFWRegistryContextSettings {
 	 * Removes a CFWObject class to the registry.
 	 * @param objectClass
 	 ***********************************************************************/
-	public static LinkedHashMap<String, Class<? extends AbstractContextSettings>> getContextSettingList()  {
+	public static TreeMap<String, Class<? extends AbstractContextSettings>> getContextSettingList()  {
 		return contextSettings;
 	}
 	

@@ -1,0 +1,181 @@
+
+<p>This little bastard of a channel lets ya grab the data from a task and report it to yer likin'.</p>
+
+
+<h2>Context Settings</h2>
+<p>To be able to use a CLI Report Channel, you need to go to &quot;Menu &lt;&lt; Admin &lt;&lt; Context Settings&quot; 
+and create one or more of &quot;Report Channel: CLI&quot; configurations.</p>
+
+
+<h2>Getting The Data: Environment Variables</h2>
+<p>This channel will expose the data to you by using environment variables. 
+The following environment Variables will be set for you:</p>
+
+<ul>
+	<li><b>CLIREPORTER_SUBJECT:&nbsp;</b> The title or subject of the report</li>
+	<li><b>CLIREPORTER_TYPE_MESSAGE:&nbsp;</b> The type of the message, either: INFO / SUCCESS / WARNING / ERROR </li>
+	<li><b>CLIREPORTER_ALERT_STATE:&nbsp;</b> The type of alert state. This can be used to define if you have to raise or resolve an issue: NONE / RAISE /  RESOLVE / REPORT </li>
+	<li><b>CLIREPORTER_CONTENT:&nbsp;</b> The content of the report as a plain text string. </li>
+	<li><b>CLIREPORTER_CONTENT_HTML:&nbsp;</b> The content of the report as a HTML string. </li>
+	<li><b>CLIREPORTER_CUSTOM_NOTES:&nbsp;</b> The custom notes that you have defined on the scheduled task. </li>
+	<li><b>CLIREPORTER_JOBDETAILS:&nbsp;</b> The details of the job that has triggered the report. (in JSON-Format) </li>
+	<li><b>CLIREPORTER_TIMEOUT:&nbsp;</b> The timeout you have defined in the Context Settings of the channel.</li>
+	<li><b>CLIREPORTER_ATTACHMENTS:&nbsp;</b> The attachments of the report as a JSON Array of JSON Objects.</li>
+	<li><b>CLIREPORTER_ALERT_USERS:&nbsp;</b> The users that should be alerted as a JSON Array of JSON Objects.</li>
+</ul>
+
+<p>You can test this for example with the following cmd-command(under windows) to see what kind of data you get:</p>
+<pre><code class="language-cfwquery">
+cmd /c set > "env.txt"
+</code></pre>
+
+
+<p>Following is an example of the output you might get from the above:</p>
+<pre><code class="language-cfwquery">
+CLIREPORTER_ALERT_STATE=NONE
+CLIREPORTER_ALERT_USERS=[
+  {
+    "username": "admin",
+    "firstname": null,
+    "lastname": null,
+    "email": "admin@emp.ch"
+  }
+]
+CLIREPORTER_ATTACHMENTS=[
+  {
+    "name": "data.csv",
+    "contents": "\"ID\";\"FIRSTNAME\";\"LASTNAME\";\"LOCATION\";\"LIKES_TIRAMISU\";\"LAST_LOGIN\";\"URL\";\"VALUE\";\"INDEX\";\"TIME\"\r\n\"31656663-8048-4853-83f\";\"Eros\";\"Andersson\";\"Niflhel\";\"true\";\"1729530750033\";\"http://www.example.url/mightyperson?id\u003d31656663-8048-4853-83f\";\"33\";\"0\";\"1736796950030\"\r\n\"d045aee9-6e16-43c6-94c\";\"Nike\";\"Bjoerk\";\"Takama-ga-hara\";\"false\";\"1734910750033\";\"http://www.example.url/mightyperson?id\u003dd045aee9-6e16-43c6-94c\";\"78\";\"1\";\"1736797550030\"\r\n\"8186cfe0-46fb-4198-ad4\";\"Minerva\";\"Lindstroem\";\"Vanaheimr\";\"false\";\"1731598750033\";\"http://www.example.url/mightyperson?id\u003d8186cfe0-46fb-4198-ad4\";\"57\";\"2\";\"1736798150030\"\r\n"
+  },
+  {
+    "name": "data.html",
+    "contents": "\u003chtml\u003e\u003cbody\u003e\u003ctable class\u003d\"table table-sm table-striped\" border\u003d1 cellspacing\u003d0 cellpadding\u003d5 \u003e\u003ctd\u003eItem\u003c/td\u003e\u003ctd\u003eID\u003c/td\u003e\u003ctd\u003e FIRSTNAME\u003c/td\u003e\u003ctd\u003e LASTNAME\u003c/td\u003e\u003ctd\u003e LOCATION\u003c/td\u003e\u003ctd\u003e LIKES_TIRAMISU\u003c/td\u003e\u003ctd\u003e LAST_LOGIN\u003c/td\u003e\u003ctd\u003e VALUE\u003c/td\u003e\u003ctd\u003e INDEX\u003c/td\u003e\u003ctd\u003e TIME\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003cb\u003e\u003ca target\u003d\"_blank\" href\u003d\"http://www.example.url/mightyperson?id\u003d31656663-8048-4853-83f\"\u003eEros Andersson\u003c/a\u003e\u003c/td\u003e\u003ctd\u003e31656663-8048-4853-83f\u003c/td\u003e\u003ctd\u003eEros\u003c/td\u003e\u003ctd\u003eAndersson\u003c/td\u003e\u003ctd\u003eNiflhel\u003c/td\u003e\u003ctd\u003etrue\u003c/td\u003e\u003ctd\u003e1729530750033\u003c/td\u003e\u003ctd\u003e33\u003c/td\u003e\u003ctd\u003e0\u003c/td\u003e\u003ctd\u003e1736796950030\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003cb\u003e\u003ca target\u003d\"_blank\" href\u003d\"http://www.example.url/mightyperson?id\u003dd045aee9-6e16-43c6-94c\"\u003eNike Bjoerk\u003c/a\u003e\u003c/td\u003e\u003ctd\u003ed045aee9-6e16-43c6-94c\u003c/td\u003e\u003ctd\u003eNike\u003c/td\u003e\u003ctd\u003eBjoerk\u003c/td\u003e\u003ctd\u003eTakama-ga-hara\u003c/td\u003e\u003ctd\u003efalse\u003c/td\u003e\u003ctd\u003e1734910750033\u003c/td\u003e\u003ctd\u003e78\u003c/td\u003e\u003ctd\u003e1\u003c/td\u003e\u003ctd\u003e1736797550030\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003cb\u003e\u003ca target\u003d\"_blank\" href\u003d\"http://www.example.url/mightyperson?id\u003d8186cfe0-46fb-4198-ad4\"\u003eMinerva Lindstroem\u003c/a\u003e\u003c/td\u003e\u003ctd\u003e8186cfe0-46fb-4198-ad4\u003c/td\u003e\u003ctd\u003eMinerva\u003c/td\u003e\u003ctd\u003eLindstroem\u003c/td\u003e\u003ctd\u003eVanaheimr\u003c/td\u003e\u003ctd\u003efalse\u003c/td\u003e\u003ctd\u003e1731598750033\u003c/td\u003e\u003ctd\u003e57\u003c/td\u003e\u003ctd\u003e2\u003c/td\u003e\u003ctd\u003e1736798150030\u003c/td\u003e\u003c/tr\u003e\u003c/table\u003e\u003c/body\u003e\u003c/html\u003e"
+  },
+  {
+    "name": "data.json",
+    "contents": "[\n  {\n    \"ID\": \"31656663-8048-4853-83f\",\n    \"FIRSTNAME\": \"Eros\",\n    \"LASTNAME\": \"Andersson\",\n    \"LOCATION\": \"Niflhel\",\n    \"LIKES_TIRAMISU\": true,\n    \"LAST_LOGIN\": 1729530750033,\n    \"URL\": \"http://www.example.url/mightyperson?id\\u003d31656663-8048-4853-83f\",\n    \"VALUE\": 33,\n    \"INDEX\": 0,\n    \"TIME\": 1736796950030\n  },\n  {\n    \"ID\": \"d045aee9-6e16-43c6-94c\",\n    \"FIRSTNAME\": \"Nike\",\n    \"LASTNAME\": \"Bjoerk\",\n    \"LOCATION\": \"Takama-ga-hara\",\n    \"LIKES_TIRAMISU\": false,\n    \"LAST_LOGIN\": 1734910750033,\n    \"URL\": \"http://www.example.url/mightyperson?id\\u003dd045aee9-6e16-43c6-94c\",\n    \"VALUE\": 78,\n    \"INDEX\": 1,\n    \"TIME\": 1736797550030\n  },\n  {\n    \"ID\": \"8186cfe0-46fb-4198-ad4\",\n    \"FIRSTNAME\": \"Minerva\",\n    \"LASTNAME\": \"Lindstroem\",\n    \"LOCATION\": \"Vanaheimr\",\n    \"LIKES_TIRAMISU\": false,\n    \"LAST_LOGIN\": 1731598750033,\n    \"URL\": \"http://www.example.url/mightyperson?id\\u003d8186cfe0-46fb-4198-ad4\",\n    \"VALUE\": 57,\n    \"INDEX\": 2,\n    \"TIME\": 1736798150030\n  }\n]"
+  },
+  {
+    "name": "data.xml",
+    "contents": "\u003cdata\u003e\n\t\u003crecord\u003e\n\t\t\u003cID\u003e31656663-8048-4853-83f\u003c/ID\u003e\n\t\t\u003cFIRSTNAME\u003eEros\u003c/FIRSTNAME\u003e\n\t\t\u003cLASTNAME\u003eAndersson\u003c/LASTNAME\u003e\n\t\t\u003cLOCATION\u003eNiflhel\u003c/LOCATION\u003e\n\t\t\u003cLIKES_TIRAMISU\u003etrue\u003c/LIKES_TIRAMISU\u003e\n\t\t\u003cLAST_LOGIN\u003e1729530750033\u003c/LAST_LOGIN\u003e\n\t\t\u003cURL\u003ehttp://www.example.url/mightyperson?id\u003d31656663-8048-4853-83f\u003c/URL\u003e\n\t\t\u003cVALUE\u003e33\u003c/VALUE\u003e\n\t\t\u003cINDEX\u003e0\u003c/INDEX\u003e\n\t\t\u003cTIME\u003e1736796950030\u003c/TIME\u003e\n\t\u003c/record\u003e\n\t\u003crecord\u003e\n\t\t\u003cID\u003ed045aee9-6e16-43c6-94c\u003c/ID\u003e\n\t\t\u003cFIRSTNAME\u003eNike\u003c/FIRSTNAME\u003e\n\t\t\u003cLASTNAME\u003eBjoerk\u003c/LASTNAME\u003e\n\t\t\u003cLOCATION\u003eTakama-ga-hara\u003c/LOCATION\u003e\n\t\t\u003cLIKES_TIRAMISU\u003efalse\u003c/LIKES_TIRAMISU\u003e\n\t\t\u003cLAST_LOGIN\u003e1734910750033\u003c/LAST_LOGIN\u003e\n\t\t\u003cURL\u003ehttp://www.example.url/mightyperson?id\u003dd045aee9-6e16-43c6-94c\u003c/URL\u003e\n\t\t\u003cVALUE\u003e78\u003c/VALUE\u003e\n\t\t\u003cINDEX\u003e1\u003c/INDEX\u003e\n\t\t\u003cTIME\u003e1736797550030\u003c/TIME\u003e\n\t\u003c/record\u003e\n\t\u003crecord\u003e\n\t\t\u003cID\u003e8186cfe0-46fb-4198-ad4\u003c/ID\u003e\n\t\t\u003cFIRSTNAME\u003eMinerva\u003c/FIRSTNAME\u003e\n\t\t\u003cLASTNAME\u003eLindstroem\u003c/LASTNAME\u003e\n\t\t\u003cLOCATION\u003eVanaheimr\u003c/LOCATION\u003e\n\t\t\u003cLIKES_TIRAMISU\u003efalse\u003c/LIKES_TIRAMISU\u003e\n\t\t\u003cLAST_LOGIN\u003e1731598750033\u003c/LAST_LOGIN\u003e\n\t\t\u003cURL\u003ehttp://www.example.url/mightyperson?id\u003d8186cfe0-46fb-4198-ad4\u003c/URL\u003e\n\t\t\u003cVALUE\u003e57\u003c/VALUE\u003e\n\t\t\u003cINDEX\u003e2\u003c/INDEX\u003e\n\t\t\u003cTIME\u003e1736798150030\u003c/TIME\u003e\n\t\u003c/record\u003e\n"
+  }
+]
+CLIREPORTER_CONTENT=Your scheduled report contains 3 record(s): Eros Andersson / Nike Bjoerk / Minerva Lindstroem
+CLIREPORTER_CONTENT_HTML=&lt;p>Your scheduled report contains 3 record(s).&lt;/p>&lt;table class="table table-sm table-striped" border=1 cellspacing=0 cellpadding=5 >&lt;td>Item&lt;/td>&lt;td>ID&lt;/td>&lt;td> FIRSTNAME&lt;/td>&lt;td> LASTNAME&lt;/td>&lt;td> LOCATION&lt;/td>&lt;td> LIKES_TIRAMISU&lt;/td>&lt;td> LAST_LOGIN&lt;/td>&lt;td> VALUE&lt;/td>&lt;td> INDEX&lt;/td>&lt;td> TIME&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>&lt;a target="_blank" href="http://www.example.url/mightyperson?id=31656663-8048-4853-83f">Eros Andersson&lt;/a>&lt;/td>&lt;td>31656663-8048-4853-83f&lt;/td>&lt;td>Eros&lt;/td>&lt;td>Andersson&lt;/td>&lt;td>Niflhel&lt;/td>&lt;td>true&lt;/td>&lt;td>1729530750033&lt;/td>&lt;td>33&lt;/td>&lt;td>0&lt;/td>&lt;td>1736796950030&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>&lt;a target="_blank" href="http://www.example.url/mightyperson?id=d045aee9-6e16-43c6-94c">Nike Bjoerk&lt;/a>&lt;/td>&lt;td>d045aee9-6e16-43c6-94c&lt;/td>&lt;td>Nike&lt;/td>&lt;td>Bjoerk&lt;/td>&lt;td>Takama-ga-hara&lt;/td>&lt;td>false&lt;/td>&lt;td>1734910750033&lt;/td>&lt;td>78&lt;/td>&lt;td>1&lt;/td>&lt;td>1736797550030&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>&lt;a target="_blank" href="http://www.example.url/mightyperson?id=8186cfe0-46fb-4198-ad4">Minerva Lindstroem&lt;/a>&lt;/td>&lt;td>8186cfe0-46fb-4198-ad4&lt;/td>&lt;td>Minerva&lt;/td>&lt;td>Lindstroem&lt;/td>&lt;td>Vanaheimr&lt;/td>&lt;td>false&lt;/td>&lt;td>1731598750033&lt;/td>&lt;td>57&lt;/td>&lt;td>2&lt;/td>&lt;td>1736798150030&lt;/td>&lt;/tr>&lt;/table>
+CLIREPORTER_CUSTOM_NOTES=My custom notes
+CLIREPORTER_JOBDETAILS={
+  "PK_ID": 7,
+  "FK_ID_USER": 1,
+  "JOB_NAME": "Test Query Report",
+  "DESCRIPTION": null,
+  "TASK_NAME": "Reporting: Query Results",
+  "JSON_SCHEDULE": {
+    "timezoneOffset": 0,
+    "timeframe": {
+      "startdatetime": 2367917400000,
+      "endtype": "RUN_FOREVER",
+      "enddatetime": null,
+      "executioncount": ""
+    },
+    "interval": {
+      "intervaltype": "EVERY_X_DAYS",
+      "everyxminutes": "0",
+      "everyxdays": "9999",
+      "everyweek": {
+        "MON": false,
+        "TUE": false,
+        "WED": false,
+        "THU": false,
+        "FRI": false,
+        "SAT": false,
+        "SUN": false
+      },
+      "cronexpression": ""
+    }
+  },
+  "SCHEDULE_START": 2367917400000,
+  "SCHEDULE_END": "Run Forever",
+  "SCHEDULE_INTERVAL": "Every 9999 day(s)",
+  "JSON_PROPERTIES": {
+    "JSON_TIMEFRAME_OFFSET": {
+      "offset": "30-m",
+      "earliest": 1736796885907,
+      "latest": 1736798685908,
+      "clientTimezoneOffset": 0
+    },
+    "query": "| source random records\u003d 3",
+    "valuefield": "VALUE",
+    "labelfields": "FIRSTNAME, LASTNAME",
+    "detailfields": null,
+    "urlfield": "URL",
+    "createtable": true,
+    "attachcsv": true,
+    "attachhtml": true,
+    "attachjson": true,
+    "attachxml": true,
+    "JSON_ALERTING_USERS_TO_ALERT": {
+      "1": "admin"
+    },
+    "JSON_ALERTING_GROUPS_TO_ALERT": {},
+    "JSON_ALERTING_ALERT_CHANNEL": {
+      "Notification": "true",
+      "eMail": "false",
+      "Application Log": "false",
+      "channel-7": "false",
+      "channel-8": "false",
+      "channel-cli-9": "true"
+    },
+    "ALERTING_CUSTOM_TITLE": "Test",
+    "ALERTING_CUSTOM_NOTES": "My custom notes"
+  },
+  "LAST_RUN_TIME": 1736798530173,
+  "JSON_LASTRUN_MESSAGES": [],
+  "IS_ENABLED": true,
+  "IS_DELETABLE": true,
+  "CUSTOM_STRING": null,
+  "CUSTOM_INTEGER": null
+}
+CLIREPORTER_SUBJECT=My Test Subject
+CLIREPORTER_TIMEOUT=120
+CLIREPORTER_TYPE_MESSAGE=INFO
+</code></pre>
+
+
+<h2>Powershell Example</h2>
+<p>Lets assume we have a powershell script 'test.ps1' with the following content:</p>
+<pre><code class="language-cfwquery">
+$LOG_FILE = ".\exec.log"
+
+Remove-Item $LOG_FILE
+
+Start-Transcript -path $LOG_FILE -append
+
+	Get-ChildItem -Path Env: | Out-File -FilePath .\all_env.txt
+	(Get-ChildItem -Path Env:CLIREPORTER_CONTENT_HTML).Value | Out-File -FilePath .\report.html
+	(Get-ChildItem -Path Env:CLIREPORTER_JOBDETAILS).Value | Out-File -FilePath .\job_details.json
+	(Get-ChildItem -Path Env:CLIREPORTER_CUSTOM_NOTES).Value | Out-File -FilePath .\custom_notes.txt
+	
+Stop-Transcript
+</code></pre>
+
+<p>Above script we could be executed like: </p>
+<pre><code class="language-cfwquery">powershell ".\test.ps1"</code></pre>
+
+
+<h2>CMD Example</h2>
+<p>Lets assume we have a cmd script 'test.bat' with the following content:</p>
+<pre><code class="language-cfwquery">
+set > "all_env.txt"
+echo "%CLIREPORTER_CONTENT_HTML%" > "report.html"
+echo "%CLIREPORTER_JOBDETAILS%" > "job_details.json"
+echo "%CLIREPORTER_CUSTOM_NOTES%" > "custom_notes.txt"
+</code></pre>
+
+<p>Above could be executed as follows. The '2>&1' will redirect stderr output to stdout and will 
+therefore also end up in the exec_cmd.log: </p>
+<pre><code class="language-cfwquery">cmd /c test.bat > exec_cmd.log 2>&1</code></pre>
+
+
+
+
+
+

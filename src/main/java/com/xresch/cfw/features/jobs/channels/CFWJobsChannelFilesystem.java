@@ -27,9 +27,9 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWJobsReportingChannelFilesystem extends CFWJobsReportingChannel {
+public class CFWJobsChannelFilesystem extends CFWJobsChannel {
 
-	private static Logger logger = CFWLog.getLogger(CFWJobsReportingChannelFilesystem.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWJobsChannelFilesystem.class.getName());
 	
 	LinkedHashMap<String,String> attachments = new LinkedHashMap<>();
 	
@@ -65,7 +65,7 @@ public class CFWJobsReportingChannelFilesystem extends CFWJobsReportingChannel {
 		String jobID = context.getJobDetail().getKey().getName();
 		CFWJob job = CFW.DB.Jobs.selectByID(jobID);
 		
-		CFWJobsReportingChannelFilesystemSettings filesystemSettings = getContextSettings();
+		CFWJobsChannelFilesystemSettings filesystemSettings = getContextSettings();
 		
 		//----------------------------------------
 		// Make Ze Path De Folder
@@ -140,10 +140,10 @@ public class CFWJobsReportingChannelFilesystem extends CFWJobsReportingChannel {
 	/************************************************************************************
 	 * 
 	 ************************************************************************************/
-	private CFWJobsReportingChannelFilesystemSettings getContextSettings() {
-		int environmentID = CFWJobsReportingChannelFilesystemSettings.extractIDFromUniqueName(uniqueName);
-		CFWJobsReportingChannelFilesystemSettings fileSystemSettings =
-				CFWJobsReportingChannelFilesystemSettingsManagement.getEnvironment(environmentID);
+	private CFWJobsChannelFilesystemSettings getContextSettings() {
+		int environmentID = CFWJobsChannelFilesystemSettings.extractIDFromUniqueName(uniqueName);
+		CFWJobsChannelFilesystemSettings fileSystemSettings =
+				CFWJobsChannelFilesystemSettingsManagement.getEnvironment(environmentID);
 		return fileSystemSettings;
 	}
 	
@@ -168,11 +168,11 @@ public class CFWJobsReportingChannelFilesystem extends CFWJobsReportingChannel {
 		if( user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN) ){
 			return true;
 		}else {
-			CFWJobsReportingChannelFilesystemSettings filesystemSettings = getContextSettings();
+			CFWJobsChannelFilesystemSettings filesystemSettings = getContextSettings();
 			
 			
 			HashMap<Integer, Object> settingsMap = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(
-					CFWJobsReportingChannelFilesystemSettings.SETTINGS_TYPE
+					CFWJobsChannelFilesystemSettings.SETTINGS_TYPE
 					, user
 				);
 			

@@ -13,7 +13,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
-public abstract class CFWJobsReportingChannel {
+public abstract class CFWJobsChannel {
 	
 	String uniqueName = "";
 	

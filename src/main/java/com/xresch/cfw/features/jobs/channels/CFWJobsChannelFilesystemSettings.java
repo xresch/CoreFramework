@@ -13,15 +13,15 @@ import com.xresch.cfw.logging.CFWLog;
  * @license MIT-License
  * 
  **************************************************************************************************************/
-public class CFWJobsReportingChannelFilesystemSettings extends AbstractContextSettings {
+public class CFWJobsChannelFilesystemSettings extends AbstractContextSettings {
 	
 	public static final String PREFIX_LABEL = "Filesystem: ";
 	public static final String PREFIX_CHANNEL_NAME = "channel-";
 
 	public static final String SETTINGS_TYPE = "Report Channel: Filesystem";
 	
-	private CFWJobsReportingChannelFilesystemSettings INSTANCE;
-	private static Logger logger = CFWLog.getLogger(CFWJobsReportingChannelFilesystemSettings.class.getName());
+	private CFWJobsChannelFilesystemSettings INSTANCE;
+	private static Logger logger = CFWLog.getLogger(CFWJobsChannelFilesystemSettings.class.getName());
 	
 	public enum CFWJobsReportingChannelFilesystemSettingsFields {
 		FOLDER_PATH
@@ -36,7 +36,7 @@ public class CFWJobsReportingChannelFilesystemSettings extends AbstractContextSe
 	/*********************************************************************
 	 * 
 	 *********************************************************************/
-	public CFWJobsReportingChannelFilesystemSettings() {
+	public CFWJobsChannelFilesystemSettings() {
 		INSTANCE = this;
 		this.addFields(folderPath);
 	}

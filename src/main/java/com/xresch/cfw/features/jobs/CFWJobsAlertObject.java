@@ -17,7 +17,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.jobs.channels.CFWJobsReportingChannel;
+import com.xresch.cfw.features.jobs.channels.CFWJobsChannel;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.validation.LengthValidator;
@@ -348,12 +348,12 @@ public class CFWJobsAlertObject extends CFWObject {
 		//--------------------------
 		// Send to Channels
 		HashMap<Integer, User> uniqueUsers = this.doSendAlert_getMergedListOfUsersToAlert();
-		HashMap<String, CFWJobsReportingChannel> channelsToAlert = this.doSendAlert_getListOfAlertChannels();
+		HashMap<String, CFWJobsChannel> channelsToAlert = this.doSendAlert_getListOfAlertChannels();
 		
-		for(Entry<String, CFWJobsReportingChannel> entry : channelsToAlert.entrySet()) {
+		for(Entry<String, CFWJobsChannel> entry : channelsToAlert.entrySet()) {
 			
 			String uniqueName = entry.getKey();
-			CFWJobsReportingChannel channel = entry.getValue();
+			CFWJobsChannel channel = entry.getValue();
 			
 			for(TextData textData : textDataArray) {
 				channel.addTextData(textData.name, textData.filetype, textData.data);
@@ -368,8 +368,8 @@ public class CFWJobsAlertObject extends CFWObject {
 	 * Returns a HashMap containing a list of unique users that are the mighty
 	 * chosen ones who will get the important alerts.
 	 **************************************************************************/
-	private HashMap<String, CFWJobsReportingChannel> doSendAlert_getListOfAlertChannels(){
-		HashMap<String, CFWJobsReportingChannel> channelsToAlert = new HashMap<>();
+	private HashMap<String, CFWJobsChannel> doSendAlert_getListOfAlertChannels(){
+		HashMap<String, CFWJobsChannel> channelsToAlert = new HashMap<>();
 		
 		LinkedHashMap<String, String> channelSelection = alertChannels.getValue();
 		

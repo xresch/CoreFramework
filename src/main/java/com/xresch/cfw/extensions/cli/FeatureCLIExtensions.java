@@ -78,6 +78,13 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 		//----------------------------------
 		// Register Job Tasks
 		CFW.Registry.Jobs.registerTask(new CFWJobTaskExecuteCommandLine());
+		
+		//----------------------------------
+		// Register ContextSettings
+		CFW.Registry.ContextSettings.register(
+						  CFWJobsChannelCLISettings.SETTINGS_TYPE
+						, CFWJobsChannelCLISettings.class
+					);
 
 		//----------------------------------
 		// Register Manual Page
@@ -128,6 +135,10 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 	 ************************************************************************************/
 	@Override
 	public void addFeature(CFWApplicationExecutor cfwApplicationExecutor) {
+		//-----------------------------------------
+		// Add Context Settings
+		CFWJobsChannelCLISettingsManagement.initialize();
+				
 		
 	}
 
