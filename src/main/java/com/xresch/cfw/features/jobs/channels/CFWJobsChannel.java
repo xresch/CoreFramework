@@ -29,7 +29,12 @@ public abstract class CFWJobsChannel {
 	/*************************************************************************
 	 * Return a description for this channel.
 	 *************************************************************************/
-	public abstract String channelDescription();
+	public abstract String manualPageTitle();
+	
+	/*************************************************************************
+	 * Return the content of the manual page as HTML.
+	 *************************************************************************/
+	public abstract String manualPageContent();
 	
 	/*************************************************************************
 	 * Optional: Data will be given to this method if available, use the data

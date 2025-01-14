@@ -3,6 +3,8 @@ package com.xresch.cfw.features.notifications;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.extensions.cli.CFWJobsChannelCLI;
+import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.jobs.channels.CFWJobsChannelAppLog;
 import com.xresch.cfw.features.jobs.channels.CFWJobsChannelEMail;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
@@ -43,6 +45,7 @@ public class FeatureNotifications extends CFWAppFeature {
 		//----------------------------------
     	// Register Alerting Channel
 		CFW.Registry.JobsReporting.registerChannel(CFWJobsChannelNotification.UNIQUE_NAME, new CFWJobsChannelNotification());
+		FeatureJobs.registerManualPageChannel(new CFWJobsChannelNotification());
 		
     	//----------------------------------
     	// Register Button Menu
@@ -54,6 +57,7 @@ public class FeatureNotifications extends CFWAppFeature {
 			.addAttribute("id", "cfwMenuButtons-Notifications");
 		
 		CFW.Registry.Components.addButtonsMenuItem(notificationMenu, null);
+		
 		
 	}
 

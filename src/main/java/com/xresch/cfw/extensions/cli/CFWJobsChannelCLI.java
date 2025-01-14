@@ -36,13 +36,21 @@ public class CFWJobsChannelCLI extends CFWJobsChannel {
 	public String getLabel() {
 		return this.getContextSettings().getName();
 	}
+	
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
+	@Override
+	public String manualPageTitle() {
+		return "CLI";
+	}
 
 	/************************************************************************************
 	 * 
 	 ************************************************************************************/
 	@Override
-	public String channelDescription() {
-		return "Sends reports using a command line interface.";
+	public String manualPageContent() {
+		return CFW.Files.readPackageResource(FeatureCLIExtensions.PACKAGE_RESOURCES, "manual_channel_cli.html");
 	}
 
 	/************************************************************************************
@@ -101,7 +109,7 @@ public class CFWJobsChannelCLI extends CFWJobsChannel {
 		envVariables.put("CLIREPORTER_ATTACHMENTS", CFW.JSON.toJSONPretty(attachmentsArray) );
 		
 		//----------------------------------------
-		// Add ENV Variables: Attachments
+		// Add ENV Variables: Users
 		
 		JsonArray usersArray = new JsonArray();
 		

@@ -4,14 +4,12 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.DB;
-import com.xresch.cfw._main.CFW.DB.Config;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.manual.ManualPage;
-import com.xresch.cfw.features.query.CFWJobTaskAlertingCFWQLQuery;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWLog;
@@ -94,6 +92,8 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 					.addPermission(FeatureCLIExtensions.PERMISSION_CLI_EXTENSIONS)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "manual_cli_extensions.html")
 			);
+		
+		FeatureJobs.registerManualPageChannel(new CFWJobsChannelCLI());
 	}
 
 	/************************************************************************************

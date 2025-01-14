@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.jobs;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import com.xresch.cfw._main.CFW;
@@ -8,10 +10,16 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.jobs.channels.CFWJobsChannel;
 import com.xresch.cfw.features.jobs.channels.CFWJobsChannelAppLog;
 import com.xresch.cfw.features.jobs.channels.CFWJobsChannelEMail;
+import com.xresch.cfw.features.jobs.channels.CFWJobsChannelFilesystem;
 import com.xresch.cfw.features.jobs.channels.CFWJobsChannelFilesystemSettings;
 import com.xresch.cfw.features.jobs.channels.CFWJobsChannelFilesystemSettingsManagement;
+import com.xresch.cfw.features.jobs.channels.CFWManualPageChannel;
+import com.xresch.cfw.features.manual.ManualPage;
+import com.xresch.cfw.features.parameter.CFWQueryManualPageParameter;
+import com.xresch.cfw.features.parameter.ParameterDefinition;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -21,15 +29,28 @@ public class FeatureJobs extends CFWAppFeature {
 	
 	private static final String URI_JOBS = "/app/jobs";
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.jobs.resources";
+	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.jobs.manual";
 	public static final String PERMISSION_JOBS_USER = "Jobs: User";
 	public static final String PERMISSION_JOBS_ADMIN = "Jobs: Admin";
 	
+	public static final ManualPage MANUAL_ROOT = CFW.Registry.Manual.addManualPage(null, 
+			new ManualPage("Jobs")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "jobs_mainpage.html"))
+			;
 	
+	public static final ManualPage MANUAL_CHANNELS = CFW.Registry.Manual.addManualPage("Jobs", 
+			new ManualPage("Channels")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "jobs_channels.html"))
+			;
+	/******************************************************************
+	 *
+	 ******************************************************************/	
 	@Override
 	public void register() {
 		//----------------------------------
 		// Register Package
 		CFW.Files.addAllowedPackage(PACKAGE_RESOURCES);
+		CFW.Files.addAllowedPackage(PACKAGE_MANUAL);
 		
 		//----------------------------------
 		// Register Objects
@@ -78,8 +99,15 @@ public class FeatureJobs extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuTools-Jobs")
 				, null);
 		
+		//----------------------------------
+    	// Register Manual
+		registerManual();
+		
 	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public void initializeDB() {
 		
@@ -100,18 +128,26 @@ public class FeatureJobs extends CFWAppFeature {
 			);
 	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
+		
+		//----------------------------------
+		// Add Servlets
+		app.addAppServlet(ServletJobs.class,  URI_JOBS);
+		
 		//----------------------------------
     	// Create Environments
 		CFWJobsChannelFilesystemSettingsManagement.initialize();
 		
-		//----------------------------------
-    	// Add Servlets
-		app.addAppServlet(ServletJobs.class,  URI_JOBS);
 		
 	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public void startTasks() {
 		//----------------------------------------
@@ -121,14 +157,43 @@ public class FeatureJobs extends CFWAppFeature {
 		}
 	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public void stopFeature() {
 		// TODO Auto-generated method stub
 		
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	public static String getJobsURI() {
 		return URI_JOBS;
 	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void registerManual() {
+		
+		FeatureJobs.registerManualPageChannel(new CFWJobsChannelAppLog());
+		FeatureJobs.registerManualPageChannel(new CFWJobsChannelEMail());
+		FeatureJobs.registerManualPageChannel(new CFWJobsChannelFilesystem());
+		
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public static void registerManualPageChannel(CFWJobsChannel channel) {
+
+		new CFWManualPageChannel(MANUAL_CHANNELS, channel);
+
+	}
+	
+	
 
 }

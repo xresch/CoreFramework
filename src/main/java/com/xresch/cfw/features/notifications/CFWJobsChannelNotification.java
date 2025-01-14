@@ -22,17 +22,34 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class CFWJobsChannelNotification extends CFWJobsChannel {
 	
 	public static final String UNIQUE_NAME = "Notification";
-
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/	
 	@Override
 	public String getLabel() {
 		return getUniqueName();
 	}
 	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/	
 	@Override
-	public String channelDescription() {
-		return "Sends the alerts to the users by adding a notification to their notification list.";
+	public String manualPageTitle() {
+		return UNIQUE_NAME;
+	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/	
+	@Override
+	public String manualPageContent() {
+		return "<p>Sends the data to the users by adding a notification to their notification list.</p>";
 	}
 
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/	
 	@Override
 	public void sendReport(JobExecutionContext context
 			, MessageType messageType
@@ -76,12 +93,18 @@ public class CFWJobsChannelNotification extends CFWJobsChannel {
 
 	}
 
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/	
 	@Override
 	public boolean hasPermission(User user) {
 		
 		return user.hasPermission(FeatureJobs.PERMISSION_JOBS_USER) || user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN);
 	}
 
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/	
 	@Override
 	public void addTextData(String name, String filetype, String data) {
 		// do nothing

@@ -1,9 +1,9 @@
 
-<p>This little bastard of a channel lets ya grab the data from a task and report it to yer likin'.</p>
+<p>This little bastard of a channel lets ya grab the data from a task and report it to yer likin' using ze magic of the holy command line toolz!</p>
 
 
 <h2>Context Settings</h2>
-<p>To be able to use a CLI Report Channel, you need to go to &quot;Menu &lt;&lt; Admin &lt;&lt; Context Settings&quot; 
+<p>To be able to use a CLI Report Channel, you need to go to &quot;Menu &gt;&gt; Admin &gt;&gt; Context Settings&quot; 
 and create one or more of &quot;Report Channel: CLI&quot; configurations.</p>
 
 
@@ -13,8 +13,22 @@ The following environment Variables will be set for you:</p>
 
 <ul>
 	<li><b>CLIREPORTER_SUBJECT:&nbsp;</b> The title or subject of the report</li>
-	<li><b>CLIREPORTER_TYPE_MESSAGE:&nbsp;</b> The type of the message, either: INFO / SUCCESS / WARNING / ERROR </li>
-	<li><b>CLIREPORTER_ALERT_STATE:&nbsp;</b> The type of alert state. This can be used to define if you have to raise or resolve an issue: NONE / RAISE /  RESOLVE / REPORT </li>
+	<li><b>CLIREPORTER_TYPE_MESSAGE:&nbsp;</b> The type of the message, either:
+		<ul>
+			<li>INFO</li>
+			<li>SUCCESS</li>
+			<li>WARNING</li>
+			<li>ERROR</li>
+		</ul>
+	</li>
+	<li><b>CLIREPORTER_ALERT_STATE:&nbsp;</b> The type of alert state. This can be used to define if you have to raise or resolve an issue:
+		<ul>
+			<li>NONE</li>
+			<li>RAISE</li>
+			<li>RESOLVE</li>
+			<li>REPORT</li>
+		</ul>
+	</li>
 	<li><b>CLIREPORTER_CONTENT:&nbsp;</b> The content of the report as a plain text string. </li>
 	<li><b>CLIREPORTER_CONTENT_HTML:&nbsp;</b> The content of the report as a HTML string. </li>
 	<li><b>CLIREPORTER_CUSTOM_NOTES:&nbsp;</b> The custom notes that you have defined on the scheduled task. </li>
@@ -25,14 +39,11 @@ The following environment Variables will be set for you:</p>
 </ul>
 
 <p>You can test this for example with the following cmd-command(under windows) to see what kind of data you get:</p>
-<pre><code class="language-cfwquery">
-cmd /c set > "env.txt"
-</code></pre>
+<pre><code class="language-cfwquery">cmd /c set > "env.txt"</code></pre>
 
 
 <p>Following is an example of the output you might get from the above:</p>
-<pre><code class="language-cfwquery">
-CLIREPORTER_ALERT_STATE=NONE
+<pre><code class="language-cfwquery">CLIREPORTER_ALERT_STATE=NONE
 CLIREPORTER_ALERT_USERS=[
   {
     "username": "admin",
@@ -142,8 +153,7 @@ CLIREPORTER_TYPE_MESSAGE=INFO
 
 <h2>Powershell Example</h2>
 <p>Lets assume we have a powershell script 'test.ps1' with the following content:</p>
-<pre><code class="language-cfwquery">
-$LOG_FILE = ".\exec.log"
+<pre><code class="language-cfwquery">$LOG_FILE = ".\exec.log"
 
 Remove-Item $LOG_FILE
 
@@ -163,8 +173,7 @@ Stop-Transcript
 
 <h2>CMD Example</h2>
 <p>Lets assume we have a cmd script 'test.bat' with the following content:</p>
-<pre><code class="language-cfwquery">
-set > "all_env.txt"
+<pre><code class="language-cfwquery">set > "all_env.txt"
 echo "%CLIREPORTER_CONTENT_HTML%" > "report.html"
 echo "%CLIREPORTER_JOBDETAILS%" > "job_details.json"
 echo "%CLIREPORTER_CUSTOM_NOTES%" > "custom_notes.txt"

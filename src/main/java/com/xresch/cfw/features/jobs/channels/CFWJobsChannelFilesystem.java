@@ -40,13 +40,24 @@ public class CFWJobsChannelFilesystem extends CFWJobsChannel {
 	public String getLabel() {
 		return this.getContextSettings().getName();
 	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/	
+	@Override
+	public String manualPageTitle() {
+		return "Filesystem";
+	}
 
 	/************************************************************************************
 	 * 
 	 ************************************************************************************/
 	@Override
-	public String channelDescription() {
-		return "Sends the alerts to the users eMail addresses.";
+	public String manualPageContent() {
+		return "<p>Stores the data and any potential attachments to a filesystem location."
+				+ " For this to be selecteable, you need to go to &quot;Menu &gt;&gt; Admin &gt;&gt; Context Settings&quot;"
+				+ " and define one or more 'Report Channel: Filesystem' to get it as an option in the list of channels.</p>"
+				;
 	}
 
 	/************************************************************************************
