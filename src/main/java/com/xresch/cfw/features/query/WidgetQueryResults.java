@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
@@ -50,6 +52,7 @@ import com.xresch.cfw.validation.NotNullOrEmptyValidator;
  **************************************************************************************************************/
 public class WidgetQueryResults extends WidgetDefinition {
 
+	private static final String MESSAGE_VALUE_NOT_NUMBER = "Value was not a number: ";
 	private static final String FIELDNAME_QUERY = "query";
 	private static Logger logger = CFWLog.getLogger(WidgetQueryResults.class.getName());
 	
@@ -368,40 +371,42 @@ public class WidgetQueryResults extends WidgetDefinition {
 			resultArray = resultList.toJsonRecords();	
 		}
 		
-		if(resultArray == null || resultArray.size() == 0) {
-			return;
-		}
+		
 		
 		//----------------------------------------
 		// Set Column default settings 
-		JsonObject object = resultArray.get(0).getAsJsonObject();
-		Set<String> fields = object.keySet();
 		boolean detailsEmpty = Strings.isNullOrEmpty(detailFields);
 		detailFields = (detailsEmpty) ? "" : detailFields;
-		int i=0;
-		for(String fieldname : fields) {
+		
+		if(resultArray != null && resultArray.size() != 0) {
 			
-			//Set first column as default for label Column
-			if(i == 0
-			&& Strings.isNullOrEmpty(labelFields)) {
-				labelFields = fieldname;
-			}
-			
-			// Set all columns if details are empty
-			if (detailsEmpty) {
-				// ignore hidden fields with underscore
-				if(!fieldname.startsWith("_")) {
-					detailFields += fieldname +", ";
+			JsonObject object = resultArray.get(0).getAsJsonObject();
+			Set<String> fields = object.keySet();
+			int i=0;
+			for(String fieldname : fields) {
+				
+				//Set first column as default for label Column
+				if(i == 0
+				&& Strings.isNullOrEmpty(labelFields)) {
+					labelFields = fieldname;
 				}
+				
+				// Set all columns if details are empty
+				if (detailsEmpty) {
+					// ignore hidden fields with underscore
+					if(!fieldname.startsWith("_")) {
+						detailFields += fieldname +", ";
+					}
+				}
+				
+				//Set last column as default for value
+				if(i == fields.size()-1
+				&& Strings.isNullOrEmpty(valueField)) {
+					valueField = fieldname;
+				}
+				
+				i++;
 			}
-			
-			//Set last column as default for value
-			if(i == fields.size()-1
-			&& Strings.isNullOrEmpty(valueField)) {
-				valueField = fieldname;
-			}
-			
-			i++;
 		}
 		
 		// Add Value Field if missing
@@ -432,16 +437,29 @@ public class WidgetQueryResults extends WidgetDefinition {
 			
 			JsonObject current = element.getAsJsonObject();
 			JsonElement valueFieldElement = current.get(valueField);
-			Float value = -1f;
+			BigDecimal value = CFW.Math.BIG_NEG_ONE;
 			
 			//-------------------------------
 			// Get Value 
 			if(valueFieldElement != null) {
-				if(valueFieldElement.isJsonPrimitive() 
-				&& valueFieldElement.getAsJsonPrimitive().isNumber()) {
-					value = valueFieldElement.getAsFloat();
+				if(valueFieldElement.isJsonPrimitive()) {
+					JsonPrimitive primitive = valueFieldElement.getAsJsonPrimitive();
+					if(primitive.isNumber()) {
+						value = valueFieldElement.getAsBigDecimal();
+					}else if(primitive.isString()) {
+						 
+						String maybeNumber = primitive.getAsString();
+						
+						try {
+							value = new BigDecimal(maybeNumber);
+						}catch(NumberFormatException e) {
+							CFW.Messages.addWarningMessage(MESSAGE_VALUE_NOT_NUMBER + CFW.JSON.toString(valueFieldElement) );
+						}
+					}else {
+						CFW.Messages.addWarningMessage(MESSAGE_VALUE_NOT_NUMBER + CFW.JSON.toString(valueFieldElement) );
+					}
 				}else {
-					CFW.Messages.addWarningMessage("Value was not a number: "+CFW.JSON.toString(valueFieldElement) );
+					CFW.Messages.addWarningMessage(MESSAGE_VALUE_NOT_NUMBER + CFW.JSON.toString(valueFieldElement) );
 					continue;
 				}
 			}

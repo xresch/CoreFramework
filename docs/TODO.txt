@@ -165,6 +165,7 @@ DONE
 ====
 
 ------- current -------
+- BREAKING CHANGE: Query Alerting Tasks: if the result is empty, alerting will consider there is no problem ()
 - REMOVED AUTO-MIGRATION: Threshold State Names
 - CLI Extensions: Now supports environment variables
 - CLI Extensions: New parameters head/tail/countSkipped to only read specific lines of output
@@ -184,6 +185,7 @@ DONE
 - Credentials: Added fields token and secret
 - Dashboard Widget: New widget "Trigger Jobs" to allow users to trigger jobs from dashboards
 - Dashboard Widget: Parameters - Fixed issue with refresh when parameters are added to top
+- Query: Alerting: Fixed bug that string numbers are not recognized as numbers
 - Query: Command display - new parameter 'download' to enable a download button
 - Query: Command formatfield - improved list formatter
 - Query Command source - Now supports parameters for pagination 
