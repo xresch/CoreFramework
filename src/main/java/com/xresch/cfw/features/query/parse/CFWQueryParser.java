@@ -1068,7 +1068,7 @@ public class CFWQueryParser {
 			//------------------------------
 			//End of Array Part
 			case SIGN_BRACE_SQUARE_CLOSE:
-				addTrace("End Part", "Close Array", "] - After: "+firstPart.createDebugObject(null));
+				addTrace("End Part", "Close Array", firstPart);
 				
 				
 				contextStack.add(CFWQueryParserContext.ARRAY);

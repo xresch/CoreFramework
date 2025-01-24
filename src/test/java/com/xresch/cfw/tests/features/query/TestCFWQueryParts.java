@@ -1209,5 +1209,106 @@ public class TestCFWQueryParts extends DBTestMaster {
 		
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testQueryPartBinaryExpression_WithBraces() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| record
+	[GROUP, VALUE] 
+	['A', 1024]
+| set 
+	MINUS_BRACE 		= ( VALUE - 4 )				# returns 1020
+	MINUS_BRACE_REVERSE = (  2034 - VALUE )			# returns 1010
+	MINUS_BRACKET		= [ VALUE - 24 ] 			# returns [1000]
+	MINUS_BRACKET_BRACE = [ ( VALUE - 34 ) ]		# returns [990]
+	MINUS_MADNESS 		= ([ ((( VALUE - 44 ))) ])	# returns [980]
+	
+	PLUS_BRACE 			= ( VALUE + 6 )				# returns 1030
+	PLUS_BRACE_REVERSE 	= (  16 + VALUE )			# returns 1040
+	PLUS_BRACKET 		= [ VALUE + 26 ] 			# returns [1050]
+	PLUS_BRACKET_BRACE 	= [ ( VALUE + 36 ) ]		# returns [1060]
+	PLUS_MADNESS 		= ([ ((( VALUE + 46 ))) ])	# returns [1070]
+	
+	DIVIDE_BRACE 			= ( VALUE / 1024 )			# returns 1
+	DIVIDE_BRACE_REVERSE 	= (  2048 / VALUE )			# returns 2
+	DIVIDE_BRACKET 			= [ VALUE / 512 ] 			# returns [2]
+	DIVIDE_BRACKET_BRACE 	= [ ( VALUE / 256 ) ]		# returns [4]
+	DIVIDE_MADNESS 			= ([ ((( VALUE / 128 ))) ])	# returns [8]
+
+	MULTIPLY_BRACE 			= ( VALUE * 1 )					# returns 1024
+	MULTIPLY_BRACE_REVERSE 	= (  0.5 * VALUE )				# returns 512
+	MULTIPLY_BRACKET 		= [ VALUE * 0.25 ] 				# returns [256]
+	MULTIPLY_BRACKET_BRACE 	= [ ( VALUE * 0.125 ) ]			# returns [128]
+	MULTIPLY_MADNESS		= ([ ((( VALUE * 0.0625 ))) ])	# returns [64]
+
+	MODULO_BRACE 			= ( VALUE % 924 )			# returns 100
+	MODULO_BRACE_REVERSE 	= (  200 % VALUE )			# returns 200
+	MODULO_BRACKET 			= [ VALUE % 724 ] 			# returns [300]
+	MODULO_BRACKET_BRACE 	= [ ( VALUE % 624 ) ]		# returns [400]
+	MODULO_MADNESS 			= ([ ((( VALUE % 524 ))) ])	# returns [500]
+				""";
+		
+		CFWQueryResultList resultArray = 
+				new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		CFWQueryResult queryResults = resultArray.get(0);
+		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+		
+		//------------------------------
+		// Check First Query Result
+		queryResults = resultArray.get(0);
+		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+		
+		Assertions.assertEquals(1, resultArray.size());
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);		
+		Assertions.assertEquals("1020", record.get("MINUS_BRACE").getAsString());
+		Assertions.assertEquals("1010", record.get("MINUS_BRACE_REVERSE").getAsString());
+		Assertions.assertEquals("[1000]", CFW.JSON.toJSON(record.get("MINUS_BRACKET")));
+		Assertions.assertEquals("[990]", CFW.JSON.toJSON(record.get("MINUS_BRACKET_BRACE")));
+		Assertions.assertEquals("[980]", CFW.JSON.toJSON(record.get("MINUS_MADNESS")));
+		
+		Assertions.assertEquals("1030", record.get("PLUS_BRACE").getAsString());
+		Assertions.assertEquals("1040", record.get("PLUS_BRACE_REVERSE").getAsString());
+		Assertions.assertEquals("[1050]", CFW.JSON.toJSON(record.get("PLUS_BRACKET")));
+		Assertions.assertEquals("[1060]", CFW.JSON.toJSON(record.get("PLUS_BRACKET_BRACE")));
+		Assertions.assertEquals("[1070]", CFW.JSON.toJSON(record.get("PLUS_MADNESS")));
+		
+		Assertions.assertEquals("1.000", record.get("DIVIDE_BRACE").getAsString());
+		Assertions.assertEquals("2.000", record.get("DIVIDE_BRACE_REVERSE").getAsString());
+		Assertions.assertEquals("[2.000]", CFW.JSON.toJSON(record.get("DIVIDE_BRACKET")));
+		Assertions.assertEquals("[4.000]", CFW.JSON.toJSON(record.get("DIVIDE_BRACKET_BRACE")));
+		Assertions.assertEquals("[8.000]", CFW.JSON.toJSON(record.get("DIVIDE_MADNESS")));
+		
+		Assertions.assertEquals("1024", record.get("MULTIPLY_BRACE").getAsString());
+		Assertions.assertEquals("512.0", record.get("MULTIPLY_BRACE_REVERSE").getAsString());
+		Assertions.assertEquals("[256.00]", CFW.JSON.toJSON(record.get("MULTIPLY_BRACKET")));
+		Assertions.assertEquals("[128.000]", CFW.JSON.toJSON(record.get("MULTIPLY_BRACKET_BRACE")));
+		Assertions.assertEquals("[64.0000]", CFW.JSON.toJSON(record.get("MULTIPLY_MADNESS")));
+		
+		Assertions.assertEquals("100", record.get("MODULO_BRACE").getAsString());
+		Assertions.assertEquals("200", record.get("MODULO_BRACE_REVERSE").getAsString());
+		Assertions.assertEquals("[300]", CFW.JSON.toJSON(record.get("MODULO_BRACKET")));
+		Assertions.assertEquals("[400]", CFW.JSON.toJSON(record.get("MODULO_BRACKET_BRACE")));
+		Assertions.assertEquals("[500]", CFW.JSON.toJSON(record.get("MODULO_MADNESS")));
+                                       
+                                       
+
+
+
+
+
+		
+		
+		
+		
+	}
+	
 	
 }
