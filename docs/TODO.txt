@@ -165,7 +165,7 @@ DONE
 ====
 
 ------- current -------
-- BREAKING CHANGE: Query Alerting Tasks: if the result is empty, alerting will consider there is no problem ()
+- BREAKING CHANGE: Query Alerting Tasks: if the result is empty, alerting will consider there is no problem
 - REMOVED AUTO-MIGRATION: Threshold State Names
 - CLI Extensions: Now supports environment variables
 - CLI Extensions: New parameters head/tail/countSkipped to only read specific lines of output
@@ -189,6 +189,7 @@ DONE
 - Query: Command display - new parameter 'download' to enable a download button
 - Query: Command formatfield - improved list formatter
 - Query Command source - Now supports parameters for pagination 
+- Query: Parentheses(Groups) will not return an array if it only contains a single value
 - Query: Added Prometheus Counters for Queries and Query Sources
 - Query: Fixed a bug where JSON member access like "function().name" would not work
 - Query: Fixed a bug where array values where cached and not updated

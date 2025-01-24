@@ -156,9 +156,9 @@ public class QueryPartGroup extends QueryPart implements LeftRightEvaluatable {
 			//---------------------------------------
 			// Evaluate as Binary
 			QueryPart singlePart = partsGroup.get(0);
-			if(partEvaluatesToBoolean(singlePart)) {
+			//if(partEvaluatesToBoolean(singlePart)) {
 				return singlePart.determineValue(object);
-			}
+			//}
 				
 		}
 		
