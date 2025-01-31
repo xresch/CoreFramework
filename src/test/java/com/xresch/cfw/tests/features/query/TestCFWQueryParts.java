@@ -1297,17 +1297,7 @@ public class TestCFWQueryParts extends DBTestMaster {
 		Assertions.assertEquals("[300]", CFW.JSON.toJSON(record.get("MODULO_BRACKET")));
 		Assertions.assertEquals("[400]", CFW.JSON.toJSON(record.get("MODULO_BRACKET_BRACE")));
 		Assertions.assertEquals("[500]", CFW.JSON.toJSON(record.get("MODULO_MADNESS")));
-                                       
-                                       
-
-
-
-
-
-		
-		
-		
-		
+        
 	}
 	
 	
