@@ -288,36 +288,46 @@ public class CFWJson {
 	/*************************************************************************************
 	 * Takes an array with JsonObjects and converts it to XML.
 	 * If there is anything else in the array that is not a JsonObject it will be ignored.
+	 * @param doPretty TODO
 	 *************************************************************************************/
-	public static String toXML(JsonArray array) {
+	public static String toXML(JsonArray array, boolean doPretty) {
 		
 		//-----------------------------------
 		// Verify Input
-		if(array == null || array.isEmpty()) { return "<dara></data>"; }
+		if(array == null || array.isEmpty()) { return "<data></data>"; }
 		
-		StringBuilder xml = new StringBuilder();
-		
-		xml.append("<data>\n");
-		
+
 		
 		//-----------------------------------
 		// Create Records
+		String tab = "\t";
+		String NL = "\n";
+		if( !doPretty ) {
+			tab = "";
+			NL = "";
+		}
+		
+		//-----------------------------------
+		// Create Records
+		StringBuilder xml = new StringBuilder();
+		xml.append("<data>"+NL);
+		
 		for(JsonElement element : array) {
 			
 			if(element.isJsonObject()) {
 				JsonObject object = element.getAsJsonObject();
-				xml.append("\t<record>\n");
+				xml.append(tab+"<record>"+NL);
 					for(Entry<String, JsonElement> entry : object.entrySet()) {
 						
 						String fieldname = entry.getKey();
 						String value = CFW.JSON.toString( entry.getValue() );
-						xml.append("\t\t<").append(fieldname).append(">")
+						xml.append(tab+tab+"<").append(fieldname).append(">")
 							.append(value)
-							.append("</").append(fieldname).append(">\n")
+							.append("</").append(fieldname).append(">"+NL)
 							;
 	
 					}
-				xml.append("\t</record>\n");
+				xml.append(tab+"</record>"+NL);
 			}
 		}
 		

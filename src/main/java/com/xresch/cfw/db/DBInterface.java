@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -393,6 +394,58 @@ public class DBInterface {
 		return result;
 	}
 	
+	
+	/********************************************************************************************
+	 * 
+	 * @param sql string with placeholders
+	 * @param values the values to be placed in the prepared statement
+	 * @return int number of updated rows, -1 in case of error
+	 ********************************************************************************************/
+	public int unpreparedExecuteBatch(String sql){	
+		
+		int totalRows = -1;
+		
+		CFWLog log = new CFWLog(logger).start();
+		Connection conn = null;
+		PreparedStatement prepared = null;
+		
+		try {
+			//-----------------------------------------
+			// Initialize Variables
+			conn = this.getConnection();
+			Statement statement = conn.createStatement();
+			statement.addBatch(sql);
+
+			//-----------------------------------------
+			// Execute
+			int[] resultCounts = statement.executeBatch();
+			
+			for(int i : resultCounts) {
+				if(i >= 0) {
+					totalRows += i;
+				}
+			}
+			increaseDBCallsCount(conn, false);
+			
+		} catch (SQLException e) {
+			increaseDBCallsCount(conn, true);
+			log.severe("Database Error: "+e.getMessage(), e);
+		} finally {
+			try {
+				if(conn != null && transactionConnection.get() == null) { 
+					removeOpenConnection(conn);
+					conn.close(); 
+				}
+				if(prepared != null) { prepared.close(); }
+			} catch (SQLException e) {
+				log.severe("Issue closing resources.", e);
+			}
+			
+		}
+		
+		log.custom("sql", sql).end(Level.FINE);
+		return totalRows;
+	}
 	/********************************************************************************************
 	 * 
 	 * @param sql string with placeholders
@@ -400,7 +453,9 @@ public class DBInterface {
 	 * @return int number of updated rows, -1 in case of error
 	 ********************************************************************************************/
 	public int preparedExecuteBatch(String sql, Object... values){	
-        
+		
+		int totalRows = -1;
+		
 		CFWLog log = new CFWLog(logger).start();
 		Connection conn = null;
 		PreparedStatement prepared = null;
@@ -420,15 +475,14 @@ public class DBInterface {
 			// Execute
 			int[] resultCounts = prepared.executeBatch();
 
-			int totalRows = 0;
+			
 			for(int i : resultCounts) {
 				if(i >= 0) {
 					totalRows += i;
 				}
 			}
 			increaseDBCallsCount(conn, false);
-			return totalRows;
-			
+
 		} catch (SQLException e) {
 			increaseDBCallsCount(conn, true);
 			log.severe("Database Error: "+e.getMessage(), e);
@@ -446,7 +500,7 @@ public class DBInterface {
 		}
 		
 		log.custom("sql", sql).end(Level.FINE);
-		return -1;
+		return totalRows;
 	}
 	
 	/********************************************************************************************

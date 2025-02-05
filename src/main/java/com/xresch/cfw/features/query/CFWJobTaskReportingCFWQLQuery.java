@@ -371,7 +371,7 @@ public class CFWJobTaskReportingCFWQLQuery extends CFWJobTask {
 		if(attachCSV) {		alertObject.addTextData("data", "csv", CFW.JSON.toCSV(resultArray, ";") ); }
 		if(attachHTML) {	alertObject.addTextData("data", "html", "<html><body>"+metricTableHTML+"</body></html>"); }
 		if(attachJSON) {	alertObject.addTextData("data", "json", CFW.JSON.toJSONPretty(resultArray) ); }
-		if(attachXML) {		alertObject.addTextData("data", "xml", CFW.JSON.toXML(resultArray) ); }
+		if(attachXML) {		alertObject.addTextData("data", "xml", CFW.JSON.toXML(resultArray, true) ); }
 		
 		//----------------------------------------
 		// Send Report

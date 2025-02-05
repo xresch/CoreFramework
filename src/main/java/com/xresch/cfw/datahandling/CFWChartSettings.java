@@ -386,7 +386,7 @@ public class CFWChartSettings {
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
-	public CFWChartSettings String(Float value) {
+	public CFWChartSettings height(Float value) {
 		chartSettingsData.addProperty(HEIGHT, value);
 		return this;
 	}

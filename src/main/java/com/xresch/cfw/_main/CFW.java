@@ -292,7 +292,7 @@ public class CFW {
 	}
 	
 	/***********************************************************************
-	 * Searches all classes annotated with @CFWExtentionApplication and 
+	 * Searches all classes implementing with CFWAppInterface and 
 	 * returns an instance of the first finding or an empty default application.
 	 * 
 	 ***********************************************************************/

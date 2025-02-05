@@ -2520,6 +2520,64 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		return success;
 	}
+		
+	/******************************************************************************************************
+	 * Returns the value that can be inserted into an SQL statement.
+	 * @param url used for the request.
+	 * @return true if successful, false otherwise
+	 ******************************************************************************************************/
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public String getValueForSQL() {
+
+		Class clazz = this.getValueClass();
+		
+		if(this.getValue() == null) { return "NULL"; }
+		
+		if( String.class.isAssignableFrom(clazz) )  	{ return "'"+this.getValue().toString().replace("'", "''")+"'"; }
+		if( Integer.class.isAssignableFrom(clazz))  	{ return ""+this.getValue(); }
+		if( Boolean.class.isAssignableFrom(clazz))  	{ return ""+this.getValue(); }
+		if( BigDecimal.class.isAssignableFrom(clazz)) 	{ return ""+((BigDecimal)this.getValue()).toPlainString(); }
+		if( Float.class.isAssignableFrom(clazz))    	{ return ""+this.getValue(); }
+		if( Long.class.isAssignableFrom(clazz))    		{ return ""+this.getValue(); }
+		
+		if( CFWChartSettings.class.isAssignableFrom(clazz)
+		  || CFWSchedule.class.isAssignableFrom(clazz)
+		  || CFWTimeframe.class.isAssignableFrom(clazz) 
+		  || LinkedHashMap.class.isAssignableFrom(clazz) 
+		  ){ return "'"+this.getValue().toString().replace("'", "''")+"'"; }
+		
+		if( Timestamp.class.isAssignableFrom(clazz))  {
+			
+			long millis = ((Timestamp)this.getValue()).getTime();
+			String timestamp = CFW.Time.formatMillisAsTimestamp(millis);
+			timestamp = timestamp.replace("T", " ");
+			return "'"+timestamp+"'";  // e.g. '2025-01-31 19:53:54.355'
+			
+		}
+		
+		if( Date.class.isAssignableFrom(clazz))  { 
+			
+			long millis = ((Date)this.getValue()).getTime();
+			String date = CFW.Time.formatMillisAsISODate(millis);
+			return "'"+date+"'";  // e.g. '2025-01-31'
+			
+		}
+		
+		if( ArrayList.class.isAssignableFrom(clazz))  { 
+			String arrayString = ((ArrayList)this.getValue()).toString();
+			
+			arrayString = arrayString
+							.replace("'", "''")
+							.replace("\"", "'")
+							;
+			
+			return "'"+arrayString+"'";  
+			
+		}
+					
+			
+		return "'CFWField.getValueForSQL(): unknown value type or class'";
+	}
 
 		
 }

@@ -28,7 +28,7 @@ import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
  **************************************************************************************************************/
 public class CFWTime {
 	
-	public static final String FORMAT_TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	public static final String FORMAT_TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS"; // IMPORTANT: DO NOT CHANGE THIS
 	public static final String FORMAT_ISO8601_DATE = "yyyy-MM-dd";
 	
 	private static TimeZone machineTimezone = TimeZone.getDefault();
@@ -561,12 +561,29 @@ public class CFWTime {
 	
 	
 	/********************************************************************************************
+	 * Get a string representation of the epcoh millis in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
+	 ********************************************************************************************/
+	public static String formatMillisAsTimestamp(long timeMillis){
+		
+		return formatterTimestamp.format(
+				zonedTimeFromEpochUTC(timeMillis)
+			);
+	}
+	/********************************************************************************************
 	 * Get a string representation of the date in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
 	 ********************************************************************************************/
 	public static String formatDateAsTimestamp(ZonedDateTime date){
 		return formatterTimestamp.format(date);
 	}
 	
+	/********************************************************************************************
+	 * Get a string representation of the date in the format  "yyyy-MM-dd".
+	 ********************************************************************************************/
+	public static String formatMillisAsISODate(long millis){
+		return formatDateAsISO(
+					zonedTimeFromEpochUTC(millis)
+				);
+	}
 	/********************************************************************************************
 	 * Get a string representation of the date in the format  "yyyy-MM-dd".
 	 ********************************************************************************************/

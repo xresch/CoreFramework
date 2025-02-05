@@ -93,17 +93,21 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL(CFWObject object) {
 		dbInterface = CFW.DB.getDBInterface();
-		if(object != null) {
-			this.object = object;
-			this.fields = object.getFields();
-		}
-	} 
+		setObject(object);
+	}
 	
 	/****************************************************************
 	 * Creates a CFWSQL object for the given DBInterface.
 	 ****************************************************************/
 	public CFWSQL(DBInterface dbInterface, CFWObject object) {
 		this.dbInterface = dbInterface;
+		setObject(object);
+	} 
+	
+	/****************************************************************
+	 * Set the object of this Class.
+	 ****************************************************************/
+	private void setObject(CFWObject object) {
 		if(object != null) {
 			this.object = object;
 			this.fields = object.getFields();
@@ -671,38 +675,59 @@ public class CFWSQL {
 	/****************************************************************
 	 * Creates the insert statement used by insert()
 	 * and insertGetPrimaryKey();
+	 * @param doPrepared TODO
 	 ****************************************************************/
-	private void createInsertStatement(Object ...fieldnames) {
+	private void createInsertStatement(boolean doPrepared, String[] fieldnames) {
 		
-			// TODO: Make insert statements cachable despite having variable fields
-			isQueryCached = false;
-			this.queryName = null;
+		Object[] objects = new Object[fieldnames.length];
+		for(int i = 0 ; i < fieldnames.length; i++) {
+			objects[i] = fieldnames[i];
+		}
+		
+		createInsertStatement(doPrepared, objects);
+	}
+	
+	/****************************************************************
+	 * Creates the insert statement used by insert()
+	 * and insertGetPrimaryKey();
+	 * @param doPrepared TODO
+	 ****************************************************************/
+	private void createInsertStatement(boolean doPrepared, Object ...fieldnames) {
+		
+		// TODO: Make insert statements cachable despite having variable fields
+		isQueryCached = false;
+		this.queryName = null;
+		
+		StringBuilder columnNames = new StringBuilder("(");
+		StringBuilder placeholdersOrValues = new StringBuilder("(");
+		
+		for(Object fieldname : fieldnames) {
+			CFWField<?> field = fields.get(fieldname.toString());
 			
-					
-			StringBuilder columnNames = new StringBuilder("(");
-			StringBuilder placeholders = new StringBuilder("(");
-			
-			for(Object fieldname : fieldnames) {
-				CFWField<?> field = fields.get(fieldname.toString());
-				
-				if(field != object.getPrimaryKeyField()
-				|| (field == object.getPrimaryKeyField() && field.getValue() != null)
-				) {
-					if(!isQueryCached()) {
-						columnNames.append("\""+field.getName()).append("\",");
-						placeholders.append("?,");
+			if(field != object.getPrimaryKeyField()
+			|| (field == object.getPrimaryKeyField() && field.getValue() != null)
+			) {
+				if(!isQueryCached() || doPrepared) {
+					columnNames.append("\""+field.getName()).append("\",");
+					if(doPrepared) {
+						placeholdersOrValues.append("?,");
+					}else {
+						placeholdersOrValues.append(field.getValueForSQL()+",");
 					}
+				}
+				if(doPrepared) {
 					this.addFieldValue(field);
 				}
 			}
-			
-			//Replace last comma with closing brace
-			columnNames.deleteCharAt(columnNames.length()-1).append(")");
-			placeholders.deleteCharAt(placeholders.length()-1).append(")");
-			if(!isQueryCached()) {	
-				query.append("INSERT INTO "+object.getTableName()+" "+columnNames
-					  + " VALUES "+placeholders+";");
-			}
+		}
+		
+		//Replace last comma with closing brace
+		columnNames.deleteCharAt(columnNames.length()-1).append(")");
+		placeholdersOrValues.deleteCharAt(placeholdersOrValues.length()-1).append(")");
+		if(!isQueryCached()) {	
+			query.append("INSERT INTO "+object.getTableName()+" "+columnNames
+				  + " VALUES "+placeholdersOrValues+";");
+		}
 
 	}
 	/****************************************************************
@@ -724,9 +749,176 @@ public class CFWSQL {
 	 * @return boolean
 	 ****************************************************************/
 	public boolean insert(Object ...fieldnames) {
-		createInsertStatement(fieldnames);
+		createInsertStatement(true, fieldnames);
 			
 		return this.execute();
+	}
+	
+	
+	/****************************************************************
+	 * Creates a batch insert statement and executes it.
+	 * For primary id fields: Either all or none must be set.
+	 * @param fieldnames
+	 * @return int
+	 ****************************************************************/
+	@SuppressWarnings("rawtypes")
+	public int insertBatch(ArrayList<? extends CFWObject> records, int recordsPerBulk, boolean doPrepared) {
+		
+		//------------------------------------------
+		// Check not emty
+		if(records.isEmpty()) { return 0; }
+		
+		int insertCount = 0;
+		this.isQueryCached = false;
+		this.queryName = null;
+
+		//------------------------------------------
+		// Bulk Insert Records 
+		int count =  records.size();
+		for(int i = 0; i < count; ) {
+			values.clear();
+
+			//---------------------------------------
+			// Add Field Values
+			this.query.setLength(0);
+			boolean stillEnoughRecords = ( count-i-1 >= recordsPerBulk);
+			for(int j = 0; j < recordsPerBulk && stillEnoughRecords ; j++) {
+
+				CFWObject current = records.get(i);
+				this.setObject(current);
+				CFWSQL sql = new CFWSQL(current);
+				
+				sql.createInsertStatement(doPrepared, current.getFieldnames());
+				String statement = sql.getStatementString();
+				
+				this.query.append(statement);
+				
+				if(doPrepared) {	this.values.addAll(sql.values); }
+				
+				i++; // next record
+			}
+			
+			//---------------------------------------
+			// Execute Insert
+			if(stillEnoughRecords) {
+				CFW.DB.transactionStart();
+					insertCount += this.executeBatch(doPrepared);
+				CFW.DB.transactionCommit();
+			}else {
+				for(; i < count; i++) {
+					records.get(i).insert();
+					insertCount++;
+				}
+			}
+			
+			System.out.println("x");
+		}
+		return insertCount;
+	}
+	
+	/****************************************************************
+	 * Creates a bulk insert statement and executes it.
+	 * For primary id fields: Either all or none must be set.
+	 * @param fieldnames
+	 * @return int
+	 ****************************************************************/
+	@SuppressWarnings("rawtypes")
+	public int insertBulk(ArrayList<? extends CFWObject> records, int recordsPerBulk, boolean doPrepared) {
+		
+		//------------------------------------------
+		// Check not emty
+		if(records.isEmpty()) { return 0;}
+		
+		int insertCount = 0;
+		this.isQueryCached = false;
+		this.queryName = null;
+
+		//------------------------------------------
+		// Build Column Names and Placeholders
+		StringBuilder columnNames = new StringBuilder("(");
+		StringBuilder placeholders = new StringBuilder("(");
+		
+		this.setObject(records.get(0));
+		
+		LinkedHashMap<String, CFWField> localFields = object.getFields();
+		for(Object fieldname : records.get(0).getFieldnames() ) {
+			CFWField<?> field = localFields.get(fieldname.toString());
+			
+			if( isNotPrimaryFieldOrNotNull(field, object) ) {
+				columnNames.append("\""+field.getName()).append("\",");
+				placeholders.append("?,");
+			}
+		}
+		
+		//Replace last comma with closing brace
+		columnNames.deleteCharAt(columnNames.length()-1).append(")");
+		placeholders.deleteCharAt(placeholders.length()-1).append(")");
+		
+		//------------------------------------------
+		// Bulk Insert Records 
+		int count =  records.size();
+		for(int i = 0; i < count; ) {
+			values.clear();
+
+			//---------------------------------------
+			// Add Field Values
+			query.setLength(0);
+			query.append("INSERT INTO "+object.getTableName()+" "+columnNames + " VALUES ");
+
+			boolean stillEnoughRecords = ( count-i-1 >= recordsPerBulk);
+			for(int j = 0; j < recordsPerBulk && stillEnoughRecords ; j++) {
+				CFWObject current = records.get(i);
+				
+				//------------------------------------------
+				// Create Query 
+				if(doPrepared) {
+					query.append(placeholders+",");
+					for(CFWField field : current.getFields().values()) {
+						if( isNotPrimaryFieldOrNotNull(field, current) ) {
+							this.addFieldValue(field);
+						}
+					}
+				}else {
+					query.append(current.toSQLInsertValues()+",");
+				}
+
+				//------------------------------------------
+				// Iterate Record
+				i++;
+			}
+			
+			// replace last comma
+			query.deleteCharAt(query.length()-1).append(";");
+			
+			//---------------------------------------
+			// Execute Insert
+			if(stillEnoughRecords) {
+				CFW.DB.transactionStart();
+					insertCount += this.executeBatch(doPrepared);
+				CFW.DB.transactionCommit();
+			}else {
+				for(; i < count; i++) {
+					records.get(i).insert();
+					insertCount++;
+				}
+			}
+			
+			System.out.println("x");
+		}
+		return insertCount;
+	}
+
+	/****************************************************************
+	 * Checks if the field is not the primary of the object,
+	 * or the primary field and not null.
+	 * @return boolean
+	 ****************************************************************/
+	private boolean isNotPrimaryFieldOrNotNull(CFWField<?> field, CFWObject object) {
+		return field != object.getPrimaryKeyField()
+			   || (
+					   field == object.getPrimaryKeyField() 
+					&& field.getValue() != null
+				);
 	}
 	
 	/****************************************************************
@@ -762,7 +954,7 @@ public class CFWSQL {
 	 * @return  id or null if not successful
 	 ****************************************************************/
 	public Integer insertGetPrimaryKey(Object ...fieldnames) {
-		createInsertStatement(fieldnames);
+		createInsertStatement(true, fieldnames);
 		
 		return this.executeInsertGetPrimaryKey();
 	}
@@ -1496,10 +1688,11 @@ public class CFWSQL {
 	/****************************************************************
 	 * Executes the query and saves the results in the global 
 	 * variable.
+	 * @param doPrepared execute as prepared statement
 	 * 
 	 * @return number of updated rows, -1 in case of error
 	 ****************************************************************/
-	public int executeBatch() {
+	public int executeBatch(boolean doPrepared) {
 		
 		//----------------------------
 		// Handle Caching
@@ -1507,7 +1700,13 @@ public class CFWSQL {
 		
 		//----------------------------
 		// Execute Statement 
-		int count = dbInterface.preparedExecuteBatch(statement, values.toArray());
+		int count = 0;
+		
+		if(doPrepared) {
+			count = dbInterface.preparedExecuteBatch(statement, values.toArray());
+		}else {
+			count= dbInterface.unpreparedExecuteBatch(statement);
+		}
 		
 		dbInterface.close(result);
 		

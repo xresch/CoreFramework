@@ -114,7 +114,7 @@ public class APIDefinitionJsonArray extends APIDefinition{
 								
 	
 					case XML:	PlaintextResponse plaintextXML = new PlaintextResponse();
-								plaintextXML.getContent().append(CFW.JSON.toXML(result));
+								plaintextXML.getContent().append(CFW.JSON.toXML(result, true));
 								break;
 								
 								

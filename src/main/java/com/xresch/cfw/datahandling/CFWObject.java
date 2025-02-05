@@ -373,6 +373,13 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
+	public Object[] getFieldnamesAsObjects() {
+		return fields.keySet().toArray(new Object[] {});
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
 	public String getTableName() {
 		return tableName;
 	}
@@ -799,6 +806,74 @@ public class CFWObject {
 		return new CFWSQL(this).delete();
 	}
 	
+	
+	/****************************************************************
+	 * Returns a block of column names like "(name, name, ...)" that
+	 * can be used to build SQL insert statements.
+	 * The primary field is only added if it's value is not null.
+	 ****************************************************************/
+	public String toSQLInsertColumnNames() {		
+		return toSQLInsertColumnNames(getFieldnamesAsObjects());
+	}
+	
+	/****************************************************************
+	 * Returns a block of column names like "(name, name, ...)" that
+	 * can be used to build SQL insert statements.
+	 * The primary field is only added if it's value is not null.
+	 ****************************************************************/
+	public String toSQLInsertColumnNames(Object ...fieldnames) {		
+		
+		StringBuilder columnNames = new StringBuilder("(");
+
+		for(Object fieldname : fieldnames) {
+			CFWField<?> field = fields.get(fieldname.toString());
+			
+			if(field != this.getPrimaryKeyField()
+			|| (field == this.getPrimaryKeyField() && field.getValue() != null)
+			) {
+				columnNames.append("\""+field.getName()).append("\",");
+			}
+		}
+		
+		//Replace last comma with closing brace
+		columnNames.deleteCharAt(columnNames.length()-1).append(")");
+		
+		return columnNames.toString();
+	}
+	
+	/****************************************************************
+	 * Returns a block of values like "(value, value, ...)" that
+	 * can be used to build SQL insert statements.
+	 * The primary field is only added if it's value is not null.
+	 ****************************************************************/
+	public String toSQLInsertValues() {		
+		return toSQLInsertValues(getFieldnamesAsObjects());
+	}
+	
+	/****************************************************************
+	 * Returns a block of values like "(value, value, ...)" that
+	 * can be used to build SQL insert statements.
+	 * The primary field is only added if it's value is not null.
+	 ****************************************************************/
+	public String toSQLInsertValues(Object ...fieldnames) {		
+		
+		StringBuilder insertString = new StringBuilder("(");
+		
+		for(Object fieldname : this.getFieldnames()) {
+			CFWField<?> field = fields.get(fieldname.toString());
+			
+			if(field != this.getPrimaryKeyField()
+			|| (field == this.getPrimaryKeyField() && field.getValue() != null)
+			) {
+				insertString.append(field.getValueForSQL()+",");
+			}
+		}
+		
+		//Replace last comma with closing brace
+		insertString.deleteCharAt(insertString.length()-1).append(")");
+		
+		return insertString.toString();
+	}
 	/****************************************************************
 	 * Override to return a JSON String.
 	 ****************************************************************/

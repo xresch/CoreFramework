@@ -1,6 +1,7 @@
 package com.xresch.cfw.utils;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
@@ -570,7 +571,7 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
-	 * Creates a random long between 0 and the given number(inclusive).
+	 * Creates a random long between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
 	public static Long randomLongInRange(long lowerInclusive, long upperInclusive) {
@@ -579,7 +580,7 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
-	 * Creates a random double between 0 and the given number(inclusive).
+	 * Creates a random double between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
 	public static Double randomDoubleInRange(double lowerInclusive, double upperInclusive) {
@@ -588,7 +589,7 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
-	 * Creates a random float between 0 and the given number(inclusive).
+	 * Creates a random float between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
 	public static Float randomFloatInRange(float lowerInclusive, float upperInclusive, int nullRatioPercent) {
@@ -599,7 +600,7 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
-	 * Creates a random float between 0 and the given number(inclusive).
+	 * Creates a random float between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
 	public static Float randomFloatInRange(float lowerInclusive, float upperInclusive) {
@@ -648,6 +649,33 @@ public class CFWRandom {
 		return decimal ;
 	}
 	
+	
+	/******************************************************************************
+	 * Creates a random Timestamp between given milliseconds(inclusive).
+	 * 
+	 ******************************************************************************/
+	public static Timestamp randomTimestampInRange(Timestamp earliestInclusive, Timestamp latestInclusive) {
+		
+		return randomTimestampInRange(earliestInclusive.getTime(), latestInclusive.getTime());
+	}
+	
+	/******************************************************************************
+	 * Creates a random Timestamp between given milliseconds(inclusive).
+	 * Example Usage:
+	 * <pre><code>
+	   CFW.Random.randomTimestampInRange(
+			CFWTimeUnit.d.offset(null, -30), 
+			CFWTimeUnit.m.offset(null, -30)
+		);
+		</code></pre>
+	 * 
+	 ******************************************************************************/
+	public static Timestamp randomTimestampInRange(long earliestInclusive, long latestInclusive) {
+		
+		long timeMillis = randomLongInRange(earliestInclusive, latestInclusive);
+		return new Timestamp(timeMillis);
+	}
+		
 	
 	/******************************************************************************
 	 * Creates a random String containing lower and uppercase characters.
