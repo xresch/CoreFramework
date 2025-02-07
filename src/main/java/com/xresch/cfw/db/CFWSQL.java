@@ -811,7 +811,6 @@ public class CFWSQL {
 				}
 			}
 			
-			System.out.println("x");
 		}
 		return insertCount;
 	}

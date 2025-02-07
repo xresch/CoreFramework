@@ -559,9 +559,16 @@ public class CFWTime {
 		return CFWTime.formatDateAsTimestamp(ZonedDateTime.now());
 	}
 	
+	/********************************************************************************************
+	 * Get a string representation of the epoch millis.
+	 ********************************************************************************************/
+	public static String formatMillis(long timeMillis, String format){
+		
+		return formatDate(zonedTimeFromEpochUTC(timeMillis), format);
+	}
 	
 	/********************************************************************************************
-	 * Get a string representation of the epcoh millis in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
+	 * Get a string representation of the epoch millis in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
 	 ********************************************************************************************/
 	public static String formatMillisAsTimestamp(long timeMillis){
 		
@@ -569,6 +576,8 @@ public class CFWTime {
 				zonedTimeFromEpochUTC(timeMillis)
 			);
 	}
+	
+	
 	/********************************************************************************************
 	 * Get a string representation of the date in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
 	 ********************************************************************************************/
