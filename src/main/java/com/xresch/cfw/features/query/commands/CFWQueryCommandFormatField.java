@@ -638,7 +638,16 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	}
 	
 	/***********************************************************************************************
-	 * 
+	 * Add formatter by name for a single field.
+	 ***********************************************************************************************/
+	public static void addFormatterByName(CFWQueryContext context, String fieldname, String formatterName) throws ParseException {
+		FormatterDefinition definition = formatterDefinitionArray.get(formatterName.toUpperCase());
+		definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname);
+	}
+		
+		
+	/***********************************************************************************************
+	 * Add formatter by name for multiple fields.
 	 ***********************************************************************************************/
 	public static void addFormatterByName(CFWQueryContext context, Collection<String> fieldnames, String formatterName) throws ParseException {
 		//--------------------------------------

@@ -3518,6 +3518,140 @@ function cfw_format_splitCFWSchedule(dataArray, fieldname){
 }
 
 /**************************************************************************************
+ * Takes values and converts them into a horizontal box plot.
+ * @param values object like 
+ * 		{
+ * 			  "min":4.517
+ * 			, "low":5.12
+ * 			, "high":4.887
+ * 			, "max":5.529
+ * 			, "start":3.437
+ * 			, "end":7.061
+ * 		}
+ *************************************************************************************/
+function cfw_format_boxplot(values, color){
+	
+
+	var boxplotDiv = $('<div class="w-100 h-100 d-flex align-items-center"></div>');
+	let v = values;
+	let popover = true;
+	
+	//----------------------------------
+	// Check
+	if(v == null){	return boxplotDiv; }
+	
+	//----------------------------------
+	// Initialize
+	
+	if(CFW.utils.isNullOrEmpty(color)){	color = "cfw-blue"; }
+	if(v.low == null){	 v.low = 0; }
+	if(v.min == null){	v.min = v.low; }
+	
+	if(v.high == null){	 v.high = 0; }
+	if(v.max == null){	v.max = v.high; }
+	
+	if(v.start == null){v.start = v.min; }
+	if(v.end == null){	v.end = v.max; }
+	
+	//----------------------------------
+	// Calculate Absolute Sizes
+	let totalWidth 			= v.end - v.start;
+	let minOffset 			= v.min - v.start;
+	let minWhiskerWidth 	= v.low - v.min;
+	let boxWidth 			= v.high - v.low;
+	let maxWhiskerWidth 	= v.max - v.high;
+	let maxOffset 			= v.end - v.max;
+	
+	//----------------------------------
+	// Calculate Percentages
+	let tickWidthPerc = 0.5;
+	
+	let minOffsetPerc  			= (minOffset 		/ totalWidth) * 100 - (tickWidthPerc / 2);
+	let minWhiskerWidthPerc  	= (minWhiskerWidth  / totalWidth) * 100 - (tickWidthPerc / 2);
+	let boxWidthPerc  			= (boxWidth 		/ totalWidth) * 100;
+	let maxWhiskerWidthPerc  	= (maxWhiskerWidth  / totalWidth) * 100 - (tickWidthPerc / 2);
+	let maxOffsetPerc  			= (maxOffset 		/ totalWidth) * 100 - (tickWidthPerc / 2);
+	
+	let gridColumnsDefinition = 
+			  minOffsetPerc.toFixed(1) + "% "
+			+ tickWidthPerc.toFixed(1) + "% "
+			+ minWhiskerWidthPerc.toFixed(1) + "% "
+			+ boxWidthPerc.toFixed(1) + "% "  		
+			+ maxWhiskerWidthPerc.toFixed(1) + "% "
+			+ tickWidthPerc.toFixed(1) + "% "
+			+ maxOffsetPerc.toFixed(1) + "% "
+			;  		
+								
+	//----------------------------------
+	// Create a Boxplot Div
+		
+	//=====================================
+	// Add Boxes
+	
+	let minOffsetDiv 		= $('<div>&nbsp;</div>');	
+	let minTickDiv 			= $('<div>&nbsp;</div>');	
+	let minWhiskerWidthDiv	= $('<div>&nbsp;</div>');	
+	let boxDiv				= $('<div></div>');	
+	let maxWhiskerWidthDiv	= $('<div>&nbsp;</div>');	
+	let maxTickDiv			= $('<div>&nbsp;</div>');	
+	let maxOffsetDiv 		= $('<div>&nbsp;</div>');	
+	
+	
+	minOffsetDiv.css(		"width", minOffsetPerc+'%');
+	minTickDiv.css(			"width", tickWidthPerc+'%');
+	minWhiskerWidthDiv.css(	"width", minWhiskerWidthPerc+'%');	
+	boxDiv.css(				"width", boxWidthPerc+'%');
+	maxWhiskerWidthDiv.css(	"width", maxWhiskerWidthPerc+'%');
+	maxTickDiv.css(			"width", tickWidthPerc+'%');
+	maxOffsetDiv.css(		"width", maxOffsetPerc+'%');
+
+	minWhiskerWidthDiv.css(	"height", '1px');
+	maxWhiskerWidthDiv.css(	"height", '1px');
+
+	boxplotDiv.append(minOffsetDiv);
+	boxplotDiv.append(minTickDiv);   
+	boxplotDiv.append(minWhiskerWidthDiv);  
+	boxplotDiv.append(boxDiv);  		
+	boxplotDiv.append(maxWhiskerWidthDiv);  
+	boxplotDiv.append(maxTickDiv);   
+	boxplotDiv.append(maxOffsetDiv); 
+		
+	//=====================================
+	// Add Median
+	
+	if(v.median == null || v.median == undefined){
+		boxDiv.append("&nbsp;");
+	}else{
+		medianOffset = v.median - v.low;
+		let medianOffsetPerc = (medianOffset / boxWidth) * 100;
+		
+		let medianDiv = $('<div class="h-100">&nbsp;</div>');	
+		medianDiv.css("width", medianOffsetPerc+'%');
+		medianDiv.css("border-right", "2px solid white")
+		boxDiv.append(medianDiv);
+	}	  
+	   
+	//=====================================
+	// Add Colors
+	CFW.colors.colorizeElement(minTickDiv		 , color, "bg")
+	CFW.colors.colorizeElement(minWhiskerWidthDiv, color, "bg")
+	CFW.colors.colorizeElement(boxDiv		 	 , color, "bg")
+	CFW.colors.colorizeElement(maxWhiskerWidthDiv, color, "bg")
+	CFW.colors.colorizeElement(maxTickDiv		 , color, "bg")
+	
+	
+	
+	if(popover){
+		var popoverSettings = Object.assign({}, cfw_renderer_common_getPopoverDefaults());
+		popoverSettings.content = CFW.format.objectToHTMLList(values);
+		boxplotDiv.popover(popoverSettings);
+		
+	}
+
+	return boxplotDiv;
+}
+
+/**************************************************************************************
  * 
  *************************************************************************************/
 function cfw_format_fieldNameToLabel(fieldname){
@@ -3913,7 +4047,7 @@ function cfw_format_objectToHTMLList(object, style, paddingLeft, doLabelize){
 			var key = (!doLabelize) ? key : CFW.format.fieldNameToLabel(key);
 			
 			if(currentValue == null){
-				htmlString += '<li>null</li>';
+				htmlString += '<li><strong>'+key+':&nbsp;</strong>null</li>';
 			}else if(typeof currentValue == "object"){
 				htmlString += '<li><strong>'+key+':&nbsp;</strong>'
 					+ cfw_format_objectToHTMLList(currentValue, style, paddingLeft, doLabelize)
@@ -5943,6 +6077,7 @@ var CFW = {
 		, millisToDurationClock: cfw_format_millisToDurationClock
 		, cfwSchedule: 			cfw_format_cfwSchedule
 		, splitCFWSchedule: 	cfw_format_splitCFWSchedule
+		, boxplot: 				cfw_format_boxplot
 		, objectToHTMLList: 	cfw_format_objectToHTMLList
 		, csvToObjectArray: 	cfw_format_csvToObjectArray
 		, capitalize: 			cfw_format_capitalize

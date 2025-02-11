@@ -745,32 +745,92 @@ function cfw_query_formatSpecial(span, value){
 	if( typeof value == "object"){
 		
 		switch(value.format){
+			case "boxplot":		cfw_query_formatSpecial_Boxplot(span, value);   break;
 			case "css":			cfw_query_formatSpecial_CSS(span, value);   break;
-			case "link":		cfw_query_formatSpecial_Link(span, value);   break;
 			case "display":		cfw_query_formatSpecial_Display(span, value);   break;
+			case "link":		cfw_query_formatSpecial_Link(span, value);   break;
 			default:			break;
 		}
 	}
 
 	
 }
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatSpecial_Boxplot(span, object){
+	
+	let values = object.values;
+	let color =  object.color;
+	let width =  "100%";
+	let height =  "100%";
+
+	span.css("height", height);
+	span.css("width", width);
+
+	//---------------------------------
+	// Data is null
+	if(values == null){
+		cfw_query_formatShowNulls(span, value);
+		return;
+	}
+	
+	//---------------------------------
+	// Data is object
+	if( typeof values === "object" ){
+		span.html("");
+		span.append( 
+			CFW.format.boxplot(values, color) 
+		);
+		console.log(span.html())
+		return;
+
+	}
+	
+	//---------------------------------
+	// Data is Object or Array
+	if( Array.isArray(value) || typeof value === "object" ){
+
+		span.text( JSON.stringify(records) );
+		return;
+
+	}
+
+	//---------------------------------
+	// Any other data type
+	span.text(value);
+}
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_formatSpecial_Link(span, object){
+function cfw_query_formatSpecial_CSS(span, object){
 	
-	var target = ' target="_blank" ';
-	if(!object.newtab){
-		target = " ";
+	let value = object.value;
+	let style =  object.style;
+
+	span.attr("style", style);
+
+	
+	//---------------------------------
+	// Data is null
+	if(value == null){
+		cfw_query_formatShowNulls(span, value);
+		return;
 	}
 	
-	var style = ' ';
-	if( !CFW.utils.isNullOrEmpty(object.style) ){
-		style = ' style="'+object.style+'" ';;
+	//---------------------------------
+	// Data is Object or Array
+	if( Array.isArray(value) || typeof value === "object" ){
+
+		span.text( JSON.stringify(records) );
+		return;
+
 	}
-	
-	span.html('<a href="'+object.url+'" '+ target + style +'>'+object.label+'</a>');
+
+	//---------------------------------
+	// Any other data type
+	span.text(value);
 }
 
 /*******************************************************************************
@@ -818,37 +878,25 @@ function cfw_query_formatSpecial_Display(span, object){
 	span.text(records);
 }
 
+
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_formatSpecial_CSS(span, object){
+function cfw_query_formatSpecial_Link(span, object){
 	
-	let value = object.value;
-	let style =  object.style;
-
-	span.attr("style", style);
-
-	
-	//---------------------------------
-	// Data is null
-	if(value == null){
-		cfw_query_formatShowNulls(span, value);
-		return;
+	var target = ' target="_blank" ';
+	if(!object.newtab){
+		target = " ";
 	}
 	
-	//---------------------------------
-	// Data is Object or Array
-	if( Array.isArray(value) || typeof value === "object" ){
-
-		span.text( JSON.stringify(records) );
-		return;
-
+	var style = ' ';
+	if( !CFW.utils.isNullOrEmpty(object.style) ){
+		style = ' style="'+object.style+'" ';;
 	}
-
-	//---------------------------------
-	// Any other data type
-	span.text(value);
+	
+	span.html('<a href="'+object.url+'" '+ target + style +'>'+object.label+'</a>');
 }
+
 
 /*******************************************************************************
  * 

@@ -197,6 +197,7 @@ DONE
 
 - Query: Added Commands:
 	- bollbands
+	- formatboxplot
 	- maparrays
 	- movavg
 	- movdiff

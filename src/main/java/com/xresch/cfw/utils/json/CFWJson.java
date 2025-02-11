@@ -639,7 +639,14 @@ public class CFWJson {
 		
 	}
 	
-	
+	/*************************************************************************************
+	 * Checks if the element is null or Json Null
+	 * 
+	 * @return empty string if array is empty
+	 *************************************************************************************/
+	public static boolean isNull(JsonElement e) {
+		return e == null || e.isJsonNull();
+	}
 	
 	/*************************************************************************************
 	 * Makes a CSV string from a JsonArray containing JsonObjects.
