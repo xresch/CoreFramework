@@ -782,7 +782,7 @@ function cfw_query_formatSpecial_Boxplot(span, object){
 		span.append( 
 			CFW.format.boxplot(values, color) 
 		);
-		console.log(span.html())
+		
 		return;
 
 	}

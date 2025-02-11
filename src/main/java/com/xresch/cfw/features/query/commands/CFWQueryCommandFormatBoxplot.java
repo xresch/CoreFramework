@@ -267,6 +267,10 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 				JsonObject valuesObject = new JsonObject();
 				specialObject.add("values", valuesObject);
 				
+				if(relative) {
+					valuesObject.addProperty("start", smallestMin);
+				}
+				
 				valuesObject.add("min", record.get(min));
 				valuesObject.add("low", record.get(low));
 				valuesObject.add("median", record.get(median));
@@ -274,7 +278,6 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 				valuesObject.add("max", record.get(max));
 				
 				if(relative) {
-					valuesObject.addProperty("start", smallestMin);
 					valuesObject.addProperty("end", biggestMax);
 				}
 				

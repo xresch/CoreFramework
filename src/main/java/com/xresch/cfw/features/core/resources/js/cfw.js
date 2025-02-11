@@ -3533,35 +3533,51 @@ function cfw_format_boxplot(values, color){
 	
 
 	var boxplotDiv = $('<div class="w-100 h-100 d-flex align-items-center"></div>');
-	let v = values;
+
 	let popover = true;
 	
 	//----------------------------------
 	// Check
-	if(v == null){	return boxplotDiv; }
+	if(values == null){	return boxplotDiv; }
+	
+	let start = values.start;
+	let min = values.min;
+	let low = values.low;
+	let median = values.median;
+	let high = values.high;
+	let max = values.max;
+	let end = values.end;
 	
 	//----------------------------------
 	// Initialize
 	
 	if(CFW.utils.isNullOrEmpty(color)){	color = "cfw-blue"; }
-	if(v.low == null){	 v.low = 0; }
-	if(v.min == null){	v.min = v.low; }
 	
-	if(v.high == null){	 v.high = 0; }
-	if(v.max == null){	v.max = v.high; }
+	if(low == null){	 low = (min != null) ? min : 0; }
+	if(high == null){	 high = (max != null) ? max : 0; }
+	if(low > high){
+		// swap low and hi if reversed
+		let temp = low;
+		low = high;
+		high = temp;
+		
+	}
 	
-	if(v.start == null){v.start = v.min; }
-	if(v.end == null){	v.end = v.max; }
+	if(min == null ){	min = low; }
+	if(max == null ){	max = high; }
+
+	
+	if(start == null){start = min; }
+	if(end == null){	end = max; }
 	
 	//----------------------------------
 	// Calculate Absolute Sizes
-	let totalWidth 			= v.end - v.start;
-	let minOffset 			= v.min - v.start;
-	let minWhiskerWidth 	= v.low - v.min;
-	let boxWidth 			= v.high - v.low;
-	let maxWhiskerWidth 	= v.max - v.high;
-	let maxOffset 			= v.end - v.max;
-	
+	let totalWidth 			= end - start;
+	let minOffset 			= min - start;
+	let minWhiskerWidth 	= low - min;
+	let boxWidth 			= high - low;
+	let maxWhiskerWidth 	= max - high;
+
 	//----------------------------------
 	// Calculate Percentages
 	let tickWidthPerc = 0.5;
@@ -3570,18 +3586,7 @@ function cfw_format_boxplot(values, color){
 	let minWhiskerWidthPerc  	= (minWhiskerWidth  / totalWidth) * 100 - (tickWidthPerc / 2);
 	let boxWidthPerc  			= (boxWidth 		/ totalWidth) * 100;
 	let maxWhiskerWidthPerc  	= (maxWhiskerWidth  / totalWidth) * 100 - (tickWidthPerc / 2);
-	let maxOffsetPerc  			= (maxOffset 		/ totalWidth) * 100 - (tickWidthPerc / 2);
 	
-	let gridColumnsDefinition = 
-			  minOffsetPerc.toFixed(1) + "% "
-			+ tickWidthPerc.toFixed(1) + "% "
-			+ minWhiskerWidthPerc.toFixed(1) + "% "
-			+ boxWidthPerc.toFixed(1) + "% "  		
-			+ maxWhiskerWidthPerc.toFixed(1) + "% "
-			+ tickWidthPerc.toFixed(1) + "% "
-			+ maxOffsetPerc.toFixed(1) + "% "
-			;  		
-								
 	//----------------------------------
 	// Create a Boxplot Div
 		
@@ -3594,8 +3599,6 @@ function cfw_format_boxplot(values, color){
 	let boxDiv				= $('<div></div>');	
 	let maxWhiskerWidthDiv	= $('<div>&nbsp;</div>');	
 	let maxTickDiv			= $('<div>&nbsp;</div>');	
-	let maxOffsetDiv 		= $('<div>&nbsp;</div>');	
-	
 	
 	minOffsetDiv.css(		"width", minOffsetPerc+'%');
 	minTickDiv.css(			"width", tickWidthPerc+'%');
@@ -3603,26 +3606,19 @@ function cfw_format_boxplot(values, color){
 	boxDiv.css(				"width", boxWidthPerc+'%');
 	maxWhiskerWidthDiv.css(	"width", maxWhiskerWidthPerc+'%');
 	maxTickDiv.css(			"width", tickWidthPerc+'%');
-	maxOffsetDiv.css(		"width", maxOffsetPerc+'%');
 
 	minWhiskerWidthDiv.css(	"height", '1px');
 	maxWhiskerWidthDiv.css(	"height", '1px');
 
-	boxplotDiv.append(minOffsetDiv);
-	boxplotDiv.append(minTickDiv);   
-	boxplotDiv.append(minWhiskerWidthDiv);  
-	boxplotDiv.append(boxDiv);  		
-	boxplotDiv.append(maxWhiskerWidthDiv);  
-	boxplotDiv.append(maxTickDiv);   
-	boxplotDiv.append(maxOffsetDiv); 
+
 		
 	//=====================================
 	// Add Median
 	
-	if(v.median == null || v.median == undefined){
+	if(median == null || median == undefined){
 		boxDiv.append("&nbsp;");
 	}else{
-		medianOffset = v.median - v.low;
+		medianOffset = median - low;
 		let medianOffsetPerc = (medianOffset / boxWidth) * 100;
 		
 		let medianDiv = $('<div class="h-100">&nbsp;</div>');	
@@ -3641,11 +3637,29 @@ function cfw_format_boxplot(values, color){
 	
 	
 	
+	//=====================================
+	// Add Colors
 	if(popover){
 		var popoverSettings = Object.assign({}, cfw_renderer_common_getPopoverDefaults());
 		popoverSettings.content = CFW.format.objectToHTMLList(values);
 		boxplotDiv.popover(popoverSettings);
 		
+	}
+	
+	//=====================================
+	// Create Boxplot
+	boxplotDiv.append(minOffsetDiv);
+	
+	if(min != low){
+		boxplotDiv.append(minTickDiv);   
+		boxplotDiv.append(minWhiskerWidthDiv);
+	}  
+	
+	boxplotDiv.append(boxDiv); 
+	 	
+	if(max != high){	
+		boxplotDiv.append(maxWhiskerWidthDiv);  
+		boxplotDiv.append(maxTickDiv);   
 	}
 
 	return boxplotDiv;
