@@ -762,8 +762,8 @@ function cfw_query_formatSpecial_Boxplot(span, object){
 	
 	let values = object.values;
 	let color =  object.color;
-	let width =  "100%";
-	let height =  "100%";
+	let width =  object.width;
+	let height =  object.height;
 
 	span.css("height", height);
 	span.css("width", width);

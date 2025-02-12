@@ -21,7 +21,6 @@ import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.utils.json.CFWJson;
 
 /************************************************************************************************************
  * 
@@ -44,8 +43,10 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	private String median = null; 
 	private String high = null; 
 	private String max = null; 
+	private String width = "100%"; 
+	private String height = "20px"; 
 	
-	private Boolean relative = false; 
+	private Boolean relative = true; 
 	
 	private ArrayList<EnhancedJsonObject> objectList = new ArrayList<>();
 	
@@ -79,7 +80,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" field=<field> min=<min> low=<low> median=<median> high=<high> max=<max>";
+		return COMMAND_NAME+" field=<field> min=<min> low=<low> median=<median> high=<high> max=<max> ...";
 	}
 	
 	/***********************************************************************************************
@@ -89,8 +90,16 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	public String descriptionSyntaxDetailsHTML() {
 		return """
 			  <ul>
-			  	<li><b>field:&nbsp;</b>Array of the fieldnames these display settings should be applied too.</li>
-			  	<li><b>style:&nbsp;</b>The CSS style that should be applied to the field.</li>
+			  	<li><b>field:&nbsp;</b>The name of the new field that will contain the boxplot.</li>
+			  	<li><b>relative:&nbsp;</b>(Optional)Toggle if the boxplots should be positioned relative to the overall min and max values. (Default: true)</li>
+			  	<li><b>color:&nbsp;</b>(Optional)The CSS color that should be applied to the boxplot.</li>
+			  	<li><b>min:&nbsp;</b>The name of the field that contains the min value.</li>
+			  	<li><b>low:&nbsp;</b>The name of the field that contains the low value.</li>
+			  	<li><b>median:&nbsp;</b>(Optional)The name of the field that contains the median value.</li>
+			  	<li><b>high:&nbsp;</b>The name of the field that contains the high value.</li>
+			  	<li><b>max:&nbsp;</b>The name of the field that contains the max value.</li>
+				<li><b>width:&nbsp;</b>(Optional) CSS width attribute to control the size of the display. (Default: 100%)</li>
+			  	<li><b>height:&nbsp;</b>(Optional) CSS height attribute to control the size of the display. (Default: 20px)</li>
 			  </ul>
 			  """
 			;
@@ -150,20 +159,21 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 			String partName = zePart.getLeftSideAsString(null).toLowerCase();
 			QueryPart rightSide = zePart.getRightSide();
 			
-			if(partName.equals("field")) { 			field = rightSide.determineValue(null).getAsString(); }
-			else if(partName.equals("min")) {		min = rightSide.determineValue(null).getAsString(); }
-			else if(partName.equals("low")) {		low = rightSide.determineValue(null).getAsString(); }
-			else if(partName.equals("median")) {	median = rightSide.determineValue(null).getAsString(); }
-			else if(partName.equals("high")) {		high = rightSide.determineValue(null).getAsString(); }
-			else if(partName.equals("max")) {		max = rightSide.determineValue(null).getAsString(); }
-			else if(partName.equals("relative")) {	relative = rightSide.determineValue(null).getAsBoolean(); }
-			else if(partName.equals("color")){
-				colorPart = zePart;
+			switch(partName) {
+				case "field":		field = rightSide.determineValue(null).getAsString(); break;
+				case "min":			min = rightSide.determineValue(null).getAsString(); break;
+				case "low":			low = rightSide.determineValue(null).getAsString(); break;
+				case "median":		median = rightSide.determineValue(null).getAsString(); break;
+				case "high":		high = rightSide.determineValue(null).getAsString(); break;
+				case "max":			max = rightSide.determineValue(null).getAsString(); break;
+				case "relative":	relative = rightSide.determineValue(null).getAsBoolean(); break;
+				case "width":		width = rightSide.determineValue(null).getAsString(); break;
+				case "height":		height = rightSide.determineValue(null).getAsString(); break;
+				case "color":		colorPart = zePart; break;
+				default:
+					continue;
 			}
-			else {
-
-				continue;
-			}
+			
 		}
 		
 		//------------------------------------------
@@ -171,7 +181,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 		//------------------------------------------
 		if(Strings.isNullOrEmpty(field)) { 	field = "boxplot"; }
 		if(relative == null) { 	relative = false; }
-		
+
 		//------------------------
 		// Check min is set
 		if(Strings.isNullOrEmpty(min) 
@@ -186,7 +196,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 		// Check max is set
 		if(Strings.isNullOrEmpty(max) 
 		&& Strings.isNullOrEmpty(high) ) {
-			throw new IllegalArgumentException(COMMAND_NAME+": Please specify either of the parameters 'min' or 'low'.");
+			throw new IllegalArgumentException(COMMAND_NAME+": Please specify either of the parameters 'max' or 'high'.");
 		}
 		if(Strings.isNullOrEmpty(max)) {
 			max = high;
@@ -263,6 +273,8 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	
 				specialObject.addProperty("format", "boxplot");
 				specialObject.addProperty("color", color);
+				specialObject.addProperty("width", width);
+				specialObject.addProperty("height", height);
 				
 				JsonObject valuesObject = new JsonObject();
 				specialObject.add("values", valuesObject);

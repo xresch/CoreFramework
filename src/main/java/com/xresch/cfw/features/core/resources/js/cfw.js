@@ -3607,9 +3607,11 @@ function cfw_format_boxplot(values, color){
 	maxWhiskerWidthDiv.css(	"width", maxWhiskerWidthPerc+'%');
 	maxTickDiv.css(			"width", tickWidthPerc+'%');
 
+	minTickDiv.css(	"height", '75%');
 	minWhiskerWidthDiv.css(	"height", '1px');
+	boxDiv.css(	"height", '100%');
 	maxWhiskerWidthDiv.css(	"height", '1px');
-
+	maxTickDiv.css(	"height", '75%');
 
 		
 	//=====================================
