@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.commands;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -15,6 +16,7 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
@@ -29,6 +31,8 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  ************************************************************************************************************/
 public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	
+	private static final String GROUP_ID = "groupID";
+
 	private static final String COMMAND_NAME = "formatboxplot";
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandFormatCSS.class.getName());
@@ -36,16 +40,22 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	private QueryPartAssignment colorPart = null; 
 	
+	private ArrayList<String> groupByFieldnames = new ArrayList<>();
+	
+	// Maps with GroupID and value
+	private LinkedHashMap<String, BigDecimal> smallestMinMap = new LinkedHashMap<>();
+	private LinkedHashMap<String, BigDecimal> biggestMaxMap = new LinkedHashMap<>();
+
 	// These all represent fieldnames
-	private String field = "boxplot"; 
+	private String field = "Boxplot"; 
 	private String min = null; 
 	private String low = null; 
 	private String median = null; 
 	private String high = null; 
 	private String max = null; 
+	
 	private String width = "100%"; 
 	private String height = "20px"; 
-	
 	private Boolean relative = true; 
 	
 	private ArrayList<EnhancedJsonObject> objectList = new ArrayList<>();
@@ -90,6 +100,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	public String descriptionSyntaxDetailsHTML() {
 		return """
 			  <ul>
+			  	<li><b>by:&nbsp;</b>The name of fields that should be used to group. Groups will have the same 'start' and 'end' values of the box plot.</li>
 			  	<li><b>field:&nbsp;</b>The name of the new field that will contain the boxplot.</li>
 			  	<li><b>relative:&nbsp;</b>(Optional)Toggle if the boxplots should be positioned relative to the overall min and max values. (Default: true)</li>
 			  	<li><b>color:&nbsp;</b>(Optional)The CSS color that should be applied to the boxplot.</li>
@@ -157,18 +168,22 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 		//------------------------------------------
 		for(QueryPartAssignment zePart : assignmentParts) {
 			String partName = zePart.getLeftSideAsString(null).toLowerCase();
-			QueryPart rightSide = zePart.getRightSide();
+			QueryPartValue rightSide = zePart.getRightSide().determineValue(null);
 			
 			switch(partName) {
-				case "field":		field = rightSide.determineValue(null).getAsString(); break;
-				case "min":			min = rightSide.determineValue(null).getAsString(); break;
-				case "low":			low = rightSide.determineValue(null).getAsString(); break;
-				case "median":		median = rightSide.determineValue(null).getAsString(); break;
-				case "high":		high = rightSide.determineValue(null).getAsString(); break;
-				case "max":			max = rightSide.determineValue(null).getAsString(); break;
-				case "relative":	relative = rightSide.determineValue(null).getAsBoolean(); break;
-				case "width":		width = rightSide.determineValue(null).getAsString(); break;
-				case "height":		height = rightSide.determineValue(null).getAsString(); break;
+				case "by":
+					ArrayList<String> fieldnames = rightSide.getAsStringArray();
+					groupByFieldnames.addAll(fieldnames);
+				break;
+				case "field":		field = rightSide.getAsString(); break;
+				case "min":			min = rightSide.getAsString(); break;
+				case "low":			low = rightSide.getAsString(); break;
+				case "median":		median = rightSide.getAsString(); break;
+				case "high":		high = rightSide.getAsString(); break;
+				case "max":			max = rightSide.getAsString(); break;
+				case "relative":	relative = rightSide.getAsBoolean(); break;
+				case "width":		width = rightSide.getAsString(); break;
+				case "height":		height = rightSide.getAsString(); break;
 				case "color":		colorPart = zePart; break;
 				default:
 					continue;
@@ -213,8 +228,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-		BigDecimal smallestMin = null;
-		BigDecimal biggestMax = null;
+
 		//-------------------------------------
 		// Fetch All Before Processing
 		while(keepPolling()) {
@@ -228,6 +242,21 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 			// Process Relative
 			if(relative) {
 				
+				//----------------------------
+				// Create Group String
+				String groupID = record.createGroupIDString(groupByFieldnames);
+				record.addMetadata(GROUP_ID, groupID); // store it to not have to generate it twice
+				
+				//----------------------------
+				// Create and Get Group
+				if(!smallestMinMap.containsKey(groupID)) {
+					smallestMinMap.put(groupID, null);
+					biggestMaxMap.put(groupID, null);
+				}
+				
+				BigDecimal smallestMin = smallestMinMap.get(groupID);
+				BigDecimal biggestMax = biggestMaxMap.get(groupID);
+				
 				//--------------------------
 				// Find the smallest Min Value
 				JsonElement minElement = record.get(min);
@@ -237,7 +266,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 					BigDecimal minDecimal = minValue.getAsBigDecimal();
 					if(smallestMin == null
 					|| smallestMin.compareTo(minDecimal) > 0) {
-						smallestMin = minDecimal;
+						smallestMinMap.put(groupID, minDecimal);
 					}
 				}
 				
@@ -250,7 +279,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 					BigDecimal maxDecimal = maxValue.getAsBigDecimal();
 					if(biggestMax == null
 					|| biggestMax.compareTo(maxDecimal) < 0) {
-						biggestMax = maxDecimal;
+						biggestMaxMap.put(groupID, maxDecimal);
 					}
 				}
 			}
@@ -280,6 +309,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 				specialObject.add("values", valuesObject);
 				
 				if(relative) {
+					BigDecimal smallestMin = smallestMinMap.get(record.getMetadata(GROUP_ID));
 					valuesObject.addProperty("start", smallestMin);
 				}
 				
@@ -290,6 +320,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 				valuesObject.add("max", record.get(max));
 				
 				if(relative) {
+					BigDecimal biggestMax = biggestMaxMap.get(record.getMetadata(GROUP_ID));
 					valuesObject.addProperty("end", biggestMax);
 				}
 				
@@ -304,5 +335,6 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 			this.setDoneIfPreviousDone();
 		}
 	}
+	
 
 }

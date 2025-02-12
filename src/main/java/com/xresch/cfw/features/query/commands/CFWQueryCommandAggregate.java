@@ -14,6 +14,7 @@ import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
@@ -202,7 +203,8 @@ public class CFWQueryCommandAggregate extends CFWQueryCommand {
 			
 			//----------------------------
 			// Create Group String
-			String groupID = createGroupID(record);
+			String groupID = record.createGroupIDString(groupByFieldnames);
+			
 			record.addMetadata("groupID", groupID);
 			recordsArray.add(record);
 			//----------------------------
@@ -242,23 +244,6 @@ public class CFWQueryCommandAggregate extends CFWQueryCommand {
 			this.setDone();
 		}
 		
-	}
-
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public String createGroupID(EnhancedJsonObject record) {
-		String groupID = "";
-		
-		for(String fieldname : groupByFieldnames) {
-			JsonElement element = record.get(fieldname);
-			if(element == null || element.isJsonNull()) {
-				groupID += "-cfwNullPlaceholder";
-			}else {
-				groupID += record.get(fieldname).toString();
-			}
-		}
-		return groupID;
 	}
 
 }

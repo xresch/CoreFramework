@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
@@ -26,8 +27,7 @@ import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
  **************************************************************************************************************/
 public class _CFWQueryCommon {
 
-	
-	
+		
 	/***********************************************************************************************
 	 * Used for sorting fields
 	 ***********************************************************************************************/

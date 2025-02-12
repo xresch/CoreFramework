@@ -13,6 +13,7 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
@@ -192,16 +193,7 @@ public class CFWQueryCommandRSI extends CFWQueryCommand {
 			
 			//----------------------------
 			// Create Group String
-			String groupID = "";
-			
-			for(String fieldname : groupByFieldnames) {
-				JsonElement element = record.get(fieldname);
-				if(element == null || element.isJsonNull()) {
-					groupID += "-cfwNullPlaceholder";
-				}else {
-					groupID += record.get(fieldname).toString();
-				}
-			}
+			String groupID = record.createGroupIDString(groupByFieldnames);
 			
 			//----------------------------
 			// Create and Get Group

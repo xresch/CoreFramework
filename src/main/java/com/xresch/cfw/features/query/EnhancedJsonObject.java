@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query;
 
 import java.lang.ref.SoftReference;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -10,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
@@ -66,6 +68,23 @@ public class EnhancedJsonObject {
 		for(String fieldname : fieldnames) {
 			object.remove(fieldname);
 		}
+	}
+	
+	/*************************************************************************************************
+	 * 
+	 *************************************************************************************************/
+	public String createGroupIDString(ArrayList<String> groupByFieldnames) {
+		String groupID = "";
+		
+		for(String fieldname : groupByFieldnames) {
+			JsonElement element = this.get(fieldname);
+			if( CFW.JSON.isNull(element) ) {
+				groupID += "-cfwNullPlaceholder";
+			}else {
+				groupID += this.get(fieldname).toString();
+			}
+		}
+		return groupID;
 	}
 	
 	/*************************************************************************************************

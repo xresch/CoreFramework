@@ -20,6 +20,7 @@ import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
@@ -210,16 +211,7 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 			
 			//----------------------------
 			// Create Row Group String
-			String rowID = "";
-			
-			for(String fieldname : rowFieldnames) {
-				JsonElement element = record.get(fieldname);
-				if(element == null || element.isJsonNull()) {
-					rowID += "-cfwNullPlaceholder";
-				}else {
-					rowID += record.get(fieldname).toString();
-				}
-			}
+			String rowID = record.createGroupIDString(rowFieldnames);
 			
 			
 			//----------------------------
