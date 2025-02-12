@@ -1,0 +1,29 @@
+
+<p>Creates a random HSL CSS color string for a Group. 
+The default parameters are set to values to be able to maintain readability when using the color as a background with white text.</p>
+
+<p>Simple example that colors firstnames: </p>
+<pre><code class="language-cfwquery">| source random
+| sort FIRSTNAME
+| formatcss
+	fields = [LOCATION, FIRSTNAME]
+	style = "background-color: "+randomColorGroup(FIRSTNAME)
+			+"; color: white"</code></pre>
+
+<p>Here is a more complex example to color boxplots by a group: </p>
+<pre><code class="language-cfwquery">| globals
+	BY = ["NAME"]
+| source random type=trading seriesCount = 3 records = 10
+| formatboxplot
+	by = g(BY)
+	relative = true
+	min = "LOW"
+	low = "OPEN"
+	high = "CLOSE"
+	max = "HIGH"
+	color = randomColorGroup("NAME",50, 100, 40, 80)
+| off formatfield
+	Boxes = none
+| sort g(BY)</code></pre>
+
+

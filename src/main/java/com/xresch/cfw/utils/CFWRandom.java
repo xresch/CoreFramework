@@ -733,6 +733,40 @@ public class CFWRandom {
 	
 	}
 	
+	/************************************************************************************************
+	 * Creates a random HSL CSS string like "hsla(112, 54, 210, 1.0)".
+	 * @param minS The minimum saturation in percent 0-100
+	 * @param maxS The maximum saturation in percent 0-100
+	 * @param minL The minimum Lightness in percent 0-100
+	 * @param maxL The maximum Lightness in percent 0-100
+	 ************************************************************************************************/
+	public static String randomColorHSL(int minS, int maxS, int minL, int maxL) { 
+		
+		int h = randomIntegerInRange(0,256);
+		int s = randomIntegerInRange(minS, maxS);
+		int l = randomIntegerInRange(minL, maxL);
+		
+		return "hsla("+h+","+s+"%,"+l+"%, 1.0)";
+		
+	}
+	
+	/************************************************************************************************
+	 * Creates a random HSL CSS string like "hsla(112, 54, 210, 1.0)".
+	 * @param hue The number that should be used for the hue.
+	 * @param minS The minimum saturation in percent 0-100
+	 * @param maxS The maximum saturation in percent 0-100
+	 * @param minL The minimum Lightness in percent 0-100
+	 * @param maxL The maximum Lightness in percent 0-100
+	 ************************************************************************************************/
+	public static String randomColorSL(int hue, int minS, int maxS, int minL, int maxL) { 
+		
+		int s = randomIntegerInRange(minS, maxS);
+		int l = randomIntegerInRange(minL, maxL);
+		
+		return "hsla("+Math.abs(hue % 360)+","+s+"%,"+l+"%, 1.0)";
+		
+	}
+	
 	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 

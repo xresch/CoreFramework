@@ -1,0 +1,10 @@
+
+<p>Creates a random HSL CSS color string. The default parameters are set to values to be able to maintain readability when using the color as a background with white text.</p>
+
+<pre><code class="language-cfwquery">| source random
+| formatcss
+	fields = [LOCATION, FIRSTNAME]
+	style = "background-color: "+randomColorHSL(50, 70, 20, 50)
+			+"; color: white"
+</code></pre>
+

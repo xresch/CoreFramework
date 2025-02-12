@@ -214,6 +214,8 @@ DONE
 	- intervalpoints
 	- message
 	- prev
+	- randomColorGroup
+	- randomColorHSL
 	- record
 	- replaceRegex
 	- sourceEach

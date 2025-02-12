@@ -121,6 +121,8 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionParam;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionPerc;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionPrev;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandom;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandomColorGroup;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandomColorHSL;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandomFloat;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandomFrom;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRecord;
@@ -336,6 +338,8 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionPerc(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionPrev(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandom(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandomColorGroup(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandomColorHSL(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandomFloat(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandomFrom(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRecord(null));

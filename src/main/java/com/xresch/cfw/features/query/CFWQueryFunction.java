@@ -28,6 +28,7 @@ public abstract class CFWQueryFunction{
 	public static final String TAG_OBJECTS = "objects";
 	public static final String TAG_STRINGS = "strings";
 	public static final String TAG_TIME = "time";
+	public static final String TAG_FORMAT = "format";
 	
 	public CFWQueryFunction(CFWQueryContext context) {
 		this.context = context;
