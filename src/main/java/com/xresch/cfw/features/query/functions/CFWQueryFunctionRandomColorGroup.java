@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import org.bouncycastle.util.test.TestRandomBigInteger;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -28,6 +30,8 @@ public class CFWQueryFunctionRandomColorGroup extends CFWQueryFunction {
 		super(context);
 	}
 
+	int lastHueValue = 0;
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -123,8 +127,6 @@ public class CFWQueryFunctionRandomColorGroup extends CFWQueryFunction {
 			QueryPartValue groupValue = parameters.get(0);
 			group = groupValue.getAsString();
 			
-			
-			System.out.println("group: "+group);
 			if(groupColorsCache.containsKey(group)) {
 				return groupColorsCache.get(group);
 			}
@@ -178,10 +180,23 @@ public class CFWQueryFunctionRandomColorGroup extends CFWQueryFunction {
 		}
 		
 		//----------------------------------
-		// Return Number
+		// Create Hue
 
-		int hueValue = group.hashCode();
+		int hueValue = group.hashCode() % 360;
 		
+		// make sure there is enough difference
+		if( Math.abs(lastHueValue - hueValue) < 50) {
+			if(lastHueValue < hueValue) {
+				hueValue += 50 - Math.abs(lastHueValue - hueValue) + CFW.Random.randomIntegerInRange(-10, +10);
+			}else {
+				hueValue -= 50 - Math.abs(lastHueValue - hueValue) + CFW.Random.randomIntegerInRange(-10, +10);;
+			}
+		}
+		
+		lastHueValue = hueValue;
+		
+		//----------------------------------
+		// Create Color
 		QueryPartValue color =  QueryPartValue.newString(
 				CFW.Random.randomColorSL(hueValue, minS, maxS, minL, maxL)
 			);

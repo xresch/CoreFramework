@@ -48,6 +48,10 @@ public class CFWRandom {
 	private static final String[] statisticsTitleObject = new String[] { "Letters", "People", "Apples", "Tiramisus", "Pillows", "Pens", "Contracts", "Customers", "Patients", "Chairs", "Castles", "Dragons", "Fairies", "Gnomes", "Chemicals", "Elves", "Horses", "Magicians", "Spirits", "Trees", "Books", "Backpacks", "Angels", "Gods", "Devils", "Demons", "Heros", "Soldiers", "Papers", "Games", "Rooms", "Liquids", "Materials" };
 	private static final String[] statisticsTitleVerb = new String[] { "Sent", "Written", "Glued", "Woreshipped", "Banned", "Cuddled", "Destroyed", "Hidden", "Stolen", "Horrified", "Made", "Created", "Impressed", "Fortified", "Mixed", "Hunted", "Befriended", "Educated", "Bewitched", "Cursed", "Enchanted", "Backed", "Sold", "Combusted", "Briefed", "Registered", "Educated", "Eradicated", "Engaged", "Divorced", "Played", "Tested", "Documented" };
 	
+	private static final String[] methodNamePrefix = new String[] {"get", "set", "create", "read", "update", "delete", "execute", "call", "generate", "make", "rename", "add", "remove", "copy", "duplicate", "put", "push", "check", "is", "has", "can", "format", "convert", "send", "poll", "sort", "filter", "decode", "encode", "compress", "decompress", "zip", "unzip", "encrypt", "decrypt", "calculate", "calc"};
+	private static final String[] methodNameItem = new String[] {"Customer", "Account", "Table", "Method", "Statistics", "Cell", "Maximum", "Message", "Record", "Category", "Tiramisu", "Source", "Box", "Package", "Graph", "Angel", "Demon", "Perfect", "Digital", "Virtual", "Artificial", "Actual", "First", "Last", "Literal", "Parameter", "Clock", "Berserk", "Magic", "Comment", "Page", "Test", "Energy", "Wave", "Billing", "Cart", "Shop", "Image", "Game", "Taste" };
+	private static final String[] methodNameSuffix = new String[] {"Count", "Value", "Time", "Role", "Permissions", "Average", "Globals", "Metadata", "Defaults", "Height", "Width", "Dimensions", "Length", "Size", "Activity", "Copy", "Chart", "Extremes", "Overlaps", "Caches", "Rights", "Interval", "Set", "Map", "List", "Collection", "Array", "Object", "Results", "Number", "Status", "Percentage", "Consumption", "Time", "Entry", "Row", "Column", "Performance", "Load" };
+
 	private static final String[] companyTitleFirst = new String[] { 
 			  "Rockford"
 			, "Battlefield" 
@@ -472,6 +476,7 @@ public class CFWRandom {
 	public static String randomExaggaratingAdjective(int nullRatioPercent) { return randomFromArray(nullRatioPercent, exaggeratingAdjectives); }
 	public static String randomIssueResolvedMessage(int nullRatioPercent) { return randomFromArray(nullRatioPercent, issueResolvedMessages); }
 	public static String randomMessageOfObedience(int nullRatioPercent) { return randomFromArray(nullRatioPercent, messagesOfObedience); }
+	
 	public static String randomJobTitle(int nullRatioPercent) { 
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
@@ -489,6 +494,17 @@ public class CFWRandom {
 		return randomFromArray(statisticsTitleAdjective)
 		+ " " +randomFromArray(statisticsTitleObject)
 		+ " " +randomFromArray(statisticsTitleVerb)
+			; 
+	}
+	
+	public static String randomMethodName(int nullRatioPercent) { 
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		return randomFromArray(methodNamePrefix)
+		+randomFromArray(methodNameItem)
+		+randomFromArray(methodNameSuffix)
+		+ "()"
 			; 
 	}
 	
@@ -518,6 +534,7 @@ public class CFWRandom {
 	public static String randomMessageOfObedience() { return randomMessageOfObedience(0); }
 	public static String randomJobTitle() { return randomJobTitle(0); }
 	public static String randomStatisticsTitle() { return randomStatisticsTitle(0); }
+	public static String randomMethodName() { return randomMethodName(0); }
 	public static String randomCompanyTitle() { return randomCompanyTitle(0); }
 
 	/******************************************************************************
@@ -575,7 +592,6 @@ public class CFWRandom {
 	 * 
 	 ******************************************************************************/
 	public static Long randomLongInRange(long lowerInclusive, long upperInclusive) {
-		
 		return ThreadLocalRandom.current().nextLong(lowerInclusive, upperInclusive+1);
 	}
 	
@@ -865,6 +881,91 @@ public class CFWRandom {
 		
 		return array;
 	}
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param valuesCount
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfBatchCalls(int seriesCount, int valuesCount, long earliest, long latest, int maxDepth) { 
+		JsonArray array = new JsonArray();
+		for(int k = 0; k < seriesCount; k++) {
+			JsonArray series = new JsonArray();
+			randomJSONArrayOfBatchCalls(series, randomUltimateServiceName(), valuesCount, earliest, latest, maxDepth);
+			array.addAll(series);
+		}
+		return array;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param valuesCount
+	 ******************************************************************************/
+	private static JsonArray randomJSONArrayOfBatchCalls(JsonArray array, String serviceName, int valuesCount, long earliest, long latest, int maxDepth) { 
+		
+		
+		//--------------------------------------
+		// Additional Values
+		JsonObject currentItem = new JsonObject();
+						
+		currentItem.addProperty("SERVICE", serviceName);
+		currentItem.addProperty("NAME", randomMethodName());
+		currentItem.addProperty("START", earliest);
+		currentItem.addProperty("END", latest);
+		currentItem.addProperty("DURATION", latest - earliest);
+		currentItem.addProperty("RESULTS", randomIntegerInRange(0,10000) );
+		currentItem.addProperty("ERRORS", (randomIntegerInRange(0, 100) > 20) 
+											? 0 
+											: randomIntegerInRange(5,1000) 
+											);
+
+		if(maxDepth == 0 || array.size() >= valuesCount) {
+			return array;
+		}
+		
+		//--------------------------------------
+		// Additional Values
+		array.add(currentItem);
+
+		//--------------------------------------
+		// Create Values for Series
+		int directCalls = 0;
+		if(maxDepth > 0) {
+			directCalls = randomIntegerInRange(0, (maxDepth / 2)+1);
+		}
+		
+		// tighten the timeframe
+		long oneTwentieth = (latest - earliest) / 20;
+		earliest = earliest + randomLongInRange( 0, oneTwentieth );
+		latest =  latest + randomLongInRange( 0, oneTwentieth );
+		
+		long currentEarliest = earliest;
+		long remainder = latest - earliest;
+
+		for(int j = 0; j < directCalls; j++) {
+			
+			long part = remainder / (directCalls-j);
+			
+			long currentLatest = currentEarliest + randomLongInRange( Math.round(part * 0.75), part);
+		
+			
+			randomJSONArrayOfBatchCalls(array, serviceName, valuesCount, currentEarliest, currentLatest, maxDepth - 1);
+			
+			//---------------------------
+			// Check Size Limit Reached
+			if(array.size() >= valuesCount) {
+				return array;
+			}
+			
+			//---------------------------
+			// Do Next
+			remainder = latest - currentEarliest;
+			currentEarliest = currentLatest;
+			
+		}
+		
+		return array;
+	}
 	
 	/******************************************************************************
 	 * Creates a random json array of people with various properties.
@@ -924,6 +1025,7 @@ public class CFWRandom {
 		
 		return array;
 	}
+	
 	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 
