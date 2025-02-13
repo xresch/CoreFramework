@@ -57,6 +57,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	private String width = "100%"; 
 	private String height = "20px"; 
 	private Boolean relative = true; 
+	private Boolean epoch = false; 
 	
 	private ArrayList<EnhancedJsonObject> objectList = new ArrayList<>();
 	
@@ -102,8 +103,9 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 			  <ul>
 			  	<li><b>by:&nbsp;</b>The name of fields that should be used to group. Groups will have the same 'start' and 'end' values of the box plot.</li>
 			  	<li><b>field:&nbsp;</b>The name of the new field that will contain the boxplot.</li>
-			  	<li><b>relative:&nbsp;</b>(Optional)Toggle if the boxplots should be positioned relative to the overall min and max values. (Default: true)</li>
 			  	<li><b>color:&nbsp;</b>(Optional)The CSS color that should be applied to the boxplot.</li>
+			  	<li><b>relative:&nbsp;</b>(Optional)Toggle if the boxplots should be positioned relative to the overall min and max values. (Default: true)</li>
+			  	<li><b>epoch:&nbsp;</b>(Optional)Set to true if the values are milliseconds in epoch time. Will format values to timestamp in popovers. (Default: false)</li>
 			  	<li><b>min:&nbsp;</b>The name of the field that contains the min value.</li>
 			  	<li><b>low:&nbsp;</b>The name of the field that contains the low value.</li>
 			  	<li><b>median:&nbsp;</b>(Optional)The name of the field that contains the median value.</li>
@@ -176,17 +178,19 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 					groupByFieldnames.addAll(fieldnames);
 				break;
 				case "field":		field = rightSide.getAsString(); break;
+				case "relative":	relative = rightSide.getAsBoolean(); break;
+				case "epoch":		epoch = rightSide.getAsBoolean(); break;
+				case "width":		width = rightSide.getAsString(); break;
+				case "height":		height = rightSide.getAsString(); break;
+				case "color":		colorPart = zePart; break;
 				case "min":			min = rightSide.getAsString(); break;
 				case "low":			low = rightSide.getAsString(); break;
 				case "median":		median = rightSide.getAsString(); break;
 				case "high":		high = rightSide.getAsString(); break;
 				case "max":			max = rightSide.getAsString(); break;
-				case "relative":	relative = rightSide.getAsBoolean(); break;
-				case "width":		width = rightSide.getAsString(); break;
-				case "height":		height = rightSide.getAsString(); break;
-				case "color":		colorPart = zePart; break;
 				default:
-					continue;
+					throw new IllegalArgumentException(COMMAND_NAME+": unknown parameter '"+partName+"'.");
+					
 			}
 			
 		}
@@ -302,6 +306,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	
 				specialObject.addProperty("format", "boxplot");
 				specialObject.addProperty("color", color);
+				specialObject.addProperty("epoch", epoch);
 				specialObject.addProperty("width", width);
 				specialObject.addProperty("height", height);
 				

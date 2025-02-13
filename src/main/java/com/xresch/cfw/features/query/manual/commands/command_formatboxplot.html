@@ -12,19 +12,36 @@
 
 
 
-<p>To differentiate between different groups, you can set a color. Plus you can set a width so you can see the boxes better: </p>
+<p>In the previous examples we use times of batch jobs. To get epoch time formatted as timestamps in the popovers, set epoch = true: </p>
 <pre><code class="language-cfwquery">| source random type=batchjobs seriesCount=5 records=10
 | remove RESULTS, ERRORS 
 | formatboxplot
 	min = "START"
 	max = "END"
-	color = randomColorGroup(SERVICE)
-	width = "500px"
-| display defaultsize=500</code></pre>
+	epoch = true
+| display menu=false</code></pre>
+
+
+<p>To differentiate between different groups, you can set a color. Plus you can set a width so you can see the boxes better.
+Let's also add QUEUED and REPORTED to let our boxes be real boxplots:</p>
+<pre><code class="language-cfwquery">| source random type=batchjobs seriesCount=5 records=10
+| formatboxplot
+	min = "QUEUED"
+	low = "START"
+	high= "END"
+	max = "REPORTED"
+	epoch = true
+	color = randomColorGroup(SERVICE, 50, 100, 40, 80)
+	width = "400px"
+| display menu=false
+| remove SERVICE, RESULTS, ERRORS 
+| formatfield
+	[QUEUED, START, END, REPORTED] = timestamp
+	DURATION = duration</code></pre>
 
 
 
-<p>You can also create box plots and color them by a specified group: </p>
+<p> Be aware when using OHLC (Open, High, Low, Close) chart data, that the parameters have to be assigned like this: </p>
 <pre><code class="language-cfwquery">| globals
 	BY = ["NAME"]
 | source random type=trading seriesCount = 3 records = 10

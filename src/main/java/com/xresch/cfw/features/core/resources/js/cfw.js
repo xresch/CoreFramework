@@ -3521,17 +3521,18 @@ function cfw_format_splitCFWSchedule(dataArray, fieldname){
  * Takes values and converts them into a horizontal box plot.
  * @param values object like 
  * 		{
- * 			  "min":4.517
+ * 			  "start":3.437
+ * 			, "min":4.517
  * 			, "low":5.12
  * 			, "high":4.887
  * 			, "max":5.529
- * 			, "start":3.437
  * 			, "end":7.061
  * 		}
+ * @param color a CSS color used for the boxplot
+ * @param isEpochTime set to true to convert the values to a timestamp for the popover
  *************************************************************************************/
-function cfw_format_boxplot(values, color){
+function cfw_format_boxplot(values, color, isEpochTime){
 	
-
 	var boxplotDiv = $('<div class="w-100 h-100 d-flex align-items-center"></div>');
 
 	let popover = true;
@@ -3547,6 +3548,19 @@ function cfw_format_boxplot(values, color){
 	let high = values.high;
 	let max = values.max;
 	let end = values.end;
+	
+	//----------------------------------
+	// Convert Time
+	if(isEpochTime){
+		values.start = CFW.format.epochToTimestamp(values.start);
+		values.min = CFW.format.epochToTimestamp(values.min);
+		values.low = CFW.format.epochToTimestamp(values.low);
+		values.median = CFW.format.epochToTimestamp(values.median);
+		values.high = CFW.format.epochToTimestamp(values.high);
+		values.max = CFW.format.epochToTimestamp(values.max);
+		values.end = CFW.format.epochToTimestamp(values.end);
+	}
+	
 	
 	//----------------------------------
 	// Initialize

@@ -904,15 +904,18 @@ public class CFWRandom {
 	private static JsonArray randomJSONArrayOfBatchCalls(JsonArray array, String serviceName, int valuesCount, long earliest, long latest, int maxDepth) { 
 		
 		
+		long span = latest - earliest;
 		//--------------------------------------
 		// Additional Values
 		JsonObject currentItem = new JsonObject();
 						
 		currentItem.addProperty("SERVICE", serviceName);
 		currentItem.addProperty("NAME", randomMethodName());
+		currentItem.addProperty("QUEUED", earliest - randomLongInRange( 0, (span / 3) ) );
 		currentItem.addProperty("START", earliest);
 		currentItem.addProperty("END", latest);
 		currentItem.addProperty("DURATION", latest - earliest);
+		currentItem.addProperty("REPORTED", latest + randomLongInRange( 0 , (span / 3) ) );
 		currentItem.addProperty("RESULTS", randomIntegerInRange(0,10000) );
 		currentItem.addProperty("ERRORS", (randomIntegerInRange(0, 100) > 20) 
 											? 0 

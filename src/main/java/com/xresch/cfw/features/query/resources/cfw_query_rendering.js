@@ -761,17 +761,14 @@ function cfw_query_formatSpecial(span, value){
 function cfw_query_formatSpecial_Boxplot(span, object){
 	
 	let values = object.values;
-	let color =  object.color;
-	let width =  object.width;
-	let height =  object.height;
 
-	span.css("height", height);
-	span.css("width", width);
+	span.css("height", object.height);
+	span.css("width", object.width);
 
 	//---------------------------------
 	// Data is null
 	if(values == null){
-		cfw_query_formatShowNulls(span, value);
+		cfw_query_formatShowNulls(span, values);
 		return;
 	}
 	
@@ -780,7 +777,7 @@ function cfw_query_formatSpecial_Boxplot(span, object){
 	if( typeof values === "object" ){
 		span.html("");
 		span.append( 
-			CFW.format.boxplot(values, color) 
+			CFW.format.boxplot(values, object.color, object.epoch) 
 		);
 		
 		return;
@@ -789,16 +786,16 @@ function cfw_query_formatSpecial_Boxplot(span, object){
 	
 	//---------------------------------
 	// Data is Object or Array
-	if( Array.isArray(value) || typeof value === "object" ){
+	if( Array.isArray(values) || typeof values === "object" ){
 
-		span.text( JSON.stringify(records) );
+		span.text( JSON.stringify(values) );
 		return;
 
 	}
 
 	//---------------------------------
 	// Any other data type
-	span.text(value);
+	span.text(values);
 }
 
 /*******************************************************************************
