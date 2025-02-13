@@ -19,6 +19,8 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 public class CFWQueryFunctionMeta extends CFWQueryFunction {
 
 	
+	public static final String FUNCTION_NAME = "meta";
+
 	public CFWQueryFunctionMeta(CFWQueryContext context) {
 		super(context);
 	}
@@ -28,7 +30,7 @@ public class CFWQueryFunctionMeta extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "meta";
+		return FUNCTION_NAME;
 	}
 	
 	/***********************************************************************************************
@@ -46,7 +48,7 @@ public class CFWQueryFunctionMeta extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "meta(propertyName [, propertyValue])";
+		return FUNCTION_NAME+"(propertyName [, propertyValue])";
 	}
 	/***********************************************************************************************
 	 * 
@@ -72,7 +74,7 @@ public class CFWQueryFunctionMeta extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_meta.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 

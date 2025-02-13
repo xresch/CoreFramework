@@ -200,7 +200,9 @@ public class CFWDBEAVStats {
 			, BigDecimal avg
 			, BigDecimal max
 			, BigDecimal sum
+			, BigDecimal p25
 			, BigDecimal p50
+			, BigDecimal p75
 			, BigDecimal p95
 		) {
 		
@@ -237,7 +239,9 @@ public class CFWDBEAVStats {
 					, avg
 					, max
 					, sum
+					, p25
 					, p50
+					, p75
 					, p95
 				);
 		}
@@ -457,7 +461,9 @@ public class CFWDBEAVStats {
 				BigDecimal max = null;
 				BigDecimal sum = null;
 
+				BigDecimal p25 = null;
 				BigDecimal p50 = null;
+				BigDecimal p75 = null;
 				BigDecimal p95 = null;
 								
 				int count = target.get(EAVStats.COUNT).getAsInt();
@@ -466,10 +472,12 @@ public class CFWDBEAVStats {
 				if( toMerge.has(EAVStats.AVG) && !toMerge.get(EAVStats.AVG).isJsonNull()) { avg = toMerge.get(EAVStats.AVG).getAsBigDecimal(); }
 				if( toMerge.has(EAVStats.MAX) && !toMerge.get(EAVStats.MAX).isJsonNull()) { max = toMerge.get(EAVStats.MAX).getAsBigDecimal(); }
 				if( toMerge.has(EAVStats.SUM) && !toMerge.get(EAVStats.SUM).isJsonNull()) { sum = toMerge.get(EAVStats.SUM).getAsBigDecimal(); }
+				if( toMerge.has(EAVStats.P25) && !toMerge.get(EAVStats.P25).isJsonNull()) { p25 = toMerge.get(EAVStats.P25).getAsBigDecimal(); }
 				if( toMerge.has(EAVStats.P50) && !toMerge.get(EAVStats.P50).isJsonNull()) { p50 = toMerge.get(EAVStats.P50).getAsBigDecimal(); }
+				if( toMerge.has(EAVStats.P75) && !toMerge.get(EAVStats.P75).isJsonNull()) { p75 = toMerge.get(EAVStats.P75).getAsBigDecimal(); }
 				if( toMerge.has(EAVStats.P95) && !toMerge.get(EAVStats.P95).isJsonNull()) { p95 = toMerge.get(EAVStats.P95).getAsBigDecimal(); }
 
-				aggregation.addStatisticsCustom(count, min, avg, max, sum, p50, p95);
+				aggregation.addStatisticsCustom(count, min, avg, max, sum, p25, p50, p75, p95);
 			}
 			
 			//---------------------------------------
@@ -481,7 +489,9 @@ public class CFWDBEAVStats {
 			target.addProperty(EAVStats.MAX, aggregation.max());
 			target.addProperty(EAVStats.SUM, aggregation.sum());
 			target.addProperty(EAVStats.VAL, aggregation.val());
+			target.addProperty(EAVStats.P25, aggregation.p25());
 			target.addProperty(EAVStats.P50, aggregation.p50());
+			target.addProperty(EAVStats.P75, aggregation.p75());
 			target.addProperty(EAVStats.P95, aggregation.p95());
 			
 		}

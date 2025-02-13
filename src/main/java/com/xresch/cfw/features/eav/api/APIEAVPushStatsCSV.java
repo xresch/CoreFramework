@@ -87,14 +87,18 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 					BigDecimal avg = null;
 					BigDecimal max = null;
 					BigDecimal sum = null;
+					BigDecimal p25 = null;
 					BigDecimal p50 = null;
+					BigDecimal p75 = null;
 					BigDecimal p95 = null;
 					
 					if(object.has("min") && !object.get("min").isJsonNull() ) {  min = object.get("min").getAsBigDecimal(); }
 					if(object.has("avg") && !object.get("avg").isJsonNull() ) {  avg = object.get("avg").getAsBigDecimal(); }
 					if(object.has("max") && !object.get("max").isJsonNull() ) {  max = object.get("max").getAsBigDecimal(); }
 					if(object.has("sum") && !object.get("sum").isJsonNull() ) {  sum = object.get("sum").getAsBigDecimal(); }
+					if(object.has("p25") && !object.get("p25").isJsonNull() ) {  p25 = object.get("p25").getAsBigDecimal(); }
 					if(object.has("p50") && !object.get("p50").isJsonNull() ) {  p50 = object.get("p50").getAsBigDecimal(); }
+					if(object.has("p75") && !object.get("p75").isJsonNull() ) {  p75 = object.get("p75").getAsBigDecimal(); }
 					if(object.has("p95") && !object.get("p95").isJsonNull() ) {  p95 = object.get("p95").getAsBigDecimal(); }
 					
 					boolean success = CFW.DB.EAVStats.pushStatsCustom(
@@ -106,7 +110,9 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 								, avg
 								, max
 								, sum
+								, p25
 								, p50
+								, p75
 								, p95 
 							);
 					

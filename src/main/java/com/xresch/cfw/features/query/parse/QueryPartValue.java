@@ -423,7 +423,7 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 	/******************************************************************************************************
 	 * Returns this value as a number.
 	 * Booleans will be returned as 0 for false and 1 for true.
-	 * Strings will be parsed as double.
+	 * Strings will be parsed to BigDecimal. If it is not parsable, it will return null.
 	 * for JsonElements getBigDecimal will be called.
 	 * This function might throw runtime exceptions for parsing or if json element is not a number.
 	 * It is highly recommended to always call one of the isNumber()-methods before calling this method.
@@ -435,7 +435,11 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 	
 			case BOOLEAN: 	return ((Boolean)value)  ? 1 : 0; 
 			
-			case STRING:	return Double.parseDouble((String)value);
+			case STRING:	if(isNumberString()) {
+								return new BigDecimal((String)value);
+							}else {
+								return null;
+							}
 			
 			case JSON:		return ((JsonElement)value).getAsBigDecimal();
 				
