@@ -29,6 +29,16 @@ function cfw_query_createTabs(){
 }
 
 /******************************************************************
+ * Reset the view.
+ ******************************************************************/
+function cfw_query_activateTab(tabToDisplay){
+	$('.nav-link').removeClass('active');
+	$('#tab-'+tabToDisplay).addClass('active');
+	
+}
+
+
+/******************************************************************
  * Delete
  ******************************************************************/
 function cfw_query_historyItemDelete(id){
@@ -87,6 +97,24 @@ function cfw_query_historyItemExecute(element){
 		});
 
 }
+
+/******************************************************************
+ * Edit
+ ******************************************************************/
+function cfw_query_historyItemEdit(element){
+		
+	var record = $(element).data('record');
+
+	CFW_QUERY_EDITOR.setQuery(record.QUERY);
+
+	cfw_query_draw({tab: 'editor'});
+	
+	CFW_QUERY_EDITOR.executeQuery();
+	
+	window.scrollTo(0, 0);
+
+}
+
 
 /******************************************************************
  * Print the editor tab.
@@ -150,6 +178,18 @@ function cfw_query_printHistoryView(data){
 			var button = $('<button class="btn btn-success btn-sm" alt="Execute" title="Execute" '
 					+'onclick="cfw_query_historyItemExecute(this)">'
 					+ '<i class="fa fa-play"></i>'
+					+ '</button>');
+			button.data('record', record);
+			return button;
+		});
+	
+	//-------------------------
+	// Edit Button
+	actionButtons.push(
+		function (record, id){
+			var button = $('<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+					+'onclick="cfw_query_historyItemEdit(this)">'
+					+ '<i class="fa fa-pen"></i>'
 					+ '</button>');
 			button.data('record', record);
 			return button;
@@ -292,8 +332,7 @@ function cfw_query_initialDraw(){
 	
 	var tabToDisplay = CFW.cache.retrieveValueForPage("cfw-query-lasttab", "editor");
 	
-	$('#tab-'+tabToDisplay).addClass('active');
-	
+
 	cfw_query_draw({tab: tabToDisplay});
 	
 	//-----------------------------------
@@ -317,6 +356,7 @@ function cfw_query_draw(options){
 	// Initialize
 	CFW_QUERY_LAST_OPTIONS = options;
 	CFW.cache.storeValueForPage("cfw-query-lasttab", options.tab);
+	cfw_query_activateTab(options.tab);
 	$("#tab-content").html("");
 	
 	//----------------------------

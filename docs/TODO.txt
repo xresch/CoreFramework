@@ -185,6 +185,7 @@ DONE
 - Credentials: Added fields token and secret
 - Dashboard Widget: New widget "Trigger Jobs" to allow users to trigger jobs from dashboards
 - Dashboard Widget: Parameters - Fixed issue with refresh when parameters are added to top
+- Query: History has now an edit button to copy the query to the editor
 - Query: Alerting: Fixed bug that string numbers are not recognized as numbers
 - Query: Command display - new parameter 'download' to enable a download button
 - Query: Command formatfield - improved list formatter

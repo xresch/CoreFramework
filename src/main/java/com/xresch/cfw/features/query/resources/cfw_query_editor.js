@@ -204,6 +204,16 @@ class CFWQueryEditor{
 		hljs.highlightElement(this.query_hljs.get(0));
 	}
 	
+	/********************************************
+	* 
+	*********************************************/
+	setQuery(query) {
+		this.textarea.val(query);
+		this.query_hljs.text(query);
+		hljs.highlightElement(this.query_hljs.get(0));
+		this.resizeToFitQuery();
+	}
+	
 	/*******************************************************************************
 	 * 
 	 ******************************************************************************/
