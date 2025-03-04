@@ -190,6 +190,7 @@ DONE
 - Query: Command display - new parameter 'download' to enable a download button
 - Query: Command formatfield - improved list formatter
 - Query Command source - Now supports parameters for pagination 
+- Query Command source - improved autocomplete
 - Query: Parentheses(Groups) will not return an array if it only contains a single value
 - Query: Added Prometheus Counters for Queries and Query Sources
 - Query: Fixed a bug where JSON member access like "function().name" would not work

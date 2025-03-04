@@ -124,6 +124,7 @@ public class CFWQueryAutocompleteHelper {
 			endIndex = i+1;
 			if(isCommandSeparator
 			&& current.position() >= cursorPosition){
+				endIndex--;
 				break;
 			}
 		}
@@ -230,17 +231,25 @@ public class CFWQueryAutocompleteHelper {
 	public int getCursorPosition() {
 		return cursorPosition;
 	}
-
 	/********************************************************
 	 * Creates s html string, representing a button opening
 	 * the manual page on the query editor.
 	 *  
 	 ********************************************************/
 	public static String createManualButton(CFWQueryComponentType type, String componentName) {
-		return "<span class=\"badge badge-primary cursor-pointer\""
+		return createManualButton(type, componentName, "Open Manual");
+	}
+	
+	/********************************************************
+	 * Creates s html string, representing a button opening
+	 * the manual page on the query editor.
+	 *  
+	 ********************************************************/
+	public static String createManualButton(CFWQueryComponentType type, String componentName, String buttonLabel) {
+		return "<span class=\"badge badge-primary cursor-pointer mr-1\""
 				+ " onclick=\"cfw_query_editor_getManualPage('"
 						+ type
-						+ "', '"+componentName+"' )\">Open Manual</span>";
+						+ "', '"+componentName+"' )\">"+buttonLabel+"</span>";
 	}
 	
 	/***********************************************************************************************

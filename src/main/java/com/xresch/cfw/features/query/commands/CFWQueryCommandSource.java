@@ -216,12 +216,18 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
 
 		String description = 
-				"<b>Description:&nbsp</b>"+this.descriptionShort()
+				 "<b>Description:&nbsp</b>"+this.descriptionShort()
 				+"<br><b>Syntax:&nbsp</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax());
 
 		//-------------------------------------
 		// Create Autocomplete List
-		if( helper.getCommandTokenCount() == 1 ) {
+		System.out.println("#### helper.getCommandTokenCount(): "+helper.getCommandTokenCount());
+		System.out.println("#### helper.getToken(): "+helper.getToken(0));
+		if( helper.getCommandTokenCount() <= 1 ) {
+			description = 
+					CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.COMMAND, COMMAND_NAME, "Manual: source") 
+					+ "<br>"
+					+ description;
 			
 			// Unfiltered list of up to 50 sources
 			autocompleteAddSources(result, helper, null);
@@ -233,11 +239,13 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				// propagate autocomplete
 				CFWQuerySource source = getCachedSources().get(sourceName);
 				
-				description = CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.SOURCE, sourceName) 
-							  +"<br>" 
-							  + description;
+				description = CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.COMMAND, COMMAND_NAME, "Manual: source") 
+						  + CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.SOURCE, sourceName, "Manual: "+sourceName) 
+						  + "<br>" 
+						  + description
+						  + "<br><b>Parameters of "+sourceName+":&nbsp</b>"+source.getParameterListHTML()
+						  ;
 				
-				description += "<br><b>Parameters of "+sourceName+":&nbsp</b>"+source.getParameterListHTML();
 				source.autocomplete(result, helper);
 				
 			}else {
@@ -252,10 +260,11 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				// propagate autocomplete
 				CFWQuerySource source = getCachedSources().get(sourceName);
 				description = 
-						CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.SOURCE, sourceName) 
-						+"<br>" 
+						  CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.COMMAND, COMMAND_NAME, "Manual: source") 
+						+ CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.SOURCE, sourceName, "Manual: "+sourceName) 
+						+ "<br>" 
 						+ description 
-						+"<br><b>Parameters of "+sourceName+":&nbsp</b>"+source.getParameterListHTML()
+						+ "<br><b>Parameters of "+sourceName+":&nbsp</b>"+source.getParameterListHTML()
 						;
 				
 				source.autocomplete(result, helper);

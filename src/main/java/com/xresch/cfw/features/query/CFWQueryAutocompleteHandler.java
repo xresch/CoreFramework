@@ -60,7 +60,7 @@ public final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 					  , sourceCommand.descriptionShort()
 					)
 			 );
-			
+			CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.COMMAND, "source"); 
 			result.addList(list);
 			return result;
 		}
