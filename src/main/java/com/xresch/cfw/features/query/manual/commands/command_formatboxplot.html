@@ -2,6 +2,7 @@
 <p>Creates a new field and formats the specified values as a boxplot.</p>
 
 
+<h3>Minimal Example</h3>
 <p>Following is a minimal example on how to create a box plot. In this case we only get a simple box and the result ends up looking like a gantt chart: </p>
 <pre><code class="language-cfwquery">| source random type=batchjobs seriesCount=2 records=10
 | remove RESULTS, ERRORS 
@@ -11,7 +12,7 @@
 </code></pre>
 
 
-
+<h3>Formatting Timestamps</h3>
 <p>In the previous examples we use times of batch jobs. To get epoch time formatted as timestamps in the popovers, set epoch = true: </p>
 <pre><code class="language-cfwquery">| source random type=batchjobs seriesCount=5 records=10
 | remove RESULTS, ERRORS 
@@ -22,6 +23,7 @@
 | display menu=false</code></pre>
 
 
+<h3>Coloring By Groups</h3>
 <p>To differentiate between different groups, you can set a color. Plus you can set a width so you can see the boxes better.
 Let's also add QUEUED and REPORTED to let our boxes be real boxplots:</p>
 <pre><code class="language-cfwquery">| source random type=batchjobs seriesCount=5 records=10
@@ -40,7 +42,7 @@ Let's also add QUEUED and REPORTED to let our boxes be real boxplots:</p>
 	DURATION = duration</code></pre>
 
 
-
+<h3>Working with OHCL Data</h3>
 <p> Be aware when using OHLC (Open, High, Low, Close) chart data, that the parameters have to be assigned like this: </p>
 <pre><code class="language-cfwquery">| globals
 	BY = ["NAME"]
@@ -58,7 +60,7 @@ Let's also add QUEUED and REPORTED to let our boxes be real boxplots:</p>
 | sort g(BY)</code></pre>
 
 
-
+<h3>Typical Statistics</h3>
 <p>Following example creates typical statistics for boxplot charts and color them based on the median value: </p>
 <pre><code class="language-cfwquery">| source random type=series seriesCount = 30 records = 100
 | stats
@@ -88,6 +90,26 @@ Let's also add QUEUED and REPORTED to let our boxes be real boxplots:</p>
 	)
 
 </code></pre>
+
+<h3>Percentage Bars</h3>
+<p>If you want to get creative, following example shows how you can get colored percentage bars: </p>
+<pre><code class="language-cfwquery">
+| source random records=30
+| keep FIRSTNAME, LASTNAME, VALUE
+| set VALUE = if(random() > 50, VALUE, VALUE * -1)
+| formatboxplot 
+	min = if(VALUE &lt;= 0, VALUE, 0 )
+	max = if(VALUE >= 0, VALUE, 0 )
+	width = "40vw"
+	relative = true
+	color = case(
+		 (VALUE &lt; 0), "red" 
+		, (VALUE > 0), "green" 
+		, true, "green" 
+	)
+</code></pre>
+
+
 
 
 

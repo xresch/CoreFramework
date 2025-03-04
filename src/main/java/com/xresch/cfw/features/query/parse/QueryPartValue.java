@@ -741,6 +741,7 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 	 * If false returns this QueryPart unchanged.
 	 * 
 	 ******************************************************************************************************/
+	@Override
 	public QueryPartValue convertFieldnameToFieldvalue(EnhancedJsonObject object) {
 		
 		if(value == null || object == null) return this;

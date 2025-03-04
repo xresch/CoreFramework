@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.commands;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
@@ -47,12 +48,12 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	private LinkedHashMap<String, BigDecimal> biggestMaxMap = new LinkedHashMap<>();
 
 	// These all represent fieldnames
-	private String field = "Boxplot"; 
-	private String min = null; 
-	private String low = null; 
-	private String median = null; 
-	private String high = null; 
-	private String max = null; 
+	private QueryPart fieldPart = null; 
+	private QueryPart minPart = null; 
+	private QueryPart lowPart = null; 
+	private QueryPart medianPart = null; 
+	private QueryPart highPart = null; 
+	private QueryPart maxPart = null; 
 	
 	private String width = "100%"; 
 	private String height = "20px"; 
@@ -170,24 +171,25 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 		//------------------------------------------
 		for(QueryPartAssignment zePart : assignmentParts) {
 			String partName = zePart.getLeftSideAsString(null).toLowerCase();
-			QueryPartValue rightSide = zePart.getRightSide().determineValue(null);
+			QueryPart rightSide = zePart.getRightSide();
+			QueryPartValue rightSideValue = rightSide.determineValue(null);
 			
 			switch(partName) {
 				case "by":
-					ArrayList<String> fieldnames = rightSide.getAsStringArray();
+					ArrayList<String> fieldnames = rightSideValue.getAsStringArray();
 					groupByFieldnames.addAll(fieldnames);
 				break;
-				case "field":		field = rightSide.getAsString(); break;
-				case "relative":	relative = rightSide.getAsBoolean(); break;
-				case "epoch":		epoch = rightSide.getAsBoolean(); break;
-				case "width":		width = rightSide.getAsString(); break;
-				case "height":		height = rightSide.getAsString(); break;
+				case "field":		fieldPart = rightSide; break;
+				case "relative":	relative = rightSideValue.getAsBoolean(); break;
+				case "epoch":		epoch = rightSideValue.getAsBoolean(); break;
+				case "width":		width = rightSideValue.getAsString(); break;
+				case "height":		height = rightSideValue.getAsString(); break;
 				case "color":		colorPart = zePart; break;
-				case "min":			min = rightSide.getAsString(); break;
-				case "low":			low = rightSide.getAsString(); break;
-				case "median":		median = rightSide.getAsString(); break;
-				case "high":		high = rightSide.getAsString(); break;
-				case "max":			max = rightSide.getAsString(); break;
+				case "min":			minPart = rightSide; break;
+				case "low":			lowPart = rightSide; break;
+				case "median":		medianPart = rightSide; break;
+				case "high":		highPart = rightSide; break;
+				case "max":			maxPart = rightSide; break;
 				default:
 					throw new IllegalArgumentException(COMMAND_NAME+": unknown parameter '"+partName+"'.");
 					
@@ -198,32 +200,26 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 		//------------------------------------------
 		// Sanitize
 		//------------------------------------------
-		if(Strings.isNullOrEmpty(field)) { 	field = "boxplot"; }
 		if(relative == null) { 	relative = false; }
 
 		//------------------------
 		// Check min is set
-		if(Strings.isNullOrEmpty(min) 
-		&& Strings.isNullOrEmpty(low) ) {
+		if(minPart == null
+		&& lowPart == null ) {
 			throw new IllegalArgumentException(COMMAND_NAME+": Please specify either of the parameters 'min' or 'low'.");
 		}
-		if(Strings.isNullOrEmpty(min)) {
-			min = low;
-		}
+		if(minPart == null) { minPart = lowPart; }
+		else if(lowPart == null) { lowPart = minPart; }
 		
 		//------------------------
 		// Check max is set
-		if(Strings.isNullOrEmpty(max) 
-		&& Strings.isNullOrEmpty(high) ) {
+		if(maxPart == null
+		&& highPart == null ) {
 			throw new IllegalArgumentException(COMMAND_NAME+": Please specify either of the parameters 'max' or 'high'.");
 		}
-		if(Strings.isNullOrEmpty(max)) {
-			max = high;
-		}
-		
-		CFWQueryCommandFormatField.addFormatterByName(this.getQueryContext(), field, "special"); 
-		this.fieldnameAdd(field);
-		
+		if(maxPart == null) { maxPart = highPart; }
+		else if(highPart == null) { highPart = maxPart; }
+				
 	}
 	
 	/***********************************************************************************************
@@ -231,8 +227,7 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
-		
-
+				
 		//-------------------------------------
 		// Fetch All Before Processing
 		while(keepPolling()) {
@@ -263,8 +258,12 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 				
 				//--------------------------
 				// Find the smallest Min Value
-				JsonElement minElement = record.get(min);
-				QueryPartValue minValue = QueryPartValue.newFromJsonElement(minElement);
+				QueryPartValue minValue = minPart.determineValue(record);
+				if(!minValue.isNumberOrNumberString()) {
+					JsonElement minElement = record.get(minValue.getAsString());
+					minValue = QueryPartValue.newFromJsonElement(minElement);
+					
+				}
 				
 				if(minValue.isNumberOrNumberString()){
 					BigDecimal minDecimal = minValue.getAsBigDecimal();
@@ -275,9 +274,12 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 				}
 				
 				//--------------------------
-				// Find the biggest Max Value
-				JsonElement maxElement = record.get(max);
-				QueryPartValue maxValue = QueryPartValue.newFromJsonElement(maxElement);
+				// Find the smallest max Value
+				QueryPartValue maxValue = maxPart.determineValue(record);
+				if(!maxValue.isNumberOrNumberString()) {
+					JsonElement maxElement = record.get(maxValue.getAsString());
+					maxValue = QueryPartValue.newFromJsonElement(maxElement);
+				}
 				
 				if(maxValue.isNumberOrNumberString()){
 					BigDecimal maxDecimal = maxValue.getAsBigDecimal();
@@ -289,10 +291,28 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 			}
 		}
 		
+		
 		if(isPreviousDone()) {
 
+			HashSet<String> newFields = new HashSet<>(); 
+			
 			for(EnhancedJsonObject record : objectList) {
 
+				//-------------------------------------
+				// Get Fieldname
+				
+				String field = null;
+				if(fieldPart != null) {
+				 field = fieldPart.determineValue(record).getAsString(); 
+				}
+				
+				if(field == null) {
+					field = "Boxplot";
+				}
+				
+				newFields.add(field);
+
+				
 				//-------------------------------------
 				// Get Values
 				String color = "";
@@ -318,11 +338,11 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 					valuesObject.addProperty("start", smallestMin);
 				}
 				
-				valuesObject.add("min", record.get(min));
-				valuesObject.add("low", record.get(low));
-				valuesObject.add("median", record.get(median));
-				valuesObject.add("high", record.get(high));
-				valuesObject.add("max", record.get(max));
+				valuesObject.addProperty("min", minPart.convertFieldnameToFieldvalue(record).getAsBigDecimal() );
+				valuesObject.addProperty("low", lowPart.convertFieldnameToFieldvalue(record).getAsBigDecimal() );
+				if(medianPart != null) { valuesObject.addProperty("median", medianPart.convertFieldnameToFieldvalue(record).getAsBigDecimal() ); }
+				valuesObject.addProperty("high", highPart.convertFieldnameToFieldvalue(record).getAsBigDecimal() );
+				valuesObject.addProperty("max", maxPart.convertFieldnameToFieldvalue(record).getAsBigDecimal() );
 				
 				if(relative) {
 					BigDecimal biggestMax = biggestMaxMap.get(record.getMetadata(GROUP_ID));
@@ -335,6 +355,13 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 	
 				outQueue.add(record);
 				
+			}
+			
+			//---------------------------------
+			// Add new Fields
+			for(String field : newFields) {
+				CFWQueryCommandFormatField.addFormatterByName(this.getQueryContext(), field, "special"); 
+				this.fieldnameAdd(field);
 			}
 			
 			this.setDoneIfPreviousDone();

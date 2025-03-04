@@ -7,3 +7,12 @@ It is helpful to reduce execution time and resource usage. It is also used to ch
 <pre><code class="language-cfwquery">| source random
 | keep INDEX, TIME, FIRSTNAME, LASTNAME, VALUE</code></pre>
 
+
+
+<p>If you have a lot of fields, and you just want to move a few at the start, you can combine this command with the fields-function:</p>
+
+<pre><code class="language-cfwquery">| source random
+| keep LIKES_TIRAMISU LOCATION  fields(LIKES_TIRAMISU, LOCATION) </code></pre>
+
+
+

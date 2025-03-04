@@ -54,6 +54,15 @@ public abstract class QueryPart {
 	
 
 	/***********************************************************************************************
+	 * Checks if the value of this part is a fieldname of the object and returns the value of the field.
+	 * If false returns this QueryPart unchanged.
+	 ***********************************************************************************************/
+	public QueryPartValue convertFieldnameToFieldvalue(EnhancedJsonObject record) {
+		return this.determineValue(record).convertFieldnameToFieldvalue(record);
+	}
+	
+	
+	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	public void position(int cursorPosition) {
