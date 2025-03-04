@@ -221,8 +221,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 
 		//-------------------------------------
 		// Create Autocomplete List
-		System.out.println("#### helper.getCommandTokenCount(): "+helper.getCommandTokenCount());
-		System.out.println("#### helper.getToken(): "+helper.getToken(0));
+
 		if( helper.getCommandTokenCount() <= 1 ) {
 			description = 
 					CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.COMMAND, COMMAND_NAME, "Manual: source") 
