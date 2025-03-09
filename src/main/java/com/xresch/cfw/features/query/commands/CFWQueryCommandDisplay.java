@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
@@ -161,7 +162,31 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// keep default
+		//--------------------------------
+		// All Paramneters
+		AutocompleteList list = new AutocompleteList();
+		result.addList(list);
+		
+		list.addItem(
+			helper.createAutocompleteItem("", 
+"\n\t"+
+				  """
+as 				= table
+	menu			= true # false, button
+	pagination		= true # false, top, bottom
+	download 		= true
+	#titlefields 	= [FIELDNAME, FIELDNAME] 
+	#titleformat   	= "{0}: {2} {1} ({3})"
+	#visiblefields 	= [FIELDNAME, FIELDNAME] 
+	#zoom			= 100 # percentage
+	#sizes			= [10, 25, 50, 100, 500, 1000] # page sizes
+	#defaultsize		= 50 # default page size
+	#settings 		= {} # experimental option
+				  """
+					, "All Parameters"
+					, "Template that contains all parameters"
+				)
+		);
 	}
 
 	/***********************************************************************************************

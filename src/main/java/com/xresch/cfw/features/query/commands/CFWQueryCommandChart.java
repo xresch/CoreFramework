@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
@@ -170,7 +171,48 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// keep default
+		//--------------------------------
+		// All Paramneters
+		AutocompleteList list = new AutocompleteList();
+		result.addList(list);
+		
+		list.addItem(
+			helper.createAutocompleteItem("", 
+"\n\t"+
+				  """
+by = [WAREHOUSE, ITEM] # groups series by
+	type = area # line, bar, scatter, doughnut, sparkline ...
+	x = TIME # fieldname
+	y = COUNT # fieldname or array of fieldnames
+	stacked = false
+	showaxes = true
+	showlegend = true
+	#height = '250px' 
+	#spangaps = true
+	#xtype = time 
+	#ytype = linear
+	#xlabel = "Time"
+	#ylabel = "Count"
+	#ymin = -10
+	#ymax = 200
+	#tension = 0.4 # 0 to 1, makes lines smoother
+	#pointradius = 0
+	#aggregation = avg # sum, avg, count
+	#padding='10px 2px'
+	
+	#multichart			= true
+	#multicharttitle		= false
+	#multichartcolumns	= 3
+
+	#details 		= true
+	#detailsrenderer = 'table'
+	#detailssize 	= 50 # number representing percentage
+	#detailsposition = bottom
+				  """
+					, "All Parameters"
+					, "Template that contains all parameters"
+				)
+		);
 	}
 
 	
