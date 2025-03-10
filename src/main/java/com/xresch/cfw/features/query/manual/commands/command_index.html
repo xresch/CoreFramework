@@ -1,0 +1,43 @@
+
+<p>Used to calculate index in percent or a custom base for the values for a field.
+Can group the statistics by specific fields using the by-parameter.
+</p>
+
+<p>The following example creates random trading data and calculates an index in percent grouped by SYMBOL:
+</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["SYMBOL"]
+| source random 
+	type=trading
+	seriesCount=3
+	records=200
+| index
+	by = meta(BY) 
+	field= "CLOSE" 
+	name = "index" 
+| chart
+	by= meta(BY)
+	x=TIME
+	y=['index']
+	height="500"</code></pre>
+	
+<p>Instead of getting raw percentage values, you can define a custom base value for your index:
+</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["SYMBOL"]
+| source random 
+	type=trading
+	seriesCount=3
+	records=200
+| index
+	by = meta(BY) 
+	field= "CLOSE" 
+	name = "index" 
+	base = 100 # specify a custom base
+| chart
+	by= meta(BY)
+	x=TIME
+	y=['index']
+	height="500"</code></pre>
+
+
