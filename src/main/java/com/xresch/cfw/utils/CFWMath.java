@@ -145,6 +145,7 @@ public class CFWMath {
 		
 		return bigMedian(sortedClone, true);
 	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -350,7 +351,6 @@ public class CFWMath {
 	 ***********************************************************************************************/
 	public static Boolean bigIsOutlierModifiedZScore(List<BigDecimal> values, BigDecimal value, int precision, BigDecimal sensitivity) {
 		
-		System.out.println("value.size: "+CFW.JSON.toJSON(values));
 		if(value == null ) { return null; }
 		while( values.remove(null) );
 		if(values.isEmpty() ) { return null; }

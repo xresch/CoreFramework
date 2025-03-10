@@ -248,7 +248,7 @@ public class CFWQueryCommandMovOutlier extends CFWQueryCommand {
 				//------------------------------------
 				// Iterate Values in Group
 				ArrayList<BigDecimal> values = new ArrayList<>(); 
-				boolean lastResult = false;
+
 				for(int k = 0 ; k < group.size(); k++) {
 					
 					EnhancedJsonObject record = group.get(k);
@@ -288,7 +288,6 @@ public class CFWQueryCommandMovOutlier extends CFWQueryCommand {
 					//---------------------------
 					// Evaluate
 					recordAtCenter.addProperty(name, isOutlier );
-					
 					
 				}
 				
