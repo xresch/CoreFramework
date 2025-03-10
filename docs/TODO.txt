@@ -200,6 +200,7 @@ DONE
 
 - Query: Added Commands:
 	- bollbands
+	- changepoint
 	- formatboxplot
 	- maparrays
 	- movavg

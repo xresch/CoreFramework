@@ -1,0 +1,33 @@
+
+<p>This command will do changepoint detection using a Sliding Window Change Detection Algorithm.
+You can group the statistics by specific fields using the by-parameter.
+Values should be sorted by time before using this command.
+The window size used for the calculations will be half the defined period.
+Results will be booleans, which can also be displayed with the chart command.
+</p>
+
+<p>The following changepoint example groups by WAREHOUSE AND ITEM and detects the change points in the data for each group:
+</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+| source random 
+	type=series 
+	seriesCount=2
+	records=300
+| sort TIME
+| changepoint 
+	by=meta(BY) 
+	field="COUNT" 
+	name="change" 
+	period=12
+	precision=3 
+	sensitivity=1.5
+| chart
+	by= meta(BY)
+	x=TIME
+	y=[COUNT, 'change']
+	ymin=null
+	height="300"
+	multichart=true</code></pre>
+
+

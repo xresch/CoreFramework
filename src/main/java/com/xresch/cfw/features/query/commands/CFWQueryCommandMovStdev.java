@@ -83,8 +83,8 @@ public class CFWQueryCommandMovStdev extends CFWQueryCommand {
 		return "<ul>"
 			  +"<li><b>by:&nbsp;</b>Array of the fieldnames which should be used for grouping.</li>"
 			  +"<li><b>field:&nbsp;</b>Name of the field which contains the value.</li>"
-			  +"<li><b>name:&nbsp;</b>The name of the target field to store the moving average value(Default: name+'_SMA').</li>"
-			  +"<li><b>period:&nbsp;</b>The number of datapoints used for creating the moving average(Default: 10).</li>"
+			  +"<li><b>name:&nbsp;</b>The name of the target field to store the moving average value (Default: name+'_SMA').</li>"
+			  +"<li><b>period:&nbsp;</b>The number of datapoints used for creating the moving average (Default: 10).</li>"
 			  +"<li><b>precision:&nbsp;</b>The decimal precision of the moving average (Default: 6).</li>"
 			  +"<li><b>population:&nbsp;</b>Set to true to use population instead of sample (Default: false).</li>"
 			  +"</ul>"
@@ -214,8 +214,7 @@ public class CFWQueryCommandMovStdev extends CFWQueryCommand {
 			
 			CFWMathPeriodic mathPeriodic = periodicMap.get(groupID);
 			BigDecimal big = value.getAsBigDecimal();
-			if(big == null) { big = BigDecimal.ZERO; }
-			
+
 			BigDecimal movavg = mathPeriodic.calcMovStdev(big, false);
 
 			record.addProperty(name, movavg);

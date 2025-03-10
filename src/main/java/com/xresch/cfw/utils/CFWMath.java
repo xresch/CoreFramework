@@ -127,12 +127,7 @@ public class CFWMath {
 									.divide(olderValue, mc)
 									.multiply(BIG_100, mc)
 									;
-//		System.out.println("================================");
-//		System.out.println("lastValue: "+youngerValue.toPlainString());
-//		System.out.println("diffValue: "+olderValue.toPlainString());
-//		System.out.println("diff: "+youngerValue.subtract(olderValue).toPlainString());
-//		System.out.println("divide: "+youngerValue.subtract(olderValue).divide(youngerValue, mc));
-//		System.out.println("diffPercent: "+diffPercent.toPlainString());
+
 		if(diffPercent == null) { return null; } 
 		diffPercent = diffPercent.setScale(precision, ROUND_UP); // won't calculate decimals if not set
 		
@@ -448,12 +443,15 @@ public class CFWMath {
 	 ***********************************************************************************************/
 	public class CFWMathPeriodic {
 		
+		
 		int period = -1;
 		BigDecimal bigPeriod = null;
 		BigDecimal bigPeriodMinusOne = null;
 		private int precision = 3;
 		
+		private boolean nonNullFound = false;
 		private List<BigDecimal> movavgValues = new ArrayList<>();
+		private List<BigDecimal> movdiffValues = new ArrayList<>();
 		private List<BigDecimal> movstdevValues = new ArrayList<>();
 
 		private List<BigDecimal> rsiValues = new ArrayList<>();
@@ -480,12 +478,22 @@ public class CFWMath {
 		 * @param values the list of values
 		 * @param acceleration number of points that should be used for calculating the moving average
 		 * @param precision the precision of digits for the resulting values.
-		 * @return moving average value , null if list size is smaller than datapoints
+		 * @return moving average value, null if list size is smaller than datapoints, or for every
+		 * null value at the beginning of the data.
 		 ***********************************************************************************************/
 		public BigDecimal calcMovAvg(BigDecimal value) {
 			
-			if(value == null) { value = ZERO; }
+			//-------------------------------
+			// Handle Nulls
+			if(value == null) { 
+				if(nonNullFound) {value = ZERO;}
+				else{ return null; }
+			}else {
+				nonNullFound = true;
+			}
 			
+			//-------------------------------
+			// Add Value
 			movavgValues.add(value);
 			
 			if(movavgValues.size() < period ) { 
@@ -504,6 +512,65 @@ public class CFWMath {
 		}
 		
 		/***********************************************************************************************
+		 * Returns a moving difference value for the values subsequently passed to this method.
+		 * Will return null if there are not enough data points.
+		 * 
+		 * @param values the list of values
+		 * @param acceleration number of points that should be used for calculating the moving average
+		 * @param precision the precision of digits for the resulting values.
+		 * @return moving average value, null if list size is smaller than data points or for every
+		 * null value at the beginning of the data.
+		 ***********************************************************************************************/
+		public BigDecimal calcMovDiff(BigDecimal value) {
+			
+			//-------------------------------
+			// Handle Nulls
+			if(value == null) { 
+				if(nonNullFound) {value = ZERO;}
+				else{ return null; }
+			}else {
+				nonNullFound = true;
+			}
+						
+			//-------------------------------
+			// Add Value
+			movdiffValues.add(value);
+			
+			if(movdiffValues.size() < period ) { 
+				return null; 
+			}
+			
+			BigDecimal youngerValue = movdiffValues.get(movdiffValues.size()-1);
+			BigDecimal olderValue = movdiffValues.get(movdiffValues.size() - period);
+			
+			//---------------------------------
+			// Handle Zeros
+			if(youngerValue.compareTo(ZERO) == 0) {
+				if(olderValue.compareTo(ZERO) == 0) {
+					return ZERO;
+				}
+				
+				return null;
+			}else if(olderValue.compareTo(ZERO) == 0) {
+				return null;
+			}
+			
+			//---------------------------------
+			// Calculate
+			MathContext mc = new MathContext(precision, ROUND_UP);
+			BigDecimal diffPercent = youngerValue
+										.subtract(olderValue)
+										.divide(olderValue, mc)
+										.multiply(BIG_100, mc)
+										;
+			
+			if(diffPercent == null) { return null; } 
+			diffPercent = diffPercent.setScale(precision, ROUND_UP); // won't calculate decimals if not set
+			
+			return diffPercent;
+			
+		}
+		/***********************************************************************************************
 		 * Returns a moving standard deviation value for the last N values in the given list.
 		 * Will return null if there are not enough datapoints.
 		 * 
@@ -514,8 +581,17 @@ public class CFWMath {
 		 ***********************************************************************************************/
 		public BigDecimal calcMovStdev(BigDecimal value, boolean usePopulation) {
 			
-			if(value == null) { value = ZERO; }
+			//-------------------------------
+			// Handle Nulls
+			if(value == null) { 
+				if(nonNullFound) {value = ZERO;}
+				else{ return null; }
+			}else {
+				nonNullFound = true;
+			}
 			
+			//-------------------------------
+			// Add Value
 			movstdevValues.add(value);
 			
 			if(movstdevValues.size() < period ) { 
@@ -546,8 +622,17 @@ public class CFWMath {
 		 ***********************************************************************************************/
 		public BigDecimal calcRSI(BigDecimal value) {
 			
-			if(value == null) { value = ZERO; }
+			//-------------------------------
+			// Handle Nulls
+			if(value == null) { 
+				if(nonNullFound) {value = ZERO;}
+				else{ return null; }
+			}else {
+				nonNullFound = true;
+			}
 			
+			//-------------------------------
+			// Add Value
 			rsiValues.add(value);
 			
 			if(rsiValues.size() < period ) { 
@@ -643,6 +728,7 @@ public class CFWMath {
 		double acceleration = -1;
 		double accelerationMax = -1;
 		private int precision = 3;
+		private boolean nonNullFound = false;
 		
 		BigDecimal bigAcceleration = null;
 		BigDecimal bigAccelerationMax = null;
@@ -698,7 +784,15 @@ public class CFWMath {
 		 * 
 		 ***********************************************************************************************/
 		public BigDecimal calcPSAR(BigDecimal high, BigDecimal low) {
-
+			//-------------------------------
+			// Handle Nulls
+			if(high == null && low == null) { 
+				if(nonNullFound) {high = ZERO; low = ZERO;}
+				else{ return null; }
+			}else {
+				nonNullFound = true;
+			}
+			
 			//-----------------------------------
 			// Sanitize
 			if(high == null) { high = ZERO; }

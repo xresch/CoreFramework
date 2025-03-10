@@ -19,6 +19,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
+import com.xresch.cfw.utils.CFWMath.CFWMathPeriodic;
 
 
 /************************************************************************************************************
@@ -36,7 +37,8 @@ public class CFWQueryCommandMovDiff extends CFWQueryCommand {
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
 	// Group name and vlaues of the group
-	private LinkedHashMap<String, ArrayList<BigDecimal>> valuesMap = new LinkedHashMap<>();
+	private LinkedHashMap<String, CFWMathPeriodic> periodicMap = new LinkedHashMap<>();
+
 
 	private String fieldname = null;
 	private String name = null;
@@ -82,8 +84,8 @@ public class CFWQueryCommandMovDiff extends CFWQueryCommand {
 		return "<ul>"
 			  +"<li><b>by:&nbsp;</b>Array of the fieldnames which should be used for grouping.</li>"
 			  +"<li><b>field:&nbsp;</b>Name of the field which contains the value.</li>"
-			  +"<li><b>name:&nbsp;</b>The name of the target field to store the moving average value(Default: name+'_SMA').</li>"
-			  +"<li><b>period:&nbsp;</b>The number of datapoints used for creating the moving difference(Default: 10).</li>"
+			  +"<li><b>name:&nbsp;</b>The name of the target field to store the moving average value (Default: name+'_movdiff').</li>"
+			  +"<li><b>period:&nbsp;</b>The number of datapoints used for creating the moving difference (Default: 10).</li>"
 			  +"<li><b>precision:&nbsp;</b>The decimal precision of the moving average (Default: 6, what is also the maximum).</li>"
 			  +"</ul>"
 				;
@@ -195,20 +197,19 @@ public class CFWQueryCommandMovDiff extends CFWQueryCommand {
 			
 			//----------------------------
 			// Create and Get Group
-			if(!valuesMap.containsKey(groupID)) {
-				valuesMap.put(groupID, new ArrayList<>());
+			if(!periodicMap.containsKey(groupID)) {
+				periodicMap.put(groupID, CFW.Math.createPeriodic(period, precision));
 			}
 			
-			ArrayList<BigDecimal> groupedValues = valuesMap.get(groupID);
+			CFWMathPeriodic mathPeriodic = periodicMap.get(groupID);
 			BigDecimal big = value.getAsBigDecimal();
-			if(big == null) { big = BigDecimal.ZERO; }
-			groupedValues.add(big);
-			
-			BigDecimal movdiff = CFW.Math.bigMovDiff(groupedValues, period, precision);
+
+			BigDecimal movdiff = mathPeriodic.calcMovDiff(big);
 
 			record.addProperty(name, movdiff);
 			
 			outQueue.add(record);
+			
 			
 		}
 		
