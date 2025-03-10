@@ -84,9 +84,9 @@ public class CFWQueryCommandIndex extends CFWQueryCommand {
 		return "<ul>"
 			  +"<li><b>by:&nbsp;</b>Array of the fieldnames which should be used for grouping.</li>"
 			  +"<li><b>field:&nbsp;</b>Name of the field which contains the value.</li>"
-			  +"<li><b>name:&nbsp;</b>The name of the target field to store the moving average value(Default: name+'_index').</li>"
+			  +"<li><b>name:&nbsp;</b>The name of the target field to store the calculated index value(Default: name+'_index').</li>"
 			  +"<li><b>base:&nbsp;</b>The base of the index, e.g 100. By default, percentage will be returned. (Default: null).</li>"
-			  +"<li><b>precision:&nbsp;</b>The decimal precision of the index (Default: 6, what is also the maximum).</li>"
+			  +"<li><b>precision:&nbsp;</b>The maximum decimal precision used in the calculation. (Default: 6).</li>"
 			  +"</ul>"
 				;
 	}
