@@ -29,11 +29,10 @@ import com.xresch.cfw.utils.CFWMath.CFWMathPeriodic;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandChangepoint extends CFWQueryCommand {
+public class CFWQueryCommandOutlier extends CFWQueryCommand {
 	
-	private static final String COMMAND_NAME = "changepoint";
-	private static final BigDecimal MINUS_ONE = new BigDecimal(-1);
-	
+	private static final String COMMAND_NAME = "outlier";
+
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<>();
 	
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
@@ -42,15 +41,12 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 
 	private String fieldname = null;
 	private String name = null;
-	private Integer precision = null;
-	private Integer period = null;
 	private BigDecimal sensitivity = null;
-	private Integer windowSize = null;
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandChangepoint(CFWQuery parent) {
+	public CFWQueryCommandOutlier(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -67,7 +63,7 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Detects changepoints int time series.";
+		return "Detects outliers int time series based on Inter-Quantile-Range(IQR).";
 	}
 
 	/***********************************************************************************************
@@ -85,10 +81,8 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 	public String descriptionSyntaxDetailsHTML() {
 		return "<ul>"
 			  +"<li><b>by:&nbsp;</b>Array of the fieldnames which should be used for grouping.</li>"
-			  +"<li><b>field:&nbsp;</b>Name of the field which contains the value changepoints should be detected in.</li>"
-			  +"<li><b>name:&nbsp;</b>The name of the target field to store the detected changepoints. (Default: name+'_changepoint')</li>"
-			  +"<li><b>period:&nbsp;</b>The number of datapoints used for the changepoint detection. (Default: 10)</li>"
-			  +"<li><b>precision:&nbsp;</b>The decimal precision of the moving average (Default: 6, what is also the maximum).</li>"
+			  +"<li><b>field:&nbsp;</b>Name of the field which contains the value outliers should be detected in.</li>"
+			  +"<li><b>name:&nbsp;</b>The name of the target field to store the detected outliers. (Default: name+'_outlier')</li>"
 			  +"<li><b>sensitivity:&nbsp;</b>A sensitivity multiplier, higher values make the detection less sensitive. (Default: 1.5).</li>"
 			  +"</ul>"
 				;
@@ -161,8 +155,6 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 				}
 				else if	 (assignmentName.equals("field")) {			fieldname = assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("name")) {			name = assignmentValue.getAsString(); }
-				else if	 (assignmentName.equals("precision")) {		precision = assignmentValue.getAsInteger(); }
-				else if	 (assignmentName.equals("period")) {	period = assignmentValue.getAsInteger(); }
 				else if	 (assignmentName.equals("sensitivity")) {	sensitivity = assignmentValue.getAsBigDecimal(); }
 
 				else {
@@ -175,15 +167,9 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 		//------------------------------------------
 		// Sanitize
 		
-		if(name == null) { name = fieldname+"_changepoint";}
-		if(precision == null) { precision = 6;}
+		if(name == null) { name = fieldname+"_outlier";}
 		if(sensitivity == null ) { sensitivity = new BigDecimal(1.5); }
 		
-		if(period == null ) { period = 10; }
-		if(period % 2 > 0 ) { period += 1; }
-		if(period < 4 ) { period = 4; }
-		
-		windowSize = period / 2;
 		
 		//------------------------------------------
 		// Add Detected Fields
@@ -225,7 +211,9 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 			for(List<EnhancedJsonObject> group : groupedRecords.values()) {
 				
 				//------------------------------------
-				// Skip Leading Null Values
+				// Create List of Values
+				ArrayList<BigDecimal> values = new ArrayList<>();
+				
 				for(int i = 0 ; i < group.size(); i++) {
 					
 					EnhancedJsonObject record = group.get(i);
@@ -233,88 +221,19 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 					QueryPartValue valuePart = QueryPartValue.newFromJsonElement(record.get(fieldname));
 					BigDecimal value = valuePart.getAsBigDecimal();
 					
-					//---------------------------
-					// Check Nulls
-					if(value == null) { 
-						record.add(name, JsonNull.INSTANCE);
-						outQueue.add(record);
-						continue;
-					}else {
-						// skip all leading null values
-						group = group.subList(i, group.size());
-						break;
-					}
+					values.add(value);
 				}
 				
 				//------------------------------------
-				// Iterate Values in Group
-				ArrayList<BigDecimal> values = new ArrayList<>(); 
-				boolean lastResult = false;
-				for(int k = 0 ; k < group.size(); k++) {
-					
-					EnhancedJsonObject record = group.get(k);
-					
-					QueryPartValue valuePart = QueryPartValue.newFromJsonElement(record.get(fieldname));
-					BigDecimal value = valuePart.getAsBigDecimal();
-					
-					//---------------------------
-					// Handle Nulls
-					if(value == null) { 
-						value = CFW.Math.ZERO;
-					}
-					
-					//---------------------------
-					// Prepare Data
-					values.add(value);
-					
-					if(values.size() < period ) { 
-						continue; 
-					}
-					
-					//---------------------------
-					// Calculate
-
-					int periodEnd = values.size();
-					int periodStart = periodEnd - period;
-					int windowCenter = periodEnd - windowSize;
-					
-					List<BigDecimal> pastWindow = values.subList(periodStart, windowCenter);
-					List<BigDecimal> futureWindow = values.subList(windowCenter, periodEnd);
-					List<BigDecimal> fullWindow = values.subList(periodStart, periodEnd);
-					
-					BigDecimal meanPast = CFW.Math.bigAvg(pastWindow, precision);
-					BigDecimal meanFuture = CFW.Math.bigAvg(futureWindow, precision);
-					BigDecimal meanDiffAbs = meanPast.subtract(meanFuture).abs();
-					
-					BigDecimal stdDev = CFW.Math.bigStdev(fullWindow, false, precision);
-					BigDecimal stdDevFactor = stdDev.multiply(sensitivity);
-
-					boolean isChangepoint = false;
-					if (meanDiffAbs.compareTo(stdDevFactor) > 0) {
-						if(lastResult == false) {
-							lastResult = true;
-							isChangepoint = lastResult;
-						}else {
-							// only return true once for every changepoint.
-							isChangepoint = false;
-						}
-					}else {
-						lastResult = false;
-						isChangepoint = lastResult;
-					}
-					
-					//---------------------------
-					// Evaluate
-					EnhancedJsonObject recordAtCenter = group.get(windowCenter);
-					recordAtCenter.addProperty(name, isChangepoint );
-					
-					
-				}
+				// Calculate Outliers
+				ArrayList<Boolean> outliersArray = CFW.Math.bigOutlier(values, sensitivity);
 				
 				//------------------------------------
 				// Send All Records to Out Queue
 				for(int k = 0 ; k < group.size(); k++) {
-					outQueue.add(group.get(k));
+					EnhancedJsonObject record = group.get(k);
+					record.addProperty(name, outliersArray.get(k));
+					outQueue.add(record);
 				}
 			}
 			

@@ -1,0 +1,33 @@
+
+<p>This command will detect outliers based on Inter-Quantile-Range().
+You can group the statistics by specific fields using the by-parameter.
+Results will be booleans, which can also be displayed with the chart command.
+</p>
+
+<p>The following outlier example groups by WAREHOUSE AND ITEM and detects the outliers in the data for each group:
+</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+| source random 
+	type=series 
+	seriesCount=2
+	records=200
+| set # add some outliers
+	COUNT = if(random(0,100) &lt; 90
+			  , COUNT
+			  , ( COUNT * randomFloat(-2, 2))  
+			)
+| outlier
+	by=meta(BY) 
+	field="COUNT" 
+	name="outlier" 
+	sensitivity = 1.5
+| chart
+	by= meta(BY)
+	x=TIME
+	y=[COUNT, 'outlier']
+	ymin=null
+	height="300"
+	multichart=true</code></pre>
+
+

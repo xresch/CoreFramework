@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
+import com.xresch.cfw._main.CFW;
+
 public class CFWMath {
 
 	
@@ -16,6 +18,7 @@ public class CFWMath {
 	
 	public static final BigDecimal ZERO = BigDecimal.ZERO;
 	public static final BigDecimal ONE = BigDecimal.ONE;
+	public static final BigDecimal ONE_POINT_FIVE = new BigDecimal(1.5);
 	public static final BigDecimal TWO = new BigDecimal(2);
 	public static final BigDecimal BIG_NEG_ONE = new BigDecimal(-1);
 	public static final BigDecimal BIG_100 = new BigDecimal(100);
@@ -89,79 +92,7 @@ public class CFWMath {
 	}
 	
 	/***********************************************************************************************
-	 * Returns a moving difference between the last value and the value at the beginning of the period in percentage (n values back).
-	 * Will return null if there are not enough datapoints.
-	 * 
-	 * @param values the list of values
-	 * @param period number of points the value is back in the sequence of data
-	 * @param precision the precision of digits for the resulting values.
-	 * @return moving average value , null if list size is smaller than datapoints
-	 ***********************************************************************************************/
-	public static BigDecimal bigMovDiff(List<BigDecimal> values, int period, int precision) {
-		
-		while( values.remove(null) ); // remove all null values
-		if(values.size() < period ) { return null; }
-		
-		BigDecimal youngerValue = values.get(values.size()-1);
-		BigDecimal olderValue = values.get(values.size() - period);
-		
-		//---------------------------------
-		// handle Zeros
-		if(youngerValue.compareTo(ZERO) == 0) {
-			if(olderValue.compareTo(ZERO) == 0) {
-				return ZERO;
-			}
-			
-			return null;
-		}else if(olderValue.compareTo(ZERO) == 0) {
-			return null;
-		}
-		
-		//---------------------------------
-		// Calculate Diff
-		// ( (youngerValue - olderValue) / olderValue) * 100
-
-		MathContext mc = new MathContext(precision, ROUND_UP);
-		BigDecimal diffPercent = youngerValue
-									.subtract(olderValue)
-									.divide(olderValue, mc)
-									.multiply(BIG_100, mc)
-									;
-
-		if(diffPercent == null) { return null; } 
-		diffPercent = diffPercent.setScale(precision, ROUND_UP); // won't calculate decimals if not set
-		
-		return diffPercent;
-		
-	}
-	
-	/***********************************************************************************************
-	 * Returns a moving average value for the last N values in the given list.
-	 * Will return null if there are not enough datapoints.
-	 * 
-	 * @param values the list of values
-	 * @param period number of points that should be used for calculating the moving average
-	 * @param precision the precision of digits for the resulting values.
-	 * @return moving average value , null if list size is smaller than datapoints
-	 ***********************************************************************************************/
-	public static BigDecimal bigMovAvg(List<BigDecimal> values, int period, int precision) {
-		
-		while( values.remove(null) ); // remove all null values
-		if(values.size() < period ) { return null; }
-		
-		List<BigDecimal> partialValues = values.subList(values.size() - period, values.size());
-		BigDecimal sum = bigSum(partialValues, precision);
-		sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
-		if(sum == null) { return null; } 
-		
-		BigDecimal count = new BigDecimal(partialValues.size());
-		
-		return sum.divide(count, ROUND_UP);
-		
-	}
-	
-	/***********************************************************************************************
-	 * Returns the Moving Average
+	 * Returns the Average
 	 * @param precision TODO
 	 * @return average value in the list, null if list is empty or all values are null
 	 ***********************************************************************************************/
@@ -208,6 +139,17 @@ public class CFWMath {
 	 ***********************************************************************************************/
 	public static BigDecimal bigMedian(List<BigDecimal> values) {
 		
+		ArrayList<BigDecimal> sortedClone = new ArrayList<>();
+		sortedClone.addAll(values);	
+		sortedClone.sort(null);
+		
+		return bigMedian(sortedClone, true);
+	}
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static BigDecimal bigMedian(List<BigDecimal> values, boolean isSorted) {
+		
 		int count = values.size();
 		
 		if(count == 0) {
@@ -220,7 +162,10 @@ public class CFWMath {
 		//---------------------------
 		// Retrieve number
 		boolean isEvenCount = (count % 2 == 0);
-		values.sort(null);
+		
+		if(!isSorted) {
+			values.sort(null);
+		}
 		
 		if(percentilePosition > 0) {
 			BigDecimal resultValue = values.get(percentilePosition-1);
@@ -272,6 +217,166 @@ public class CFWMath {
 		
 	}
 	
+    
+	/***********************************************************************************************
+	 * Returns a moving average value for the last N values in the given list.
+	 * Will return null if there are not enough datapoints.
+	 * 
+	 * @param values the list of values
+	 * @param period number of points that should be used for calculating the moving average
+	 * @param precision the precision of digits for the resulting values.
+	 * @return moving average value , null if list size is smaller than datapoints
+	 ***********************************************************************************************/
+	public static BigDecimal bigMovAvg(List<BigDecimal> values, int period, int precision) {
+		
+		while( values.remove(null) ); // remove all null values
+		if(values.size() < period ) { return null; }
+		
+		List<BigDecimal> partialValues = values.subList(values.size() - period, values.size());
+		BigDecimal sum = bigSum(partialValues, precision);
+		sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
+		if(sum == null) { return null; } 
+		
+		BigDecimal count = new BigDecimal(partialValues.size());
+		
+		return sum.divide(count, ROUND_UP);
+		
+	}
+
+	/***********************************************************************************************
+	 * Returns a moving difference between the last value and the value at the beginning of the period in percentage (n values back).
+	 * Will return null if there are not enough datapoints.
+	 * 
+	 * @param values the list of values
+	 * @param period number of points the value is back in the sequence of data
+	 * @param precision the precision of digits for the resulting values.
+	 * @return moving average value , null if list size is smaller than datapoints
+	 ***********************************************************************************************/
+	public static BigDecimal bigMovDiff(List<BigDecimal> values, int period, int precision) {
+		
+		while( values.remove(null) ); // remove all null values
+		if(values.size() < period ) { return null; }
+		
+		BigDecimal youngerValue = values.get(values.size()-1);
+		BigDecimal olderValue = values.get(values.size() - period);
+		
+		//---------------------------------
+		// handle Zeros
+		if(youngerValue.compareTo(ZERO) == 0) {
+			if(olderValue.compareTo(ZERO) == 0) {
+				return ZERO;
+			}
+			
+			return null;
+		}else if(olderValue.compareTo(ZERO) == 0) {
+			return null;
+		}
+		
+		//---------------------------------
+		// Calculate Diff
+		// ( (youngerValue - olderValue) / olderValue) * 100
+	
+		MathContext mc = new MathContext(precision, ROUND_UP);
+		BigDecimal diffPercent = youngerValue
+									.subtract(olderValue)
+									.divide(olderValue, mc)
+									.multiply(BIG_100, mc)
+									;
+	
+		if(diffPercent == null) { return null; } 
+		diffPercent = diffPercent.setScale(precision, ROUND_UP); // won't calculate decimals if not set
+		
+		return diffPercent;
+		
+	}
+
+	/***********************************************************************************************
+	 * Returns an array of booleans an outlier based on Inter-Quantile-Range(IQR).
+	 * 
+	 * @param values the list of values
+	 * @param sensitivity the multiplier for the IQR, higher values mean less sensitive to outliers (default 1.5)
+	 * @return array of booleans, may contain null if input number was null.
+	 ***********************************************************************************************/
+    public static ArrayList<Boolean> bigOutlier(List<BigDecimal> values, BigDecimal sensitivity) {
+    	        
+    	ArrayList<Boolean> result = new ArrayList<>();
+    	
+    	if(values.isEmpty()) {
+    		return result;
+    	}
+    	
+    	if(sensitivity == null) { sensitivity = ONE_POINT_FIVE; }
+    	
+    	List<BigDecimal> valuesToSort = new ArrayList<>();
+    	
+    	//bigPercentile sorts the values, we don't want that on the original array
+    	valuesToSort.addAll(values);
+        BigDecimal perc25 = bigPercentile(25, valuesToSort);
+        BigDecimal perc75 =  bigPercentile(75, valuesToSort);
+
+        BigDecimal iqr = perc75.subtract(perc25);
+
+        BigDecimal lowerBound = perc25.subtract(iqr.multiply(sensitivity));
+        BigDecimal upperBound = perc75.add(iqr.multiply(sensitivity));
+
+
+        for(BigDecimal value : values) {
+        	
+        	if(value == null) {
+        		result.add(null);
+        	}else if (value.compareTo(lowerBound) < 0 
+        		   || value.compareTo(upperBound) > 0 ){
+        		result.add(true);
+        		
+	        }else {
+	        	result.add(false);
+	        }
+
+        }
+        
+        return result;
+        
+    }
+    
+	/***********************************************************************************************
+	 * Returns true if the value is an outlier based on Modified Z-Score.
+	 * Will return false if there are not enough datapoints.
+	 * 
+	 * @param values the list of values
+	 * @param period number of points that should be used for calculating the moving average
+	 * @param precision TODO
+	 * @param sensitivity 
+	 * @return boolean , null if list size is smaller than datapoints
+	 ***********************************************************************************************/
+	public static Boolean bigIsOutlierModifiedZScore(List<BigDecimal> values, BigDecimal value, int precision, BigDecimal sensitivity) {
+		
+		System.out.println("value.size: "+CFW.JSON.toJSON(values));
+		if(value == null ) { return null; }
+		while( values.remove(null) );
+		if(values.isEmpty() ) { return null; }
+		
+		if(sensitivity == null) {
+			sensitivity = new BigDecimal("3.5");
+		}
+
+		
+		BigDecimal median = bigMedian(values);
+		BigDecimal mad = bigMedianAbsoluteDeviation(values, median);
+
+		if (mad.compareTo(BigDecimal.ZERO) == 0) {
+			return false; // Avoid division by zero
+		}
+
+		// Compute the Modified Z-score
+		BigDecimal modifiedZ = 
+				value.subtract(median)
+					 .divide(mad, precision, RoundingMode.HALF_UP)
+					 .multiply(new BigDecimal("0.6745"))
+					 ;
+
+		 return modifiedZ.abs().compareTo(sensitivity) > 0; // Threshold for outlier detection
+ 
+	}
 	
 	/***********************************************************************************************
 	 * Returns a moving standard deviation value for the last N values in the given list.
@@ -342,6 +447,39 @@ public class CFWMath {
 		BigDecimal standardDeviation = divided.sqrt(mc);
 		
 		return standardDeviation;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static BigDecimal bigMedianAbsoluteDeviation(List<BigDecimal> values) {
+		if(values.size() <= 1) {
+			return ZERO;
+		}
+		BigDecimal median = bigMedian(values);
+		
+		return bigMedianAbsoluteDeviation(values, median);
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static BigDecimal bigMedianAbsoluteDeviation(List<BigDecimal> values, BigDecimal median) {
+		
+		while( values.remove(null) );
+		
+		// zero or one number will have MAD of 0
+		if(values.size() <= 1) {
+			return ZERO;
+		}
+	
+		ArrayList<BigDecimal> deviations = new ArrayList<>();
+        for (BigDecimal num : values) {
+            deviations.add(num.subtract(median).abs());
+        }
+        
+        return bigMedian(deviations);
+		
 	}
 	
 	
@@ -450,10 +588,8 @@ public class CFWMath {
 		private int precision = 3;
 		
 		private boolean nonNullFound = false;
-		private List<BigDecimal> movavgValues = new ArrayList<>();
-		private List<BigDecimal> movdiffValues = new ArrayList<>();
-		private List<BigDecimal> movstdevValues = new ArrayList<>();
-
+		private List<BigDecimal> inputValues = new ArrayList<>();
+		
 		private List<BigDecimal> rsiValues = new ArrayList<>();
 
 		
@@ -494,13 +630,13 @@ public class CFWMath {
 			
 			//-------------------------------
 			// Add Value
-			movavgValues.add(value);
+			inputValues.add(value);
 			
-			if(movavgValues.size() < period ) { 
+			if(inputValues.size() < period ) { 
 				return null; 
 			}
 			
-			List<BigDecimal> partialValues = movavgValues.subList(movavgValues.size() - period, movavgValues.size());
+			List<BigDecimal> partialValues = inputValues.subList(inputValues.size() - period, inputValues.size());
 			BigDecimal sum = bigSum(partialValues, precision);
 			sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
 			if(sum == null) { return null; } 
@@ -534,14 +670,14 @@ public class CFWMath {
 						
 			//-------------------------------
 			// Add Value
-			movdiffValues.add(value);
+			inputValues.add(value);
 			
-			if(movdiffValues.size() < period ) { 
+			if(inputValues.size() < period ) { 
 				return null; 
 			}
 			
-			BigDecimal youngerValue = movdiffValues.get(movdiffValues.size()-1);
-			BigDecimal olderValue = movdiffValues.get(movdiffValues.size() - period);
+			BigDecimal youngerValue = inputValues.get(inputValues.size()-1);
+			BigDecimal olderValue = inputValues.get(inputValues.size() - period);
 			
 			//---------------------------------
 			// Handle Zeros
@@ -592,17 +728,19 @@ public class CFWMath {
 			
 			//-------------------------------
 			// Add Value
-			movstdevValues.add(value);
+			inputValues.add(value);
 			
-			if(movstdevValues.size() < period ) { 
+			if(inputValues.size() < period ) { 
 				return null; 
 			}
 			
-			List<BigDecimal> partialValues = movstdevValues.subList(movstdevValues.size() - period, movstdevValues.size());
+			List<BigDecimal> partialValues = inputValues.subList(inputValues.size() - period, inputValues.size());
 			
 			return bigStdev(partialValues, usePopulation, precision);
 			
 		}
+		
+
 		
 		/***********************************************************************************************
 		 * Returns the Relative Strength Index(RSI) for the values subsequently passed to this method.

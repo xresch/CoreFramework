@@ -205,7 +205,9 @@ DONE
 	- maparrays
 	- movavg
 	- movdiff
+	- movoutlier
 	- movstdev
+	- outlier
 	- psar
 	- rsi
 	- score

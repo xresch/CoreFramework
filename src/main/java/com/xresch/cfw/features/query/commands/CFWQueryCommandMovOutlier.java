@@ -29,11 +29,10 @@ import com.xresch.cfw.utils.CFWMath.CFWMathPeriodic;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandChangepoint extends CFWQueryCommand {
+public class CFWQueryCommandMovOutlier extends CFWQueryCommand {
 	
-	private static final String COMMAND_NAME = "changepoint";
-	private static final BigDecimal MINUS_ONE = new BigDecimal(-1);
-	
+	private static final String COMMAND_NAME = "movoutlier";
+
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<>();
 	
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
@@ -50,7 +49,7 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandChangepoint(CFWQuery parent) {
+	public CFWQueryCommandMovOutlier(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -67,7 +66,7 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Detects changepoints int time series.";
+		return "Detects outliers using a Modified Z-Score Algorithm.";
 	}
 
 	/***********************************************************************************************
@@ -86,7 +85,7 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 		return "<ul>"
 			  +"<li><b>by:&nbsp;</b>Array of the fieldnames which should be used for grouping.</li>"
 			  +"<li><b>field:&nbsp;</b>Name of the field which contains the value changepoints should be detected in.</li>"
-			  +"<li><b>name:&nbsp;</b>The name of the target field to store the detected changepoints. (Default: name+'_changepoint')</li>"
+			  +"<li><b>name:&nbsp;</b>The name of the target field to store the detected changepoints. (Default: name+'_outlier')</li>"
 			  +"<li><b>period:&nbsp;</b>The number of datapoints used for the changepoint detection. (Default: 10)</li>"
 			  +"<li><b>precision:&nbsp;</b>The decimal precision of the moving average (Default: 6, what is also the maximum).</li>"
 			  +"<li><b>sensitivity:&nbsp;</b>A sensitivity multiplier, higher values make the detection less sensitive. (Default: 1.5).</li>"
@@ -175,7 +174,7 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 		//------------------------------------------
 		// Sanitize
 		
-		if(name == null) { name = fieldname+"_changepoint";}
+		if(name == null) { name = fieldname+"_outlier";}
 		if(precision == null) { precision = 6;}
 		if(sensitivity == null ) { sensitivity = new BigDecimal(1.5); }
 		
@@ -273,40 +272,22 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 					
 					//---------------------------
 					// Calculate
-
 					int periodEnd = values.size();
 					int periodStart = periodEnd - period;
 					int windowCenter = periodEnd - windowSize;
 					
-					List<BigDecimal> pastWindow = values.subList(periodStart, windowCenter);
-					List<BigDecimal> futureWindow = values.subList(windowCenter, periodEnd);
+					EnhancedJsonObject recordAtCenter = group.get(windowCenter);
+					BigDecimal valueAtCenter = 
+							QueryPartValue.newFromJsonElement(recordAtCenter.get(fieldname))
+										  .getAsBigDecimal();
+					
 					List<BigDecimal> fullWindow = values.subList(periodStart, periodEnd);
 					
-					BigDecimal meanPast = CFW.Math.bigAvg(pastWindow, precision);
-					BigDecimal meanFuture = CFW.Math.bigAvg(futureWindow, precision);
-					BigDecimal meanDiffAbs = meanPast.subtract(meanFuture).abs();
-					
-					BigDecimal stdDev = CFW.Math.bigStdev(fullWindow, false, precision);
-					BigDecimal stdDevFactor = stdDev.multiply(sensitivity);
-
-					boolean isChangepoint = false;
-					if (meanDiffAbs.compareTo(stdDevFactor) > 0) {
-						if(lastResult == false) {
-							lastResult = true;
-							isChangepoint = lastResult;
-						}else {
-							// only return true once for every changepoint.
-							isChangepoint = false;
-						}
-					}else {
-						lastResult = false;
-						isChangepoint = lastResult;
-					}
+					Boolean isOutlier = CFW.Math.bigIsOutlierModifiedZScore(fullWindow, valueAtCenter, precision, sensitivity);
 					
 					//---------------------------
 					// Evaluate
-					EnhancedJsonObject recordAtCenter = group.get(windowCenter);
-					recordAtCenter.addProperty(name, isChangepoint );
+					recordAtCenter.addProperty(name, isOutlier );
 					
 					
 				}
