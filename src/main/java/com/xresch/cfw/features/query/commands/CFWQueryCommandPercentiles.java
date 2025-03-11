@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.TreeSet;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -53,6 +54,18 @@ public class CFWQueryCommandPercentiles extends CFWQueryCommand {
 		return new String[] {COMMAND_NAME};
 	}
 
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(_CFWQueryCommon.TAG_ANALYTICS);
+		tags.add(_CFWQueryCommon.TAG_STATS);
+		return tags;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

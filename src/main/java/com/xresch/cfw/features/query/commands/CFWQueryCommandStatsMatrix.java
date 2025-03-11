@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -72,7 +73,17 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 	public String[] uniqueNameAndAliases() {
 		return new String[] {COMMAND_NAME};
 	}
-
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(_CFWQueryCommon.TAG_STATS);
+		return tags;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

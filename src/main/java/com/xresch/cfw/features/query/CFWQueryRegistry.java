@@ -188,6 +188,31 @@ public class CFWQueryRegistry {
 	}
 	
 	/***********************************************************************
+	 * Returns a list of commands by tags without aliases.
+	 * @param objectClass
+	 ***********************************************************************/
+	public static TreeMap<String, ArrayList<CFWQueryCommand>> getCommandsByTags()  {
+		TreeMap<String, ArrayList<CFWQueryCommand>> commandsByTags = new TreeMap<>();
+		CFWQuery pseudoQuery = new CFWQuery();
+		
+		for(Entry<String, Class<? extends CFWQueryCommand>> entry : queryCommandMap.entrySet()) {
+			CFWQueryCommand current = createCommandInstance(pseudoQuery, entry.getKey());
+			
+			// skip aliases
+			if( !entry.getKey().equals(current.getUniqueName())) { continue; }
+			
+			for(String tag : current.getTags()) {
+				if( !commandsByTags.containsKey(tag) ){
+					commandsByTags.put(tag, new ArrayList<CFWQueryCommand>() );
+				}
+				commandsByTags.get(tag).add(current);
+			}
+		}
+		
+		return commandsByTags;
+	}
+	
+	/***********************************************************************
 	 * Get a list of Environment instances.
 	 * 
 	 ***********************************************************************/
@@ -282,6 +307,7 @@ public class CFWQueryRegistry {
 	public static TreeMap<String, Class<? extends CFWQueryFunction>> getFunctionList()  {
 		return queryFunctionMap;
 	}
+	
 	
 	/***********************************************************************
 	 * 

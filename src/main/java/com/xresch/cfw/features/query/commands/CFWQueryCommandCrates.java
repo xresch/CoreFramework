@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.commands;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
@@ -12,6 +13,7 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
@@ -53,6 +55,18 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 	@Override
 	public String[] uniqueNameAndAliases() {
 		return new String[] {COMMAND_NAME, "bin"};
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(_CFWQueryCommon.TAG_ANALYTICS);
+		tags.add(_CFWQueryCommon.TAG_AGGREGATION);
+		tags.add(_CFWQueryCommon.TAG_STATS);
+		return tags;
 	}
 
 	/***********************************************************************************************

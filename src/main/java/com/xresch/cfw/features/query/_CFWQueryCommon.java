@@ -27,15 +27,18 @@ import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
  **************************************************************************************************************/
 public class _CFWQueryCommon {
 
+	public static final String TAG_ANALYTICS = "analytics";
 	public static final String TAG_AGGREGATION = "aggregation";
 	public static final String TAG_ARRAYS = "arrays";
 	public static final String TAG_CODING = "coding";
+	public static final String TAG_FORMAT = "format";
+	public static final String TAG_FILTER = "filter";
 	public static final String TAG_GENERAL = "general";
 	public static final String TAG_MATH = "math";
 	public static final String TAG_OBJECTS = "objects";
+	public static final String TAG_STATS = "statistics";
 	public static final String TAG_STRINGS = "strings";
 	public static final String TAG_TIME = "time";
-	public static final String TAG_FORMAT = "format";
 	
 		
 	/***********************************************************************************************

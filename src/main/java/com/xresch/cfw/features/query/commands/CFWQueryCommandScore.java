@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonElement;
@@ -60,7 +61,17 @@ public class CFWQueryCommandScore extends CFWQueryCommand {
 	public String[] uniqueNameAndAliases() {
 		return new String[] {COMMAND_NAME};
 	}
-
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(_CFWQueryCommon.TAG_ANALYTICS);
+		return tags;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

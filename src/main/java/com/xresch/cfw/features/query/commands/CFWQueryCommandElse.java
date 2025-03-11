@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.xresch.cfw._main.CFW;
@@ -49,6 +50,16 @@ public class CFWQueryCommandElse extends _CFWQueryCommandFlowControl {
 	@Override
 	public String[] uniqueNameAndAliases() {
 		return new String[] {COMMAND_NAME};
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(_CFWQueryCommon.TAG_CODING);
+		return tags;
 	}
 
 	/***********************************************************************************************

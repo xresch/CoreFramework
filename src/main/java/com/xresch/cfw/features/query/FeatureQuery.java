@@ -625,11 +625,7 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
 		// Commands Main Page
-		ManualPage commandsPage = new ManualPage("Commands")
-				.faicon("fas fa-cogs")
-				.content("&nbsp;");
-		
-		ROOT_MANUAL_PAGE.addChild(commandsPage);
+		ManualPage commandsPage = new CFWQueryManualPageRootForCommands(ROOT_MANUAL_PAGE, "Commands");
 		
 		//----------------------------------
 		// Pages for each Command

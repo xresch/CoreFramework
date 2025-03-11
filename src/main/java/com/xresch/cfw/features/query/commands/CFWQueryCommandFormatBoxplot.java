@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -79,6 +80,16 @@ public class CFWQueryCommandFormatBoxplot extends CFWQueryCommand {
 		return new String[] {COMMAND_NAME};
 	}
 
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(_CFWQueryCommon.TAG_FORMAT);
+		return tags;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

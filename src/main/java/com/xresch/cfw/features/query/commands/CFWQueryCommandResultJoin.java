@@ -18,6 +18,7 @@ import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.LeftRightEvaluatable;
 import com.xresch.cfw.features.query.parse.QueryPart;
@@ -118,7 +119,17 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 	public String[] uniqueNameAndAliases() {
 		return new String[] {COMMAND_NAME};
 	}
-
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(_CFWQueryCommon.TAG_CODING);
+		return tags;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

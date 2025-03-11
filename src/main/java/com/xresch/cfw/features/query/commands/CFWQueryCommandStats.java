@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.commands;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.TreeSet;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -56,7 +57,17 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 	public String[] uniqueNameAndAliases() {
 		return new String[] {COMMAND_NAME};
 	}
-
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(_CFWQueryCommon.TAG_STATS);
+		return tags;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

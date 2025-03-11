@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
@@ -76,6 +77,12 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		}
 		return null;
 	}
+	
+	/***********************************************************************************************
+	 * Return an arrayList with Tags
+	 ***********************************************************************************************/
+	public abstract TreeSet<String> getTags();
+	
 	
 	/***********************************************************************************************
 	 * Return a short description that can be shown in content assist and will be used as intro text

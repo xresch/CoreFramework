@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.TreeSet;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -52,6 +53,18 @@ public class CFWQueryCommandIndex extends CFWQueryCommand {
 		super(parent);
 	}
 
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(_CFWQueryCommon.TAG_ANALYTICS);
+		tags.add(_CFWQueryCommon.TAG_STATS);
+		return tags;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.TreeSet;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -58,6 +59,17 @@ public class CFWQueryCommandOutlier extends CFWQueryCommand {
 		return new String[] {COMMAND_NAME};
 	}
 
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(_CFWQueryCommon.TAG_ANALYTICS);
+		return tags;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
