@@ -9,6 +9,15 @@
 	LASTNAME = if(random(0,100) > 50, LASTNAME, null)
 | set
 	LASTNAME = coalesce(LASTNAME, "N/A")</code></pre>
+	
+	
+<p>If you also need to handle empty strings, use the nullif function to convert the empty strings to null:</p>
+<pre><code class="language-cfwquery">| source random 
+| keep LASTNAME
+| set # add some more nulls for demonstration
+	LASTNAME = if(random(0,100) > 50, LASTNAME, '')
+| set
+	LASTNAME = coalesce(nullif(LASTNAME, ''), "N/A")</code></pre>
 
 
 	

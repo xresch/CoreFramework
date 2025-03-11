@@ -920,7 +920,34 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 	}
 
 	/******************************************************************************************************
-	 * 
+	 * Returns true if both values are the same, ignoring type
+	 ******************************************************************************************************/
+	public boolean equalsIgnoreType(Object obj) {
+				
+		if (this == obj)				 	{ return true;  }
+		if (obj == null) 					{ return false; }
+		if (getClass() != obj.getClass()) 	{ return false; }
+		
+		
+		QueryPartValue other = (QueryPartValue) obj;
+		if(type == other.type) {
+			return Objects.equals(value, other.value);
+		}else if(type == QueryPartValueType.NULL 
+		|| other.type == QueryPartValueType.NULL   
+		){
+			return false;
+		}else {
+			this.getAsString()
+				.equals(
+						other.getAsString()
+					);
+		}
+		
+		return false;
+	}
+	
+	/******************************************************************************************************
+	 * Returns true if both values are of the same type and have the same value
 	 ******************************************************************************************************/
 	@Override
 	public boolean equals(Object obj) {

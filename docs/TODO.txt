@@ -217,12 +217,14 @@ DONE
 	- skip
 	
 - Query: Added Functions:
+	- coalesce
 	- extractAll
 	- extractBounds
 	- g (shorthand for globals)
 	- intervalpoints
 	- m (shorthand for meta)
 	- message
+	- nullif
 	- prev
 	- randomColorGroup
 	- randomColorHSL
