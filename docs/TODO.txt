@@ -219,6 +219,7 @@ DONE
 	
 - Query: Added Functions:
 	- coalesce
+	- corr
 	- extractAll
 	- extractBounds
 	- g (shorthand for globals)

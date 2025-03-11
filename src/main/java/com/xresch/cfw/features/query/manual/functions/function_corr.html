@@ -1,0 +1,40 @@
+
+<p>This function is used to calculate Pearson's Correlation Coefficient for two values. 
+It supports aggregation and can be used in aggregation commands.</p>
+
+<p>Following is an example on how to use this function in aggregation command:</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+| source random 
+	type=series 
+	seriesCount=3
+| stats 
+	by		= meta(BY)
+	PRICE 	= avg(PRICE)
+	BOX_SIZE= avg(BOX_SIZE)
+	TOTAL 	= avg(TOTAL)
+	"CORR" 	= corr(TOTAL, BOX_SIZE)</code></pre>
+
+<p>If you have your values in arrays(stored in fields), you can as well use the correlation function directly on those arrays:</p>
+<pre><code class="language-cfwquery">| source random 
+| keep FIRSTNAME
+| set correlation = corr( [1,2,3,4,5] , [5,4,3,2,1] )</code></pre>
+
+
+<p>If you want to visualize correlation as a chart instead, here is an example how to do that:</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+| source random type=series seriesCount=3
+| chart 
+	by		= meta(BY)
+	type	= scatter
+	x		= TOTAL
+	y		= BOX_SIZE
+	height	= "400px"
+	width	= "400px"
+	xtype	= linear
+	xlabel	= "Total Price"
+	ylabel	= "Box Size"
+	pointradius = 2
+</code></pre>
+

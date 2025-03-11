@@ -1100,6 +1100,7 @@ public class CFWRandom {
 		for(int i = 0; i < seriesCount; i++) {
 			String warehouse = randomColorName()+" "+randomStringAlphaNumerical(1).toUpperCase()+randomIntegerInRange(1, 9);
 			String item = randomFruitName();
+			float priceMultiplier = randomFloatInRange(0.5f, 5.6f);
 						
 			//--------------------------------------
 			// Create Values for Series
@@ -1115,13 +1116,14 @@ public class CFWRandom {
 				
 				//--------------------------------------
 				// Additional Values
-				currentItem.addProperty("PRICE", randomFloatInRange(0.5f, 5.6f));
-				currentItem.addProperty("BOX_SIZE", randomFromArray(boxsizeArray));
+				Float price = randomFloatInRange(0.5f, 1.6f) * priceMultiplier;
+				int boxSize = randomFromArray(boxsizeArray);
+				
+				currentItem.addProperty("PRICE", price);
+				currentItem.addProperty("BOX_SIZE", boxSize);
 				currentItem.addProperty("PERCENT", randomIntegerInRange(1, 100));
 				
-				double multiplier = Math.pow(1000, randomIntegerInRange(0, 4));
-				double thousands = randomIntegerInRange(0, 1000) * multiplier;
-				currentItem.addProperty("TOTAL", thousands);
+				currentItem.addProperty("TOTAL", price * boxSize );
 				
 				array.add(currentItem);
 			}

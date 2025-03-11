@@ -25,6 +25,9 @@ public class CFWMath {
 	
 	public static final RoundingMode ROUND_UP = RoundingMode.HALF_UP;
 	
+	/** Math Context with precision of CFW.Math.GLOBAL_SCALE and rounding mode HALF_UP*/
+	public static final MathContext MATHCONTEXT_HALF_UP = new MathContext(GLOBAL_SCALE, ROUND_UP);
+	
 	/***********************************************************************************************
 	 * Replaces all null values with zeros and returns a clone of the list.
 	 ***********************************************************************************************/
