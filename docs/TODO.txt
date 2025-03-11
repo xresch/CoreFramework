@@ -225,6 +225,7 @@ DONE
 	- m (shorthand for meta)
 	- message
 	- nullif
+	- p (shorthand for param)
 	- prev
 	- randomColorGroup
 	- randomColorHSL
