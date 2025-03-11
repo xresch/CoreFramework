@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
@@ -257,6 +258,20 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		return localPreviousSource.getFieldManager();
 	}
 	
+	/***********************************************************************************************
+	 * Add a fieldname
+	 * @return 
+	 ***********************************************************************************************/
+	protected LinkedHashSet<String> fieldnameGetAll() {
+		
+		//-----------------------------------
+		// Add Change to source fieldmanager
+		CFWQueryFieldnameManager sourceFieldmanager = this.getSourceFieldmanager();
+			
+		
+		return sourceFieldmanager.getFinalFieldList();
+		
+	}
 	
 	/***********************************************************************************************
 	 * Add a fieldname

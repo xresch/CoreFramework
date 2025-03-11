@@ -166,6 +166,7 @@ DONE
 
 ------- current -------
 - BREAKING CHANGE: Query Alerting Tasks: if the result is empty, alerting will consider there is no problem
+- BREAKING CHANGE: Query alias "reorder" removed to avoid confusion, use "keep" instead
 - REMOVED AUTO-MIGRATION: Threshold State Names
 - CLI Extensions: Now supports environment variables
 - CLI Extensions: New parameters head/tail/countSkipped to only read specific lines of output
@@ -206,6 +207,7 @@ DONE
 	- maparrays
 	- movavg
 	- movdiff
+	- move
 	- movoutlier
 	- movstdev
 	- outlier

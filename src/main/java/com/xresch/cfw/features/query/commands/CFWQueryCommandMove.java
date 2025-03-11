@@ -2,10 +2,11 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -26,20 +27,24 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandKeep extends CFWQueryCommand {
+public class CFWQueryCommandMove extends CFWQueryCommand {
 	
-	public static final String COMMAND_NAME = "keep";
+	public static final String COMMAND_NAME = "move";
 
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandKeep.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandMove.class.getName());
 	
 	private ArrayList<QueryPart> parts;
 
-	private ArrayList<String> fieldnames = new ArrayList<>();
+	private ArrayList<String> fieldsToMove = new ArrayList<>();
+	private String beforeField = null;
+	private String afterField = null;
+	
+	private LinkedBlockingQueue<EnhancedJsonObject> queuingQueue = new LinkedBlockingQueue<>();
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandKeep(CFWQuery parent) {
+	public CFWQueryCommandMove(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -58,7 +63,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Keeps the specified fields and removes all other.";
+		return "Moves the specified fields before or after a defined field.";
 	}
 
 	/***********************************************************************************************
@@ -66,7 +71,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" <fieldname> [, <fieldname>, <fieldname>...]";
+		return COMMAND_NAME+" before=<before> after=<after> <fieldname> [, <fieldname>, <fieldname>...]";
 	}
 	
 	/***********************************************************************************************
@@ -74,7 +79,12 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>fieldname:&nbsp;</b> Names of the fields that should be kept.</p>";
+		return "<ul>"
+				+"<li><b>before:&nbsp;</b>The name of the field where the other fields should be placed before.</li>"
+				+"<li><b>after:&nbsp;</b>The name of the field where the other fields should be placed after.</li>"
+				+"<li><b>fieldname:&nbsp;</b> Names of the fields that should be moved.</li>"
+				+"</ul>"
+				;
 	}
 
 	/***********************************************************************************************
@@ -114,33 +124,63 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public void initializeAction() {
+	public void initializeAction() throws Exception {
 		
+		//--------------------------------------
+		// Iterate Parts
 		for(QueryPart part : parts) {
 			
 			if(part instanceof QueryPartAssignment) {
-				QueryPartAssignment parameter = (QueryPartAssignment)part;
-				String paramName = parameter.getLeftSide().determineValue(null).getAsString();
+				QueryPartAssignment assignment = (QueryPartAssignment)part;
+				String assignmentName = assignment.getLeftSideAsString(null);
+				QueryPartValue assignmentValue = assignment.determineValue(null);
 				
+				if(assignmentName != null) {
+					assignmentName = assignmentName.trim().toLowerCase();
+					
+					switch(assignmentName) {
+					
+						case "before": beforeField = assignmentValue.getAsString(); 
+						case "after":  afterField = assignmentValue.getAsString(); 
+						break;
+						
+						default: throw new ParseException(COMMAND_NAME+": Unsupported parameter '"+assignmentName+"'", -1);
+					}
+
+				}
 			}else if(part instanceof QueryPartArray) {
 				QueryPartArray array = (QueryPartArray)part;
 				for(JsonElement element : array.getAsJsonArray(null, true)) {
 					
 					if(!element.isJsonNull() && element.isJsonPrimitive()) {
-						fieldnames.add(element.getAsString());
+						fieldsToMove.add(element.getAsString());
 					}
 				}
 			}else {
 				QueryPartValue value = part.determineValue(null);
 				if(value.isJsonArray()) {
-					fieldnames.addAll(value.getAsStringArray());
+					fieldsToMove.addAll(value.getAsStringArray());
 				}else if(!value.isNull()) {
-					fieldnames.add(value.getAsString());
+					fieldsToMove.add(value.getAsString());
 				}
 			}
 		}
 		
-		this.fieldnameKeep(fieldnames.toArray(new String[] {}));
+		//--------------------------------------
+		// Sanitize
+		
+		// ignore after if both are specificed
+		if(beforeField != null && afterField != null) {
+			afterField = null;
+		}
+		
+		// remove before after from fields to move
+		fieldsToMove.remove(beforeField);
+		fieldsToMove.remove(afterField);
+			
+		
+		
+
 	}
 	
 	/***********************************************************************************************
@@ -149,24 +189,58 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
+		//-----------------------------------
+		// Read all the records an store them
+		// temporarily, making sure all 
+		// fieldnames have been populated
 		while(keepPolling()) {
-			EnhancedJsonObject record = inQueue.poll();
-				
-			JsonObject newRecord = new JsonObject(); 
-			for(String fieldname : fieldnames) {
-				if(record.has(fieldname)) {
-					newRecord.add(fieldname, record.get(fieldname));
+			queuingQueue.add(inQueue.poll());	
+		}
+		
+		//-----------------------------------
+		// After All Previous Done
+		if(this.isPreviousDone()) {
+		
+			//--------------------------------
+			// Move Fields
+			if( !fieldsToMove.isEmpty()) {
+				LinkedHashSet<String> fieldnames = this.fieldnameGetAll();
+				fieldnames.removeAll(fieldsToMove);		
+				if(afterField != null && fieldnames.contains(afterField)) {
+					
+					this.fieldnameClearAll();
+					
+					for(String current : fieldnames) {
+						if(!current.equals(afterField)) {
+							this.fieldnameAdd(current);
+						}else {
+							this.fieldnameAdd(afterField);
+							this.fieldnameAddAll(fieldsToMove);
+						}
+					}
+								
+				}else if(beforeField != null && fieldnames.contains(beforeField)) {
+					
+					this.fieldnameClearAll();
+					for(String current : fieldnames) {
+						if( !current.equals(beforeField) ) {
+							this.fieldnameAdd(current);
+						}else {
+							this.fieldnameAddAll(fieldsToMove);
+							this.fieldnameAdd(beforeField);
+						}
+					}
+					
 				}
 			}
 			
-			record.setWrappedObject(newRecord);
+			//--------------------------------
+			// Send Records to out Queue
+			outQueue.addAll(queuingQueue);	
 			
-			outQueue.add(record);
-			
+			this.setDone();
+		
 		}
-		
-		this.setDoneIfPreviousDone();
-		
 	}
 
 }

@@ -1,0 +1,24 @@
+
+<p>The move command is used to move fields before or after another field, for example to order columns in a table.</p>
+
+
+<p>Following code will create random records, and moves the LIKES_TIRAMISU field before the ID field:</p>
+<pre><code class="language-cfwquery">| source random 
+| move before=ID LIKES_TIRAMISU</code></pre>
+
+
+<p>Following moves two fields after the ID field:</p>
+
+<pre><code class="language-cfwquery">| source random 
+| move after=ID TIME LAST_LOGIN </code></pre>
+
+
+<p>You can combine move with before and after, as well as define the fieldnames comma-separated or as an array:</p>
+
+<pre><code class="language-cfwquery">| source random 
+| move before=ID INDEX, LIKES_TIRAMISU
+| move after=ID ["TIME", "LAST_LOGIN"]</code></pre>
+
+
+
+
