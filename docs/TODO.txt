@@ -203,6 +203,7 @@ DONE
 	- bollbands
 	- changepoint
 	- formatboxplot
+	- forwardfill
 	- index
 	- maparrays
 	- movavg

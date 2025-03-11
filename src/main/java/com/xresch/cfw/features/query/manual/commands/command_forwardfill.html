@@ -1,0 +1,48 @@
+
+<p>This command will do changepoint detection using a Sliding Window Change Detection Algorithm.
+You can group the statistics by specific fields using the by-parameter.
+Values should be sorted by time before using this command.
+The window size used for the calculations will be half the defined period.
+Results will be booleans, which can also be displayed with the chart command.
+</p>
+
+<p>Following query creates random series with missing COUNT values and uses forwardfill to fill in the missing values:</p>
+<pre><code class="language-cfwquery">| source random type=series seriesCount=1
+| set COUNT = random(0, 100, 50) # make series with 50% null values for demonstration
+| forwardfill "COUNT"
+| chart
+	by= meta(BY)
+	x=TIME
+	y=["COUNT"]</code></pre>
+
+
+<p>This command doesn't care if it fills numbers ore something else, you can also forward fill strings or booleans or other types:</p>
+<pre><code class="language-cfwquery">| source random 
+| set LIKES_TIRAMISU = randomFrom([true,false], 50) # make series with 50% null values for demonstration
+| forwardfill "LIKES_TIRAMISU" 
+| chart
+	by= meta(BY)
+	x=TIME
+	y=["LIKES_TIRAMISU"]</code></pre>
+
+
+<p>If you have multiple data series and multiple fields with values to fill, you can use the by parameter to apply the forward filling by groups and define multiple fields:</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+| source random 
+	type=series 
+	seriesCount=2
+	records=300
+| set # make series with 50% null values for demonstration
+	COUNT = random(0, 100, 50) 
+	PRICE= randomFloat(1.5, 20.3, 50)
+| sort TIME
+| forwardfill by=meta(BY) "COUNT", "PRICE"
+| chart
+	by= meta(BY)
+	x=TIME
+	y=["COUNT", "PRICE"]
+	height="300"
+	multichart=true</code></pre>
+
+
