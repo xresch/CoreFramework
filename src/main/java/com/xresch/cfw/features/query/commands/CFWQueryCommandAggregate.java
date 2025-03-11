@@ -67,7 +67,6 @@ public class CFWQueryCommandAggregate extends CFWQueryCommand {
 	@Override
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
-		tags.add(_CFWQueryCommon.TAG_AGGREGATION);
 		tags.add(_CFWQueryCommon.TAG_STATS);
 		return tags;
 	}

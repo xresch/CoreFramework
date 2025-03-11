@@ -1,0 +1,14 @@
+
+<p>The coalesce-function returns the first non-null value given as it's parameters.</p>
+
+
+<p>The following example creates sample records and show some example uses of the coalesce-function:</p>
+<pre><code class="language-cfwquery">| source random 
+| keep LASTNAME
+| set # add some more nulls for demonstration
+	LASTNAME = if(random(0,100) > 50, LASTNAME, null)
+| set
+	LASTNAME = coalesce(LASTNAME, "N/A")</code></pre>
+
+
+	
