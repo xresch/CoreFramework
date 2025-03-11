@@ -196,12 +196,14 @@
 	
 	<div class="card flex-grow-1">
 		<div class="card-header pt-1 pb-1">
-			<div>Removing Fields</div>
+			<div>Rename, Move, Remove Fields</div>
 		</div>
 		<div class="card-body maxvw-40">
-			Use 'remove' command to remove some fields:
+			Use the following commands to change the fields:
 			<pre><code class="language-cfwquery">| source random 
-| remove INDEX, URL</code></pre>
+| rename LAST_LOGIN = "Login Time"
+| move before=ID INDEX, LIKES_TIRAMISU
+| remove URL, LOCATION</code></pre>
 			Use 'keep' command to remove all fields except for the ones to keep:
 			<pre><code class="language-cfwquery">| source random 
 | keep INDEX, FIRSTNAME</code></pre>

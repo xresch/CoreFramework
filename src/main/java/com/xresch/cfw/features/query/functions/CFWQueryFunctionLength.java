@@ -8,6 +8,7 @@ import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
@@ -38,9 +39,9 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	@Override
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
-		tags.add(CFWQueryFunction.TAG_STRINGS);
-		tags.add(CFWQueryFunction.TAG_ARRAYS);
-		tags.add(CFWQueryFunction.TAG_OBJECTS);
+		tags.add(_CFWQueryCommon.TAG_STRINGS);
+		tags.add(_CFWQueryCommon.TAG_ARRAYS);
+		tags.add(_CFWQueryCommon.TAG_OBJECTS);
 		return tags;
 	}
 	

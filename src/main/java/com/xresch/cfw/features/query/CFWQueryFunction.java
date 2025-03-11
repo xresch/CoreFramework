@@ -20,16 +20,6 @@ public abstract class CFWQueryFunction{
 	protected CFWQueryContext context;
 	protected CFWQueryCommand parent;
 	
-	public static final String TAG_AGGREGATION = "aggregation";
-	public static final String TAG_ARRAYS = "arrays";
-	public static final String TAG_CODING = "coding";
-	public static final String TAG_GENERAL = "general";
-	public static final String TAG_MATH = "math";
-	public static final String TAG_OBJECTS = "objects";
-	public static final String TAG_STRINGS = "strings";
-	public static final String TAG_TIME = "time";
-	public static final String TAG_FORMAT = "format";
-	
 	public CFWQueryFunction(CFWQueryContext context) {
 		this.context = context;
 	}
