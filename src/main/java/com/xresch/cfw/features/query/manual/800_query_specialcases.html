@@ -11,10 +11,10 @@
 <pre><code class="language-cfwquery">| source random records = 100
 | set
 	emoji = case( 
-				(VALUE < 20), "😍"
-				(VALUE < 40), "😃"
-				(VALUE < 60), "🤨"
-				(VALUE < 80), "😱"
+				(VALUE &lt; 20), "😍"
+				(VALUE &lt; 40), "😃"
+				(VALUE &lt; 60), "🤨"
+				(VALUE &lt; 80), "😱"
 				true, "💩"
 			)
 | sort VALUE
