@@ -1353,15 +1353,20 @@ public class CFWQueryParser {
 		//-------------------------
 		JsonObject object = new JsonObject();
 		object.addProperty("KEY", "Description");
-		object.addProperty("VALUE", "This result contains debug information to analyze the error which occured while parsing of the query.");
+		object.addProperty("VALUE", "This result contains debug information to analyze the error which occured during the parsing of the query.");
 		resultArray.add(object);
-				
+					
 		//-------------------------
 		object = new JsonObject();
-		object.addProperty("KEY", "Query");
-		object.addProperty("VALUE", this.query);
+		object.addProperty("KEY", "Query Before Issue");
+		object.addProperty("VALUE", this.query.substring(0,lastToken.position()) );
 		resultArray.add(object);
 		
+		//-------------------------
+		object = new JsonObject();
+		object.addProperty("KEY", "Query After Issue");
+		object.addProperty("VALUE", this.query.substring(currentToken.position()) );
+		resultArray.add(object);
 		
 		//-------------------------
 		object = new JsonObject();
@@ -1386,23 +1391,17 @@ public class CFWQueryParser {
 		object.addProperty("KEY", "Current Token Index");
 		object.addProperty("VALUE", cursor-1);
 		resultArray.add(object);
-
-		//-------------------------
-		object = new JsonObject();
-		object.addProperty("KEY", "Query Before Issue");
-		object.addProperty("VALUE", this.query.substring(0,lastToken.position()) );
-		resultArray.add(object);
-		
-		//-------------------------
-		object = new JsonObject();
-		object.addProperty("KEY", "Query After Issue");
-		object.addProperty("VALUE", this.query.substring(currentToken.position()) );
-		resultArray.add(object);
 		
 		//-------------------------
 		object = new JsonObject();
 		object.addProperty("KEY", "Query Part Count");
 		object.addProperty("VALUE", currentQueryParts.size());
+		resultArray.add(object);
+		
+		//-------------------------
+		object = new JsonObject();
+		object.addProperty("KEY", "Full Query");
+		object.addProperty("VALUE", this.query);
 		resultArray.add(object);
 		
 		return resultArray;

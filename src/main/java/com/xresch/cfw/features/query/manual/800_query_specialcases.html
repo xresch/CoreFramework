@@ -11,18 +11,22 @@
 <pre><code class="language-cfwquery">| source random records = 100
 | set
 	emoji = case( 
-				(VALUE &lt; 20), "😍"
-				(VALUE &lt; 40), "😃"
-				(VALUE &lt; 60), "🤨"
-				(VALUE &lt; 80), "😱"
+				(VALUE < 20), "😍"
+				(VALUE < 40), "😃"
+				(VALUE < 60), "🤨"
+				(VALUE < 80), "😱"
 				true, "💩"
 			)
 | sort VALUE
+| formatfield emoji = ['css', "padding", "0px"]
 | display 
 	as=tiles 
 	titlefields=[emoji] 
 	visiblefields=[]
-	menu = false</code></pre>
+	menu = false
+	# zoom & sizefactor used to hack away some padding
+	zoom = 30
+	settings = {sizefactor: 3}</code></pre>
 	
 	
 

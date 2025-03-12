@@ -79,7 +79,7 @@ systemctl restart vsftpd
 	touch /etc/systemd/system/{appname}.service
 	sudo chmod 664 /etc/systemd/system/{appname}.service
 
-2. Add file content:
+2. Add file content(start/stop might or might not need sudo):
 	[Unit]
 	Description={applicationname}
 	[Service]
@@ -91,8 +91,8 @@ systemctl restart vsftpd
 
 	#path to executable. 
 	#executable is a bash script which calls jar file
-	ExecStart=/bin/bash /home/{appuser}/{appfolder}/start.sh
-	ExecStop=/bin/bash /home/{appuser}/{appfolder}/stop.sh
+	ExecStart=sudo /bin/bash /home/{appuser}/{appfolder}/start.sh
+	ExecStop=sudo /bin/bash /home/{appuser}/{appfolder}/stop.sh
 	SuccessExitStatus=143
 	TimeoutStopSec=10
 	Restart=on-failure
@@ -102,8 +102,8 @@ systemctl restart vsftpd
 	WantedBy=multi-user.target
 
 3. Enable:
-systemctl enable orgmanager
-systemctl status orgmanager
+systemctl enable {appname}
+systemctl status {appname}
 
 4. Test:
 sudo systemctl start {appname}
@@ -127,13 +127,17 @@ sudo apt-get upgrade
 yum install java-1.8.0-openjdk
 
 #########################################################
-# Open Ports / Fix java.net.SocketException
+# Ubuntu Open Ports / Firewall / Fix java.net.SocketException
 #########################################################
 
 # Fix class java.net.SocketException: Permission denied <br/>  at sun.nio.ch.Net.bind0(Native Method)
 
 sudo ufw allow 8888/tcp
 sudo /sbin/sysctl -w net.ipv4.ip_unprivileged_port_start=0
+
+# Somethimes needed 
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8888
+sudo iptables -t nat -I OUTPUT -p tcp -d 127.0.0.1 --dport 80 -j REDIRECT --to-ports 8888
 
 
 #########################################################

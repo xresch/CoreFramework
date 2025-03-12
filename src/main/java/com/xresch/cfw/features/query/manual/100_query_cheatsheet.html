@@ -126,6 +126,109 @@
 	
 </div>
 
+
+
+
+
+<!-- ============================================================ -->
+<!-- Debugging -->
+<!-- ============================================================ -->
+<h2>Debugging and Troubleshooting</h2>
+
+<!-- =========================== FIRST ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Parsing Errors</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Whenever you get a parsing error, you will get a table containing information what is wrong. 
+			The most useful rows are "Query Before Issue" and "Query After Issue". The issue might not be exactly there,
+			but is definitely somewhere in the "Query Before Issue".
+		</div>
+	</div>
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Set for Debug</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Use the set command to output values for every row to see what is happening:
+			<pre><code class="language-cfwquery">| source random 
+| set test = split("a,b,c", ",")</code></pre>
+		</div>
+	</div>
+		
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Message Function</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Use the message function to output values to the Web UI as popup messages():
+			<pre><code class="language-cfwquery">| globals test = {a: "b", c: "d"}
+| source random 
+| set test = message( globals(test).a )</code></pre>
+
+		</div>
+	</div>
+	
+</div>
+
+<!-- =========================== SECOND ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+ 
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Comment /*</div>
+		</div>
+		<div class="card-body maxvw-40">
+			To check what a query is doing up to a certain point, you can disable a whole section using &quot;/* */&quot; comment style.
+			The ending &quot;*/&quot; is not mandatory if you want to comment everything until the end of the query:
+			<pre><code class="language-cfwquery">| source random 
+| set INDEX = INDEX * 5
+/*
+| filter LIKES_TIRAMISU == true
+| stats	by=[TIME, FIRSTNAME] count()
+| display as=csv</code></pre>
+
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>off Comments</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can turn off a specific command typing 'off' before the command:
+			<pre><code class="language-cfwquery">| source random 
+| set INDEX = INDEX * 5
+| off filter LIKES_TIRAMISU == true
+| display as=properties
+</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Parser Details</div>
+		</div>
+		<div class="card-body maxvw-40">	
+		If you want to see details how your query got parsed, add the following hash tags to the first line of your query.	
+		<pre><code class="language-cfwquery">#TRACE #TOKENS #PARTS
+| source random 
+| keep FIRSTNAME
+| set test = [1, 2, 3]</code></pre>
+
+		</div>
+	</div>
+	
+</div>
+
+
+
+
+
 <!-- ============================================================ -->
 <!-- QUERY BASICS -->
 <!-- ============================================================ -->
