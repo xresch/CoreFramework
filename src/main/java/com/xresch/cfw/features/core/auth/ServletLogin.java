@@ -11,13 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWContextRequest;
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.core.auth.openid.SSOProviderSettingsOpenID;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

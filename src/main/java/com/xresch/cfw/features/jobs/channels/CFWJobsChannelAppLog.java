@@ -6,11 +6,12 @@ import java.util.logging.Logger;
 import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

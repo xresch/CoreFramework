@@ -13,6 +13,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWContextAwareExecutor;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteList;
@@ -24,8 +25,8 @@ import com.xresch.cfw.features.query.CFWQueryFieldnameManager;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
-import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.FeatureQuery.CFWQueryComponentType;
+import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
@@ -33,8 +34,6 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.pipeline.PipelineActionListener;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 import io.prometheus.client.Counter;
 

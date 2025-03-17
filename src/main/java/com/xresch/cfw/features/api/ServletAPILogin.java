@@ -10,12 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWContextRequest;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.core.auth.LoginUtils;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.PlaintextResponse;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 
 /**************************************************************************************************************

@@ -10,6 +10,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
@@ -19,7 +21,6 @@ import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 import io.prometheus.client.Counter;
 /**************************************************************************************************************

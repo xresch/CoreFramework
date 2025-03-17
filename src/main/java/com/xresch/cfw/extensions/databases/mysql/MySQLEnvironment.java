@@ -7,7 +7,6 @@ import com.xresch.cfw.db.DBInterface;
 import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

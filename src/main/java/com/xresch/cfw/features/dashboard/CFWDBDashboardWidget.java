@@ -12,6 +12,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
@@ -23,7 +24,6 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

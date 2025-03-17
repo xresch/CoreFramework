@@ -8,14 +8,13 @@ import java.util.LinkedHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.xresch.cfw.caching.FileDefinition;
+import com.xresch.cfw._main.CFWMessages.MessageType;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * This Context allows to access data related to the current request.

@@ -1,8 +1,27 @@
 package com.xresch.cfw._main;
 
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 
 public class CFWMessages {
+
+	public enum MessageType {
+		INFO, 
+		SUCCESS, 
+		WARNING, 
+		ERROR;
+		
+		public static boolean hasMessageType(String value) {
+			if(value == null) { return false; }
+			if(value.equals("INFO")
+			|| value.equals("SUCCESS")
+			|| value.equals("WARNING")
+			|| value.equals("ERROR")
+			){
+				return true;
+			}
+			return false;
+		}
+	}
 
 	/****************************************************************
 	 * Adds a custom message to the Request Context. 

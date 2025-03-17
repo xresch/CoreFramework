@@ -1,5 +1,8 @@
 package com.xresch.cfw.response.bootstrap;
 
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
+
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2021
@@ -7,27 +10,9 @@ package com.xresch.cfw.response.bootstrap;
  **************************************************************************************************************/
 public class CFWHTMLItemAlertMessage {
 	
-	private CFWHTMLItemAlertMessage.MessageType type;
+	private MessageType type;
 	private String message;
-	public enum MessageType {
-		INFO, 
-		SUCCESS, 
-		WARNING, 
-		ERROR;
-		
-		public static boolean hasMessageType(String value) {
-			if(value == null) { return false; }
-			if(value.equals("INFO")
-			|| value.equals("SUCCESS")
-			|| value.equals("WARNING")
-			|| value.equals("ERROR")
-			){
-				return true;
-			}
-			return false;
-		}
-	}
-
+	
 	public CFWHTMLItemAlertMessage(MessageType type, String message){
 		this.type = type;
 		this.message = message;
@@ -56,11 +41,11 @@ public class CFWHTMLItemAlertMessage {
 		return html.toString();
 	}
 
-	public CFWHTMLItemAlertMessage.MessageType getType() {
+	public MessageType getType() {
 		return type;
 	}
 
-	public CFWHTMLItemAlertMessage setType(CFWHTMLItemAlertMessage.MessageType type) {
+	public CFWHTMLItemAlertMessage setType(MessageType type) {
 		this.type = type;
 		return this;
 	}

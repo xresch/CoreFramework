@@ -14,13 +14,14 @@ import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
 import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

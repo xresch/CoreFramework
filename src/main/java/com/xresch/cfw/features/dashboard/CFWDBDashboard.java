@@ -18,6 +18,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -35,7 +36,6 @@ import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

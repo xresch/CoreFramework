@@ -16,6 +16,8 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
@@ -29,7 +31,6 @@ import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.validation.CustomValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 

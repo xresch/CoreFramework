@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 
 /**************************************************************************************************************
  * 

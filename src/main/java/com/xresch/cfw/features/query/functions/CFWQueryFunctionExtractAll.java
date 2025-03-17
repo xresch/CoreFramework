@@ -7,13 +7,14 @@ import java.util.regex.Pattern;
 
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

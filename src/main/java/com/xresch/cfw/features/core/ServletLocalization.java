@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
@@ -20,7 +22,6 @@ import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /************************************************************************************************************
  * 

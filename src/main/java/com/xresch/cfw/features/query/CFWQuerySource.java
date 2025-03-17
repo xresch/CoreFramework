@@ -5,12 +5,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

@@ -12,6 +12,8 @@ import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -19,7 +21,6 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.jobs.channels.CFWJobsChannel;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.validation.LengthValidator;
 import com.xresch.cfw.validation.NumberRangeValidator;
 

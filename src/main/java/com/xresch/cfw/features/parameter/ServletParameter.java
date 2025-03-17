@@ -18,6 +18,7 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormCustomAutocompleteHandler;
@@ -36,7 +37,6 @@ import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
 import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWModifiableHTTPRequest;
 
 /**************************************************************************************************************

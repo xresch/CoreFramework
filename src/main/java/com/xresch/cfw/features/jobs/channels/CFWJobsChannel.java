@@ -4,9 +4,10 @@ import java.util.HashMap;
 
 import org.quartz.JobExecutionContext;
 
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

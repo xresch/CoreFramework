@@ -3,11 +3,12 @@ package com.xresch.cfw.features.query;
 import java.util.ArrayList;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandComment;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.pipeline.Pipeline;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 

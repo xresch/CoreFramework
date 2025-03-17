@@ -13,11 +13,8 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartAssignment;
-import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 
 /**************************************************************************************************************
