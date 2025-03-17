@@ -49,6 +49,41 @@ public class CFWMath {
 	}
 	
 	/***********************************************************************************************
+	 * Returns a scale useful for calculations:
+	 *    (highest scale of all numbers) + plusThis  
+	 *    
+	 * @return int scale
+	 ***********************************************************************************************/
+	public static int getScale(int plusThis, BigDecimal... decimals) {
+
+		int scale = 0;
+		
+		for(BigDecimal current : decimals) {
+			if(scale < current.scale()) {
+				scale = current.scale();
+			}
+		}
+		return scale + plusThis;
+	}
+	
+	/***********************************************************************************************
+	 * Does a forwardFill on the list of values.
+	 * 
+	 ***********************************************************************************************/
+	public static void forwardFill(List<BigDecimal> values) {
+		
+		BigDecimal lastValue = null;
+		for(int i = 0; i < values.size(); i++) {
+			BigDecimal current = values.get(i);
+			if(values.get(i) == null) {
+				values.set(i, lastValue);
+			}
+			
+			lastValue = current;
+		}
+		
+	}
+	/***********************************************************************************************
 	 * 
 	 * @return minimum value in the list, null if list is empty
 	 ***********************************************************************************************/
@@ -97,18 +132,24 @@ public class CFWMath {
 	/***********************************************************************************************
 	 * Returns the Average
 	 * @param precision TODO
+	 * @param removeNulls set to false if you don't want to remove nulls from the original array.
 	 * @return average value in the list, null if list is empty or all values are null
 	 ***********************************************************************************************/
-	public static BigDecimal bigAvg(List<BigDecimal> values, int precision) {
+	public static BigDecimal bigAvg(List<BigDecimal> values, int precision, boolean removeNulls) {
 		
-		while( values.remove(null) ); // remove all null values
-		if(values.isEmpty()) { return null; }
+		List<BigDecimal> data = values;
+		if(!removeNulls) {
+			data = new ArrayList<>(values);
+		}
 		
-		BigDecimal sum = bigSum(values, precision);
+		while( data.remove(null) ); // remove all null values
+		if(data.isEmpty()) { return null; }
+		
+		BigDecimal sum = bigSum(data, precision, true);
 		sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
 		if(sum == null) { return null; } 
 		
-		BigDecimal count = new BigDecimal(values.size());
+		BigDecimal count = new BigDecimal(data.size());
 		
 		return sum.divide(count, ROUND_UP);
 		
@@ -117,16 +158,22 @@ public class CFWMath {
 	/***********************************************************************************************
 	 * 
 	 * @param precision TODO
+	 * @param removeNulls TODO
 	 * @return sum value in the list, null if list is empty or all values are null
 	 ***********************************************************************************************/
-	public static BigDecimal bigSum(List<BigDecimal> values, int precision) {
+	public static BigDecimal bigSum(List<BigDecimal> values, int precision, boolean removeNulls) {
 		
-		while( values.remove(null) ); // remove all null values
-		if(values.isEmpty()) { return null; }
+		List<BigDecimal> data = values;
+		if(!removeNulls) {
+			data = new ArrayList<>(values);
+		}
+		
+		while( data.remove(null) ); // remove all null values
+		if(data.isEmpty()) { return null; }
 		
 		BigDecimal sum = ZERO.setScale(precision);
 
-		for(BigDecimal current : values) {
+		for(BigDecimal current : data) {
 			if(sum == null) { sum = current; continue; }
 			
 			sum = sum.add(current);
@@ -237,7 +284,7 @@ public class CFWMath {
 		if(values.size() < period ) { return null; }
 		
 		List<BigDecimal> partialValues = values.subList(values.size() - period, values.size());
-		BigDecimal sum = bigSum(partialValues, precision);
+		BigDecimal sum = bigSum(partialValues, precision, true);
 		sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
 		if(sum == null) { return null; } 
 		
@@ -246,6 +293,36 @@ public class CFWMath {
 		return sum.divide(count, ROUND_UP);
 		
 	}
+	
+	/***********************************************************************************************
+	 * Returns an array of moving average values.
+
+	 * @param values the list of values
+	 * @param period number of points that should be used for calculating the moving average
+	 * @param precision the precision of digits for the resulting values.
+	 * @return array of moving averages
+	 ***********************************************************************************************/
+    // Compute moving average (trend estimation)
+    public static ArrayList<BigDecimal> bigMovAvgArray(List<BigDecimal> timeseries, int period, int precision) {
+       
+    	ArrayList<BigDecimal> trend = new ArrayList<>();
+        
+    	for (int i = 0; i < timeseries.size(); i++) {
+            
+        	if (i < period - 1) {
+                trend.add(null); // Not enough data for moving average
+            } else {
+                BigDecimal sum = BigDecimal.ZERO;
+                for (int j = 0; j < period; j++) {
+                    sum = sum.add(timeseries.get(i - j));
+                }
+                BigDecimal avg = sum.divide(BigDecimal.valueOf(period), precision, RoundingMode.HALF_UP);
+
+                trend.add(avg);
+            }
+        }
+        return trend;
+    }
 
 	/***********************************************************************************************
 	 * Returns a moving difference between the last value and the value at the beginning of the period in percentage (n values back).
@@ -424,7 +501,7 @@ public class CFWMath {
 		// STEP 1: Find Average
 		BigDecimal count = new BigDecimal(values.size());
 		
-		BigDecimal average = bigAvg(values, precision);
+		BigDecimal average = bigAvg(values, precision, true);
 
 		BigDecimal sumDistanceSquared = ZERO;
 		
@@ -550,7 +627,177 @@ public class CFWMath {
 		
 	}
 	
+	/***********************************************************************************************
+	 * Extract Seasonality plus Residual from time series.
+	 * 
+	 * @param timeseries the list of numbers in the time series 
+	 * @param trend the underlying trend in the times series, for example.
+	 * 
+	 * @return BigDecimal the autocorrelation value
+	 ***********************************************************************************************/
+    public static ArrayList<BigDecimal> extractSeasonalityResidual(List<BigDecimal> timeseries, List<BigDecimal> trend) {
+    	ArrayList<BigDecimal> seasonalityResidual = new ArrayList<>();
+        
+        for (int i = 0; i < timeseries.size(); i++) {
+        	
+        	BigDecimal trendNumber = trend.get(i);
+        	BigDecimal current = timeseries.get(i);
+        	
+        	if(trendNumber == null  || current == null) {
+        		seasonalityResidual.add(ZERO);
+        		continue;
+        	}
+
+            seasonalityResidual.add( current.subtract(trendNumber) );
+        }
+
+        return seasonalityResidual;
+    }
+    
+	/***********************************************************************************************
+	 * Extract Residual component from (seasonality + residual).
+	 * 
+	 * @param timeseries the list of numbers in the time series 
+	 * @param trend the underlying trend in the times series, for example.
+	 * 
+	 * @return BigDecimal the autocorrelation value
+	 ***********************************************************************************************/
+    public static ArrayList<BigDecimal> extractResidual(List<BigDecimal> seasonalityResidual, List<BigDecimal> seasonality) {
+    	ArrayList<BigDecimal> residual = new ArrayList<>();
+
+        for (int i = 0; i < seasonalityResidual.size(); i++) {
+            residual.add(seasonalityResidual.get(i).subtract(seasonality.get(i)) );
+        }
+
+        return residual;
+    }
 	
+	/***********************************************************************************************
+	 * Estimate Seasonality by Averaging Over Cycles.
+	 * @param minLag TODO
+	 * @param seasonalityResidual time series without trend
+	 * @param minLag the minimum lag for the calculations
+	 * 
+	 * @return BigDecimal the autocorrelation value
+	 ***********************************************************************************************/
+    public static ArrayList<BigDecimal> estimateSeasonality(List<BigDecimal> seasonalityResidual, int minLag, int maxLag) {
+    	ArrayList<BigDecimal> seasonality = new ArrayList<>(seasonalityResidual);
+    	ArrayList<BigDecimal> seasonAverages = new ArrayList<>();
+
+        int seasonLength = estimateSeasonalityLag(seasonalityResidual, minLag, maxLag);
+
+        // ----------------------------------------
+        // Compute average seasonal component for 
+        // each position in the cycle
+        for (int i = 0; i < seasonLength; i++) {
+            BigDecimal sum = BigDecimal.ZERO;
+            int count = 0;
+
+            for (int j = i; j < seasonalityResidual.size(); j += seasonLength) {
+            	BigDecimal current = seasonalityResidual.get(j);
+            	if(current == null) { current = ZERO; }
+                sum = sum.add(current);
+                count++;
+            }
+            
+            if(count > 0) {
+            	seasonAverages.add( sum.divide(BigDecimal.valueOf(count), GLOBAL_SCALE, RoundingMode.HALF_UP) );
+            }else {
+            	seasonAverages.add(ZERO);
+            }
+        }
+        // ----------------------------------------
+        // Apply the averaged seasonality back to 
+        // the full time series
+        for (int i = 0; i < seasonalityResidual.size(); i++) {
+            seasonality.set(i, seasonAverages.get(i % seasonLength));
+        }
+
+        return seasonality;
+    }
+    
+	/***********************************************************************************************
+	 * Function to detect seasonality using binary search.
+	 * 
+	 * @param data either raw timeseries or (seasonality + residual)
+	 * @param minLag the minimum Lag to check.
+	 * 
+	 * @return BigDecimal the autocorrelation value
+	 ***********************************************************************************************/
+    public static int estimateSeasonalityLag(List<BigDecimal> data, int minLag, int maxLag) {
+        
+    	int finalMaxLag = Math.min(data.size() / 2, maxLag);  // Seasonality cannot be longer than half the dataset
+        int bestLag = minLag;
+        BigDecimal maxCorrelation = ZERO;
+
+        //--------------------------------------------------
+        // Step 1: Exponentially search lag
+        for (int lag = minLag; lag <= finalMaxLag; lag++) {
+		
+            BigDecimal correlation = computeAutocorrelation(data, lag);
+            System.out.println("Lag: "+lag+" / corr: "+ correlation + " / maxCorr: "+maxCorrelation +" bestLag: " + bestLag);
+            if (correlation.compareTo(maxCorrelation) > 0) {
+                maxCorrelation = correlation;
+                bestLag = lag;
+            }
+        }
+
+        //--------------------------------------------------
+        // Step 2: Fine-tune by searching near bestLag
+        int start = Math.max(minLag, bestLag / 2);
+        int end = Math.min(finalMaxLag, bestLag * 2);
+
+        for (int lag = start; lag <= end; lag++) {
+            BigDecimal correlation = computeAutocorrelation(data, lag);
+            if (correlation.compareTo(maxCorrelation) > 0) {
+                maxCorrelation = correlation;
+                bestLag = lag;
+            }
+        }
+
+        return bestLag;
+    }
+    
+	/***********************************************************************************************
+	 * Compute autocorrelation for a given lag.
+	 * 
+	 * @param series the list of numbers in the time series
+	 * @param precision the precision of digits for the resulting values.
+	 * 
+	 * @return BigDecimal the autocorrelation value
+	 ***********************************************************************************************/
+    public static BigDecimal computeAutocorrelation(List<BigDecimal> series, int lag) {
+        if (series.size() < lag) return BigDecimal.ZERO;
+
+        BigDecimal mean = bigAvg(series, GLOBAL_SCALE, false);
+        if(mean == null) { return ZERO; }
+        
+        BigDecimal numerator = ZERO;
+        BigDecimal denominator = ZERO;
+        
+        for (int i = 0; i < (series.size() - lag) ; i++) {
+        	
+        	BigDecimal value = series.get(i); 		 if(value == null) 		{ value = ZERO;}
+        	BigDecimal valueLag = series.get(i+lag); if(valueLag == null) 	{ valueLag = ZERO;}
+
+            BigDecimal diff1 = value.subtract(mean);
+            BigDecimal diff2 = valueLag.subtract(mean);
+            numerator = numerator.add(diff1.multiply(diff2));
+        }
+
+        for (BigDecimal value : series) {
+        	if(value == null) { value = ZERO; }
+            BigDecimal diff = value.subtract(mean);
+            denominator = denominator.add(diff.multiply(diff));
+        }
+
+        return denominator.compareTo(BigDecimal.ZERO) == 0
+            ? ZERO
+            : numerator.divide(denominator, GLOBAL_SCALE, RoundingMode.HALF_UP);
+    }
+    
+
+    
 	/***********************************************************************************************
 	 * Returns a new instance of periodic math.
 	 * 
@@ -640,7 +887,7 @@ public class CFWMath {
 			}
 			
 			List<BigDecimal> partialValues = inputValues.subList(inputValues.size() - period, inputValues.size());
-			BigDecimal sum = bigSum(partialValues, precision);
+			BigDecimal sum = bigSum(partialValues, precision, true);
 			sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
 			if(sum == null) { return null; } 
 			

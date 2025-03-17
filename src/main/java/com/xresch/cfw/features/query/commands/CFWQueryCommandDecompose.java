@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -22,7 +21,6 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.utils.math.CFWMath.CFWMathPeriodic;
 
 
 /************************************************************************************************************
@@ -30,28 +28,33 @@ import com.xresch.cfw.utils.math.CFWMath.CFWMathPeriodic;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandChangepoint extends CFWQueryCommand {
+public class CFWQueryCommandDecompose extends CFWQueryCommand {
 	
-	private static final String COMMAND_NAME = "changepoint";
+	private static final String COMMAND_NAME = "decompose";
 	private static final BigDecimal MINUS_ONE = new BigDecimal(-1);
 	
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<>();
 	
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
-	private LinkedHashMap<String, ArrayList<EnhancedJsonObject>> groupedRecords = new LinkedHashMap<>();
+	// MUST BE LINKED! following maps contain a groupID plus Record or value
+	private LinkedHashMap<String, ArrayList<EnhancedJsonObject>> recordGroupsMap = new LinkedHashMap<>();
+	private LinkedHashMap<String, ArrayList<BigDecimal>> valueGroupsMap = new LinkedHashMap<>();
 
 	private String fieldname = null;
-	private String name = null;
+	private String nameTrend = "trend";
+	private String nameSeason = "seasonal";
+	private String nameResidual = "residual";
 	private Integer precision = null;
 	private Integer period = null;
-	private BigDecimal sensitivity = null;
+	private Integer minLag = null;
+	private Integer maxLag = null;
 	private Integer windowSize = null;
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandChangepoint(CFWQuery parent) {
+	public CFWQueryCommandDecompose(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -78,7 +81,7 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Detects changepoints int time series.";
+		return "Decomposes time series into trend, seasonality and residual components.";
 	}
 
 	/***********************************************************************************************
@@ -97,10 +100,11 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 		return "<ul>"
 			  +"<li><b>by:&nbsp;</b>Array of the fieldnames which should be used for grouping.</li>"
 			  +"<li><b>field:&nbsp;</b>Name of the field which contains the value changepoints should be detected in.</li>"
-			  +"<li><b>name:&nbsp;</b>The name of the target field to store the detected changepoints. (Default: name+'_changepoint')</li>"
-			  +"<li><b>period:&nbsp;</b>The number of datapoints used for the changepoint detection. (Default: 10)</li>"
-			  +"<li><b>precision:&nbsp;</b>The decimal precision of the moving average (Default: 6, what is also the maximum).</li>"
-			  +"<li><b>sensitivity:&nbsp;</b>A sensitivity multiplier, higher values make the detection less sensitive. (Default: 1.5).</li>"
+			  +"<li><b>name:&nbsp;</b>Prefix for the result fieldnames.</li>"
+			  +"<li><b>period:&nbsp;</b>The number of datapoints used for the trend as a moving average. (Default: 10)</li>"
+			  +"<li><b>precision:&nbsp;</b>The decimal precision of the moving average (Default: 6).</li>"
+			  +"<li><b>minlag:&nbsp;</b>The minimum lag used for extracting the seasonality. (Default: period).</li>"
+			  +"<li><b>maxlag:&nbsp;</b>The maximum lag used for extracting the seasonality. (Default: 10 * minlag).</li>"
 			  +"</ul>"
 				;
 	}
@@ -158,6 +162,7 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Parameters
+		String namePrefix = null;
 		for(QueryPartAssignment assignment : assignmentParts) {
 			
 			String assignmentName = assignment.getLeftSideAsString(null);
@@ -166,15 +171,16 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 			if(assignmentName != null) {
 				assignmentName = assignmentName.trim().toLowerCase();
 
-				if(assignmentName.trim().equals("by")) {
+				if(assignmentName.equals("by")) {
 					ArrayList<String> fieldnames = assignmentValue.getAsStringArray();
 					groupByFieldnames.addAll(fieldnames);
 				}
 				else if	 (assignmentName.equals("field")) {			fieldname = assignmentValue.getAsString(); }
-				else if	 (assignmentName.equals("name")) {			name = assignmentValue.getAsString(); }
+				else if	 (assignmentName.equals("name")) {			namePrefix = assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("precision")) {		precision = assignmentValue.getAsInteger(); }
 				else if	 (assignmentName.equals("period")) {	period = assignmentValue.getAsInteger(); }
-				else if	 (assignmentName.equals("sensitivity")) {	sensitivity = assignmentValue.getAsBigDecimal(); }
+				else if	 (assignmentName.equals("minlag")) {	minLag = assignmentValue.getAsInteger(); }
+				else if	 (assignmentName.equals("maxlag")) {	maxLag = assignmentValue.getAsInteger(); }
 
 				else {
 					throw new ParseException(COMMAND_NAME+": Unsupported parameter '"+assignmentName+"'", -1);
@@ -186,19 +192,27 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 		//------------------------------------------
 		// Sanitize
 		
-		if(name == null) { name = fieldname+"_changepoint";}
+		if(namePrefix != null) { 
+			nameTrend = namePrefix+"_trend";
+			nameSeason = namePrefix+"_season";
+			nameResidual = namePrefix+"_residual";
+		}
+		
 		if(precision == null) { precision = 6;}
-		if(sensitivity == null ) { sensitivity = new BigDecimal(1.5); }
 		
 		if(period == null ) { period = 10; }
 		if(period % 2 > 0 ) { period += 1; }
-		if(period < 4 ) { period = 4; }
+		if(period < 2 ) { period = 4; }
 		
+		if(minLag == null ) { minLag = period; }
+		if(maxLag == null ) { maxLag = minLag * 10; }
 		windowSize = period / 2;
 		
 		//------------------------------------------
 		// Add Detected Fields
-		this.fieldnameAdd(name);
+		this.fieldnameAdd(nameTrend);
+		this.fieldnameAdd(nameSeason);
+		this.fieldnameAdd(nameResidual);
 	}
 	
 	/***********************************************************************************************
@@ -218,12 +232,18 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 			
 			//----------------------------
 			// Create and Get Group
-			if(!groupedRecords.containsKey(groupID)) {
-				groupedRecords.put(groupID, new ArrayList<>());
+			if(!recordGroupsMap.containsKey(groupID)) {
+				recordGroupsMap.put(groupID, new ArrayList<>());
+				valueGroupsMap.put(groupID, new ArrayList<>());
 			}
 			
-			ArrayList<EnhancedJsonObject> group = groupedRecords.get(groupID);
-			group.add(record);
+			ArrayList<EnhancedJsonObject> recordGroup = recordGroupsMap.get(groupID);
+			recordGroup.add(record);
+			
+			ArrayList<BigDecimal> valueGroup = valueGroupsMap.get(groupID);
+			QueryPartValue valuePart = QueryPartValue.newFromJsonElement(record.get(fieldname));
+
+			valueGroup.add(valuePart.getAsBigDecimal());
 			
 		}
 		
@@ -233,100 +253,60 @@ public class CFWQueryCommandChangepoint extends CFWQueryCommand {
 			
 			//------------------------------------
 			// Iterate the Groups
-			for(List<EnhancedJsonObject> group : groupedRecords.values()) {
+			ArrayList<ArrayList<EnhancedJsonObject>> recordGroups = new ArrayList<>(recordGroupsMap.values() );
+			ArrayList<ArrayList<BigDecimal>> valueGroups = new ArrayList<>(valueGroupsMap.values());
+			for(int k = 0; k < recordGroupsMap.size(); k++) {
+								
+				List<EnhancedJsonObject> currentRecords = recordGroups.get(k);
+				List<BigDecimal> currentValues = valueGroups.get(k);
 				
 				//------------------------------------
 				// Skip Leading Null Values
-				for(int i = 0 ; i < group.size(); i++) {
-					
-					EnhancedJsonObject record = group.get(i);
-					
-					QueryPartValue valuePart = QueryPartValue.newFromJsonElement(record.get(fieldname));
-					BigDecimal value = valuePart.getAsBigDecimal();
+				for(int i = 0 ; i < currentValues.size(); i++) {
+										
+					BigDecimal value = currentValues.get(i);
 					
 					//---------------------------
 					// Check Nulls
 					if(value == null) { 
-						record.add(name, JsonNull.INSTANCE);
+						EnhancedJsonObject record = currentRecords.get(i);
+						record.add(nameTrend, JsonNull.INSTANCE);
+						record.add(nameSeason, JsonNull.INSTANCE);
+						record.add(nameResidual, JsonNull.INSTANCE);
 						outQueue.add(record);
 						continue;
 					}else {
 						// skip all leading null values
-						group = group.subList(i, group.size());
+						currentRecords = currentRecords.subList(i, currentRecords.size());
+						currentValues = currentValues.subList(i, currentValues.size());
 						break;
 					}
 				}
 				
 				//------------------------------------
-				// Iterate Values in Group
-				ArrayList<BigDecimal> values = new ArrayList<>(); 
-				boolean lastResult = false;
-				for(int k = 0 ; k < group.size(); k++) {
-					
-					EnhancedJsonObject record = group.get(k);
-					
-					QueryPartValue valuePart = QueryPartValue.newFromJsonElement(record.get(fieldname));
-					BigDecimal value = valuePart.getAsBigDecimal();
-					
-					//---------------------------
-					// Handle Nulls
-					if(value == null) { 
-						value = CFW.Math.ZERO;
-					}
-					
-					//---------------------------
-					// Prepare Data
-					values.add(value);
-					
-					if(values.size() < period ) { 
-						continue; 
-					}
-					
-					//---------------------------
-					// Calculate
-
-					int periodEnd = values.size();
-					int periodStart = periodEnd - period;
-					int windowCenter = periodEnd - windowSize;
-					
-					List<BigDecimal> pastWindow = values.subList(periodStart, windowCenter);
-					List<BigDecimal> futureWindow = values.subList(windowCenter, periodEnd);
-					List<BigDecimal> fullWindow = values.subList(periodStart, periodEnd);
-					
-					BigDecimal meanPast = CFW.Math.bigAvg(pastWindow, precision, true);
-					BigDecimal meanFuture = CFW.Math.bigAvg(futureWindow, precision, true);
-					BigDecimal meanDiffAbs = meanPast.subtract(meanFuture).abs();
-					
-					BigDecimal stdDev = CFW.Math.bigStdev(fullWindow, false, precision);
-					BigDecimal stdDevFactor = stdDev.multiply(sensitivity);
-
-					boolean isChangepoint = false;
-					if (meanDiffAbs.compareTo(stdDevFactor) > 0) {
-						if(lastResult == false) {
-							lastResult = true;
-							isChangepoint = lastResult;
-						}else {
-							// only return true once for every changepoint.
-							isChangepoint = false;
-						}
-					}else {
-						lastResult = false;
-						isChangepoint = lastResult;
-					}
-					
-					//---------------------------
-					// Evaluate
-					EnhancedJsonObject recordAtCenter = group.get(windowCenter);
-					recordAtCenter.addProperty(name, isChangepoint );
-					
-					
-				}
+				// Calculate Components
+				CFW.Math.forwardFill(currentValues);
+				ArrayList<BigDecimal> trend = CFW.Math.bigMovAvgArray(currentValues, period, precision);
+				System.out.println("Trend SUM: "+CFW.Math.bigSum(trend, 6, false));
+				ArrayList<BigDecimal> seasonalityResidual = CFW.Math.extractSeasonalityResidual(currentValues, trend);
+				ArrayList<BigDecimal> seasonality = CFW.Math.estimateSeasonality(trend, minLag, maxLag);
+				ArrayList<BigDecimal> residual = CFW.Math.extractResidual(seasonalityResidual, seasonality);
+				System.out.println("Trend SUM B: "+CFW.Math.bigSum(trend, 6, false));
 				
 				//------------------------------------
-				// Send All Records to Out Queue
-				for(int k = 0 ; k < group.size(); k++) {
-					outQueue.add(group.get(k));
+				// Add to Records
+				for(int r = 0 ; r < currentRecords.size(); r++) {
+					
+					EnhancedJsonObject record = currentRecords.get(r);
+					record.addProperty(nameTrend, trend.get(r));
+					record.addProperty(nameSeason, seasonality.get(r));
+					record.addProperty(nameResidual, residual.get(r));
+					
+					outQueue.add(record);
 				}
+				
+				
+				
 			}
 			
 
