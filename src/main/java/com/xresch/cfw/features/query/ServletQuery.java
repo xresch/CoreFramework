@@ -314,7 +314,7 @@ public class ServletQuery extends HttpServlet
 //					if(origin.mapRequestParameters(request)) {
 //						
 //						if(PersonDBMethods.update((Person)origin)) {
-//							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+//							CFW.Messages.addSuccessMessage("Updated!");
 //						}
 //							
 //					}

@@ -173,7 +173,7 @@ import com.xresch.cfw.features.query.sources.CFWQuerySourceThreaddump;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
@@ -418,7 +418,7 @@ public class FeatureQuery extends CFWAppFeature {
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(
-				(MenuItem)new MenuItem("Query")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Query")
 					.faicon("fas fa-terminal")
 					.addPermission(PERMISSION_QUERY_USER)
 					.addPermission(PERMISSION_QUERY_ADMIN)

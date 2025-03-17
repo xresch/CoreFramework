@@ -28,7 +28,7 @@ import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
@@ -249,7 +249,7 @@ public class ServletCredentialsList extends HttpServlet
 			
 		}else {
 			jsonResponse.setSuccess(false);
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient permissions to duplicate the credentials.");
+			CFW.Messages.addErrorMessage("Insufficient permissions to duplicate the credentials.");
 		}
 	}
 	
@@ -284,7 +284,7 @@ public class ServletCredentialsList extends HttpServlet
 						
 						if( newID != null ) {
 							credentials.id(newID);
-							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Credentials created successfully!");
+							CFW.Messages.addSuccessMessage("Credentials created successfully!");
 							generateSharedMessages(credentials);
 							
 							credentials.saveSelectorFields();
@@ -322,7 +322,7 @@ public class ServletCredentialsList extends HttpServlet
 						&& CFW.DB.Credentials.update(credentials)) {
 							
 							
-							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+							CFW.Messages.addSuccessMessage("Updated!");
 							
 							generateSharedMessages(credentials);
 							
@@ -338,7 +338,7 @@ public class ServletCredentialsList extends HttpServlet
 				json.setSuccess(true);	
 			}
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient permissions to execute action.");
+			CFW.Messages.addErrorMessage("Insufficient permissions to execute action.");
 		}
 	}
 	
@@ -387,7 +387,7 @@ public class ServletCredentialsList extends HttpServlet
 								credentials.foreignKeyOwner(Integer.parseInt(newOwner));
 								
 								if(credentials.update(CFWCredentialsFields.FK_ID_OWNER)) {
-									CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+									CFW.Messages.addSuccessMessage("Updated!");
 									
 									User currentUser = CFW.Context.Request.getUser();
 									//----------------------------------

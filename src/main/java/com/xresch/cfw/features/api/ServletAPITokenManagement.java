@@ -15,7 +15,7 @@ import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -173,8 +173,8 @@ public class ServletAPITokenManagement extends HttpServlet
 						APIToken token = (APIToken)origin;
 						token.foreignKeyCreator(CFW.Context.Request.getUser().id());
 						if(APITokenDBMethods.create(token) ) {
-							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Token created successfully!");
-							CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Don't forget to edit and add permissions to the token.");
+							CFW.Messages.addSuccessMessage("Token created successfully!");
+							CFW.Messages.addWarningMessage("Don't forget to edit and add permissions to the token.");
 						}
 					}
 				}
@@ -201,7 +201,7 @@ public class ServletAPITokenManagement extends HttpServlet
 					if(origin.mapRequestParameters(request)) {
 						
 						if(APITokenDBMethods.update((APIToken)origin)) {
-							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+							CFW.Messages.addSuccessMessage("Updated!");
 						}
 							
 					}

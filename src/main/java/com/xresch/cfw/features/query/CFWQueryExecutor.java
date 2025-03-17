@@ -19,7 +19,7 @@ import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 import io.prometheus.client.Counter;
 /**************************************************************************************************************

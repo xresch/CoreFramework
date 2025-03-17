@@ -16,7 +16,7 @@ import com.xresch.cfw.extensions.web.FeatureWebExtensions;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -75,7 +75,7 @@ public class WidgetOracleQueryChart extends WidgetBaseSQLQueryChart {
 		if(environmentID != null) {
 			 environment = OracleEnvironmentManagement.getEnvironment(Integer.parseInt(environmentID));
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Oracle Query Chart: The chosen environment seems not configured correctly.");
+			CFW.Messages.addWarningMessage("Oracle Query Chart: The chosen environment seems not configured correctly.");
 			return null;
 		}
 		

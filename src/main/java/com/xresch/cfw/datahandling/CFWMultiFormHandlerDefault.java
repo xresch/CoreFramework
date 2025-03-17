@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -25,7 +25,7 @@ public class CFWMultiFormHandlerDefault extends CFWMultiFormHandler {
 		form.revertFieldNames();
 			for(CFWObject object : originsMap.values()) {
 				if(!object.update()) {
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+object.getPrimaryKeyValue()+"' could not be saved to the database.");
+					CFW.Messages.addErrorMessage("The data with the ID '"+object.getPrimaryKeyValue()+"' could not be saved to the database.");
 				};
 			}
 		//make fieldnames Unique again to be able to edit and save again.

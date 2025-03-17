@@ -11,19 +11,19 @@ import java.util.Map.Entry;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public abstract class HierarchicalHTMLItem {
+public abstract class CFWHTMLItem {
 	
-	protected ArrayList<HierarchicalHTMLItem> children = new ArrayList<HierarchicalHTMLItem> ();
-	protected ArrayList<HierarchicalHTMLItem> oneTimeChildren = new ArrayList<HierarchicalHTMLItem> ();
+	protected ArrayList<CFWHTMLItem> children = new ArrayList<CFWHTMLItem> ();
+	protected ArrayList<CFWHTMLItem> oneTimeChildren = new ArrayList<CFWHTMLItem> ();
 	
-	protected DynamicItemCreator creator = null; 
+	protected CFWHTMLItemDynamic creator = null; 
 	protected boolean hasChanged = true;
 	
 	protected StringBuilder html = null;
 	
 	protected LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
 	
-	protected HierarchicalHTMLItem parent = null;
+	protected CFWHTMLItem parent = null;
 	
 	/***********************************************************************************
 	 * Create the HTML representation of this item.
@@ -60,7 +60,7 @@ public abstract class HierarchicalHTMLItem {
 		//-----------------------------------------
 		// Reset oneTimeChildren
 		if(oneTimeChildren.size() > 0) {
-			oneTimeChildren = new ArrayList<HierarchicalHTMLItem> ();
+			oneTimeChildren = new ArrayList<CFWHTMLItem> ();
 			fireChange();
 		}
 
@@ -72,37 +72,37 @@ public abstract class HierarchicalHTMLItem {
 		if(parent != null) parent.fireChange();
 	}
 	
-	public HierarchicalHTMLItem getParent() {
+	public CFWHTMLItem getParent() {
 		return parent;
 	}
 
-	public void setParent(HierarchicalHTMLItem parent) {
+	public void setParent(CFWHTMLItem parent) {
 		this.parent = parent;
 	}
 	
-	public HierarchicalHTMLItem setChildren(ArrayList<HierarchicalHTMLItem> children) {
+	public CFWHTMLItem setChildren(ArrayList<CFWHTMLItem> children) {
 		fireChange();
 		this.children = children;
 		return this;
 	}
 	
-	public ArrayList<HierarchicalHTMLItem> getChildren() {
+	public ArrayList<CFWHTMLItem> getChildren() {
 		return children;
 	}
 
-	public HierarchicalHTMLItem addChild(HierarchicalHTMLItem childItem) {
+	public CFWHTMLItem addChild(CFWHTMLItem childItem) {
 		fireChange();
 		childItem.setParent(this);
 		this.children.add(childItem);
 		return this;
 	}
 	
-	public boolean removeChild(MenuItem childItem) {
+	public boolean removeChild(CFWHTMLItemMenuItem childItem) {
 		fireChange();
 		return this.children.remove(childItem);
 	}
 	
-	public boolean containsChild(MenuItem childItem) {
+	public boolean containsChild(CFWHTMLItemMenuItem childItem) {
 		return children.contains(childItem);
 	}
 	
@@ -112,29 +112,29 @@ public abstract class HierarchicalHTMLItem {
 
 	
 	
-	public HierarchicalHTMLItem setOneTimeChildren(ArrayList<HierarchicalHTMLItem> children) {
+	public CFWHTMLItem setOneTimeChildren(ArrayList<CFWHTMLItem> children) {
 		fireChange();
 		this.oneTimeChildren = children;
 		return this;
 	}
 	
-	public ArrayList<HierarchicalHTMLItem> getOneTimeChildren() {
+	public ArrayList<CFWHTMLItem> getOneTimeChildren() {
 		return oneTimeChildren;
 	}
 
-	public HierarchicalHTMLItem addOneTimeChild(HierarchicalHTMLItem childItem) {
+	public CFWHTMLItem addOneTimeChild(CFWHTMLItem childItem) {
 		fireChange();
 		childItem.setParent(this);
 		this.oneTimeChildren.add(childItem);
 		return this;
 	}
 	
-	public boolean removeOneTimeChild(MenuItem childItem) {
+	public boolean removeOneTimeChild(CFWHTMLItemMenuItem childItem) {
 		fireChange();
 		return this.oneTimeChildren.remove(childItem);
 	}
 	
-	public boolean containsOneTimeChild(MenuItem childItem) {
+	public boolean containsOneTimeChild(CFWHTMLItemMenuItem childItem) {
 		return oneTimeChildren.contains(childItem);
 	}
 	
@@ -149,7 +149,7 @@ public abstract class HierarchicalHTMLItem {
 	 * @param key the key of the attribute.
 	 * @return instance for chaining
 	 ***********************************************************************************/
-	public HierarchicalHTMLItem addAttribute(String name, String value) {
+	public CFWHTMLItem addAttribute(String name, String value) {
 		fireChange();
 		this.attributes.put(name, value);
 		return this;
@@ -162,7 +162,7 @@ public abstract class HierarchicalHTMLItem {
 	 * @param name the name of the attribute.
 	 * @return instance for chaining
 	 ***********************************************************************************/
-	public HierarchicalHTMLItem removeAttribute(String name) {
+	public CFWHTMLItem removeAttribute(String name) {
 		fireChange();
 		this.attributes.remove(name);
 		return this;
@@ -235,7 +235,7 @@ public abstract class HierarchicalHTMLItem {
 	 * Set the CSS Class attribute.
 	 * @param cssClass the css classes you want to set on this item.
 	 ***********************************************************************************/
-	public HierarchicalHTMLItem addCssClass(String cssClass) {
+	public CFWHTMLItem addCssClass(String cssClass) {
 		if(getAttributes().containsKey("class")) {
 			String currentClasses = getAttributeValue("class");
 			return addAttribute("class", currentClasses+" "+cssClass);
@@ -248,7 +248,7 @@ public abstract class HierarchicalHTMLItem {
 	 * Set the onclick attribute.
 	 * @param onclick javascript code
 	 ***********************************************************************************/
-	public HierarchicalHTMLItem onclick(String onclick) {
+	public CFWHTMLItem onclick(String onclick) {
 		return addAttribute("onclick", onclick);
 	}
 
@@ -256,7 +256,7 @@ public abstract class HierarchicalHTMLItem {
 	 * Set a dynamic creator that always creates the child items on the fly and will
 	 * not be cached.
 	 ***********************************************************************************/
-	public HierarchicalHTMLItem setDynamicCreator(DynamicItemCreator creator) {
+	public CFWHTMLItem setDynamicCreator(CFWHTMLItemDynamic creator) {
 		fireChange();
 		this.creator = creator;
 		return this;

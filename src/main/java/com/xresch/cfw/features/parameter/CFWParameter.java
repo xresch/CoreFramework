@@ -29,7 +29,7 @@ import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.validation.CustomValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
@@ -114,12 +114,12 @@ public class CFWParameter extends CFWObject {
 						|| stringValue.equals("timeframepreset")
 						|| stringValue.equals("earliest")
 						|| stringValue.equals("latest")) {
-							CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter name(yours:'"+stringValue+"') cannot be the following: id, title, timeframepreset, earliest, latest");
+							CFW.Messages.addErrorMessage("Parameter name(yours:'"+stringValue+"') cannot be the following: id, title, timeframepreset, earliest, latest");
 							return false;
 						}
 						return true;
 					}else {
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter name can only contain 0-9, a-z, A-Z, dashes and underscores(pay attention to blanks): "+value);
+						CFW.Messages.addErrorMessage("Parameter name can only contain 0-9, a-z, A-Z, dashes and underscores(pay attention to blanks): "+value);
 						return false;
 					}
 				}

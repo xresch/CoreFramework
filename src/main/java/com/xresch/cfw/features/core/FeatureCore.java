@@ -31,7 +31,7 @@ import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWAuditLog;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -138,7 +138,7 @@ public class FeatureCore extends CFWAppFeature {
     	//----------------------------------
     	// Register Admin Menu
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("Feature Management")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Feature Management")
 					.faicon("fas fa-star")
 					.addPermission(FeatureCore.PERMISSION_FEATURE_MGMT)	
 					.href("/app/featuremanagement")

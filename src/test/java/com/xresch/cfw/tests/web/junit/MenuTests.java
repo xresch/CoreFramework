@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
-import com.xresch.cfw.response.bootstrap.BTMenu;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenu;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.tests._master.WebTestMaster;
 import com.xresch.cfw.tests.assets.mockups.MockupMenuItem;
 
@@ -17,33 +17,33 @@ public class MenuTests extends WebTestMaster{
 		
 		//---------------------------
 		// Test Menu Hierarchy
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("Top Item"), null);
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("A"), "Top Item");
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("B"), " Top Item | A ");
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("C"), " Top Item | A | B");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("Top Item"), null);
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("A"), "Top Item");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("B"), " Top Item | A ");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("C"), " Top Item | A | B");
 		
 		//---------------------------
 		// Test Menu Hierarchy 2
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("Top Item 2"), null);
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("Sub Item"), "Top Item 2");
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("Sub Sub Item"), " Top Item 2 | Sub Item ");
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("Sub Sub Item 2"), "Top Item 2 | Sub Item ");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("Top Item 2"), null);
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("Sub Item"), "Top Item 2");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("Sub Sub Item"), " Top Item 2 | Sub Item ");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("Sub Sub Item 2"), "Top Item 2 | Sub Item ");
 		
 		//---------------------------
 		// Test Override
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("Sub Item"), "Top Item 2");
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("Sub Sub Item"), " Top Item 2 | Sub Item ");
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("Sub Sub Item 2"), "Top Item 2 | Sub Item ");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("Sub Item"), "Top Item 2");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("Sub Sub Item"), " Top Item 2 | Sub Item ");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("Sub Sub Item 2"), "Top Item 2 | Sub Item ");
 		
 		//---------------------------
 		// Test addChild combo
-		CFW.Registry.Components.addUserMenuItem(new MenuItem("User Top")
-				.addChild(new MenuItem("User A")
-							.addChild(new MenuItem("User B"))
+		CFW.Registry.Components.addUserMenuItem(new CFWHTMLItemMenuItem("User Top")
+				.addChild(new CFWHTMLItemMenuItem("User A")
+							.addChild(new CFWHTMLItemMenuItem("User B"))
 						 )
 				
 				, null);
-		CFW.Registry.Components.addUserMenuItem(new MenuItem("User C"), "User Top | User A | User B");
+		CFW.Registry.Components.addUserMenuItem(new CFWHTMLItemMenuItem("User C"), "User Top | User A | User B");
 		
 		//---------------------------
 		// Dump and Check
@@ -67,7 +67,7 @@ public class MenuTests extends WebTestMaster{
 		//---------------------------
 		// Create and Check Menu
 		CFWSessionData stubData = new CFWSessionData("sessionID");
-		BTMenu menu = CFW.Registry.Components.createMenuInstance(stubData, false);
+		CFWHTMLItemMenu menu = CFW.Registry.Components.createMenuInstance(stubData, false);
 		//System.out.println(CFW.Dump.dumpObject(menu));
 		String html = menu.getHTML();
 		System.out.println("========= HTML =========\n"+html);
@@ -78,12 +78,12 @@ public class MenuTests extends WebTestMaster{
 	@Test
 	public void testBootstrapMenu() {
 		
-		BTMenu menu = new BTMenu().setLabel("TEST MENU");
+		CFWHTMLItemMenu menu = new CFWHTMLItemMenu().setLabel("TEST MENU");
 		
 		menu.addChild(new MockupMenuItem("Mockup Menu A"))
 			.addChild(new MockupMenuItem("Mockup Menu B"))
-			.addChild(new MenuItem("Single Item").href("./singleitemlink"))
-			.addOneTimeChild(new MenuItem("OneTime Item"));
+			.addChild(new CFWHTMLItemMenuItem("Single Item").href("./singleitemlink"))
+			.addOneTimeChild(new CFWHTMLItemMenuItem("OneTime Item"));
 
 		String html = menu.getHTML();
 		

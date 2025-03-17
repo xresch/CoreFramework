@@ -13,7 +13,7 @@ import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -59,14 +59,14 @@ public class ServletChangePassword extends HttpServlet
 		if(oldpassword == null || oldpassword.isEmpty()
 		|| newpassword == null || newpassword.isEmpty()
 		|| repeatpassword == null || repeatpassword.isEmpty()) {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Please Provide a value in each password field.");
+			CFW.Messages.addErrorMessage("Please Provide a value in each password field.");
 		}else {
 			User currentUser = CFW.Context.Request.getUser();
 			
 			if(currentUser.changePassword(oldpassword, newpassword, repeatpassword)){
 				boolean isUpdateSuccessful = CFW.DB.Users.update(currentUser);
 				if(isUpdateSuccessful) {
-					CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Password changed successfully.");
+					CFW.Messages.addSuccessMessage("Password changed successfully.");
 				}
 			}
 		}

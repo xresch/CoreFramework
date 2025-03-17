@@ -8,7 +8,7 @@ import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -39,7 +39,7 @@ public class FeatureAPI extends CFWAppFeature {
     	//----------------------------------
     	// Register Menu Entry
 		CFW.Registry.Components.addToolsMenuItem(
-				(MenuItem)new MenuItem("API")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("API")
 					.faicon("fas fa-code")
 					.addPermission(PERMISSION_CFW_API)
 					.href("/app/api")	

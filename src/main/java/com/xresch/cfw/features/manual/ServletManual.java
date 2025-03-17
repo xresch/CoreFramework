@@ -12,7 +12,7 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -55,7 +55,7 @@ public class ServletManual extends HttpServlet
 				handleDataRequest(request, response);
 			}
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 		}
         
     }
@@ -83,17 +83,17 @@ public class ServletManual extends HttpServlet
 												if(page != null) {
 													jsonResponse.getContent().append(page.toJSONObjectWithContent());
 												}else {
-													CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The page with the path '"+path+"' was not found.");
+													CFW.Messages.addErrorMessage("The page with the path '"+path+"' was not found.");
 												}
 												break;
 												
 												
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 					CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
 												break;
 				}
 				break;
 						
-			default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The action '"+action+"' is not supported.");
+			default: 			CFW.Messages.addErrorMessage("The action '"+action+"' is not supported.");
 								break;
 								
 		}

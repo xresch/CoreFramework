@@ -7,7 +7,7 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -50,7 +50,7 @@ public class FeatureManual extends CFWAppFeature {
     	//----------------------------------
     	// Register Button Menu
 		CFW.Registry.Components.addButtonsMenuItem(
-		(MenuItem)new MenuItem("Manual", "{!cfw_core_manual!}") 
+		(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Manual", "{!cfw_core_manual!}") 
 				.faicon("fas fa-book")
 				.addPermission(FeatureManual.PERMISSION_MANUAL)
 				.href("/app/manual")

@@ -17,7 +17,7 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
 
@@ -76,7 +76,7 @@ public class InfluxDBEnvironment extends AbstractContextSettings {
 		if(count == 0) {
 			return true;
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The InfluxDB environment cannot be deleted as it is still in use by "+count+"  widget(s).");
+			CFW.Messages.addErrorMessage("The InfluxDB environment cannot be deleted as it is still in use by "+count+"  widget(s).");
 			return false;
 		}
 
@@ -196,7 +196,7 @@ public class InfluxDBEnvironment extends AbstractContextSettings {
 			
 			//System.out.println(queryResult.getResponseBody());
 //			if(json.get("error") != null) {
-//				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "InfluxDB Error: "+json.get("error").getAsString());
+//				CFW.Messages.addErrorMessage("InfluxDB Error: "+json.get("error").getAsString());
 //				return null;
 //			}
 			
@@ -357,7 +357,7 @@ public class InfluxDBEnvironment extends AbstractContextSettings {
 		InfluxDBEnvironment environment = InfluxDBEnvironmentManagement.getEnvironment(environmentID);
 		
 		if(environment == null) {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "The chosen environment seems not configured correctly.");
+			CFW.Messages.addWarningMessage("The chosen environment seems not configured correctly.");
 			return null;
 		}
 

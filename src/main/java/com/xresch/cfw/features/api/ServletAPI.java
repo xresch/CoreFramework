@@ -22,7 +22,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 import io.prometheus.client.Counter;
 
@@ -83,7 +83,7 @@ public class ServletAPI extends HttpServlet
 		//------------------------------------------
 		// Check if the token is active
 		if(!APITokenDBMethods.checkIsTokenActive(token)) {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "This token is disabled or does not exist.");
+			CFW.Messages.addErrorMessage("This token is disabled or does not exist.");
 			json.setSuccess(false);
 			return;
 		}
@@ -100,7 +100,7 @@ public class ServletAPI extends HttpServlet
 			//----------------------------
 			// Check For Result
 			try {
-				CFW.Context.Request.addAlertMessage(MessageType.INFO, "ApiName and/or action was not provided. List of permitted APIs for this token is returned.");
+				CFW.Messages.addInfoMessage("ApiName and/or action was not provided. List of permitted APIs for this token is returned.");
 				JsonArray array = new JsonArray();
 				while(result.next()) {
 					String name = result.getString("API_NAME");
@@ -142,7 +142,7 @@ public class ServletAPI extends HttpServlet
 			handleAPIRequest(request, response);
 		}else {
 			json.setSuccess(false);
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The token does not have access to the API "+apiName+"."+actionName+".");
+			CFW.Messages.addErrorMessage("The token does not have access to the API "+apiName+"."+actionName+".");
 		}
 		
 	}
@@ -187,7 +187,7 @@ public class ServletAPI extends HttpServlet
 		}else {
 			@SuppressWarnings("unused")
 			HTMLResponse html = new HTMLResponse("Error");
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 		}
         
     }
@@ -213,7 +213,7 @@ public class ServletAPI extends HttpServlet
 
 		}else {
 
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 		}
 	}
 	
@@ -235,7 +235,7 @@ public class ServletAPI extends HttpServlet
 		
 		JSONResponse json = new JSONResponse();
 		if(definition == null) {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The API definition could not be found - name: "+apiName+", action: "+action);
+			CFW.Messages.addErrorMessage("The API definition could not be found - name: "+apiName+", action: "+action);
 			json.setSuccess(false);
 			return;
 		}
@@ -302,7 +302,7 @@ public class ServletAPI extends HttpServlet
 		
 		JSONResponse json = new JSONResponse();
 		if(definition == null) {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The API definition could not be found - name: "+apiName+", action: "+action);
+			CFW.Messages.addErrorMessage("The API definition could not be found - name: "+apiName+", action: "+action);
 			json.setSuccess(false);
 			return;
 		}

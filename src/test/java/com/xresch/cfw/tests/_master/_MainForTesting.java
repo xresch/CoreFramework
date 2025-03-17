@@ -13,7 +13,7 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppInterface;
 import com.xresch.cfw.tests.assets.servlets.FormTestServlet;
 import com.xresch.cfw.tests.assets.servlets.GeneralTestServlet;
@@ -55,18 +55,18 @@ public class _MainForTesting implements CFWAppInterface {
 		//---------------------------------
 		// Register Menu Items
 		CFW.Registry.Components.addRegularMenuItem(
-				(MenuItem)new MenuItem("Test Pages")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Test Pages")
 					.faicon("fas fa-flask")
 					.addCssClass("some-test-class")
-					.addChild(new MenuItem("General Tests").href("./general"))
-					.addChild(new MenuItem("Form Tests").faicon("fa fa-table").href("./form"))
+					.addChild(new CFWHTMLItemMenuItem("General Tests").href("./general"))
+					.addChild(new CFWHTMLItemMenuItem("Form Tests").faicon("fa fa-table").href("./form"))
 				, null);
 		
 
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("Menu Test"), null);
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("A").faicon("fa fa-star"), "Menu Test");
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("B").faicon("fa fa-folder-open"), " Menu Test | A ");
-		CFW.Registry.Components.addRegularMenuItem(new MenuItem("C"), " Menu Test | A | B");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("Menu Test"), null);
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("A").faicon("fa fa-star"), "Menu Test");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("B").faicon("fa fa-folder-open"), " Menu Test | A ");
+		CFW.Registry.Components.addRegularMenuItem(new CFWHTMLItemMenuItem("C"), " Menu Test | A | B");
 		
 		//---------------------------------
 		// Register ContextSettings

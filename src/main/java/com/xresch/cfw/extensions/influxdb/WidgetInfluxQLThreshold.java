@@ -34,7 +34,7 @@ import com.xresch.cfw.features.jobs.CFWJobsAlertObject.AlertType;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWMonitor;
 import com.xresch.cfw.utils.CFWState.CFWStateOption;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
@@ -189,7 +189,7 @@ public class WidgetInfluxQLThreshold extends WidgetDefinition {
 		if(environmentID != null) {
 			environment = InfluxDBEnvironmentManagement.getEnvironment(Integer.parseInt(environmentID));
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Influx DB Threashold: The chosen environment seems not configured correctly.");
+			CFW.Messages.addWarningMessage("Influx DB Threashold: The chosen environment seems not configured correctly.");
 			return null;
 		}
 				

@@ -11,11 +11,11 @@ import com.xresch.cfw.features.config.FeatureConfig;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class BTMenu extends HierarchicalHTMLItem {
+public class CFWHTMLItemMenu extends CFWHTMLItem {
 	
 	private String label = "&nbsp;";
-	private UserMenuItem userMenuItem = null;
-	private ArrayList<MenuItem> rightMenuItems = new ArrayList<MenuItem>();
+	private CFWHTMLItemMenuItemUser userMenuItem = null;
+	private ArrayList<CFWHTMLItemMenuItem> rightMenuItems = new ArrayList<CFWHTMLItemMenuItem>();
 	
 	
 	/***********************************************************************************
@@ -46,14 +46,14 @@ public class BTMenu extends HierarchicalHTMLItem {
 
 		if(this.hasChildren()) {
 				
-			for(HierarchicalHTMLItem child : children) {
+			for(CFWHTMLItem child : children) {
 				html.append("\t"+child.getHTML());
 			}
 		}
 		
 		if(this.hasOneTimeChildren()) {
 			
-			for(HierarchicalHTMLItem child : oneTimeChildren) {
+			for(CFWHTMLItem child : oneTimeChildren) {
 				html.append("\t"+child.getHTML());
 			}
 		}
@@ -62,7 +62,7 @@ public class BTMenu extends HierarchicalHTMLItem {
 		//-----------------------------
 		// Right User menus
 		html.append("\n<ul id=\"cfw-navbar-right\" class=\"nav navbar-nav navbar-right\">");
-			for(MenuItem item : rightMenuItems) {
+			for(CFWHTMLItemMenuItem item : rightMenuItems) {
 				html.append(item.getHTML());
 			}
 			
@@ -80,22 +80,22 @@ public class BTMenu extends HierarchicalHTMLItem {
 		return label;
 	}
 
-	public BTMenu setLabel(String label) {
+	public CFWHTMLItemMenu setLabel(String label) {
 		fireChange();
 		this.label = label;
 		return this;
 	}
 
-	public UserMenuItem getUserMenuItem() {
+	public CFWHTMLItemMenuItemUser getUserMenuItem() {
 		return userMenuItem;
 	}
 
-	public BTMenu addRightMenuItem(MenuItem item) {
+	public CFWHTMLItemMenu addRightMenuItem(CFWHTMLItemMenuItem item) {
 		fireChange();
 		rightMenuItems.add(item);
 		return this;
 	}
-	public BTMenu setUserMenuItem(UserMenuItem userMenuItem) {
+	public CFWHTMLItemMenu setUserMenuItem(CFWHTMLItemMenuItemUser userMenuItem) {
 		fireChange();
 		this.userMenuItem = userMenuItem;
 		return this;

@@ -1,47 +1,19 @@
 package com.xresch.cfw.response.bootstrap;
 
-
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class HTMLItemCustom extends HierarchicalHTMLItem {
-	
-	private String htmlString = "&nbsp;";
-	
-	public HTMLItemCustom(String htmlString) {
-		this.htmlString = htmlString;
-	}
+public class CFWHTMLItemMenuDivider extends CFWHTMLItem {
 	
 	/***********************************************************************************
 	 * Create the HTML representation of this item.
 	 * @return String html for this item. 
 	 ***********************************************************************************/
 	public void createHTML(StringBuilder html) {
-		
-		html.append(htmlString);
-		
+		html.append("\n<div class=\"dropdown-divider border-primary\"></div>");
 	}
-
-	public String getHtmlString() {
-		return htmlString;
-	}
-
-	public HTMLItemCustom setHtmlString(String htmlString) {
-		fireChange();
-		this.htmlString = htmlString;
-		return this;
-	}
-
-
-
-
-	
-	
-
-	
-	
 	
 
 }

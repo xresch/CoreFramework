@@ -19,7 +19,7 @@ import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -75,9 +75,9 @@ public class ServletDatabaseAnalytics extends HttpServlet
 					new CFWLog(logger).audit(CFWAuditLogAction.CREATE, "DatabaseSnapshot", "Request manual database snapshot.");
 					boolean isSuccess = CFW.DB.backupDatabaseFile("./snapshot", "h2_database_snapshot");
 					if(isSuccess) {
-						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Snapshot created on hard disk under {APP_RUN_DIR}/snapshot.");
+						CFW.Messages.addSuccessMessage("Snapshot created on hard disk under {APP_RUN_DIR}/snapshot.");
 					}else {
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while creating snapshot.");
+						CFW.Messages.addErrorMessage("Error while creating snapshot.");
 					}
 				break;
 					
@@ -87,9 +87,9 @@ public class ServletDatabaseAnalytics extends HttpServlet
 					new CFWLog(logger).audit(CFWAuditLogAction.EXPORT, "DatabaseScript", "Request export of database data to script.");
 					boolean isExportSuccess = CFW.DB.exportScript("./snapshot", "h2database_exported_script");
 					if(isExportSuccess) {
-						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Snapshot created on hard disk under {APP_RUN_DIR}/snapshot.");
+						CFW.Messages.addSuccessMessage("Snapshot created on hard disk under {APP_RUN_DIR}/snapshot.");
 					}else {
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while creating snapshot.");
+						CFW.Messages.addErrorMessage("Error while creating snapshot.");
 					}
 				break;
 				
@@ -99,9 +99,9 @@ public class ServletDatabaseAnalytics extends HttpServlet
 				String scriptFilePath = request.getParameter("filepath");
 				boolean isImportSuccess = CFW.DB.importScript(scriptFilePath);
 				if(isImportSuccess) {
-					CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Import successful!");
+					CFW.Messages.addSuccessMessage("Import successful!");
 				}else {
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error occured while importing script.");
+					CFW.Messages.addErrorMessage("Error occured while importing script.");
 				}
 				break;
 									

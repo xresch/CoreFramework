@@ -31,7 +31,7 @@ import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
@@ -212,7 +212,7 @@ public class ServletDashboardList extends HttpServlet
 
 					case "dashboards": 	String jsonString = request.getParameter("jsonString");
 										CFW.DB.Dashboards.importByJson(jsonString, false);
-										CFW.Context.Request.addAlertMessage(MessageType.INFO, "Import finished!");
+										CFW.Messages.addInfoMessage("Import finished!");
 										break;  
 										
 					default: 			CFW.Messages.itemNotSupported(item);
@@ -285,7 +285,7 @@ public class ServletDashboardList extends HttpServlet
 			
 		}else {
 			jsonResponse.setSuccess(false);
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient permissions to duplicate the dashboard.");
+			CFW.Messages.addErrorMessage("Insufficient permissions to duplicate the dashboard.");
 		}
 	}
 
@@ -319,7 +319,7 @@ public class ServletDashboardList extends HttpServlet
 						
 						if( newID != null ) {
 							dashboard.id(newID);
-							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard created successfully!");
+							CFW.Messages.addSuccessMessage("Dashboard created successfully!");
 							generateSharedMessages(dashboard);
 							
 							dashboard.saveSelectorFields();
@@ -361,7 +361,7 @@ public class ServletDashboardList extends HttpServlet
 						&& CFW.DB.Dashboards.update(dashboard)) {
 							
 							
-							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+							CFW.Messages.addSuccessMessage("Updated!");
 							
 							generateSharedMessages(dashboard);
 							
@@ -377,7 +377,7 @@ public class ServletDashboardList extends HttpServlet
 				json.setSuccess(true);	
 			}
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient permissions to execute action.");
+			CFW.Messages.addErrorMessage("Insufficient permissions to execute action.");
 		}
 	}
 	
@@ -426,7 +426,7 @@ public class ServletDashboardList extends HttpServlet
 								dashboard.foreignKeyOwner(Integer.parseInt(newOwner));
 								
 								if(dashboard.update(DashboardFields.FK_ID_USER)) {
-									CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+									CFW.Messages.addSuccessMessage("Updated!");
 									
 									User currentUser = CFW.Context.Request.getUser();
 									//----------------------------------

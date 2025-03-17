@@ -35,7 +35,7 @@ private void createForms() {
 					Person Person = (Person)origin;
 					
 					if(PersonDBMethods.create(Person) ) {
-						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Person created successfully!");
+						CFW.Messages.addSuccessMessage("Person created successfully!");
 					}
 				}
 			}
@@ -142,7 +142,7 @@ private void createEditForm(JSONResponse json, String ID) {
 					
 					//update in DB if successful
 					if(PersonDBMethods.update((Person)origin)) {
-						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+						CFW.Messages.addSuccessMessage("Updated!");
 					}
 						
 				}

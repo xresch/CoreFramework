@@ -47,7 +47,7 @@ import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.utils.undoredo.UndoRedoHistory;
 import com.xresch.cfw.utils.undoredo.UndoRedoManager;
@@ -101,7 +101,7 @@ public class ServletDashboardViewMethods
 				//---------------------------
 				// Check Access
 				if(!CFW.DB.Dashboards.hasUserAccessToDashboard(dashboardID, isPublicServlet)) {
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+					CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 					return;
 				}
 				
@@ -192,7 +192,7 @@ public class ServletDashboardViewMethods
 				handleActionRequest(request, response, isPublicServlet);
 			}
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 		}
         
     }
@@ -209,7 +209,7 @@ public class ServletDashboardViewMethods
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			handleActionRequest(request, response, isPublicServlet);
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 		}
         
     }
@@ -256,7 +256,7 @@ public class ServletDashboardViewMethods
 					case "paramwidgetpwcheck": 	WidgetParameter.checkParameterWidgetPassword(request, response, jsonResponse);
 												break;
 												
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 					CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
 												break;
 				}
 				break;
@@ -323,7 +323,7 @@ public class ServletDashboardViewMethods
 				}
 				break;	
 				
-			default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The action '"+action+"' is not supported.");
+			default: 			CFW.Messages.addErrorMessage("The action '"+action+"' is not supported.");
 								break;
 								
 		}
@@ -363,7 +363,7 @@ public class ServletDashboardViewMethods
 			
 			response.getContent().append(jsonString);
 		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to view this dashboard.");
+			CFW.Messages.addErrorMessage("Insufficient rights to view this dashboard.");
 		}
 	}
 	
@@ -410,7 +410,7 @@ public class ServletDashboardViewMethods
 				CFW.Messages.noPermission();
 			}
 		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+			CFW.Messages.addErrorMessage("Insufficient rights to execute action.");
 		}
 
 	}
@@ -444,7 +444,7 @@ public class ServletDashboardViewMethods
 				CFW.Messages.noPermission();
 			}
 		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+			CFW.Messages.addErrorMessage("Insufficient rights to execute action.");
 		}
 
 	}
@@ -533,7 +533,7 @@ public class ServletDashboardViewMethods
 			}
 			
 		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+			CFW.Messages.addErrorMessage("Insufficient rights to execute action.");
 		}
 
 	}
@@ -562,7 +562,7 @@ public class ServletDashboardViewMethods
 			}
 			
 		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+			CFW.Messages.addErrorMessage("Insufficient rights to execute action.");
 		}
 
 	}
@@ -617,7 +617,7 @@ public class ServletDashboardViewMethods
 			}
 			
 		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+			CFW.Messages.addErrorMessage("Insufficient rights to execute action.");
 		}
 
 	}
@@ -658,7 +658,7 @@ public class ServletDashboardViewMethods
 			}
 			
 		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+			CFW.Messages.addErrorMessage("Insufficient rights to execute action.");
 		}
 
 	}

@@ -15,7 +15,7 @@ import com.xresch.cfw.extensions.databases.WidgetBaseSQLQueryChart;
 import com.xresch.cfw.extensions.databases.mysql.FeatureDBExtensionsMySQL;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -74,7 +74,7 @@ public class WidgetMSSQLQueryChart extends WidgetBaseSQLQueryChart {
 		if(environmentID != null) {
 			 environment = MSSQLEnvironmentManagement.getEnvironment(Integer.parseInt(environmentID));
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "MSSQL Query Chart: The chosen environment seems not configured correctly.");
+			CFW.Messages.addWarningMessage("MSSQL Query Chart: The chosen environment seems not configured correctly.");
 			return null;
 		}
 		

@@ -15,7 +15,7 @@ import com.xresch.cfw.extensions.databases.WidgetBaseSQLQueryStatus;
 import com.xresch.cfw.extensions.databases.oracle.FeatureDBExtensionsOracle;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 public class WidgetMySQLQueryStatus extends WidgetBaseSQLQueryStatus {
 
@@ -69,7 +69,7 @@ public class WidgetMySQLQueryStatus extends WidgetBaseSQLQueryStatus {
 		if(environmentID != null) {
 			 environment = MySQLEnvironmentManagement.getEnvironment(Integer.parseInt(environmentID));
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "MySQL Query Status: The chosen environment seems not configured correctly.");
+			CFW.Messages.addWarningMessage("MySQL Query Status: The chosen environment seems not configured correctly.");
 			return null;
 		}
 		

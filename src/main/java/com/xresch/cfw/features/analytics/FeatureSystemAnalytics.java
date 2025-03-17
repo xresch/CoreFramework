@@ -6,7 +6,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.FeatureConfig;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 import io.prometheus.client.exporter.MetricsServlet;
@@ -51,14 +51,14 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		String SYSTEM_ANALYTICS = "System Analytics";
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem(SYSTEM_ANALYTICS)
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem(SYSTEM_ANALYTICS)
 					.faicon("fas fa-traffic-light")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.addAttribute("id", "cfwMenuSystemAnalytics")
 				, null);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("DB Analytics")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("DB Analytics")
 					.faicon("fas fa-database")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/dbanalytics")
@@ -66,7 +66,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("CPU Sampling")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("CPU Sampling")
 					.faicon("fas fa-microchip")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/cpusampling")	
@@ -74,7 +74,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("Servlet Context Tree")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Servlet Context Tree")
 					.faicon("fas fa-sitemap")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/servletcontexttree")
@@ -82,7 +82,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("Session Overview")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Session Overview")
 					.faicon("fas fa-database")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/sessionoverview")	
@@ -90,7 +90,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("System Properties")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("System Properties")
 					.faicon("fas fa-cubes")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/systemproperties")	
@@ -98,7 +98,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("Cache Statistics")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Cache Statistics")
 					.faicon("fas fa-sd-card")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/cachestatistics")	
@@ -106,7 +106,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("Log Configuration")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Log Configuration")
 					.faicon("fas fa-book-open")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/logconfiguration")	
@@ -114,7 +114,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("Metrics")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Metrics")
 					.faicon("fas fa-thermometer-half")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/metrics")	

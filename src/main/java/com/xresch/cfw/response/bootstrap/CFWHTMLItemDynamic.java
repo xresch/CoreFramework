@@ -2,12 +2,12 @@ package com.xresch.cfw.response.bootstrap;
 
 import java.util.ArrayList;
 
-public abstract class DynamicItemCreator {
+public abstract class CFWHTMLItemDynamic {
 
 	/**********************************************************************
 	 * Create and return you dynamic items.
 	 * @return
 	 **********************************************************************/
-	public abstract ArrayList<HierarchicalHTMLItem> createDynamicItems();
+	public abstract ArrayList<CFWHTMLItem> createDynamicItems();
 	
 }

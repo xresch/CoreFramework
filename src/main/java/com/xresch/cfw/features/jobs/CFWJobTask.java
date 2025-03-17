@@ -14,7 +14,7 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWMonitor;
 
 import io.prometheus.client.Counter;
@@ -225,14 +225,14 @@ public abstract class CFWJobTask implements InterruptableJob {
 	public boolean isMinimumIntervalValid(int scheduleIntervalSec) {
 		
 		if(scheduleIntervalSec == -1) {
-			CFW.Context.Request.addAlertMessage(MessageType.INFO, 
+			CFW.Messages.addInfoMessage(
 				"The defined schedule will make the job execute once or never."
 			);
 			return true;
 		}
 		
 		if(scheduleIntervalSec < this.minIntervalSeconds()) {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, 
+			CFW.Messages.addErrorMessage(
 					"The minimum time interval for the selected task is "+this.minIntervalSeconds()+" second(s). "
 					+"Your current schedule has an interval of "+scheduleIntervalSec+" second(s)"
 			);

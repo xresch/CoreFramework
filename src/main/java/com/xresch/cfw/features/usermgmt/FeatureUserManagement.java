@@ -10,7 +10,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -75,7 +75,7 @@ public class FeatureUserManagement extends CFWAppFeature {
     	//----------------------------------
     	// Register Admin Menu
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("Manage Users", "{!cfw_core_manage_users!}") 
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Manage Users", "{!cfw_core_manage_users!}") 
 					.faicon("fas fa-users")
 					.addPermission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)
 					.href(URI_USERMANAGEMENT)
@@ -85,7 +85,7 @@ public class FeatureUserManagement extends CFWAppFeature {
 		//----------------------------------
 		// Register Tools Menu
 		CFW.Registry.Components.addToolsMenuItem(
-				(MenuItem)new MenuItem("Groups", "{!cfw_core_groups!}") 
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Groups", "{!cfw_core_groups!}") 
 				.faicon("fas fa-users")
 				.addPermission(FeatureUserManagement.PERMISSION_GROUPS_USER)
 				.href(URI_GROUPS)

@@ -42,8 +42,8 @@ import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHandler;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
-import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItem;
 import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.validation.BooleanValidator;
 import com.xresch.cfw.validation.DoubleValidator;
@@ -59,7 +59,7 @@ import com.xresch.cfw.validation.LongValidator;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T> {
+public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	
 	private static Logger logger = CFWLog.getLogger(CFWField.class.getName());
 	
@@ -2196,7 +2196,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					}
 				});
 			} catch (Exception e) {
-				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error handling password field. Refresh the page and try again.");
+				CFW.Messages.addErrorMessage("Error handling password field. Refresh the page and try again.");
 				return false;
 			}
 
@@ -2211,7 +2211,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			result = false;
 			if(invalidMessages != null) {
 				for(String message : invalidMessages) {
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, message);
+					CFW.Messages.addErrorMessage(message);
 				}
 			}
 		}

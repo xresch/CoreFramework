@@ -12,8 +12,8 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
-import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItem;
 
 
 /**************************************************************************************************************
@@ -21,7 +21,7 @@ import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWForm extends HierarchicalHTMLItem {
+public class CFWForm extends CFWHTMLItem {
 	
 	private static Logger logger = CFWLog.getLogger(CFWForm.class.getName());
 	
@@ -52,7 +52,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 	public CFWForm(String formUniqueName, String submitLabel) {
 		
 		if(formUniqueName.matches(".*[^A-Za-z0-9_-]+.*")) {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Don't use any other characters for formIDs than A-Z, a-z 0-9, and '-' '_': '"+formUniqueName+"'");
+			CFW.Messages.addWarningMessage("Don't use any other characters for formIDs than A-Z, a-z 0-9, and '-' '_': '"+formUniqueName+"'");
 		}
 		this.formID = formUniqueName;
 		this.submitLabel = submitLabel;
@@ -106,7 +106,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 		
 		if(this.hasChildren()) {
 				
-			for(HierarchicalHTMLItem child : children) {
+			for(CFWHTMLItem child : children) {
 				if(child instanceof CFWField) {
 					((CFWField) child).createHTML_LabeledFormField(this, html);
 				}else {
@@ -117,7 +117,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 		
 		if(this.hasOneTimeChildren()) {
 			
-			for(HierarchicalHTMLItem child : oneTimeChildren) {
+			for(CFWHTMLItem child : oneTimeChildren) {
 				html.append("\n\t"+child.getHTML());
 			}
 		}

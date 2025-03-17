@@ -14,8 +14,8 @@ import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.AbstractResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * This Context allows to access data related to the current request.
@@ -38,7 +38,7 @@ public class CFWContextRequest {
 		protected AbstractResponse responseContent = null;
 		protected CFWSessionData sessionData = null;
 		
-		protected LinkedHashMap<String,AlertMessage> messageArray = null;
+		protected LinkedHashMap<String,CFWHTMLItemAlertMessage> messageArray = null;
 		
 	}
 	
@@ -231,7 +231,7 @@ public class CFWContextRequest {
 			getContext().messageArray = new LinkedHashMap<>();
 		}
 		
-		getContext().messageArray.put(message, new AlertMessage(type, message));
+		getContext().messageArray.put(message, new CFWHTMLItemAlertMessage(type, message));
 				
 	}
 	
@@ -241,7 +241,7 @@ public class CFWContextRequest {
 	 * @return Map or null
 	 *   
 	 ****************************************************************/
-	public static LinkedHashMap<String,AlertMessage> getAlertMap() {
+	public static LinkedHashMap<String,CFWHTMLItemAlertMessage> getAlertMap() {
 		if(getContext().messageArray == null) {
 			getContext().messageArray = new LinkedHashMap<>();
 		}
@@ -253,7 +253,7 @@ public class CFWContextRequest {
 	 * @param alertType alert type from OMKeys
 	 *   
 	 ****************************************************************/
-	public static Collection<AlertMessage> getAlertMessages() {
+	public static Collection<CFWHTMLItemAlertMessage> getAlertMessages() {
 		if(getContext().messageArray == null) {
 			return new ArrayList<>();
 		}

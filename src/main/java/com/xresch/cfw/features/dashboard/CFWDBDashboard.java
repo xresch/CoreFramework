@@ -35,7 +35,7 @@ import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -192,7 +192,7 @@ public class CFWDBDashboard {
 				
 			CFW.DB.transactionCommit();
 			
-			CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard duplicated successfully.");
+			CFW.Messages.addSuccessMessage("Dashboard duplicated successfully.");
 		}
 			
 		
@@ -413,7 +413,7 @@ public class CFWDBDashboard {
 				.orderby(DashboardFields.NAME.toString())
 				.getAsJSON();
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 			return "[]";
 		}
 	}
@@ -436,7 +436,7 @@ public class CFWDBDashboard {
 				.orderby(DashboardFields.NAME.toString())
 				.getAsJSON();
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 			return "[]";
 		}
 	}
@@ -613,7 +613,7 @@ public class CFWDBDashboard {
 			
 			return CFW.JSON.toJSONPretty(dashboardArray);
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!") );
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!") );
 			return "[]";
 		}
 	}
@@ -673,7 +673,7 @@ public class CFWDBDashboard {
 					if(owner != null) {
 						dashboard.foreignKeyOwner(owner.id());
 					}else {
-						CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
+						CFW.Messages.addWarningMessage(
 								CFW.L("cfw_dashboard_error_usernotresolved",
 									  "The the dashboard owner with name '{0}' could not be resolved. Set the owner to the importing user.",
 									  dashboardObject.has("username"))
@@ -694,7 +694,7 @@ public class CFWDBDashboard {
 							
 							resolvedViewers.put(""+user.id(), user.createUserLabel());
 						}else {
-							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
+							CFW.Messages.addWarningMessage(
 									CFW.L("cfw_core_error_usernotfound",
 										  "The user '{0}' could not be found.",
 										  dashboard.sharedWithUsers().get(id))
@@ -714,7 +714,7 @@ public class CFWDBDashboard {
 						if(user != null) {
 							resolvedEditors.put(""+user.id(), user.username());
 						}else {
-							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
+							CFW.Messages.addWarningMessage(
 									CFW.L("cfw_core_error_usernotfound",
 										  "The  user '{0}' could not be found.",
 										  dashboard.editors().get(id))
@@ -733,7 +733,7 @@ public class CFWDBDashboard {
 						if(role != null) {
 							resolvedSharedRoles.put(""+role.id(), role.name());
 						}else {
-							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
+							CFW.Messages.addWarningMessage(
 									CFW.L("cfw_core_error_rolenotfound",
 										  "The  role '{0}' could not be found.",
 										  dashboard.sharedWithGroups().get(id))
@@ -752,7 +752,7 @@ public class CFWDBDashboard {
 						if(role != null) {
 							resolvedEditorRoles.put(""+role.id(), role.name());
 						}else {
-							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
+							CFW.Messages.addWarningMessage(
 									CFW.L("cfw_core_error_rolenotfound",
 										  "The  role '{0}' could not be found.",
 										  dashboard.editorGroups().get(id))
@@ -781,7 +781,7 @@ public class CFWDBDashboard {
 					//-----------------------------
 					// Check format
 					if(!dashboardObject.get("parameters").isJsonArray()) {
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
+						CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
 						continue;
 					}
 					
@@ -809,7 +809,7 @@ public class CFWDBDashboard {
 							
 							Integer newID = CFW.DB.Parameters.createGetPrimaryKey(param);
 							if(newID == null) {
-								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error creating imported parameter.");
+								CFW.Messages.addErrorMessage("Error creating imported parameter.");
 								continue;
 							}
 							
@@ -826,7 +826,7 @@ public class CFWDBDashboard {
 					//-----------------------------
 					// Check format
 					if(!dashboardObject.get("widgets").isJsonArray()) {
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
+						CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
 						continue;
 					}
 					
@@ -875,7 +875,7 @@ public class CFWDBDashboard {
 							//-----------------------------
 							// Create Widget
 							if(!CFW.DB.DashboardWidgets.create(widget)) {
-								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error creating imported widget.");
+								CFW.Messages.addErrorMessage("Error creating imported widget.");
 							}
 							
 						}
@@ -883,7 +883,7 @@ public class CFWDBDashboard {
 				}
 				
 			}else {
-				CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
+				CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
 				continue;
 			}
 		}

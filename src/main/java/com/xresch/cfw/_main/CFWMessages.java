@@ -1,6 +1,6 @@
 package com.xresch.cfw._main;
 
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 public class CFWMessages {
 

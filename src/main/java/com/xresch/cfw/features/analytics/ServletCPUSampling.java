@@ -16,7 +16,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
@@ -121,7 +121,7 @@ public class ServletCPUSampling extends HttpServlet
 				.append(",\"timeseries\": ").append(timeseries)
 				.append("}");
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Access to statistics denied.");
+			CFW.Messages.addErrorMessage("Access to statistics denied.");
 		}
 		
 	}

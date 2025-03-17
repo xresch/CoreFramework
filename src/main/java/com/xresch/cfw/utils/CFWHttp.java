@@ -91,7 +91,7 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 import io.prometheus.client.Counter;
 
@@ -304,11 +304,11 @@ public class CFWHttp {
 					proxyPAC = response.getResponseBody();
 					
 					if(proxyPAC == null || !proxyPAC.contains("FindProxyForURL")) {
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The Proxy .pac-File seems not be in the expected format.");
+						CFW.Messages.addErrorMessage("The Proxy .pac-File seems not be in the expected format.");
 						proxyPAC = null;
 					}
 				}else {
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error occured while retrieving .pac-File from URL. (HTTP Code: "+response.getStatus()+")");
+					CFW.Messages.addErrorMessage("Error occured while retrieving .pac-File from URL. (HTTP Code: "+response.getStatus()+")");
 				}
 			}else {
 				//------------------------------
@@ -316,7 +316,7 @@ public class CFWHttp {
 				proxyPAC = CFW.Files.getFileContent(CFW.Context.Request.getRequest(), CFW.Properties.PROXY_PAC);
 				
 				if(proxyPAC == null || !proxyPAC.contains("FindProxyForURL")) {
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The Proxy .pac-File seems not be in the expected format.");
+					CFW.Messages.addErrorMessage("The Proxy .pac-File seems not be in the expected format.");
 					proxyPAC = null;
 				}
 			}
@@ -1517,7 +1517,7 @@ public class CFWHttp {
 				JsonObject object = jsonElement.getAsJsonObject();
 				if(object.get("error") != null) {
 					new CFWLog(responseLogger).severe("Error occured while reading http response: "+object.get("error").toString());
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error: ");
+					CFW.Messages.addErrorMessage("Error: ");
 					return jsonArray;
 				}else {
 					new CFWLog(responseLogger).severe("Error occured while reading http response:"+CFW.JSON.toString(jsonElement));

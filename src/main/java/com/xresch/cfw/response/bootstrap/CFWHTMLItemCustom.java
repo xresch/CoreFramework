@@ -6,44 +6,42 @@ package com.xresch.cfw.response.bootstrap;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class BTFooter extends HierarchicalHTMLItem {
+public class CFWHTMLItemCustom extends CFWHTMLItem {
 	
-	private String label = "&nbsp;";
+	private String htmlString = "&nbsp;";
 	
-
+	public CFWHTMLItemCustom(String htmlString) {
+		this.htmlString = htmlString;
+	}
+	
 	/***********************************************************************************
 	 * Create the HTML representation of this item.
 	 * @return String html for this item. 
 	 ***********************************************************************************/
-	protected void createHTML(StringBuilder html) {
-
-		html.append("<div id=\"cfw-footer\" class=\"flex-default flex-column\">");
+	public void createHTML(StringBuilder html) {
 		
-		if(this.hasChildren()) {
-				
-			for(HierarchicalHTMLItem child : children) {
-				html.append("\t"+child.getHTML());
-			}
-		}
+		html.append(htmlString);
 		
-		if(this.hasOneTimeChildren()) {
-			
-			for(HierarchicalHTMLItem child : oneTimeChildren) {
-				html.append("\t"+child.getHTML());
-			}
-		}
-		
-		html.append("</div>");
 	}
 
-	public String getLabel() {
-		return label;
+	public String getHtmlString() {
+		return htmlString;
 	}
 
-	public BTFooter setLabel(String label) {
+	public CFWHTMLItemCustom setHtmlString(String htmlString) {
 		fireChange();
-		this.label = label;
+		this.htmlString = htmlString;
 		return this;
 	}
+
+
+
+
+	
+	
+
+	
+	
+	
 
 }

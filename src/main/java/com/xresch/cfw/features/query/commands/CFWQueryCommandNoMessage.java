@@ -19,8 +19,8 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.response.bootstrap.AlertMessage;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /************************************************************************************************************
  * 
@@ -146,9 +146,9 @@ public class CFWQueryCommandNoMessage extends CFWQueryCommand {
 			
 			//------------------------------------
 			// Handle messages
-			LinkedHashMap<String, AlertMessage> alertMap = CFW.Context.Request.getAlertMap();
+			LinkedHashMap<String, CFWHTMLItemAlertMessage> alertMap = CFW.Context.Request.getAlertMap();
 			
-			for(Entry<String, AlertMessage> entry : alertMap.entrySet()) {
+			for(Entry<String, CFWHTMLItemAlertMessage> entry : alertMap.entrySet()) {
 				MessageType type = entry.getValue().getType();
 				
 				if(messageTypesLowerCase.contains(type.toString().toLowerCase())) {

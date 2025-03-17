@@ -6,11 +6,11 @@ package com.xresch.cfw.response.bootstrap;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class BTLink extends HierarchicalHTMLItem {
+public class CFWHTMLItemLink extends CFWHTMLItem {
 	
 	private String label = "&nbsp;";
 	
-	public BTLink(String label, String href) {
+	public CFWHTMLItemLink(String label, String href) {
 		this.label = label;
 		this.href(href);
 	}
@@ -27,15 +27,15 @@ public class BTLink extends HierarchicalHTMLItem {
 
 			html.append("<a "+this.getAttributesString()+">"+label+"</a>");   
 			
-			for(HierarchicalHTMLItem child : children) {
-				if(child instanceof BTLink) {
-					html.append("\t"+((BTLink)child).getHTML());
+			for(CFWHTMLItem child : children) {
+				if(child instanceof CFWHTMLItemLink) {
+					html.append("\t"+((CFWHTMLItemLink)child).getHTML());
 				}
 			}
 			
-			for(HierarchicalHTMLItem child : oneTimeChildren) {
-				if(child instanceof BTLink) {
-					html.append("\t"+((BTLink)child).getHTML());
+			for(CFWHTMLItem child : oneTimeChildren) {
+				if(child instanceof CFWHTMLItemLink) {
+					html.append("\t"+((CFWHTMLItemLink)child).getHTML());
 				}
 			}
 			
@@ -48,13 +48,13 @@ public class BTLink extends HierarchicalHTMLItem {
 		return label;
 	}
 
-	public BTLink setLabel(String label) {
+	public CFWHTMLItemLink setLabel(String label) {
 		fireChange();
 		this.label = label;
 		return this;
 	}
 	
-	public HierarchicalHTMLItem href(String href) {
+	public CFWHTMLItem href(String href) {
 		return addAttribute("href", href);
 	}
 

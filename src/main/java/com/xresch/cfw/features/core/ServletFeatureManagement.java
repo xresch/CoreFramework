@@ -18,7 +18,7 @@ import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -62,7 +62,7 @@ public class ServletFeatureManagement extends HttpServlet
 				handleDataRequest(request, response);
 			}
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 		}
 
     }
@@ -130,7 +130,7 @@ public class ServletFeatureManagement extends HttpServlet
 		dbEntry.value(!oldStatus+"");
 		
 		if(CFW.DB.KeyValuePairs.update(dbEntry)) {
-			CFW.Context.Request.addAlertMessage(MessageType.INFO, "Changes will only take effect after application restart.");
+			CFW.Messages.addInfoMessage("Changes will only take effect after application restart.");
 		}else {
 			jsonResponse.setSuccess(false);
 		}

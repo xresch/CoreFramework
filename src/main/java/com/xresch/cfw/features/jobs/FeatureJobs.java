@@ -22,7 +22,7 @@ import com.xresch.cfw.features.parameter.CFWQueryManualPageParameter;
 import com.xresch.cfw.features.parameter.ParameterDefinition;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 public class FeatureJobs extends CFWAppFeature {
@@ -91,7 +91,7 @@ public class FeatureJobs extends CFWAppFeature {
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(
-				(MenuItem)new MenuItem("Jobs")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Jobs")
 					.faicon("fas fa-play-circle")
 					.addPermission(PERMISSION_JOBS_USER)
 					.addPermission(PERMISSION_JOBS_ADMIN)

@@ -9,7 +9,7 @@ import com.xresch.cfw.features.jobs.channels.CFWJobsChannelAppLog;
 import com.xresch.cfw.features.jobs.channels.CFWJobsChannelEMail;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -49,7 +49,7 @@ public class FeatureNotifications extends CFWAppFeature {
 		
     	//----------------------------------
     	// Register Button Menu
-		MenuItem notificationMenu = (MenuItem)new MenuItem("Notifications", "{!cfw_core_notifications!}") 
+		CFWHTMLItemMenuItem notificationMenu = (CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Notifications", "{!cfw_core_notifications!}") 
 			.faicon("fas fa-bell")
 			.addPermission(PERMISSION_NOTIFICATIONS_USER)
 			.onclick("cfw_notifications_showModal();")

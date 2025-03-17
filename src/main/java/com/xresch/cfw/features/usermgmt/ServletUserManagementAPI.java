@@ -26,7 +26,7 @@ import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.validation.LengthValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 import com.xresch.cfw.validation.PasswordValidator;
@@ -75,7 +75,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 		}else {
 			
 			if (action == null) {
-				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter 'action' was not specified.");
+				CFW.Messages.addErrorMessage("Parameter 'action' was not specified.");
 				//content.append("{\"error\": \"Type was not specified.\"}");
 			}else {
 	
@@ -122,7 +122,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 													content.append(CFWRegistryAudit.auditAllUsers());
 													break;  	
 													
-							default: 				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+							default: 				CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
 													break;
 						}
 						break;
@@ -169,7 +169,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 												jsonResponse.setSuccess(CFW.DB.Permissions.deleteMultipleByID(IDs));
 		  			   							break;  
 		  			   							
-							default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+							default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
 												break;
 						}
 						break;
@@ -192,7 +192,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 														jsonResponse.setSuccess(CFW.DB.RolePermissionMap.tooglePermissionInRole(permissionID, roleID));
 														break;
 			
-							default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+							default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
 												break;
 						}
 						break;
@@ -217,12 +217,12 @@ public class ServletUserManagementAPI extends HttpServlet {
 												createResetPasswordForm(jsonResponse, ID);
 							break;
 							
-							default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+							default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
 												break;
 						}
 						break;
 						
-					default: 				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of action '"+action+"' is not supported.");
+					default: 				CFW.Messages.addErrorMessage("The value of action '"+action+"' is not supported.");
 											break;
 											
 				}
@@ -256,7 +256,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 							
 						User userFromDB = CFW.DB.Users.selectByUsernameOrMail(newUser.username());
 						if (CFW.DB.UserRoleMap.addRoleToUser(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true)) {
-							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "User created successfully!");
+							CFW.Messages.addSuccessMessage("User created successfully!");
 							return;
 						}
 						
@@ -292,7 +292,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 					
 					if( CFW.DB.Roles.create(role) ) {
 						role.saveSelectorFields();
-						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Role created successfully!");
+						CFW.Messages.addSuccessMessage("Role created successfully!");
 					}
 				}
 				
@@ -329,7 +329,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 					
 					if( CFW.DB.Roles.create(role) ) {
 						role.saveSelectorFields();
-						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Group created successfully!");
+						CFW.Messages.addSuccessMessage("Group created successfully!");
 					}
 				}
 				
@@ -359,7 +359,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 					if(origin.mapRequestParameters(request) 
 					&& CFW.DB.Users.update((User)origin)) {
 						
-						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+						CFW.Messages.addSuccessMessage("Updated!");
 							
 					}
 				}
@@ -394,7 +394,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 					if(origin.mapRequestParameters(request)
 					&& CFW.DB.Roles.update((Role)origin)) {
 						role.saveSelectorFields();
-						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");	
+						CFW.Messages.addSuccessMessage("Updated!");	
 					}
 					
 				}
@@ -427,7 +427,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 					if(origin.mapRequestParameters(request)
 					&& CFW.DB.Roles.update((Role)origin)) {
 						role.saveSelectorFields();
-						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");	
+						CFW.Messages.addSuccessMessage("Updated!");	
 					}
 					
 				}
@@ -486,7 +486,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 								role.foreignKeyGroupOwner(Integer.parseInt(newOwner));
 								
 								if(role.update(RoleFields.FK_ID_GROUPOWNER)) {
-									CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+									CFW.Messages.addSuccessMessage("Updated!");
 									
 									User currentUser = CFW.Context.Request.getUser();
 									
@@ -540,7 +540,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 			resetPasswordForm.appendToPayload(json);
 			json.setSuccess(true);
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Unknown user ID:"+ID);
+			CFW.Messages.addErrorMessage("Unknown user ID:"+ID);
 		}
 	}
 	
@@ -591,7 +591,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 							boolean success = user.update(UserFields.PASSWORD_HASH.toString(), 
 										UserFields.PASSWORD_SALT.toString());
 							if(success) {
-								CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Password Updated!");
+								CFW.Messages.addSuccessMessage("Password Updated!");
 								return;
 							}
 						}

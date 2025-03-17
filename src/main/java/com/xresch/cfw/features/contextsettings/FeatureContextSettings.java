@@ -4,7 +4,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -34,7 +34,7 @@ public class FeatureContextSettings extends CFWAppFeature {
     	// Register Regular Menu
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("Context Settings", "{!cfw_core_contextsettings!}")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Context Settings", "{!cfw_core_contextsettings!}")
 					.faicon("fas fa-cogs")
 					.addPermission(PERMISSION_CONTEXT_SETTINGS)
 					.href("/app/contextsettings")	

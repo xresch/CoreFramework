@@ -13,7 +13,7 @@ import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -101,7 +101,7 @@ public class FeatureCredentials extends CFWAppFeature {
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(
-				(MenuItem)new MenuItem("Credentials")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Credentials")
 					.faicon("fas fa-key")
 					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
 					.addPermission(PERMISSION_CREDENTIALS_CREATOR)

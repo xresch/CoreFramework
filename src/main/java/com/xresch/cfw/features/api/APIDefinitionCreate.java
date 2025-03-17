@@ -15,7 +15,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.PlaintextResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -94,7 +94,7 @@ public class APIDefinitionCreate extends APIDefinition{
 							ArrayList<String> messageArray = field.getInvalidationMessages();
 							if(messageArray != null) {
 								for(String message : messageArray) {
-									CFW.Context.Request.addAlertMessage(MessageType.ERROR, message);
+									CFW.Messages.addErrorMessage(message);
 								}
 							}
 						}

@@ -44,9 +44,9 @@ import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.response.bootstrap.DynamicItemCreator;
-import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemDynamic;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
@@ -192,7 +192,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(
-				(MenuItem)new MenuItem("Dashboards")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Dashboards")
 					.faicon("fas fa-tachometer-alt")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
 					.addPermission(PERMISSION_DASHBOARD_CREATOR)
@@ -203,24 +203,24 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 			//----------------------------------
 	    	// Register Menus
-			MenuItem favoritesMenu = (MenuItem)new MenuItem("Favorites")
+			CFWHTMLItemMenuItem favoritesMenu = (CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Favorites")
 				.addPermission(PERMISSION_DASHBOARD_VIEWER)
 				.addPermission(PERMISSION_DASHBOARD_CREATOR)
 				.addPermission(PERMISSION_DASHBOARD_ADMIN)
 				.addAttribute("id", "cfwMenuButtons-Favorites")
-				.setDynamicCreator(new DynamicItemCreator() {		
+				.setDynamicCreator(new CFWHTMLItemDynamic() {		
 		
 					@Override
-					public ArrayList<HierarchicalHTMLItem> createDynamicItems() {
+					public ArrayList<CFWHTMLItem> createDynamicItems() {
 						
-						ArrayList<HierarchicalHTMLItem> childitems = new ArrayList<HierarchicalHTMLItem>();
+						ArrayList<CFWHTMLItem> childitems = new ArrayList<CFWHTMLItem>();
 						ArrayList<Dashboard> dashboardList = CFW.DB.Dashboards.getFavedDashboardList();
 						
 						//-------------------------
 						// Handle no Faves
 						if(dashboardList.isEmpty()) {
 							childitems.add(
-									new MenuItem("No Favorites")
+									new CFWHTMLItemMenuItem("No Favorites")
 								);
 							return childitems;
 						}
@@ -228,7 +228,7 @@ public class FeatureDashboard extends CFWAppFeature {
 						for(Dashboard current : dashboardList) {
 
 							childitems.add(
-								(MenuItem)new MenuItem(current.name())
+								(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem(current.name())
 									.noIconSpace(true)
 									.href(URI_DASHBOARD_VIEW+ "?id="+current.id()) 	
 							);

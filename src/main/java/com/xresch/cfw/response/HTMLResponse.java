@@ -12,9 +12,9 @@ import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage;
-import com.xresch.cfw.response.bootstrap.BTFooter;
-import com.xresch.cfw.response.bootstrap.BTMenu;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemFooter;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenu;
 
 /**************************************************************************************************************
  * 
@@ -95,7 +95,7 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				buildedPage.append("");
 				CFWSessionData sessionData = CFW.Context.Request.getSessionData();
 				
-				BTMenu menu = sessionData.getMenu();
+				CFWHTMLItemMenu menu = sessionData.getMenu();
 				if(menu != null) {
 					buildedPage.append(menu.getHTML());
 				}
@@ -105,9 +105,9 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				this.appendSectionTitle(buildedPage, "Messages");
 				buildedPage.append("<div id=\"cfw-messages\">");
 					
-				Collection<AlertMessage> messageArray = CFW.Context.Request.getAlertMessages();
+				Collection<CFWHTMLItemAlertMessage> messageArray = CFW.Context.Request.getAlertMessages();
 					if(messageArray != null) {
-						for(AlertMessage message : messageArray) {
+						for(CFWHTMLItemAlertMessage message : messageArray) {
 							buildedPage.append(message.createHTML());
 						}
 					}
@@ -127,7 +127,7 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				// Footer
 				this.appendSectionTitle(buildedPage, "Footer");
 
-				BTFooter footer = sessionData.getFooter();
+				CFWHTMLItemFooter footer = sessionData.getFooter();
 				if(footer != null) {
 					buildedPage.append(footer.getHTML());
 				}

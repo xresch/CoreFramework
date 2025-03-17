@@ -36,7 +36,7 @@ import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
 import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWModifiableHTTPRequest;
 
 /**************************************************************************************************************
@@ -141,7 +141,7 @@ public class ServletParameter extends HttpServlet
 	private static boolean canEdit(String scope, String ID) {
 		
 		if( (scope.equals(SCOPE_DASHBOARD) && !CFW.DB.Dashboards.checkCanEdit(ID)) ) {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to load dashboard parameters.");
+			CFW.Messages.addErrorMessage("Insufficient rights to load dashboard parameters.");
 			return false;
 		}
 		
@@ -269,7 +269,7 @@ public class ServletParameter extends HttpServlet
 //						param.isModeChangeAllowed(true);
 //					}
 			}else {
-				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter definition could not be found for: "+label);
+				CFW.Messages.addErrorMessage("Parameter definition could not be found for: "+label);
 			}
 
 
@@ -278,7 +278,7 @@ public class ServletParameter extends HttpServlet
 			// Check does Widget Exist
 			WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
 			if(widgetType != null && definition == null) {
-				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected widget type does not exist.");
+				CFW.Messages.addErrorMessage("The selected widget type does not exist.");
 				return;
 			}
 			
@@ -286,7 +286,7 @@ public class ServletParameter extends HttpServlet
 			// Handle Widget Settings Params
 			CFWField settingsField = definition.getSettings().getField(widgetSetting);
 			if(settingsField == null) {
-				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected field does not does not exist for this widget type.");
+				CFW.Messages.addErrorMessage("The selected field does not does not exist for this widget type.");
 				return;
 			}else {
 				param.widgetType(widgetType);
@@ -312,7 +312,7 @@ public class ServletParameter extends HttpServlet
 		// Create Parameter in DB
 		if(CFW.DB.Parameters.create(param)) {
 			
-			CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Parameter added!");
+			CFW.Messages.addSuccessMessage("Parameter added!");
 		}
 
 	}
@@ -404,10 +404,10 @@ public class ServletParameter extends HttpServlet
 									DashboardParameterFields.LABEL.toString());
 							
 							if(!success) {
-								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+param.getPrimaryKeyValue()+"' could not be saved to the database.");
+								CFW.Messages.addErrorMessage("The data with the ID '"+param.getPrimaryKeyValue()+"' could not be saved to the database.");
 							};
 						}else {
-							CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The parameter name is already in use: '"+param.name());
+							CFW.Messages.addErrorMessage("The parameter name is already in use: '"+param.name());
 						}
 					}
 					

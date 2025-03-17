@@ -13,7 +13,7 @@ import com.xresch.cfw.features.usermgmt.Permission;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class MenuItem extends HierarchicalHTMLItem {
+public class CFWHTMLItemMenuItem extends CFWHTMLItem {
 	
 	private String menuName = "&nbsp;";
 	private String label = "&nbsp;";
@@ -25,21 +25,21 @@ public class MenuItem extends HierarchicalHTMLItem {
 	// if any permissions match item will be rendered
 	// if null item will be rendered
 	private HashSet<String> permissions = new HashSet<String>();
-	private LinkedHashMap<String, MenuItem> childMenuItems = new LinkedHashMap<String, MenuItem>();
+	private LinkedHashMap<String, CFWHTMLItemMenuItem> childMenuItems = new LinkedHashMap<String, CFWHTMLItemMenuItem>();
 	
-	public MenuItem(String name) {
+	public CFWHTMLItemMenuItem(String name) {
 		this.menuName = name;
 		this.label = name;
 		this.addAttribute("href", "#");
 	}
 	
-	public MenuItem(String name, String label) {
+	public CFWHTMLItemMenuItem(String name, String label) {
 		this.menuName = name;
 		this.label = label;
 		this.addAttribute("href", "#");
 	}
 	
-	public MenuItem(String label, HashSet<String> permissions) {
+	public CFWHTMLItemMenuItem(String label, HashSet<String> permissions) {
 		this.menuName = label;
 		this.label = label;
 		this.permissions = permissions;
@@ -51,12 +51,12 @@ public class MenuItem extends HierarchicalHTMLItem {
 	 * @return String html for this item. 
 	 ***********************************************************************************/
 	@Override
-	public MenuItem addChild(HierarchicalHTMLItem childItem) {
+	public CFWHTMLItemMenuItem addChild(CFWHTMLItem childItem) {
 		super.addChild(childItem);
 		
-		if(childItem instanceof MenuItem) {
-			childMenuItems.put(((MenuItem)childItem).getMenuName(), (MenuItem)childItem);
-			this.addPermissions(((MenuItem)childItem).getPermissions());
+		if(childItem instanceof CFWHTMLItemMenuItem) {
+			childMenuItems.put(((CFWHTMLItemMenuItem)childItem).getMenuName(), (CFWHTMLItemMenuItem)childItem);
+			this.addPermissions(((CFWHTMLItemMenuItem)childItem).getPermissions());
 		}
 		return this;
 	}
@@ -65,7 +65,7 @@ public class MenuItem extends HierarchicalHTMLItem {
 	 * Overrride to handle sub menu items.
 	 * @return String html for this item. 
 	 ***********************************************************************************/
-	public LinkedHashMap<String, MenuItem> getSubMenuItems() {
+	public LinkedHashMap<String, CFWHTMLItemMenuItem> getSubMenuItems() {
 		return childMenuItems;
 	}
 	
@@ -122,7 +122,7 @@ public class MenuItem extends HierarchicalHTMLItem {
 				.append("</a></li>");   
 		}else {
 			String submenuClass = "";
-			if(parent instanceof MenuItem) {
+			if(parent instanceof CFWHTMLItemMenuItem) {
 				submenuClass = "";
 			}
 			
@@ -135,13 +135,13 @@ public class MenuItem extends HierarchicalHTMLItem {
 				.append("<span class=\"caret\"></span></a>")   
 				.append("\n<ul class=\"dropdown-menu dropdown-submenu "+submenuClass+alignRightClass+"\" >");
 
-			for(HierarchicalHTMLItem child : children) {
+			for(CFWHTMLItem child : children) {
 				html.append("\t"+child.getHTML());
 			}
 			
-			for(HierarchicalHTMLItem child : oneTimeChildren) {
-				if(child instanceof MenuItem) {
-					html.append("\t"+((MenuItem)child).getHTML());
+			for(CFWHTMLItem child : oneTimeChildren) {
+				if(child instanceof CFWHTMLItemMenuItem) {
+					html.append("\t"+((CFWHTMLItemMenuItem)child).getHTML());
 				}
 			}
 			html.append("\n</ul></li>");
@@ -157,15 +157,15 @@ public class MenuItem extends HierarchicalHTMLItem {
 	 * Add the permission needed to see this menu item.
 	 * @return String html for this item. 
 	 ***********************************************************************************/
-	public MenuItem addPermission(String permission) {
+	public CFWHTMLItemMenuItem addPermission(String permission) {
 		if(permissions == null) {
 			permissions = new HashSet<String>();
 		}
 		
 		permissions.add(permission);
 		
-		if(this.parent != null && parent instanceof MenuItem) {
-			((MenuItem)parent).addPermission(permission);
+		if(this.parent != null && parent instanceof CFWHTMLItemMenuItem) {
+			((CFWHTMLItemMenuItem)parent).addPermission(permission);
 		}
 		
 		return this;
@@ -176,15 +176,15 @@ public class MenuItem extends HierarchicalHTMLItem {
 	 * Add the permissions needed to see this menu item.
 	 * @return String html for this item. 
 	 ***********************************************************************************/
-	public MenuItem addPermissions(HashSet<String> permissionArray) {
+	public CFWHTMLItemMenuItem addPermissions(HashSet<String> permissionArray) {
 		if(permissions == null) {
 			permissions = new HashSet<String>();
 		}
 		
 		permissions.addAll(permissionArray);
 		
-		if(this.parent != null && parent instanceof MenuItem) {
-			((MenuItem)parent).addPermissions(permissionArray);
+		if(this.parent != null && parent instanceof CFWHTMLItemMenuItem) {
+			((CFWHTMLItemMenuItem)parent).addPermissions(permissionArray);
 		}
 		
 		return this;
@@ -208,7 +208,7 @@ public class MenuItem extends HierarchicalHTMLItem {
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public MenuItem setMenuName(String menuName) {
+	public CFWHTMLItemMenuItem setMenuName(String menuName) {
 		fireChange();
 		this.menuName = menuName;
 		return this;
@@ -217,14 +217,14 @@ public class MenuItem extends HierarchicalHTMLItem {
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public HierarchicalHTMLItem href(String href) {
+	public CFWHTMLItem href(String href) {
 		return addAttribute("href", href);
 	}
 	
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public MenuItem noIconSpace(boolean noIconSpace) {
+	public CFWHTMLItemMenuItem noIconSpace(boolean noIconSpace) {
 		this.noIconSpace = noIconSpace;
 		return this;
 	}
@@ -232,7 +232,7 @@ public class MenuItem extends HierarchicalHTMLItem {
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public MenuItem faicon(String faiconClasses) {
+	public CFWHTMLItemMenuItem faicon(String faiconClasses) {
 		this.faiconClasses = faiconClasses;
 		return this;
 	}
@@ -254,15 +254,15 @@ public class MenuItem extends HierarchicalHTMLItem {
 	 * 
 	 * @param 
 	 ***********************************************************************************/
-	public MenuItem createCopy() {
-		return copyInto(new MenuItem(""));
+	public CFWHTMLItemMenuItem createCopy() {
+		return copyInto(new CFWHTMLItemMenuItem(""));
 	}
 	
 	/***********************************************************************************
 	 * 
 	 * @param 
 	 ***********************************************************************************/
-	public MenuItem copyInto(MenuItem targetItem) {
+	public CFWHTMLItemMenuItem copyInto(CFWHTMLItemMenuItem targetItem) {
 		
 		//------------------------------------
 		// Copy Menu Fields
@@ -273,9 +273,9 @@ public class MenuItem extends HierarchicalHTMLItem {
 		targetItem.faiconClasses = this.faiconClasses;
 		targetItem.permissions = this.permissions;
 		
-		for(HierarchicalHTMLItem child : children) {
-			if(child instanceof MenuItem) {
-				targetItem.addChild( ((MenuItem)child).createCopy());
+		for(CFWHTMLItem child : children) {
+			if(child instanceof CFWHTMLItemMenuItem) {
+				targetItem.addChild( ((CFWHTMLItemMenuItem)child).createCopy());
 			}else {
 				targetItem.addChild(child);
 			}

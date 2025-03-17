@@ -28,7 +28,7 @@ import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -140,7 +140,7 @@ public class CFWDBCredentials {
 
 			CFW.DB.transactionCommit();
 			
-			CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Credentials duplicated successfully.");
+			CFW.Messages.addSuccessMessage("Credentials duplicated successfully.");
 		}
 			
 		

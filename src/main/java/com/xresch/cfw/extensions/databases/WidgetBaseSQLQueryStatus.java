@@ -36,7 +36,7 @@ import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject.AlertType;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWMonitor;
 import com.xresch.cfw.utils.CFWState;
 import com.xresch.cfw.utils.CFWState.CFWStateOption;
@@ -164,7 +164,7 @@ public abstract class WidgetBaseSQLQueryStatus extends WidgetDefinition {
 		DBInterface db =  this.getDatabaseInterface(environmentID);
 		
 		if(db == null) {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Database Query Status: The chosen environment seems not configured correctly.");
+			CFW.Messages.addWarningMessage("Database Query Status: The chosen environment seems not configured correctly.");
 			return null;
 		}
 			

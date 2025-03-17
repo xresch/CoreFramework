@@ -23,7 +23,7 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -329,7 +329,7 @@ public class CFWDBDashboardWidget {
 			return null;
 		 
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 			return null;
 		}
 	}
@@ -344,7 +344,7 @@ public class CFWDBDashboardWidget {
 		}
 		
 		if(Strings.isNullOrEmpty(dashboardID)) {
-			CFW.Context.Request.addAlertMessage(MessageType.INFO, "Please select a dashboard first.");
+			CFW.Messages.addInfoMessage("Please select a dashboard first.");
 		}
 		
 		return new DashboardWidget()

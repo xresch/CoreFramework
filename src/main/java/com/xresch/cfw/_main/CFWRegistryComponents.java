@@ -8,11 +8,11 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.BTFooter;
-import com.xresch.cfw.response.bootstrap.BTMenu;
-import com.xresch.cfw.response.bootstrap.MenuItem;
-import com.xresch.cfw.response.bootstrap.MenuItemDivider;
-import com.xresch.cfw.response.bootstrap.UserMenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemFooter;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenu;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuDivider;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItemUser;
 
 
 /**************************************************************************************************************
@@ -27,22 +27,22 @@ public class CFWRegistryComponents {
 	// Menus
 	
 	//Top level menu items placed in the left of the navigation bar
-	private static LinkedHashMap<String, MenuItem> regularMenuItems = new LinkedHashMap<>();
+	private static LinkedHashMap<String, CFWHTMLItemMenuItem> regularMenuItems = new LinkedHashMap<>();
 	
 	//Items in the dropdown of the tools menu
-	private static LinkedHashMap<String, MenuItem> toolsMenuItems = new LinkedHashMap<>();
+	private static LinkedHashMap<String, CFWHTMLItemMenuItem> toolsMenuItems = new LinkedHashMap<>();
 	
 	//Items in the dropdown of the admin menu
-	private static LinkedHashMap<String, MenuItem> adminMenuItems = new LinkedHashMap<>();
+	private static LinkedHashMap<String, CFWHTMLItemMenuItem> adminMenuItems = new LinkedHashMap<>();
 	
 	// Admin items of the Core Framework
-	private static LinkedHashMap<String, MenuItem> adminMenuItemsCFW = new LinkedHashMap<>();
+	private static LinkedHashMap<String, CFWHTMLItemMenuItem> adminMenuItemsCFW = new LinkedHashMap<>();
 	
 	//Top Level Menu Items in the button area next to the user menu
-	private static LinkedHashMap<String, MenuItem> buttonMenuItems = new LinkedHashMap<>();
+	private static LinkedHashMap<String, CFWHTMLItemMenuItem> buttonMenuItems = new LinkedHashMap<>();
 	
 	//Items in the dropdown of the user menu
-	private static LinkedHashMap<String, MenuItem> userMenuItems = new LinkedHashMap<>();
+	private static LinkedHashMap<String, CFWHTMLItemMenuItem> userMenuItems = new LinkedHashMap<>();
 	
 	
 	//-------------------------------
@@ -94,7 +94,7 @@ public class CFWRegistryComponents {
 	 * @param menuPath were the menu should be added, or null for root
 	 * @param Class that extends from BTMenu
 	 ***********************************************************************/
-	public static void addRegularMenuItem(MenuItem item, String menuPath)  {
+	public static void addRegularMenuItem(CFWHTMLItemMenuItem item, String menuPath)  {
 		addMenuItem(regularMenuItems, item, menuPath);
 	}
 	
@@ -106,7 +106,7 @@ public class CFWRegistryComponents {
 	 * @param menuPath were the menu should be added, or null for root
 	 * @param Class that extends from BTMenu
 	 ***********************************************************************/
-	public static void addAdminMenuItem(MenuItem itemToAdd, String menuPath)  {
+	public static void addAdminMenuItem(CFWHTMLItemMenuItem itemToAdd, String menuPath)  {
 		if(itemToAdd.getPermissions().size() == 0){
 			new CFWLog(logger)
 			.severe("Coding Issue: Admin menu items need at least 1 permission.");
@@ -122,7 +122,7 @@ public class CFWRegistryComponents {
 	 * @param menuPath were the menu should be added, or null for root
 	 * @param Class that extends from BTMenu
 	 ***********************************************************************/
-	public static void addToolsMenuItem(MenuItem itemToAdd, String menuPath)  {
+	public static void addToolsMenuItem(CFWHTMLItemMenuItem itemToAdd, String menuPath)  {
 		if(itemToAdd.getPermissions().size() == 0){
 			new CFWLog(logger)
 			.severe("Coding Issue: Admin menu items need at least 1 permission.");
@@ -138,7 +138,7 @@ public class CFWRegistryComponents {
 	 * @param menuPath were the menu should be added, or null for root
 	 * @param Class that extends from BTMenu
 	 ***********************************************************************/
-	public static void addAdminCFWMenuItem(MenuItem itemToAdd, String menuPath)  {
+	public static void addAdminCFWMenuItem(CFWHTMLItemMenuItem itemToAdd, String menuPath)  {
 		if(itemToAdd.getPermissions().size() == 0){
 			new CFWLog(logger)
 			.severe("Coding Issue: Admin menu items need at least 1 permission.");
@@ -155,7 +155,7 @@ public class CFWRegistryComponents {
 	 * @param menuPath were the menu should be added, or null for root
 	 * @param Class that extends from BTMenu
 	 ***********************************************************************/
-	public static void addButtonsMenuItem(MenuItem itemToAdd, String menuPath)  {
+	public static void addButtonsMenuItem(CFWHTMLItemMenuItem itemToAdd, String menuPath)  {
 		itemToAdd.addCssClass("cfw-button-menuitem");
 		addMenuItem(buttonMenuItems, itemToAdd, menuPath);
 	}
@@ -168,7 +168,7 @@ public class CFWRegistryComponents {
 	 * @param menuPath were the menu should be added, or null for root
 	 * @param Class that extends from BTMenu
 	 ***********************************************************************/
-	public static void addUserMenuItem(MenuItem itemToAdd, String menuPath)  {
+	public static void addUserMenuItem(CFWHTMLItemMenuItem itemToAdd, String menuPath)  {
 		addMenuItem(userMenuItems, itemToAdd, menuPath);
 	}
 	
@@ -180,7 +180,7 @@ public class CFWRegistryComponents {
 	 * @param menuPath were the menu should be added, or null for root
 	 * @param Class that extends from BTMenu
 	 ***********************************************************************/
-	private static void addMenuItem(LinkedHashMap<String, MenuItem> targetItemList, MenuItem itemToAdd, String menuPath)  {
+	private static void addMenuItem(LinkedHashMap<String, CFWHTMLItemMenuItem> targetItemList, CFWHTMLItemMenuItem itemToAdd, String menuPath)  {
 		
 		//-----------------------
 		// Check Argument
@@ -192,7 +192,7 @@ public class CFWRegistryComponents {
 		//-----------------------
 		// Handle Path
 		String[] pathTokens = menuPath.split("\\Q|\\E");
-		MenuItem parentItem = null;
+		CFWHTMLItemMenuItem parentItem = null;
 		for(int i = 0; i < pathTokens.length; i++) {
 			String currentToken = pathTokens[i].trim();
 			
@@ -201,7 +201,7 @@ public class CFWRegistryComponents {
 			if(parentItem == null) {
 				parentItem = targetItemList.get(currentToken);
 				if(parentItem == null) {
-					parentItem = new MenuItem(currentToken);
+					parentItem = new CFWHTMLItemMenuItem(currentToken);
 					targetItemList.put(currentToken, parentItem);
 				}
 			}else if(parentItem.getSubMenuItems().containsKey(currentToken)) {
@@ -217,15 +217,15 @@ public class CFWRegistryComponents {
 	 * Create a instance of the menu.
 	 * @return a Bootstrap Menu instance
 	 ***********************************************************************/
-	public static BTMenu createMenuInstance(CFWSessionData sessionData, boolean withUserMenus)  {
+	public static CFWHTMLItemMenu createMenuInstance(CFWSessionData sessionData, boolean withUserMenus)  {
 		
-		BTMenu menu = new BTMenu();
+		CFWHTMLItemMenu menu = new CFWHTMLItemMenu();
 		menu.setLabel(CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_MENU_TITLE));
 		
 		//======================================
 		// Regular Menus
 		//======================================
-		for(MenuItem item : regularMenuItems.values() ) {
+		for(CFWHTMLItemMenuItem item : regularMenuItems.values() ) {
 			menu.addChild(item.createCopy());
 		}
 		
@@ -236,61 +236,61 @@ public class CFWRegistryComponents {
 			
 			//---------------------------
 			// Tools
-			MenuItem toolsParentMenu = (MenuItem)new MenuItem("Tools")
+			CFWHTMLItemMenuItem toolsParentMenu = (CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Tools")
 					.faicon("fas fa-tools")
 					.addPermission("PSEUDO_PERMISSION_HIDE_BY_DEFAULT")
 					.addAttribute("id", "cfwMenuTools");	
 			
 			menu.addChild(toolsParentMenu);
 			
-			for(MenuItem item : toolsMenuItems.values() ) {
+			for(CFWHTMLItemMenuItem item : toolsMenuItems.values() ) {
 				toolsParentMenu.addChild(item.createCopy());
 			}
 			
 			//---------------------------
 			// Admin Menu
-			MenuItem adminParentMenu = (MenuItem)new MenuItem("Admin")
+			CFWHTMLItemMenuItem adminParentMenu = (CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Admin")
 					.faicon("fas fa-cogs")
 					.addAttribute("id", "cfwMenuAdmin");
 			
 			menu.addChild(adminParentMenu);
 			
-			for(MenuItem item : adminMenuItems.values() ) {
+			for(CFWHTMLItemMenuItem item : adminMenuItems.values() ) {
 				adminParentMenu.addChild(item.createCopy());
 			}
 
 			if(adminMenuItems.size() > 0) {
-				adminParentMenu.addChild(new MenuItemDivider());
+				adminParentMenu.addChild(new CFWHTMLItemMenuDivider());
 			}
 			
 			//---------------------------
 			// Admin Menu Items CFW
-			for(MenuItem item : adminMenuItemsCFW.values() ) {
+			for(CFWHTMLItemMenuItem item : adminMenuItemsCFW.values() ) {
 				adminParentMenu.addChild(item.createCopy());
 			}
 						
 			//---------------------------
 			// Button Menu			
-			for(MenuItem item : buttonMenuItems.values() ) {
+			for(CFWHTMLItemMenuItem item : buttonMenuItems.values() ) {
 				menu.addRightMenuItem(item.createCopy());
 			}
 						
 			//---------------------------
 			// User Menu
-			UserMenuItem userParentMenu = new UserMenuItem(sessionData);	
+			CFWHTMLItemMenuItemUser userParentMenu = new CFWHTMLItemMenuItemUser(sessionData);	
 			menu.setUserMenuItem(userParentMenu);
 			
-			for(MenuItem item : userMenuItems.values() ) {
+			for(CFWHTMLItemMenuItem item : userMenuItems.values() ) {
 				userParentMenu.addChild(item.createCopy());
 			}
 			
 			if(userMenuItems.size() > 0) {
-				userParentMenu.addChild(new MenuItemDivider());
+				userParentMenu.addChild(new CFWHTMLItemMenuDivider());
 			}
 		
 			if(!sessionData.getUser().isForeign()) {
 				userParentMenu.addChild(
-						new MenuItem("Change Password")
+						new CFWHTMLItemMenuItem("Change Password")
 							.faicon("fas fa-key")
 							.href("/app/changepassword")
 							.addAttribute("id", "cfwMenuUser-ChangePassword")
@@ -298,7 +298,7 @@ public class CFWRegistryComponents {
 			}
 			
 			userParentMenu.addChild(
-				new MenuItem("Logout")
+				new CFWHTMLItemMenuItem("Logout")
 					.faicon("fas fa-sign-out-alt")
 					.href("/app/logout")
 					.addAttribute("id", "cfwMenuUser-Logout")
@@ -313,13 +313,10 @@ public class CFWRegistryComponents {
 	 * Set the class to be used as the default footer for your application.
 	 * @param Class that extends from BTFooter
 	 ***********************************************************************/
-	public static void setDefaultFooter(Class<?> menuClass)  {
-		
-		if(BTFooter.class.isAssignableFrom(menuClass)) {
-			defaultFooterClass = menuClass;
-		}else {
-			new CFWLog(logger).severe("Class is not a subclass of 'BTFooter': "+menuClass.getName());
-		}
+	public static void setDefaultFooter(Class<? extends CFWHTMLItemFooter> footerClass)  {
+
+		defaultFooterClass = footerClass;
+
 	}
 	
 	
@@ -327,14 +324,14 @@ public class CFWRegistryComponents {
 	 * Create a instance of the footer.
 	 * @return a Bootstrap Menu instance
 	 ***********************************************************************/
-	public static BTFooter createDefaultFooterInstance()  {
+	public static CFWHTMLItemFooter createDefaultFooterInstance()  {
 		
 		if(defaultFooterClass != null) {
 			try {
-				Object menu = defaultFooterClass.newInstance();
+				Object menu = defaultFooterClass.getDeclaredConstructor().newInstance();
 				
-				if(menu instanceof BTFooter) {
-					return (BTFooter)menu;
+				if(menu instanceof CFWHTMLItemFooter) {
+					return (CFWHTMLItemFooter)menu;
 				}else {
 					throw new InstantiationException("Class not an instance of BTFooter");
 				}
@@ -343,7 +340,7 @@ public class CFWRegistryComponents {
 			}
 		}
 		
-		return new BTFooter().setLabel("Set your custom menu class(extending BTFooter) using CFW.App.setDefaultFooter()! ");
+		return new CFWHTMLItemFooter().setLabel("Set your custom menu class(extending BTFooter) using CFW.App.setDefaultFooter()! ");
 	}
 	
 	
@@ -362,16 +359,16 @@ public class CFWRegistryComponents {
 	/*****************************************************************************
 	 * 
 	 *****************************************************************************/
-	public static String dumpMenuItemHierarchy(String currentPrefix, LinkedHashMap<String, MenuItem> menuItems) {
+	public static String dumpMenuItemHierarchy(String currentPrefix, LinkedHashMap<String, CFWHTMLItemMenuItem> menuItems) {
 		
 		//-----------------------------------
 		//Create Prefix
 		StringBuilder builder = new StringBuilder();
 		
-		MenuItem[] items = menuItems.values().toArray(new MenuItem[]{});
+		CFWHTMLItemMenuItem[] items = menuItems.values().toArray(new CFWHTMLItemMenuItem[]{});
 		int objectCount = items.length;
 		for(int i = 0; i < objectCount; i++) {
-			MenuItem current = items[i];
+			CFWHTMLItemMenuItem current = items[i];
 			builder.append(currentPrefix)
 				   .append("|--> ")
 				   .append(current.getMenuName()).append("\n");

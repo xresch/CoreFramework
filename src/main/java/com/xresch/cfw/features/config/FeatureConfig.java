@@ -6,7 +6,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -73,7 +73,7 @@ public class FeatureConfig extends CFWAppFeature {
     	// Register Regular Menu
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("Configuration", "{!cfw_core_configuration!}")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Configuration", "{!cfw_core_configuration!}")
 					.faicon("fas fa-cog")
 					.addPermission(PERMISSION_CONFIGURATION)
 					.href("/app/configuration")	

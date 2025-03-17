@@ -16,8 +16,8 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.BTFooter;
-import com.xresch.cfw.response.bootstrap.BTMenu;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemFooter;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenu;
 
 /**************************************************************************************************************
  * 
@@ -46,8 +46,8 @@ public class CFWSessionData implements Serializable {
 	//formID and form
 	protected Cache<String, CFWForm> formCache;
 	
-	protected BTMenu menu;
-	protected BTFooter footer;
+	protected CFWHTMLItemMenu menu;
+	protected CFWHTMLItemFooter footer;
 
 	/***********************************************************************
 	 * 
@@ -217,7 +217,7 @@ public class CFWSessionData implements Serializable {
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/
-	public BTMenu getMenu() {
+	public CFWHTMLItemMenu getMenu() {
 		if(menu == null) {
 			loadMenu(isLoggedIn);
 		}
@@ -227,7 +227,7 @@ public class CFWSessionData implements Serializable {
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/
-	public BTFooter getFooter() {
+	public CFWHTMLItemFooter getFooter() {
 		return footer;
 	}
 

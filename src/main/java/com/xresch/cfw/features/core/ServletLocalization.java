@@ -12,7 +12,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -69,7 +69,7 @@ public class ServletLocalization extends HttpServlet
 	        json.setSuccess(true);
 	    }else {
 	    	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	    	CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Language could not be loaded. Try to refresh the page.");
+	    	CFW.Messages.addWarningMessage("Language could not be loaded. Try to refresh the page.");
 	    	json.setSuccess(false);
 	    }
 		

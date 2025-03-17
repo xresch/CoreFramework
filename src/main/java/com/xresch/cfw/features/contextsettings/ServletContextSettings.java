@@ -15,7 +15,7 @@ import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWRandom;
 
 /**************************************************************************************************************
@@ -57,7 +57,7 @@ public class ServletContextSettings extends HttpServlet
 				handleDataRequest(request, response);
 			}
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 		}
        
    }
@@ -80,7 +80,7 @@ public class ServletContextSettings extends HttpServlet
 					case "contextsettings": 	jsonResponse.getContent().append(CFW.DB.ContextSettings.getContextSettingsListAsJSON());
 	  											break;							
 	  																					
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 					CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
 												break;
 				}
 				break;
@@ -91,7 +91,7 @@ public class ServletContextSettings extends HttpServlet
 					case "contextsettings": 	duplicateContextSettings(jsonResponse, ID);
 												break;  
 										
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 					CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
 												break;
 				}
 				break;	
@@ -101,7 +101,7 @@ public class ServletContextSettings extends HttpServlet
 					case "contextsettings": 	deleteContextSettings(jsonResponse, ID);
 												break;  
 										
-					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
 										break;
 				}
 				break;	
@@ -112,12 +112,12 @@ public class ServletContextSettings extends HttpServlet
 					case "createcontextsettings": 	createCreateContextSettingsForm(jsonResponse, request.getParameter("type"));
 													break;							
 									
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 					CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
 												break;
 				}
 				break;
 						
-			default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The action '"+action+"' is not supported.");
+			default: 			CFW.Messages.addErrorMessage("The action '"+action+"' is not supported.");
 								break;
 								
 		}
@@ -156,7 +156,7 @@ public class ServletContextSettings extends HttpServlet
 			
 		}else {
 			jsonResponse.setSuccess(false);
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient permissions to duplicate the context settings.");
+			CFW.Messages.addErrorMessage("Insufficient permissions to duplicate the context settings.");
 		}
 	}
 
@@ -206,7 +206,7 @@ public class ServletContextSettings extends HttpServlet
 								settings.settings(typeSettings.toJSONEncrypted());
 		
 								if( CFW.DB.ContextSettings.createGetPrimaryKey(settings) != null ) {
-									CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Context Settings created successfully!");
+									CFW.Messages.addSuccessMessage("Context Settings created successfully!");
 								}
 							}
 						}
@@ -261,7 +261,7 @@ public class ServletContextSettings extends HttpServlet
 								settings.settings(typeSettings.toJSONEncrypted());
 		
 								if( CFW.DB.ContextSettings.update(settings) ) {
-									CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Update successful!");
+									CFW.Messages.addSuccessMessage("Update successful!");
 								}
 							}
 						}
@@ -273,7 +273,7 @@ public class ServletContextSettings extends HttpServlet
 				json.setSuccess(true);	
 			}
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient permissions to execute action.");
+			CFW.Messages.addErrorMessage("Insufficient permissions to execute action.");
 		}
 	}
 	

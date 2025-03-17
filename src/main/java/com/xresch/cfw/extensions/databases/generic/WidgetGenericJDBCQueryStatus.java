@@ -15,7 +15,7 @@ import com.xresch.cfw.extensions.databases.WidgetBaseSQLQueryStatus;
 import com.xresch.cfw.extensions.databases.mssql.FeatureDBExtensionsMSSQL;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -74,7 +74,7 @@ public class WidgetGenericJDBCQueryStatus extends WidgetBaseSQLQueryStatus {
 		if(environmentID != null) {
 			 environment = GenericJDBCEnvironmentManagement.getEnvironment(Integer.parseInt(environmentID));
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Generic JDBC Query Status: The chosen environment seems not configured correctly.");
+			CFW.Messages.addWarningMessage("Generic JDBC Query Status: The chosen environment seems not configured correctly.");
 			return null;
 		}
 		

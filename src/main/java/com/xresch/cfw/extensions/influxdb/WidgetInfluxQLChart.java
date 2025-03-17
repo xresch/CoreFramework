@@ -23,7 +23,7 @@ import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemAlertMessage.MessageType;
 
 public class WidgetInfluxQLChart extends WidgetDefinition {
 
@@ -140,7 +140,7 @@ public class WidgetInfluxQLChart extends WidgetDefinition {
 		if(environmentID != null) {
 			environment = InfluxDBEnvironmentManagement.getEnvironment(Integer.parseInt(environmentID));
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Influx DB Threshold: The chosen environment seems not configured correctly.");
+			CFW.Messages.addWarningMessage("Influx DB Threshold: The chosen environment seems not configured correctly.");
 			return;
 		}
 				

@@ -5,9 +5,9 @@ package com.xresch.cfw.response.bootstrap;
  * @author Reto Scheiwiller, (c) Copyright 2021
  * @license MIT-License
  **************************************************************************************************************/
-public class AlertMessage {
+public class CFWHTMLItemAlertMessage {
 	
-	private AlertMessage.MessageType type;
+	private CFWHTMLItemAlertMessage.MessageType type;
 	private String message;
 	public enum MessageType {
 		INFO, 
@@ -28,7 +28,7 @@ public class AlertMessage {
 		}
 	}
 
-	public AlertMessage(MessageType type, String message){
+	public CFWHTMLItemAlertMessage(MessageType type, String message){
 		this.type = type;
 		this.message = message;
 	}
@@ -56,11 +56,11 @@ public class AlertMessage {
 		return html.toString();
 	}
 
-	public AlertMessage.MessageType getType() {
+	public CFWHTMLItemAlertMessage.MessageType getType() {
 		return type;
 	}
 
-	public AlertMessage setType(AlertMessage.MessageType type) {
+	public CFWHTMLItemAlertMessage setType(CFWHTMLItemAlertMessage.MessageType type) {
 		this.type = type;
 		return this;
 	}
@@ -69,7 +69,7 @@ public class AlertMessage {
 		return message;
 	}
 
-	public AlertMessage setMessage(String message) {
+	public CFWHTMLItemAlertMessage setMessage(String message) {
 		this.message = message;
 		return this;
 	}
