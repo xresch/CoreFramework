@@ -1,4 +1,4 @@
-package com.xresch.cfw.utils;
+package com.xresch.cfw.utils.math;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

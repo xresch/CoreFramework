@@ -29,8 +29,8 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
-import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.utils.web.CFWHttp.CFWHttpRequestBuilder;
+import com.xresch.cfw.utils.web.CFWHttp.CFWHttpResponse;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
 /**************************************************************************************************************

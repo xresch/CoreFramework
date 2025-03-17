@@ -1,4 +1,4 @@
-package com.xresch.cfw.utils;
+package com.xresch.cfw.utils.web;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

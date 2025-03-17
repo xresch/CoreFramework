@@ -1,4 +1,4 @@
-package com.xresch.cfw.utils;
+package com.xresch.cfw.utils.files;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

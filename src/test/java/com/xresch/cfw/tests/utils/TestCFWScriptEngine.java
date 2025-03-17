@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.cli.ArgumentsException;
-import com.xresch.cfw.utils.CFWHttpPacScriptMethods;
-import com.xresch.cfw.utils.CFWScriptingContext;
+import com.xresch.cfw.utils.scriptengine.CFWScriptingContext;
+import com.xresch.cfw.utils.web.CFWHttpPacScriptMethods;
 
 public class TestCFWScriptEngine {
 	

@@ -16,7 +16,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.utils.CFWMath;
+import com.xresch.cfw.utils.math.CFWMath;
 
 /************************************************************************************************************
  * 

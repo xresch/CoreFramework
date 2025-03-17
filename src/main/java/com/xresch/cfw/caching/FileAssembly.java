@@ -105,7 +105,7 @@ public class FileAssembly {
 	
 	/***********************************************************************
 	 * Assembles and stores the file in the permanent cache of 
-	 * {@link com.xresch.cfw.utils.CFWFiles FileUtils}.
+	 * {@link com.xresch.cfw.utils.files.CFWFiles FileUtils}.
 	 * 
 	 * @return the filename that can be used for retrieving the file content.
 	 ***********************************************************************/

@@ -13,7 +13,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.utils.CFWModifiableHTTPRequest;
+import com.xresch.cfw.utils.web.CFWModifiableHTTPRequest;
 
 /**************************************************************************************************************
  * This servlet is used to handle forms that have a BTFormHandler defined.

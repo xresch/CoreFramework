@@ -37,7 +37,7 @@ import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
 import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.utils.CFWModifiableHTTPRequest;
+import com.xresch.cfw.utils.web.CFWModifiableHTTPRequest;
 
 /**************************************************************************************************************
  * 

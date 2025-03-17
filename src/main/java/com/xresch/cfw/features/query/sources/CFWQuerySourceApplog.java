@@ -26,7 +26,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.FileBackwardsInputReader;
+import com.xresch.cfw.utils.files.FileBackwardsInputReader;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 	
 /**************************************************************************************************************

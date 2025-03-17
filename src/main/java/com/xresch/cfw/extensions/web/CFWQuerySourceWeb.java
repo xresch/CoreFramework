@@ -26,10 +26,10 @@ import com.xresch.cfw.features.query._CFWQueryCommonStringParser.CFWQueryStringP
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.utils.CFWHttp.CFWHttpAuthMethod;
-import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
-import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
+import com.xresch.cfw.utils.web.CFWHttp.CFWHttpAuthMethod;
+import com.xresch.cfw.utils.web.CFWHttp.CFWHttpRequestBuilder;
+import com.xresch.cfw.utils.web.CFWHttp.CFWHttpResponse;
 import com.xresch.cfw.validation.CustomValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 	

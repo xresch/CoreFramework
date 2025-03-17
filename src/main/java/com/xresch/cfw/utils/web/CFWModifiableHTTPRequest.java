@@ -1,4 +1,4 @@
-package com.xresch.cfw.utils;
+package com.xresch.cfw.utils.web;
 
 import java.util.Collections;
 import java.util.Enumeration;

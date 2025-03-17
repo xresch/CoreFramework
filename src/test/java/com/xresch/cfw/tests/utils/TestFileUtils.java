@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.tests._master.WebTestMaster;
-import com.xresch.cfw.utils.CFWFiles;
+import com.xresch.cfw.utils.files.CFWFiles;
 
 public class TestFileUtils {
 		

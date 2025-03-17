@@ -20,7 +20,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.utils.CFWMath.CFWMathParabolicSAR;
+import com.xresch.cfw.utils.math.CFWMath.CFWMathParabolicSAR;
 
 
 /************************************************************************************************************

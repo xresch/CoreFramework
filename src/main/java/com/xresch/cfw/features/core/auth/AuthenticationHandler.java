@@ -18,7 +18,7 @@ import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.HTMLResponse;
-import com.xresch.cfw.utils.CFWHttp;
+import com.xresch.cfw.utils.web.CFWHttp;
 
 /**************************************************************************************************************
  * 

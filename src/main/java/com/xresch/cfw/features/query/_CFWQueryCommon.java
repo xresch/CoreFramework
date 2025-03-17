@@ -14,7 +14,7 @@ import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartGroup;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.utils.web.CFWHttp.CFWHttpResponse;
 /**************************************************************************************************************
  * 
  * Class contains common functions used over multiple classes.
