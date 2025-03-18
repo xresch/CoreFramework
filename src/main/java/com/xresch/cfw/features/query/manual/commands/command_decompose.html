@@ -1,0 +1,31 @@
+
+<p>This command is used to do statistical decomposition of time series into trend, seasonal and residual.
+</p>
+
+<p>The following decompose example groups by WAREHOUSE AND ITEM and decomposes the data for each group:
+</p>
+<pre><code class="language-cfwquery">| meta 
+	BY = ["WAREHOUSE", "ITEM"]
+| source random 
+	type=series
+	seriesCount=1
+	records=300
+| sort TIME
+| decompose 
+	by=meta(BY) 
+	field="COUNT" 
+	period=12
+	minLag=6
+	precision=2
+	multiplicative = false # default is true
+| chart
+	by= meta(BY)
+	type=area
+	x=TIME
+	y=[COUNT, 'trend', "seasonal", "residual"]
+	ymin=null
+	height="300"
+	multichart=true
+	multichartcolumns=1</code></pre>
+
+

@@ -296,21 +296,23 @@ public class CFWMath {
 	
 	/***********************************************************************************************
 	 * Returns an array of moving average values.
-
+	 *
 	 * @param values the list of values
 	 * @param period number of points that should be used for calculating the moving average
 	 * @param precision the precision of digits for the resulting values.
+	 * @param nullValue the value used if there is not enough data, Zero or null
+	 * 
 	 * @return array of moving averages
 	 ***********************************************************************************************/
     // Compute moving average (trend estimation)
-    public static ArrayList<BigDecimal> bigMovAvgArray(List<BigDecimal> timeseries, int period, int precision) {
+    public static ArrayList<BigDecimal> bigMovAvgArray(List<BigDecimal> timeseries, int period, int precision, BigDecimal nullValue) {
        
     	ArrayList<BigDecimal> trend = new ArrayList<>();
         
     	for (int i = 0; i < timeseries.size(); i++) {
             
         	if (i < period - 1) {
-                trend.add(null); // Not enough data for moving average
+                trend.add(nullValue); // Not enough data for moving average
             } else {
                 BigDecimal sum = BigDecimal.ZERO;
                 for (int j = 0; j < period; j++) {
@@ -635,20 +637,19 @@ public class CFWMath {
 	 * 
 	 * @return BigDecimal the autocorrelation value
 	 ***********************************************************************************************/
-    public static ArrayList<BigDecimal> extractSeasonalityResidual(List<BigDecimal> timeseries, List<BigDecimal> trend) {
+    public static ArrayList<BigDecimal> decomposeSeasonalityResidual(List<BigDecimal> timeseries, List<BigDecimal> trend, boolean useMultiplicative) {
     	ArrayList<BigDecimal> seasonalityResidual = new ArrayList<>();
-        
-        for (int i = 0; i < timeseries.size(); i++) {
-        	
-        	BigDecimal trendNumber = trend.get(i);
-        	BigDecimal current = timeseries.get(i);
-        	
-        	if(trendNumber == null  || current == null) {
-        		seasonalityResidual.add(ZERO);
-        		continue;
-        	}
 
-            seasonalityResidual.add( current.subtract(trendNumber) );
+        for (int i = 0; i < timeseries.size(); i++) {
+            if (trend.get(i).compareTo(ZERO) == 0) {
+                seasonalityResidual.add(useMultiplicative ? BigDecimal.ONE : ZERO);
+            } else {
+                if (useMultiplicative) {
+                    seasonalityResidual.add(timeseries.get(i).divide(trend.get(i), GLOBAL_SCALE, RoundingMode.HALF_UP));
+                } else {
+                    seasonalityResidual.add(timeseries.get(i).subtract(trend.get(i)));
+                }
+            }
         }
 
         return seasonalityResidual;
@@ -662,13 +663,23 @@ public class CFWMath {
 	 * 
 	 * @return BigDecimal the autocorrelation value
 	 ***********************************************************************************************/
-    public static ArrayList<BigDecimal> extractResidual(List<BigDecimal> seasonalityResidual, List<BigDecimal> seasonality) {
+    public static ArrayList<BigDecimal> decomposeResidual(List<BigDecimal> timeseries, List<BigDecimal> trend, List<BigDecimal> seasonality, boolean useMultiplicative) {
     	ArrayList<BigDecimal> residual = new ArrayList<>();
 
-        for (int i = 0; i < seasonalityResidual.size(); i++) {
-            residual.add(seasonalityResidual.get(i).subtract(seasonality.get(i)) );
+        for (int i = 0; i < timeseries.size(); i++) {
+            if (trend.get(i).compareTo(BigDecimal.ZERO) == 0) {
+                residual.add(useMultiplicative ? BigDecimal.ONE : BigDecimal.ZERO);
+            } else {
+                if (useMultiplicative) {
+                    BigDecimal denominator = trend.get(i).multiply(seasonality.get(i));
+                    residual.add(denominator.compareTo(BigDecimal.ZERO) == 0
+                        ? BigDecimal.ONE
+                        : timeseries.get(i).divide(denominator, 4, RoundingMode.HALF_UP));
+                } else {
+                    residual.add(timeseries.get(i).subtract(trend.get(i)).subtract(seasonality.get(i)));
+                }
+            }
         }
-
         return residual;
     }
 	
@@ -680,35 +691,27 @@ public class CFWMath {
 	 * 
 	 * @return BigDecimal the autocorrelation value
 	 ***********************************************************************************************/
-    public static ArrayList<BigDecimal> estimateSeasonality(List<BigDecimal> seasonalityResidual, int minLag, int maxLag) {
-    	ArrayList<BigDecimal> seasonality = new ArrayList<>(seasonalityResidual);
-    	ArrayList<BigDecimal> seasonAverages = new ArrayList<>();
+    public static ArrayList<BigDecimal> decomposeSeasonality(List<BigDecimal> series, List<BigDecimal> seasonalityResidual, int minLag, int maxLag, boolean useMultiplicative) {
+        int seasonLength = decomposeEstimateSeasonalityLag(seasonalityResidual, minLag, maxLag);
 
-        int seasonLength = estimateSeasonalityLag(seasonalityResidual, minLag, maxLag);
-
-        // ----------------------------------------
-        // Compute average seasonal component for 
-        // each position in the cycle
+        //-------------------------------------------------
+        // Step 1: Compute Averaged Seasonal Components
+        ArrayList<BigDecimal> seasonAverages = new ArrayList<>();
         for (int i = 0; i < seasonLength; i++) {
-            BigDecimal sum = BigDecimal.ZERO;
+            BigDecimal sum = ZERO;
             int count = 0;
 
             for (int j = i; j < seasonalityResidual.size(); j += seasonLength) {
-            	BigDecimal current = seasonalityResidual.get(j);
-            	if(current == null) { current = ZERO; }
+                BigDecimal current = seasonalityResidual.get(j);
                 sum = sum.add(current);
                 count++;
             }
-            
-            if(count > 0) {
-            	seasonAverages.add( sum.divide(BigDecimal.valueOf(count), GLOBAL_SCALE, RoundingMode.HALF_UP) );
-            }else {
-            	seasonAverages.add(ZERO);
-            }
+
+            seasonAverages.add(count > 0 ? sum.divide(BigDecimal.valueOf(count), GLOBAL_SCALE, RoundingMode.HALF_UP) : ZERO);
         }
-        // ----------------------------------------
-        // Apply the averaged seasonality back to 
-        // the full time series
+
+        // Step 2: Apply Averaged Seasonality to Full Time Series
+        ArrayList<BigDecimal> seasonality = new ArrayList<>(seasonalityResidual);
         for (int i = 0; i < seasonalityResidual.size(); i++) {
             seasonality.set(i, seasonAverages.get(i % seasonLength));
         }
@@ -724,7 +727,7 @@ public class CFWMath {
 	 * 
 	 * @return BigDecimal the autocorrelation value
 	 ***********************************************************************************************/
-    public static int estimateSeasonalityLag(List<BigDecimal> data, int minLag, int maxLag) {
+    public static int decomposeEstimateSeasonalityLag(List<BigDecimal> data, int minLag, int maxLag) {
         
     	int finalMaxLag = Math.min(data.size() / 2, maxLag);  // Seasonality cannot be longer than half the dataset
         int bestLag = minLag;

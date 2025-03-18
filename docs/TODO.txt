@@ -203,6 +203,7 @@ DONE
 - Query: Added Commands:
 	- bollbands
 	- changepoint
+	- decompose
 	- formatboxplot
 	- forwardfill
 	- index

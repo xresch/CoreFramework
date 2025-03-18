@@ -49,7 +49,7 @@ public class CFWQueryCommandDecompose extends CFWQueryCommand {
 	private Integer period = null;
 	private Integer minLag = null;
 	private Integer maxLag = null;
-	private Integer windowSize = null;
+	private Boolean multiplicative = true;
 	
 	/***********************************************************************************************
 	 * 
@@ -105,6 +105,7 @@ public class CFWQueryCommandDecompose extends CFWQueryCommand {
 			  +"<li><b>precision:&nbsp;</b>The decimal precision of the moving average (Default: 6).</li>"
 			  +"<li><b>minlag:&nbsp;</b>The minimum lag used for extracting the seasonality. (Default: period).</li>"
 			  +"<li><b>maxlag:&nbsp;</b>The maximum lag used for extracting the seasonality. (Default: 10 * minlag).</li>"
+			  +"<li><b>multiplicative:&nbsp;</b>Set to false to use additive model (Default: true).</li>"
 			  +"</ul>"
 				;
 	}
@@ -137,7 +138,6 @@ public class CFWQueryCommandDecompose extends CFWQueryCommand {
 				parser.throwParseException(COMMAND_NAME+": Only parameters(key=value) are allowed.", currentPart);
 			}
 		}
-		
 	}
 	
 	/***********************************************************************************************
@@ -178,9 +178,10 @@ public class CFWQueryCommandDecompose extends CFWQueryCommand {
 				else if	 (assignmentName.equals("field")) {			fieldname = assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("name")) {			namePrefix = assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("precision")) {		precision = assignmentValue.getAsInteger(); }
-				else if	 (assignmentName.equals("period")) {	period = assignmentValue.getAsInteger(); }
-				else if	 (assignmentName.equals("minlag")) {	minLag = assignmentValue.getAsInteger(); }
-				else if	 (assignmentName.equals("maxlag")) {	maxLag = assignmentValue.getAsInteger(); }
+				else if	 (assignmentName.equals("period")) {		period = assignmentValue.getAsInteger(); }
+				else if	 (assignmentName.equals("minlag")) {		minLag = assignmentValue.getAsInteger(); }
+				else if	 (assignmentName.equals("maxlag")) {		maxLag = assignmentValue.getAsInteger(); }
+				else if	 (assignmentName.equals("multiplicative")) {	multiplicative = assignmentValue.getAsBoolean(); }
 
 				else {
 					throw new ParseException(COMMAND_NAME+": Unsupported parameter '"+assignmentName+"'", -1);
@@ -206,7 +207,7 @@ public class CFWQueryCommandDecompose extends CFWQueryCommand {
 		
 		if(minLag == null ) { minLag = period; }
 		if(maxLag == null ) { maxLag = minLag * 10; }
-		windowSize = period / 2;
+
 		
 		//------------------------------------------
 		// Add Detected Fields
@@ -285,14 +286,13 @@ public class CFWQueryCommandDecompose extends CFWQueryCommand {
 				
 				//------------------------------------
 				// Calculate Components
+
 				CFW.Math.forwardFill(currentValues);
-				ArrayList<BigDecimal> trend = CFW.Math.bigMovAvgArray(currentValues, period, precision);
-				System.out.println("Trend SUM: "+CFW.Math.bigSum(trend, 6, false));
-				ArrayList<BigDecimal> seasonalityResidual = CFW.Math.extractSeasonalityResidual(currentValues, trend);
-				ArrayList<BigDecimal> seasonality = CFW.Math.estimateSeasonality(trend, minLag, maxLag);
-				ArrayList<BigDecimal> residual = CFW.Math.extractResidual(seasonalityResidual, seasonality);
-				System.out.println("Trend SUM B: "+CFW.Math.bigSum(trend, 6, false));
-				
+				ArrayList<BigDecimal> trend = CFW.Math.bigMovAvgArray(currentValues, period, precision, BigDecimal.ZERO);
+				ArrayList<BigDecimal> seasonalityResidual = CFW.Math.decomposeSeasonalityResidual(currentValues, trend, multiplicative);
+				ArrayList<BigDecimal> seasonality = CFW.Math.decomposeSeasonality(currentValues, seasonalityResidual, minLag, maxLag, multiplicative);
+				ArrayList<BigDecimal> residual = CFW.Math.decomposeResidual(currentValues, trend, seasonality, multiplicative);
+
 				//------------------------------------
 				// Add to Records
 				for(int r = 0 ; r < currentRecords.size(); r++) {
