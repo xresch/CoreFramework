@@ -29,18 +29,18 @@ function cfw_manual_searchManual(inputField){
 		CFW.http.getJSON(CFW_MANUAL_URL, {action: "search", item: "page", query: query}, function (data){
 			
 			if(data.payload != undefined){
-				var searchResults = data.payload;
+				var results = data.payload;
 				let titleTarget = $('#cfw-manual-page-title');
 				let target = $('#cfw-manual-page-content');
-				titleTarget.html('<h1>Search Results</h1>');
+				titleTarget.html('<h1>Search: '+results.length+' Results</h1>');
 				target.html('');
 				
-				for(let i in searchResults){
-					let current = searchResults[i];
+				for(let i in results){
+					let current = results[i];
 					
 					let resultDiv = $('<div class="card p-2" >');
 					resultDiv.append('<div class="h3 cursor-pointer">'
-									    +'<b><a class="link" onclick="cfw_manual_loadPage('+current.path+')">'+current.title+'</a><b>'
+									    +'<b><a class="link" onclick="cfw_manual_loadPage(\''+current.path+'\')">'+current.title+'</a><b>'
 									+'</div>');
 					resultDiv.append('<div>'+current.snippet.replaceAll('\n', '<br>') +'</div>');
 			
@@ -380,6 +380,13 @@ function cfw_manual_printMenu(data){
 	}
 }
 
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_manual_loadPage(pagePath, callback){
+	cfw_manual_printContent($('a[data-path="'+pagePath+'"]').get(0), callback);
+	
+}
 
 /******************************************************************
  * 

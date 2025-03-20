@@ -1,8 +1,8 @@
 package com.xresch.cfw.features.manual;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.NavigableMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -120,21 +120,13 @@ public class ServletManual extends HttpServlet
 	private void searchManual(HttpServletRequest request, JSONResponse jsonResponse) {
 		String query = request.getParameter("query");
 		
-		HashMap<ManualPage, String> searchResults = ManualSearchEngine.searchManual(query);
+		NavigableMap<Float, JsonObject> searchResults = ManualSearchEngine.searchManual(query);
 		
 		JsonArray jsonArray = new JsonArray();
 		int count = 0;
-		for(Entry<ManualPage, String> entry : searchResults.entrySet()) {
-			
-			ManualPage page = entry.getKey();
-			String resultSnipped = entry.getValue();
-			
-			JsonObject object = new JsonObject();
-			object.addProperty("title", page.getLabel() );
-			object.addProperty("path", page.resolvePath(null) );
-			object.addProperty("snippet", resultSnipped );
-			
-			jsonArray.add(object);
+		for(Entry<Float, JsonObject> entry : searchResults.entrySet()) {
+
+			jsonArray.add(entry.getValue());
 			
 			count++;
 			if(count >= 100) {

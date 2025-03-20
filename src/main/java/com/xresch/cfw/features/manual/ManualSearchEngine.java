@@ -3,6 +3,8 @@ package com.xresch.cfw.features.manual;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -14,6 +16,8 @@ import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 
+import com.google.gson.JsonObject;
+
 public class ManualSearchEngine {
 	
     private static final int SNIPPET_SIZE = 400;
@@ -21,6 +25,7 @@ public class ManualSearchEngine {
 	private static final Map<ManualPage, MemoryIndex> indexMap = new HashMap<>();
     private static final StandardAnalyzer analyzer = new StandardAnalyzer();
 
+    
 	/*****************************************************************************
 	 * Add a ManualPage to the in-memory index
 	 *****************************************************************************/
@@ -34,15 +39,15 @@ public class ManualSearchEngine {
 	 *  Search through indexed pages and return matching snippets
 	 *****************************************************************************/
  
-    public static HashMap<ManualPage, String> searchManual(String searchQuery) {
-        HashMap<ManualPage, String> results = new HashMap<>();
-        
+    public static NavigableMap<Float, JsonObject> searchManual(String searchQuery) {
+        TreeMap<Float, JsonObject> sortedResults = new TreeMap<>();
+
         QueryParser parser = new QueryParser("content", analyzer);
         Query query;
 		
         query = parser.createBooleanQuery("content", searchQuery);
 
-        if (query == null) return results;
+        if (query == null) return sortedResults;
 
         for (Map.Entry<ManualPage, MemoryIndex> entry : indexMap.entrySet()) {
             ManualPage page = entry.getKey();
@@ -57,10 +62,16 @@ public class ManualSearchEngine {
 				} catch (Exception e) {
 					snippet = extractSnippet(page.getContentPlaintext(), searchQuery);
 				}
-				 results.put(page, snippet);
+				
+				JsonObject object = new JsonObject();
+				object.addProperty("score", score );
+				object.addProperty("title", page.getLabel() );
+				object.addProperty("path", page.resolvePath(null) );
+				object.addProperty("snippet", snippet );
+				sortedResults.put(score, object);
             }
         }
-        return results;
+        return sortedResults.reversed();
     }
     
 	/*****************************************************************************
