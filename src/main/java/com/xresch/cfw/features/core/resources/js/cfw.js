@@ -4467,13 +4467,11 @@ function cfw_ui_addToast(toastTitle, toastBody, style, delay){
 		autohide = 'data-autohide="true" data-delay="'+delay+'"';
 	}
 	//--------------------------------------------
-	// Check message already exists
+	// Check if message is already shown
 	//--------------------------------------------
-	
 	let hash = 	CFW.utils.hash(""+toastTitle + toastBody + style);
 	
-	console.log(toastDiv.find("div[data-hash='"+hash+"']"))
-	if(toastDiv.find("div[data-hash='"+hash+"']").length > 0){
+	if(toastDiv.find("div[data-hash='"+hash+"']").not('.hide').length > 0){
 		return;
 	}
 	
