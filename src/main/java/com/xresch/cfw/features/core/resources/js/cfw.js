@@ -80,6 +80,24 @@ function cfw_utils_isTrue(value){
 }
 
 /************************************************************************************************
+ * Creates a hash for a string.
+ ************************************************************************************************/
+function cfw_utils_hash(string) {
+
+    let hash = 0;
+
+    if (string.length == 0) return hash;
+
+    for (i = 0; i < string.length; i++) {
+        char = string.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+
+    return hash;
+}
+
+/************************************************************************************************
  * Replaces all occurences of one string with another.
  ************************************************************************************************/
 function cfw_utils_replaceAll(string, search, replace) {
@@ -4416,7 +4434,7 @@ function cfw_ui_addToast(toastTitle, toastBody, style, delay){
 	
 		var toastWrapper = $(
 				'<div id="cfw-toasts-wrapper" aria-live="polite" aria-atomic="true">'
-			  + '  <div id="cfw-toasts"></div>'
+			  + '  <div id="'+toastsID+'"></div>'
 			  + '</div>');
 				
 		body.prepend(toastWrapper);
@@ -4449,11 +4467,22 @@ function cfw_ui_addToast(toastTitle, toastBody, style, delay){
 		autohide = 'data-autohide="true" data-delay="'+delay+'"';
 	}
 	//--------------------------------------------
+	// Check message already exists
+	//--------------------------------------------
+	
+	let hash = 	CFW.utils.hash(""+toastTitle + toastBody + style);
+	
+	console.log(toastDiv.find("div[data-hash='"+hash+"']"))
+	if(toastDiv.find("div[data-hash='"+hash+"']").length > 0){
+		return;
+	}
+	
+	//--------------------------------------------
 	// Create Toast 
 	//--------------------------------------------
-		
+	
 	var toastHTML = 
-		      '<div class="toast bg-'+clazz+' text-light" role="alert" aria-live="assertive" aria-atomic="true" data-animation="true" '+autohide+'>'
+		      '<div class="toast bg-'+clazz+' text-light" data-hash="'+hash+'" role="alert" aria-live="assertive" aria-atomic="true" data-animation="true" '+autohide+'>'
 			+ '  <div class="toast-header bg-'+clazz+' text-light">'
 			  + '	<strong class="mr-auto word-break-word"></strong>'
 			  + '	<button type="button" class="ml-2 mb-auto close" data-dismiss="toast" aria-label="Close">'
@@ -6167,6 +6196,7 @@ var CFW = {
 		randomString: cfw_utils_randomString,
 		chainedOnload: cfw_utils_chainedOnload,
 		downloadText: cfw_utils_downloadText,
+		hash: cfw_utils_hash,
 		isNullOrEmpty: cfw_utils_isNullOrEmpty,
 		isTrue: cfw_utils_isTrue,
 		nullTo: cfw_utils_nullTo,

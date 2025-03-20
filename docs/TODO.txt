@@ -179,6 +179,7 @@ DONE
 - Jobs: Added manual pages for Channels
 - Renderer: Fixed issues with titlefields when specifying only one as string
 - Renderer: CSV - fixed issue with escaping double quotes for object and array values
+- Toast Messages: Are now de-duplicated to not spam the UI
 - Notifications: Increased polling interval from 2 to 5 minutes
 - Parameters: New parameter "Time Range"
 - Select Fields: Select first value by default if nothing is selected
