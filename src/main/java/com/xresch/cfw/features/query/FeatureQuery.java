@@ -157,6 +157,8 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeOffset;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeParse;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeRound;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeTruncate;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeframeDuration;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeframeMax;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeframeOffset;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionToJSON;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTrim;
@@ -382,6 +384,8 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSumIf(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTan(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTimeFormat(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTimeframeDuration(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTimeframeMax(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTimeframeOffset(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTimeOffset(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTimeParse(null));

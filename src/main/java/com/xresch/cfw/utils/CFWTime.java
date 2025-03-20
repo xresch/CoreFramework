@@ -300,7 +300,7 @@ public class CFWTime {
 		/********************************************************************************************
 		 * Converts the given milliseconds to a representation of the selected time unit.
 		 * @param millis the time in milliseconds of the earlier time
-		 * @return long value representing milliseconds, rounding will occur
+		 * @return long value representing milliseconds, rounding towards zero will occur
 		 ********************************************************************************************/
 		public long convert(long millis) { 
 			

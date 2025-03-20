@@ -1,0 +1,27 @@
+
+<p>This function returns the duration of the selected timeframe. T
+This function was introduced as some API calls are easier created by providing an offset in the size of the duration, 
+instead of making an offset of the whole timeframe used by the query and making a second call.
+</p>
+
+<p>Following query uses the function to get the duration in various time units:</p>
+
+<pre><code class="language-cfwquery">| source empty
+| set
+	seconds = timeframeDuration('s') + "s"
+	minutes = timeframeDuration('m') + "m"
+	hours = timeframeDuration('h') + "h"</code></pre>
+
+<p>This function ignores fractions and always returns integer values that are rounded down. 
+If after rounding the value is 0, the function will return 1 to at least have a duration.
+If you select a time unit that is far bigger than your selected timeframe, this might lead to unwanted behaviour.
+For example, if you select a timeframe with a duration of 1 hour, and you request a duration in years, the function will return 1 year:
+</p>
+<pre><code class="language-cfwquery">| source empty
+| set
+	# will result in "1y"
+	years= timeframeDuration('y') + "y"</code></pre>
+
+
+
+

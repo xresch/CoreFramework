@@ -238,6 +238,8 @@ DONE
 	- sourceEach
 	- sourcePage
 	- sourceWebResponse
+	- timeframeDuration
+	- timeframeMax
 	- split
 	
 ------- v.10.0.0 -------

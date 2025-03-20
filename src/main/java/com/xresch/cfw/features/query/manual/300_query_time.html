@@ -3,9 +3,28 @@
 	This page gives you an overview how to work with time in queries.
 </p>
 
-<h2>Time Formatting</h2>
-<p>For formatting time, you can use the command <a href="#" onclick="cfw_manual_loadPage('Query|Commands|formatfield');">formatfield</a>. 
-There are two formatters called 'date' and 'timestamp' to specify time formats, here a small example:
+<h2>Use Milliseconds</h2>
+<p>To work with time in this query language, one thing that should be known is that close to all time operations are done in milliseconds.
+Therefore, if you have any other time format, you might first need to convert it like this: </p>
+<pre><code class="language-cfwquery">| source empty
+| set
+	stringToMillis = timeparse("yyyy-MM-dd HH:mm:ss", "2020-02-20 20:20:20") 
+	secondsToMillis = 1582230020 * 1000
+	nanosToMillis = 1582230020000000000 / 1000000
+	# etc...</code></pre>
+	
+
+
+<h2>Time Functions</h2>
+<p>You can find the functions that can be used to manipulate time in the section
+<a href="#" onclick="cfw_manual_loadPage('Query|Functions');">Functions</a> tagged with "time".
+</p>
+
+
+
+<h2>Time Formatting - Keep Milliseconds in Export</h2>
+<p>For formatting time in the browser, but having milliseconds in exports, you can use the command <a href="#" onclick="cfw_manual_loadPage('Query|Commands|formatfield');">formatfield</a>. 
+There are two formatters called 'date' and 'timestamp' to specify time formats, for example:
 </p>
 <pre><code class="language-cfwquery">| source random 
 | set
@@ -15,19 +34,35 @@ There are two formatters called 'date' and 'timestamp' to specify time formats, 
 	LOGIN_TIME =[timestamp, "HH:mm:ss"]
 	TIME=timestamp
 | keep FIRSTNAME, LAST_LOGIN, LOGIN_TIME, TIME
-</code></pre>
+| display download = true</code></pre>
 
-<h2>Time Functions</h2>
-<p>The following functions are available to work with time:
+
+
+<h2>Time Formatting - Formatted in Export</h2>
+<p>For formatting time on serverside, and having formatted time in exports, you can 
+use the function <a href="#" onclick="cfw_manual_loadPage('Query|Functions|timeformat');">timeformat</a>: 
 </p>
-<ul>
-<li><b><a href="#" onclick="cfw_manual_loadPage('Query|Functions|now');">now</a></b>: Returns current time and offsets from current time.</li>
-<li><b><a href="#" onclick="cfw_manual_loadPage('Query|Functions|earliest');">earliest</a></b>: Returns earliest time as epoch time or in a specific format.</li>
-<li><b><a href="#" onclick="cfw_manual_loadPage('Query|Functions|earliestset');">earliestSet</a></b>: Set the earliest time for the current query.</li>
-<li><b><a href="#" onclick="cfw_manual_loadPage('Query|Functions|latest');">latest</a></b>: Returns latest time as epoch time or in a specific format.</li>
-<li><b><a href="#" onclick="cfw_manual_loadPage('Query|Functions|latestset');">latestSet</a></b>: Set the latest time for the current query.</li>
-<li><b><a href="#" onclick="cfw_manual_loadPage('Query|Functions|timeframeoffset');">timeframeOffset</a></b>: Takes the earliest/latest times and offsets them by the specified amount..</li>
-<li><b><a href="#" onclick="cfw_manual_loadPage('Query|Functions|timeoffset');">timeOffset</a></b>: Takes epoch milliseconds and offsets it by the specified amount..</li>
-<li><b><a href="#" onclick="cfw_manual_loadPage('Query|Functions|timeparse');">timeParse</a></b>: Parses time from a string representation and returns it as epoch milliseconds.</li>
-</ul>
+<pre><code class="language-cfwquery">| source random 
+| set
+	LAST_LOGIN = timeformat("yyyy-MM-dd'T'HH:mm:ss", LAST_LOGIN )
+	TIME = timeformat("yyyy-MM-dd'T'HH:mm:ss", TIME )
+| display download = true</code></pre>
+
+
+
+<h2>Get Selected Duration</h2>
+<p>To get the duration of the selected timeframe, you can use the function <a href="#" onclick="cfw_manual_loadPage('Query|Functions|timeframeDuration');">timeframeDuration</a>.
+This was introduced as some API calls are easier created by providing an offset of the duration instead of making an offset of the whole timeframe and making a second call.
+</p>
+<pre><code class="language-cfwquery">| source empty
+| set
+	seconds = timeframeDuration('s') + "s"
+	minutes = timeframeDuration('m') + "m"
+	hours = timeframeDuration('h') + "h"</code></pre>
+
+
+
+
+
+
 

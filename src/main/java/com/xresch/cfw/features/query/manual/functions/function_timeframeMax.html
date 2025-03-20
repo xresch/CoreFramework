@@ -1,0 +1,14 @@
+
+<p>This function is used to limit the maximum allowed timeframe the query can run with.
+This function used to limit the impact of expensive queries.
+</p>
+
+<p>Following query uses the function to set the max duration to 1 hour:</p>
+
+<pre><code class="language-cfwquery">| execute timeframeMax(1, 'h')
+| source random records = 10</code></pre>
+
+
+
+
+
