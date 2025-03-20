@@ -87,7 +87,7 @@ public class ManualSearchEngine {
         TokenStream tokenStream = analyzer.tokenStream("content", new StringReader(text));
         String highlighted = highlighter.getBestFragment(tokenStream, text);
         
-        return (highlighted != null) ? highlighted + "..." : text.substring(0, Math.min(text.length(), 200)) + "...";
+        return (highlighted != null) ? "[...] " + highlighted + " [...]" : text.substring(0, Math.min(text.length(), 200)) + "...";
     }
     
 	/*****************************************************************************
