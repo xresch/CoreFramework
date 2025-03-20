@@ -92,24 +92,10 @@ public class FeatureDashboard extends CFWAppFeature {
 	
 	private static ScheduledFuture<?> taskCreateVersions;
 	
-	public static final ManualPage MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
-					new ManualPage(MANUAL_NAME_DASHBOARD)
-						.faicon("fas fa-tachometer-alt")
-						.addPermission(PERMISSION_DASHBOARD_VIEWER)
-						.addPermission(PERMISSION_DASHBOARD_CREATOR)
-						.addPermission(PERMISSION_DASHBOARD_ADMIN)
-				);
+	public static ManualPage MANUAL_PAGE_ROOT;
 	
 	
-	
-	public static final ManualPage MANUAL_PAGE_WIDGETS = MANUAL_PAGE_ROOT.addChild( 
-			new ManualPage(MANUAL_NAME_WIDGETS)
-				.faicon("fas fa-th")
-				.addPermission(PERMISSION_DASHBOARD_VIEWER)
-				.addPermission(PERMISSION_DASHBOARD_CREATOR)
-				.addPermission(PERMISSION_DASHBOARD_ADMIN)
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "&nbsp;"))
-			;
+	public static ManualPage MANUAL_PAGE_WIDGETS;
 	
 	
 	
@@ -189,6 +175,26 @@ public class FeatureDashboard extends CFWAppFeature {
     	// Register Job Tasks
 		CFW.Registry.Jobs.registerTask(new CFWJobTaskWidgetTaskExecutor());
 		
+		//----------------------------------
+		// Register Manual PAges
+		MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
+				new ManualPage(MANUAL_NAME_DASHBOARD)
+					.faicon("fas fa-tachometer-alt")
+					.addPermission(PERMISSION_DASHBOARD_VIEWER)
+					.addPermission(PERMISSION_DASHBOARD_CREATOR)
+					.addPermission(PERMISSION_DASHBOARD_ADMIN)
+			);
+
+
+		MANUAL_PAGE_WIDGETS = MANUAL_PAGE_ROOT.addChild( 
+			new ManualPage(MANUAL_NAME_WIDGETS)
+				.faicon("fas fa-th")
+				.addPermission(PERMISSION_DASHBOARD_VIEWER)
+				.addPermission(PERMISSION_DASHBOARD_CREATOR)
+				.addPermission(PERMISSION_DASHBOARD_ADMIN)
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "&nbsp;"))
+			;
+
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(

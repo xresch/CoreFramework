@@ -206,13 +206,7 @@ public class FeatureQuery extends CFWAppFeature {
 	
 	private static ScheduledFuture<?> taskQueryHistoryLimit;
 	
-	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
-			new ManualPage("Query")
-				.faicon("fas fa-terminal")
-				.addPermission(PERMISSION_QUERY_USER)
-				.addPermission(PERMISSION_QUERY_ADMIN)
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "000_query.html"))
-			;
+	public static ManualPage ROOT_MANUAL_PAGE;
 	
 	public enum CFWQueryComponentType{
 		  SOURCE
@@ -574,6 +568,16 @@ public class FeatureQuery extends CFWAppFeature {
 	public void registerManual() {
 		
 		CFWQuery pseudoQuery = new CFWQuery();
+		
+		//----------------------------------
+		// Root Page
+		ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
+				new ManualPage("Query")
+					.faicon("fas fa-terminal")
+					.addPermission(PERMISSION_QUERY_USER)
+					.addPermission(PERMISSION_QUERY_ADMIN)
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "000_query.html"))
+				;
 		
 		//----------------------------------
 		// Cheat Sheet

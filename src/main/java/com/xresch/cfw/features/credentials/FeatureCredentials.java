@@ -43,29 +43,8 @@ public class FeatureCredentials extends CFWAppFeature {
 	public static final String EAV_STATS_WIDGET_LOADS_UNCACHED = "Widget Loads Not Cached";
 	
 	public static final String MANUAL_NAME_CREDENTIALS = "Credentials";
-	public static final String MANUAL_NAME_WIDGETS = "Widgets";
-	public static final String MANUAL_PATH_WIDGETS = MANUAL_NAME_CREDENTIALS+"|"+MANUAL_NAME_WIDGETS;
-	
-	public static final ManualPage MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
-					new ManualPage(MANUAL_NAME_CREDENTIALS)
-						.faicon("fas fa-key")
-						.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-						.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-						.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-				);
-	
-	
-	
-	public static final ManualPage MANUAL_PAGE_WIDGETS = MANUAL_PAGE_ROOT.addChild( 
-			new ManualPage(MANUAL_NAME_WIDGETS)
-				.faicon("fas fa-th")
-				.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-				.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-				.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "&nbsp;"))
-			;
-	
-	
+
+	public static ManualPage MANUAL_PAGE_ROOT;
 	
 	@Override
 	public void register() {
@@ -110,6 +89,7 @@ public class FeatureCredentials extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuTools-Credentials")
 				, null);
 		
+	
 		
 	}
 
@@ -202,17 +182,27 @@ public class FeatureCredentials extends CFWAppFeature {
 	}
 	
 	private void createCredentialsManual() {
-
-		//----------------------------------
-		//
-		MANUAL_PAGE_ROOT.addChild(
-				new ManualPage("Introduction")
-					.faicon("fas fa-star")
-					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_00_introduction.html")
-			);
+		
+//		//----------------------------------
+//    	// Register Manual Pages
+//		MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
+//				new ManualPage(MANUAL_NAME_CREDENTIALS)
+//					.faicon("fas fa-key")
+//					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
+//					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
+//					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
+//			);	
+//		
+//		//----------------------------------
+//		//
+//		MANUAL_PAGE_ROOT.addChild(
+//				new ManualPage("Introduction")
+//					.faicon("fas fa-star")
+//					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
+//					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
+//					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
+//					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_00_introduction.html")
+//			);
 		
 	}
 	

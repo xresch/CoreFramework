@@ -227,7 +227,7 @@ public class CFWFiles {
 				fileContent = readContentsFromInputStream(in);
 			}
 		}else {
-			new CFWLog(logger).severe("Not allowed to read resource from package: "+packageName);
+			new CFWLog(logger).severe("Not allowed to read resource from package: "+packageName, new Exception());
 		}
 		return fileContent;
 

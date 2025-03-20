@@ -22,10 +22,7 @@ public class FeatureParameter extends CFWAppFeature {
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.parameter.resources";
 	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.parameter.manual";
 	
-	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
-			new ManualPage("Parameter")
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_mainpage.html"))
-			;
+	public static ManualPage ROOT_MANUAL_PAGE;
 
 	public static final String CFW_PARAMS = "params";
 	
@@ -58,6 +55,9 @@ public class FeatureParameter extends CFWAppFeature {
 		CFW.Registry.Parameters.add(new ParameterDefinitionChartSettings());
 		CFW.Registry.Parameters.add(new ParameterDefinitionTimeRange());
 		
+		//----------------------------------
+    	// Register Manual
+		registerManual();
 	}
 	
 	@Override
@@ -72,9 +72,7 @@ public class FeatureParameter extends CFWAppFeature {
     	// Servlets
     	app.addUnsecureServlet(ServletParameter.class,  URI_PARAMETER);
 		
-		//----------------------------------
-    	// Register Manual
-		registerManual();
+		
 	}
 
 	@Override
@@ -93,7 +91,13 @@ public class FeatureParameter extends CFWAppFeature {
 	 *
 	 ******************************************************************/
 	public void registerManual() {
+		//----------------------------------
+		// Pages for each Command
 		
+		ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
+				new ManualPage("Parameter")
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_mainpage.html"))
+				;
 		//----------------------------------
 		// Pages for each Command
 		LinkedHashMap<String, ParameterDefinition> paramList = CFW.Registry.Parameters.getParameterDefinitions();

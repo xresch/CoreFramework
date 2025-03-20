@@ -33,15 +33,9 @@ public class FeatureJobs extends CFWAppFeature {
 	public static final String PERMISSION_JOBS_USER = "Jobs: User";
 	public static final String PERMISSION_JOBS_ADMIN = "Jobs: Admin";
 	
-	public static final ManualPage MANUAL_ROOT = CFW.Registry.Manual.addManualPage(null, 
-			new ManualPage("Jobs")
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "jobs_mainpage.html"))
-			;
+	public static ManualPage MANUAL_ROOT;
+	public static ManualPage MANUAL_CHANNELS;
 	
-	public static final ManualPage MANUAL_CHANNELS = CFW.Registry.Manual.addManualPage("Jobs", 
-			new ManualPage("Channels")
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "jobs_channels.html"))
-			;
 	/******************************************************************
 	 *
 	 ******************************************************************/	
@@ -177,6 +171,16 @@ public class FeatureJobs extends CFWAppFeature {
 	 *
 	 ******************************************************************/
 	private void registerManual() {
+		
+		MANUAL_ROOT = CFW.Registry.Manual.addManualPage(null, 
+				new ManualPage("Jobs")
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "jobs_mainpage.html"))
+				;
+		
+		MANUAL_CHANNELS = CFW.Registry.Manual.addManualPage("Jobs", 
+				new ManualPage("Channels")
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "jobs_channels.html"))
+				;
 		
 		FeatureJobs.registerManualPageChannel(new CFWJobsChannelAppLog());
 		FeatureJobs.registerManualPageChannel(new CFWJobsChannelEMail());
