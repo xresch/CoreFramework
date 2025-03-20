@@ -22,35 +22,47 @@ var CFW_MANUAL_PRINTVIEW_PAGEPATH_ANCHOR_MAP = {};
  * Main method for building the view.
  * 
  ******************************************************************/
-function cfw_manual_searchManual(inputField){
+function cfw_manual_searchManual(event){
 	
+	//-----------------------
+	// Only Execute on Enter
+	if (event.keyCode != 13) {
+        return;
+    }
+    
+    //-----------------------
+	// Get Input Field
+    let inputField = event.target || event.srcElement;
 	let query = $(inputField).val();
 	
-		CFW.http.getJSON(CFW_MANUAL_URL, {action: "search", item: "page", query: query}, function (data){
+	//-----------------------
+	// Send Request
+	CFW.http.getJSON(CFW_MANUAL_URL, {action: "search", item: "page", query: query}, function (data){
+		
+		if(data.payload != undefined){
+			var results = data.payload;
+			let titleTarget = $('#cfw-manual-page-title');
+			let target = $('#cfw-manual-page-content');
+			titleTarget.html('<h1>Search: '+results.length+' Results</h1>');
+			target.html('');
 			
-			if(data.payload != undefined){
-				var results = data.payload;
-				let titleTarget = $('#cfw-manual-page-title');
-				let target = $('#cfw-manual-page-content');
-				titleTarget.html('<h1>Search: '+results.length+' Results</h1>');
-				target.html('');
+			for(let i in results){
+				let current = results[i];
 				
-				for(let i in results){
-					let current = results[i];
-					
-					let resultDiv = $('<div class="card p-2" >');
-					resultDiv.append('<div class="h3 cursor-pointer">'
-									    +'<b><a class="link" onclick="cfw_manual_loadPage(\''+current.path+'\')">'+current.title+'</a><b>'
-									+'</div>');
-					resultDiv.append('<div>'+current.snippet.replaceAll('\n', '<br>') +'</div>');
-			
-					target.append(resultDiv);
-					
-				}
+				let resultDiv = $('<div class="card p-2" >');
+				resultDiv.append('<div class="h3 m-0 cfw-link">'
+								    +'<b><a onclick="cfw_manual_loadPage(\''+current.path+'\')">'+current.title+'</a><b>'
+								+'</div>');
+				resultDiv.append('<div class="font-sm mb-2 text-secondary"><b>Path:&nbsp;</b>'+current.path.replaceAll('\|', ' &gt;&gt; ') +'</div>');
+				resultDiv.append('<div>'+current.snippet.replaceAll('\n', '<br>') +'</div>');
+		
+				target.append(resultDiv);
 				
 			}
 			
-		});
+		}
+		
+	});
 
 
 }
