@@ -1,14 +1,17 @@
 package com.xresch.cfw.features.manual;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.response.HTMLResponse;
@@ -25,9 +28,9 @@ public class ServletManual extends HttpServlet
 	private static final long serialVersionUID = 1L;
 
 	
-	/*****************************************************************
+	/*********************************************************************************************
 	 *
-	 ******************************************************************/
+	 *********************************************************************************************/
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
@@ -60,13 +63,14 @@ public class ServletManual extends HttpServlet
         
     }
 	
+	/*********************************************************************************************
+	 *
+	 *********************************************************************************************/
 	private void handleDataRequest(HttpServletRequest request, HttpServletResponse response) {
 		
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
-		//String ID = request.getParameter("id");
-		//String IDs = request.getParameter("ids");
-		//int	userID = CFW.Context.Request.getUser().id();
+
 		
 		JSONResponse jsonResponse = new JSONResponse();
 
@@ -92,6 +96,17 @@ public class ServletManual extends HttpServlet
 												break;
 				}
 				break;
+				
+			case "search": 			
+				switch(item.toLowerCase()) {
+					case "page": 		searchManual(request, jsonResponse);
+					break;
+									
+					
+					default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
+					break;
+				}
+				break;
 						
 			default: 			CFW.Messages.addErrorMessage("The action '"+action+"' is not supported.");
 								break;
@@ -99,5 +114,34 @@ public class ServletManual extends HttpServlet
 		}
 	}
 		
-
+	/*********************************************************************************************
+	 *
+	 *********************************************************************************************/
+	private void searchManual(HttpServletRequest request, JSONResponse jsonResponse) {
+		String query = request.getParameter("query");
+		
+		HashMap<ManualPage, String> searchResults = ManualSearchEngine.searchManual(query);
+		
+		JsonArray jsonArray = new JsonArray();
+		int count = 0;
+		for(Entry<ManualPage, String> entry : searchResults.entrySet()) {
+			
+			ManualPage page = entry.getKey();
+			String resultSnipped = entry.getValue();
+			
+			JsonObject object = new JsonObject();
+			object.addProperty("title", page.getLabel() );
+			object.addProperty("path", page.resolvePath(null) );
+			object.addProperty("snippet", resultSnipped );
+			
+			jsonArray.add(object);
+			
+			count++;
+			if(count >= 100) {
+				break;
+			}
+		}
+		
+		jsonResponse.setPayload(jsonArray);
+	}
 }

@@ -5,13 +5,15 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import org.jsoup.Jsoup;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
+import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -267,8 +269,24 @@ public class ManualPage {
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
+    public String getContentPlaintext() {
+    	String html = "";
+    	if(content != null) {
+    		html = content.readContents();
+    	}
+    	
+    	if(html == null) { html = ""; }
+    	
+        return Jsoup.parse(html).text();
+        
+    }
+	
+	/*****************************************************************************
+	 *  
+	 *****************************************************************************/
 	public ManualPage content(String html) {
 		this.content = new FileDefinition(html);
+		updateSearchIndex();
 		return this;
 	}
 	
@@ -277,6 +295,7 @@ public class ManualPage {
 	 *****************************************************************************/
 	public ManualPage content(HandlingType type, String path, String filename) {
 		this.content = new FileDefinition(type, path, filename);
+		updateSearchIndex();
 		return this;
 	}
 	
@@ -285,8 +304,19 @@ public class ManualPage {
 	 *****************************************************************************/
 	public ManualPage content(FileDefinition fileDef) {
 		this.content = fileDef;
+		updateSearchIndex();
 		return this;
 	}
+	
+	/*****************************************************************************
+	 *  
+	 *****************************************************************************/
+	private ManualPage updateSearchIndex() {
+		ManualSearchEngine.addPage(this);
+		return this;
+	}
+	
+	
 	
 	/*****************************************************************************
 	 *  

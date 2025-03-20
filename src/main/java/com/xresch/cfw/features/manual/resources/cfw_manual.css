@@ -20,6 +20,9 @@ p{
 	padding: 0px;
 }
 
+#search-manual{
+	display:flex;
+}
 #menu-filter{
 	display:flex;
 }

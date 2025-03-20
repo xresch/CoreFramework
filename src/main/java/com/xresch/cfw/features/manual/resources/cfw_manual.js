@@ -9,6 +9,7 @@
 /******************************************************************
  * Global
  ******************************************************************/
+var CFW_MANUAL_URL = "./manual";
 var CFW_MANUAL_COUNTER = 0;
 var CFW_MANUAL_COUNTER_PRINT_GUID = 0;
 var CFW_MANUAL_COUNTER_PRINT_IN_PROGRESS = 0;
@@ -17,6 +18,42 @@ var CFW_MANUAL_GUID_PAGE_MAP = {};
 
 var CFW_MANUAL_PRINTVIEW_PAGEPATH_ANCHOR_MAP = {};
 
+/******************************************************************
+ * Main method for building the view.
+ * 
+ ******************************************************************/
+function cfw_manual_searchManual(inputField){
+	
+	let query = $(inputField).val();
+	
+		CFW.http.getJSON(CFW_MANUAL_URL, {action: "search", item: "page", query: query}, function (data){
+			
+			if(data.payload != undefined){
+				var searchResults = data.payload;
+				let titleTarget = $('#cfw-manual-page-title');
+				let target = $('#cfw-manual-page-content');
+				titleTarget.html('<h1>Search Results</h1>');
+				target.html('');
+				
+				for(let i in searchResults){
+					let current = searchResults[i];
+					
+					let resultDiv = $('<div class="card p-2" >');
+					resultDiv.append('<div class="h3 cursor-pointer">'
+									    +'<b><a class="link" onclick="cfw_manual_loadPage('+current.path+')">'+current.title+'</a><b>'
+									+'</div>');
+					resultDiv.append('<div>'+current.snippet.replaceAll('\n', '<br>') +'</div>');
+			
+					target.append(resultDiv);
+					
+				}
+				
+			}
+			
+		});
+
+
+}
 
 /******************************************************************
  * Main method for building the view.
@@ -220,7 +257,7 @@ function cfw_manual_addPageToPrintView(parentContainer, page, headerOffset){
 		
 	if(page.hasContent){
 		CFW_MANUAL_COUNTER_PRINT_IN_PROGRESS++;
-		CFW.http.getJSON("./manual", {action: "fetch", item: "page", path: page.path}, function (data){
+		CFW.http.getJSON(CFW_MANUAL_URL, {action: "fetch", item: "page", path: page.path}, function (data){
 			if(data.payload != undefined){
 				var pageData = data.payload;
 				var enhancedContent = cfw_manual_preparePageForPrint(pageData.content, head);				
