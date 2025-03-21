@@ -495,12 +495,12 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureSystemAnalytics.class);		
 		CFW.Registry.Features.addFeature(FeatureManual.class);	
 		CFW.Registry.Features.addFeature(FeatureNotifications.class);	
-		CFW.Registry.Features.addFeature(FeatureParameter.class);	
 		CFW.Registry.Features.addFeature(FeatureCredentials.class);
 		
 		if(CFW.AppSettings.isDashboardingEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureDashboard.class);	
 		}
+		CFW.Registry.Features.addFeature(FeatureParameter.class);	
 		
 		CFW.Registry.Features.addFeature(FeatureQuery.class);
 		
