@@ -588,9 +588,9 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
 		// Working with Time
-		ROOT_MANUAL_PAGE.addChild(new ManualPage("Using Objects")
+		ROOT_MANUAL_PAGE.addChild(new ManualPage("Using Objects and Arrays")
 				.faicon("fas fa-grip-horizontal")
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "200_query_objects.html")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "200_query_objects_arrays.html")
 			);
 		
 		//----------------------------------

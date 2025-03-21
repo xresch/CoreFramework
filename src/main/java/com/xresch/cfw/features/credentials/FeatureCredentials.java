@@ -34,8 +34,7 @@ public class FeatureCredentials extends CFWAppFeature {
 
 	
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.credentials.resources";
-	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.credentials.manual";
-	
+
 	public static final String EAV_STATS_CATEGORY = "CredentialsStats";
 	public static final String EAV_STATS_PAGE_LOADS = "Page Loads";
 	public static final String EAV_STATS_PAGE_LOADS_AND_REFRESHES = "Page Loads And Refreshes";
@@ -51,7 +50,6 @@ public class FeatureCredentials extends CFWAppFeature {
 		//----------------------------------
 		// Register Package
 		CFW.Files.addAllowedPackage(PACKAGE_RESOURCES);
-		CFW.Files.addAllowedPackage(PACKAGE_MANUAL);
 		
 		//----------------------------------
 		// Register Languages
@@ -183,26 +181,17 @@ public class FeatureCredentials extends CFWAppFeature {
 	
 	private void createCredentialsManual() {
 		
-//		//----------------------------------
-//    	// Register Manual Pages
-//		MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
-//				new ManualPage(MANUAL_NAME_CREDENTIALS)
-//					.faicon("fas fa-key")
-//					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-//					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-//					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-//			);	
-//		
-//		//----------------------------------
-//		//
-//		MANUAL_PAGE_ROOT.addChild(
-//				new ManualPage("Introduction")
-//					.faicon("fas fa-star")
-//					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-//					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-//					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
-//					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_00_introduction.html")
-//			);
+		//----------------------------------
+    	// Register Manual Pages
+		MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
+				new ManualPage(MANUAL_NAME_CREDENTIALS)
+					.faicon("fas fa-key")
+					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
+					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
+					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "manual_credentials.html")
+			);	
+
 		
 	}
 	

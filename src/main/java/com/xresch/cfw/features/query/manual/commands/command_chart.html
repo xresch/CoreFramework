@@ -85,6 +85,8 @@
 	detailsposition=bottom</code></pre>	
 	
 <h2>Gantt Chart</h2>
+<p><b>Note:</b> Using the chart-command for creating Gantt Charts is not recommended if you don't know how much data you have to display. 
+Use the <a href="#" onclick="cfw_manual_loadPage('Query|Commands|formatboxplot')">formatboxplot</a> command instead to create a gantt-chart-like view inside of a table.  </p>
 <p>Gantt chart has a bit of a special treatment. The by-parameter will be used to create labels, while x/y parameters take start/end date of the bar in the chart.
 Following will give you a chart containing a time line for each group created with the by-parameter:</p>	
 <pre><code class="language-cfwquery">| source random records=1000 

@@ -76,12 +76,12 @@
 	
 	<div class="card flex-grow-1">
 		<div class="card-header pt-1 pb-1">
-			<div>Timerange</div>
+			<div>Timeframe</div>
 		</div>
 		<div class="card-body maxvw-40">
-			A time range selector is available to specify the time to fetch data from the source.
+			A timeframe selector is available to specify the time to fetch data from the source.
 			It depends on the source if time is actually used and how it is applied. Check the
-			documentation for the  source you are using or use the content assist.
+			documentation for the source you are using or use the content assist.
 		</div>
 	</div>
 </div>
@@ -385,6 +385,48 @@
 	</div>
 </div>
 
+<!-- =========================== FORTH ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Credentials</div>
+		</div>
+		<div class="card-body maxvw-40">
+			The <a href="#" onclick="cfw_manual_loadPage('Credentials')">Credentials</a> feature can be used
+			to store credentials and store values prone to changes like URLs in a central place for easier maintenance:
+			<pre><code class="language-cfwquery">| source empty
+| global CREDS = credentials( "myCreds" )
+| set
+	credentials = g(CREDS) # object with fields
+	account = g(CREDS).account # get account
+	password = g(CREDS).password # get password</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Time</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Time is mainly handled in milliseconds, and there are many function helping you with time. 
+			See <a href="#" onclick="cfw_manual_loadPage('Query|Working with Time')">Working with Time</a> to get a good overview about time handling.
+			
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Objects and Arrays</div>  
+		</div>
+		<div class="card-body maxvw-40">
+			This query language supports the concept of objects and arrays. 
+			See <a href="#" onclick="cfw_manual_loadPage('Query|Using Objects and Arrays')">Using Object and Arrays</a> for detailed information about how to work with these data types.
+			
+		</div>
+	</div>
+</div>
+
 <!-- ============================================================ -->
 <!-- FORMATTING AND DISPLAY -->
 <!-- formatfield, formatrecord, display, chart -->
@@ -530,8 +572,8 @@
 			<div>Display: Tiles</div>
 		</div>
 		<div class="card-body maxvw-40">
-			for displaying as tiles it often makes sense to not have any visible fields.
-			This can be achieved thy setting visible fields to an empty array:
+			For displaying as tiles it often makes sense to not have any visible fields.
+			This can be achieved by setting visible fields to an empty array:
 			<pre><code class="language-cfwquery">| source random records=100
 | display 
 	as=tiles 
@@ -579,6 +621,68 @@
 	menu=false 
 	titlefields=[VALUE] 
 	visiblefields=[]</code></pre>
+		</div>
+	</div>
+</div>
+
+<!-- =========================== FORTH ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Charts</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can display your data in a chart using the chart-command.
+			This command is very powerful, have a look at it's documentation.			
+			<pre><code class="language-cfwquery">| source random records=100 type=series
+| chart 
+	by=[WAREHOUSE, ITEM]
+	x=TIME 
+	y=COUNT</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Display for Fields</div>
+		</div>
+		<div class="card-body maxvw-40">
+			To apply a display to fields instead of the whole result, you can use the displayfields command.
+			This is often combined with stats commands to create an array of records first.
+			<pre><code class="language-cfwquery">| source random records =200 type=series
+| formatrecord
+	[(COUNT &lt; 20), "cfw-red"] 
+	[true, "cfw-green"] 
+| stats
+	by=WAREHOUSE, CLASS, ITEM
+	"Status Bar"=records() # creates array of records
+| displayfields
+	fields="Status Bar"
+	as=statusbar
+	height="20px"
+	width="300px"</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Charts for Fields</div>
+		</div>
+		<div class="card-body maxvw-40">
+			To apply a chart to fields instead of the whole result, you can use the chartfields command.
+			This is often combined with stats commands to create an array of records first.
+			<pre><code class="language-cfwquery">| source random records=100 type=series
+| meta BY=[WAREHOUSE, ITEM]
+| stats
+	by=meta(BY)
+	"Chart"=records() # creates array of records
+| chartfields
+	fields="Chart"
+	by=meta(BY)
+	type=sparkarea
+	x=TIME		  y=COUNT
+	height="50px" width="200px"</code></pre>
 		</div>
 	</div>
 </div>

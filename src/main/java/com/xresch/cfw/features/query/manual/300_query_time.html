@@ -21,6 +21,19 @@ Therefore, if you have any other time format, you might first need to convert it
 </p>
 
 
+<h2>Inserting Time</h2>
+<p>
+To insert the selected timeframe into your database queries, web requests and similar, you can use the functions earliest() and latest():
+</p>
+<pre><code class="language-cfwquery">| source jdbc 
+	environment={"id":1234,"name":"Acme Database"} 
+	query="
+		SELECT DISTINCT TIME, FROM CFW_STATS_CPUSAMPLE 
+		WHERE TIME >= TIMESTAMP '"+earliest("yyyy-MM-dd HH:mm:ss", true)+"'
+		  AND TIME &lt;= TIMESTAMP '"+latest("yyyy-MM-dd HH:mm:ss", true)+"'
+		LIMIT 100"</code></pre>
+
+
 
 <h2>Time Formatting - Keep Milliseconds in Export</h2>
 <p>For formatting time in the browser, but having milliseconds in exports, you can use the command <a href="#" onclick="cfw_manual_loadPage('Query|Commands|formatfield');">formatfield</a>. 

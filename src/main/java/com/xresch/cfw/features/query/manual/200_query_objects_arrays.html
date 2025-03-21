@@ -1,11 +1,11 @@
 
 <p>
-	The query language supports the creation and use of objects.
+	The query language supports the creation and use of objects and arrays (further in this text 'objects' will include arrays too).
 	This can be helpful in use cases like  fetching data from sources returning JSON structures, 
 	or when using the API to execute queries and structuring the returned result.
 </p>
 
-<h2>Formating Objects(and Arrays)</h2>
+<h2>Formatting Objects</h2>
 <p>For easier reading of objects, you can use the formatfield-command to format an object as a list:
 </p>
 <pre><code class="language-cfwquery">| source random records=10 type=various
@@ -13,6 +13,34 @@
 | formatfield 
 	GRAPH_DATA = ['list', "bullets", "10px", false]</code></pre>
 	
+<h2>Check Type and Parsing JSON</h2>
+<p>Objects are printed as strings by default, what makes it hard to see if they are of type string or are actual objects.
+You can use the type()-function to print the data type, and use the tojson()-function to convert to an object.
+If you pass an object to the function it will return the object unchanged, what makes it useful if you don't know if it is still a string or already an object.
+</p>
+<pre><code class="language-cfwquery">| source empty
+| set 
+	MESSAGE = '{index: 1, message:"Hello World"}'
+	TYPE = type(MESSAGE)   # returns 'string'
+	
+	# ================================
+	OBJECT=tojson(MESSAGE) 
+	OBJECT_TYPE = TYPE = type(OBJECT) # returns 'object'
+	
+	# ================================
+	ARRAY=tojson('[1,2,3, "a", "b", "c", true, false]')
+	ARRAY_TYPE = TYPE = type(ARRAY) # returns 'array'</code></pre>
+
+<h2>Unboxing Objects</h2>
+<p>To convert all the members of an object into fields, or entries of an array to rows, use the <a href="#" onclick="cfw_manual_loadPage('Query|Commands|unbox');">unbox</a> command:</p>
+<pre><code class="language-cfwquery">| source empty
+| set
+  object = {index: 1, message:"Hello World"}
+  array = [null, one, true, "three"]
+| unbox replace=false
+	object # converts fields to columns
+	array # converts each entry to a new row</code></pre>
+
 	
 <h2>Creating Objects</h2>
 <p>You can create your own objects for every record using curly braces'{}'.
@@ -118,17 +146,6 @@ Also you can use function return values inside of access expressions:</p>
 	FUNC_ACCESS = temp.param(favoriteField)			# returns "tiramisu"
 	FUNC_SUBACCESS = temp.param(objectField).sub	# returns 42	</code></pre>
 
-
-<h2>Unboxing Objects</h2>
-<p>To convert all the members of an object into fields, use the <a href="#" onclick="cfw_manual_loadPage('Query|Commands|unbox');">unbox</a> command:</p>
-<pre><code class="language-cfwquery">| source empty records =100
-| set
-  index = count()
-  object = {}
-  object.X = randomFloat() 
-  object.Y = randomFloat()
-  object.Z = randomFloat()
-| unbox object replace=false</code></pre>
 
 
 
