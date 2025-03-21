@@ -11,7 +11,7 @@ standard and error outputs of the executed commands.</p>
 
 <h2>Executing Single Command</h2>
 <p>Here are some very basic examples of how to execute a single command. For commands other than cmd and powershell on windows, 
-you probably need to specify a fully qualified path or execute them with cmd/powershell.</p>
+you probably need to specify a fully qualified path or execute them with cmd or powershell.</p>
 
 <p><b>CMD:</b></p>			<pre><code class="language-cfwquery">| source cli commands=`cmd /c dir`</code></pre>
 <p><b>Powershell:</b></p>	<pre><code class="language-cfwquery">| source cli commands=`powershell Get-ChildItem`</code></pre>
@@ -23,15 +23,18 @@ you probably need to specify a fully qualified path or execute them with cmd/pow
 <h2>Executing Piped Commands</h2>
 <p>The engine that executes commands allows to pipe commands together. You might need to escape the pipe symbol if you want to pass a 
 pipeline to a command:</p>
-<pre><code class="language-cfwquery">| source cli commands=`cmd /c echo "hello world" > file.txt | cmd /c type file.txt`
-# or with escaped pipe
-| source cli commands=`cmd /c echo "hello world" > file.txt \| type file.txt``</code></pre>
+<pre><code class="language-cfwquery"># Piping two commands together with the engine
+| source cli commands=`cmd /c echo "hello world" > file.txt | cmd /c type file.txt`
+# Or with escaped pipe, use the pipe as is in the command line tool your are using
+| source cli commands=`cmd /c echo "hello world" > file.txt \| type file.txt`</code></pre>
 
 
 <h2>Comments and Multiple Commands</h2>
 <p>Each line starting with a # is considered a command. 
-You can execute multiple commands separated by newline. 
-You can escape the newline with '\'. Blank lines are ignored: </p>
+<br>You can execute multiple commands separated by newline. 
+<br>You can escape the newline with '\'.
+<br> Blank lines are ignored: 
+</p>
 <pre><code class="language-cfwquery">| source cli 
 	as=plain # defines how the output should be parsed
 	dir="Z:\Repositories\CoreFramework" # defines the working directory. If empty, uses the working directory of the application. 

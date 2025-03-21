@@ -27,6 +27,64 @@ The dashboard widgets can be used to execute and show CLI output directly on a d
 For more information about the settings of the widgets, hover over the small info icon next to the respective setting.
 See the widget manual for more information >> <a href="#" onclick="cfw_manual_loadPage('Dashboard|Widgets|Command Line|CLI Results');">Widget: CLI Result</a>
 
-
 </p>
+
+<h2>How to use the CLI Extensions</h2>
+
+
+<h3>Executing Single Command</h3>
+<p>Here are some very basic examples of how to execute a single command. For commands other than cmd and powershell on windows, 
+you probably need to specify a fully qualified path or execute them with cmd/powershell.</p>
+
+<p><b>CMD:</b></p>			<pre><code class="language-cfwquery">cmd /c dir</code></pre>
+<p><b>Powershell:</b></p>	<pre><code class="language-cfwquery">powershell Get-ChildItem</code></pre>
+<p><b>Git Bash:</b></p>		<pre><code class="language-cfwquery">"C:\Program Files\Git\bin\bash.exe" -c "ls -la"</code></pre>
+<p><b>Maven:</b></p>		<pre><code class="language-cfwquery">mvn.cmd install
+#or...
+cmd /c mvn install</code></pre>
+
+
+
+<h3>Executing Piped Commands</h3>
+<p>The engine that executes commands allows to pipe commands together. You might need to escape the pipe symbol if you want to pass a 
+pipeline to a command:</p>
+<pre><code class="language-cfwquery"># Piping two commands together with the engine
+cmd /c echo "hello world" > file.txt | cmd /c type file.txt
+# Or with escaped pipe, use the pipe as is in the command line tool your are using
+cmd /c echo "hello world" > file.txt \| type file.txt</code></pre>
+
+
+<h3>Comments and Multiple Commands</h3>
+<p>Each line starting with a # is considered a command. 
+<br>You can execute multiple commands separated by newline. 
+<br>You can escape the newline with '\'.
+<br> Blank lines are ignored: 
+</p>
+<pre><code class="language-cfwquery">###################################
+# Bash: Execute a command 
+###################################
+"C:\Program Files\Git\bin\bash.exe" -c "java -version"
+
+###################################
+# Bash: Execute a command with pipes
+###################################
+"C:\Program Files\Git\bin\bash.exe" -c "ps -ef | grep 'bash'"
+
+###################################
+# CMD: Execute a command
+###################################
+cmd /c mvn install
+</code></pre>
+
+
+<h3>Environment Variables</h3>
+<p>The CLI extension will provide you with settings to add custom environment variables.
+These will be added to the existing environment variables and enables you use them within your commands: </p>
+<pre><code class="language-cfwquery">cmd /c echo %MY_VAR% %MY_MESSAGE%</code></pre>
+
+
+<h3>Reading Head And Tail</h3>
+<p>To only read the head and/or tail of an output, you can specify the number of lines to be read with the parameters 'Head' and 'Tail'.
+The number of lines skipped will be added to the output like '[... 19 lines skipped ...]'. If you don't want that information 
+you can turn it off by setting 'Count Skipped' to false. </p>
 
