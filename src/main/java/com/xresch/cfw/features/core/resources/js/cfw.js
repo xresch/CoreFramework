@@ -3676,8 +3676,24 @@ function cfw_format_boxplot(values, color, isEpochTime){
 	//=====================================
 	// Add Colors
 	if(popover){
-		var popoverSettings = Object.assign({}, cfw_renderer_common_getPopoverDefaults());
-		popoverSettings.content = CFW.format.objectToHTMLList(values);
+
+		//-------------------------------
+		// Simplify Data shown in popup
+		let clone = _.clone(values);
+		if(CFW.utils.isNullOrEmpty(clone.sart) 	|| clone.start == clone.min){	delete clone.start; }
+		if(CFW.utils.isNullOrEmpty(clone.low) 	|| clone.low == clone.min)  {	delete clone.low; }
+		if( CFW.utils.isNullOrEmpty(clone.min))								{	delete clone.min; }
+		
+		if(CFW.utils.isNullOrEmpty(clone.end) 	|| clone.end == clone.max)	{	delete clone.end; }
+		if(CFW.utils.isNullOrEmpty(clone.high) 	|| clone.high == clone.max)	{	delete clone.high; }
+		if(CFW.utils.isNullOrEmpty(clone.max))								{	delete clone.max; }
+		
+		if( CFW.utils.isNullOrEmpty(clone.median) ){	delete clone.median; }
+
+		//-------------------------------
+		// Show Popup
+		let popoverSettings = Object.assign({}, cfw_renderer_common_getPopoverDefaults());
+		popoverSettings.content = CFW.format.objectToHTMLList(clone);
 		boxplotDiv.popover(popoverSettings);
 		
 	}
