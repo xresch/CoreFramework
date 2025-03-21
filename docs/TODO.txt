@@ -165,6 +165,8 @@ DONE
 ====
 
 ------- current -------
+
+------- v.11.0.0 -------
 - BREAKING CHANGE: Query Alerting Tasks: if the result is empty, alerting will consider there is no problem
 - BREAKING CHANGE: Query alias "reorder" removed to avoid confusion, use "keep" instead
 - BREAKING CHANGE: Moved MessageType to CFWMessages
