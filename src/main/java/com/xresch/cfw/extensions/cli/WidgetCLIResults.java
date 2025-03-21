@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -120,7 +121,7 @@ public class WidgetCLIResults extends WidgetDefinition {
 		try {
 			//----------------------------------------
 			// Get Data
-			String dataString = executeCommandsAndGetOutput(cfwObject, timeframe, null);
+			String dataString = executeCommandsAndGetOutput(cfwObject, null, timeframe, null);
 
 			//----------------------------------------
 			// Create Result
@@ -140,7 +141,7 @@ public class WidgetCLIResults extends WidgetDefinition {
 	 * 
 	 ***************************************************************************************/
 	@SuppressWarnings("unchecked")
-	private String executeCommandsAndGetOutput(CFWObject widgetSettings, CFWTimeframe timeframe, CFWMonitor monitor) throws Exception {
+	private String executeCommandsAndGetOutput(CFWObject widgetSettings, String dashboardParams, CFWTimeframe timeframe, CFWMonitor monitor) throws Exception {
 		//------------------------------------
 		// Get Working Dir
 		String dir = (String) widgetSettings.getField(CFWCLIExtensionsCommon.PARAM_DIR).getValue();
@@ -159,7 +160,11 @@ public class WidgetCLIResults extends WidgetDefinition {
 		//------------------------------------
 		// Get Env Variables
 		LinkedHashMap<String,String> envVariables = (LinkedHashMap<String,String>) widgetSettings.getField(CFWCLIExtensionsCommon.PARAM_ENV).getValue();
-
+		
+		if(dashboardParams != null) {
+			envVariables.put("CFW_DASHBOARD_PARAMS", CFW.JSON.toJSON(dashboardParams) );
+		}
+		
 		//------------------------------------
 		// Get Others
 		Integer head = (Integer) widgetSettings.getField(CFWCLIExtensionsCommon.PARAM_HEAD).getValue();
@@ -246,12 +251,22 @@ public class WidgetCLIResults extends WidgetDefinition {
 						  , CFWTimeframe offset) throws JobExecutionException {
 				
 		
+		//----------------------------------------
+		// Get Custom Data from JobMap
+		JobDataMap data = context.getMergedJobDataMap();
+		
+		Object customData = data.get(CFW.Registry.Jobs.FIELD_CUSTOM);
+		
+		String dashboardParams = null;
+		if(customData instanceof String) {
+			dashboardParams = (String)customData;
+		}
 		
 		//----------------------------------------
 		// Get CLI Output
 		String output;
 		try {
-			output = executeCommandsAndGetOutput(widgetSettings, offset, monitor);
+			output = executeCommandsAndGetOutput(widgetSettings,dashboardParams, offset, monitor);
 		} catch (Exception e) {
 			new CFWLog(logger).severe("Task - error while getting CLI output:"+e.getMessage(), e);
 			return;

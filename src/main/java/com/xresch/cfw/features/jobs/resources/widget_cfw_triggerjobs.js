@@ -26,7 +26,9 @@ function cfw_widget_triggerjobs_rerender(){
 function cfw_widget_triggerjobs_execute(id){
 	
 	let obfuscatedID = (id + 7) * 761;
-	params = {action: "execute", item: "widgettriggerjob", id: obfuscatedID};
+	let dashboardParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
+
+	params = {action: "execute", item: "widgettriggerjob", id: obfuscatedID, dashboardParams: JSON.stringify(dashboardParams)};
 	CFW.http.getJSON(CFW_TRIGGERJOBS_URL, params, 
 		function(data) {
 			if(data.success){ 

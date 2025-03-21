@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
@@ -140,10 +140,11 @@ public class ServletJobs extends HttpServlet
 			case "execute": 			
 				switch(item.toLowerCase()) {
 
-					case "job": 				executeCFWJob(jsonResponse, ID);
+					case "job": 				executeCFWJob(jsonResponse, ID, null);
 												break;  
 												
-					case "widgettriggerjob": 	executeCFWJob(jsonResponse, unobfuscateID(ID));
+					case "widgettriggerjob": 	String dashboardParams = request.getParameter("dashboardParams");
+												executeCFWJob(jsonResponse, unobfuscateID(ID), dashboardParams);
 												break;  
 										
 					default: 					CFW.Messages.itemNotSupported(item);
@@ -255,9 +256,28 @@ public class ServletJobs extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private void executeCFWJob(JSONResponse jsonResponse, String ID) {
+	private void executeCFWJob(JSONResponse jsonResponse, String ID, String dashboardParams) {
 		
-		CFW.Registry.Jobs.executeJobManually(ID);
+		//-------------------------------
+		// Dashboard Params
+		JsonObject paramsObject = new JsonObject();
+
+		if(dashboardParams != null && dashboardParams.startsWith("[")) {
+			JsonElement element = CFW.JSON.fromJson(dashboardParams);
+			if( ! CFW.JSON.isNull(element) ) {
+				JsonArray paramsArray = element.getAsJsonArray();
+				for(JsonElement currentElement : paramsArray) {
+					JsonObject param = currentElement.getAsJsonObject();
+					paramsObject.add(param.get("NAME").getAsString(), param.get("VALUE"));
+				}
+			}
+			
+		}
+		
+		
+		//-------------------------------
+		// Execute Job
+		CFW.Registry.Jobs.executeJobManually(ID, CFW.JSON.toJSON(paramsObject) );
 	}
 	
 	/******************************************************************

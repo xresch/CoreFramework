@@ -34,7 +34,9 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWRegistryJobs {
 
+
 	public static final String FIELD_STARTTIME = "starttime";
+	public static final String FIELD_CUSTOM = "custom";
 
 	private static Logger logger = CFWLog.getLogger(CFWRegistryJobs.class.getName());
 	
@@ -204,22 +206,39 @@ public class CFWRegistryJobs {
 		
 		return scheduler;
 	}
+	/***********************************************************************
+	 * Executes a job manually.
+	 * Will write a message to inform user that the job was triggered.
+	 * @param ID of the job that should be executed
+	 * @param customData an object that should be added to the jobDataMap
+	 *        with the name "custom"
+	 ***********************************************************************/
+	protected static void executeJobManually(String ID)  {
+		
+		executeJobManually(CFW.DB.Jobs.selectByID(ID), null);
+	}
 	
 	/***********************************************************************
 	 * Executes a job manually.
 	 * Will write a message to inform user that the job was triggered.
+	 * @param ID of the job that should be executed
+	 * @param customData an object that should be added to the jobDataMap
+	 *        with the name "custom"
 	 ***********************************************************************/
-	protected static void executeJobManually(String ID)  {
+	protected static void executeJobManually(String ID, Object customData)  {
 		
-		executeJobManually(CFW.DB.Jobs.selectByID(ID));
+		executeJobManually(CFW.DB.Jobs.selectByID(ID), customData);
 	}
-	
 
 	/***********************************************************************
 	 * Executes a job manually.
 	 * Will write a message to inform user that the job was triggered.
+	 * 
+	 * @param job that should be executed
+	 * @param customData an object that should be added to the jobDataMap
+	 *        with the name "custom"
 	 ***********************************************************************/
-	protected static void executeJobManually(CFWJob job)  {
+	protected static void executeJobManually(CFWJob job, Object customData)  {
 		
 		if(job == null) {
 			new CFWLog(logger).warn("Job cannot be executed as it was null.");
@@ -240,7 +259,7 @@ public class CFWRegistryJobs {
 			JobDetail jobDetail = job.createJobDetail();
 			Trigger trigger = job.createJobTrigger(jobDetail);
 			JobDataMap data = trigger.getJobDataMap();
-			
+			data.put(FIELD_CUSTOM, customData);
 			scheduler.triggerJob(job.createJobKey(), data);
 
 		} catch (SchedulerException e) {
