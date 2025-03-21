@@ -1,0 +1,34 @@
+
+<p>This source allows you to fetch data from the EMP internal H2 database.</p>
+
+<p>Following gives you a list of all tables: </p>
+<pre><code class="language-cfwquery">| source appdb
+	query=`SHOW TABLES`
+</code></pre>
+
+<p>Following gives you a list of all columns in all tables: </p>
+<pre><code class="language-cfwquery">| source appdb
+	query=`SHOW TABLES`
+| set
+	COLUMN = subquery(`| source appdb
+	query="SHOW COLUMNS FROM `+TABLE_NAME+`"`)
+| unbox COLUMN
+| unbox COLUMN 
+| remove COLUMN
+| rename 
+	TABLE_NAME = TABLE
+	TABLE_SCHEMA = SCHEMA
+	FIELD = COLUMN
+| keep SCHEMA, TABLE, COLUMN, TYPE, DEFAULT, NULL, KEY</code></pre>
+
+<p>Following is an example how to work with time:</p>
+<pre><code class="language-cfwquery">| source appdb
+	query=`
+		SELECT * 
+		FROM CFW_AUDITLOG
+		WHERE TIMESTAMP >= DATEADD(MS, `+earliest()+`, DATE '1970-01-01') 
+		  AND TIMESTAMP &lt;= DATEADD(MS, `+latest()+`, DATE '1970-01-01')
+		LIMIT 100
+		`</code></pre>
+
+		
