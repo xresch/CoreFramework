@@ -23,9 +23,9 @@ public class QuartzConnectionProvider implements ConnectionProvider {
 		
 		String sql = CFW.Files.readPackageResource(FeatureJobs.PACKAGE_RESOURCES, "create_quartz_tables.sql");
 
-		if(CFW.DB.getDBInterface().preparedExecuteBatch(sql) == -1) {
+		if(CFW.DB.getDBInterface().preparedExecuteBatch(sql) == -99) {
 			new CFWLog(logger)
-				.severe("Error while initializing Quartz Tables.");
+				.warn("Error while initializing Quartz Tables.");
 		}
 		
 	}

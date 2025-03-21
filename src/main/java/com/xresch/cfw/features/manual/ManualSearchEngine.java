@@ -39,7 +39,7 @@ public class ManualSearchEngine {
 	 *  Search through indexed pages and return matching snippets
 	 *****************************************************************************/
  
-    public static NavigableMap<Float, JsonObject> searchManual(String searchQuery) {
+    public static TreeMap<Float, JsonObject> searchManual(String searchQuery) {
         TreeMap<Float, JsonObject> sortedResults = new TreeMap<>();
 
         QueryParser parser = new QueryParser("content", analyzer);
@@ -71,7 +71,7 @@ public class ManualSearchEngine {
 				sortedResults.put(score, object);
             }
         }
-        return sortedResults.reversed();
+        return sortedResults;
     }
     
 	/*****************************************************************************

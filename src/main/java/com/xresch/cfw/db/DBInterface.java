@@ -450,11 +450,11 @@ public class DBInterface {
 	 * 
 	 * @param sql string with placeholders
 	 * @param values the values to be placed in the prepared statement
-	 * @return int number of updated rows, -1 in case of error
+	 * @return int number of updated rows, -99 in case of error
 	 ********************************************************************************************/
 	public int preparedExecuteBatch(String sql, Object... values){	
 		
-		int totalRows = -1;
+		int totalRows = -99;
 		
 		CFWLog log = new CFWLog(logger).start();
 		Connection conn = null;
@@ -475,10 +475,14 @@ public class DBInterface {
 			// Execute
 			int[] resultCounts = prepared.executeBatch();
 
-			
+			totalRows = 0;
 			for(int i : resultCounts) {
 				if(i >= 0) {
-					totalRows += i;
+					int currentCount = resultCounts[i];
+					if( currentCount != Statement.SUCCESS_NO_INFO
+					&&  currentCount != Statement.EXECUTE_FAILED) {
+						totalRows += i;
+					}
 				}
 			}
 			increaseDBCallsCount(conn, false);

@@ -802,7 +802,10 @@ public class CFWSQL {
 			// Execute Insert
 			if(stillEnoughRecords) {
 				CFW.DB.transactionStart();
-					insertCount += this.executeBatch(doPrepared);
+					int batchCount = this.executeBatch(doPrepared);
+					if(insertCount != -99) {
+						insertCount += batchCount;
+					}
 				CFW.DB.transactionCommit();
 			}else {
 				for(; i < count; i++) {
@@ -893,7 +896,10 @@ public class CFWSQL {
 			// Execute Insert
 			if(stillEnoughRecords) {
 				CFW.DB.transactionStart();
-					insertCount += this.executeBatch(doPrepared);
+					int batchCount = this.executeBatch(doPrepared);
+					if(insertCount != -99) {
+						insertCount += batchCount;
+					}
 				CFW.DB.transactionCommit();
 			}else {
 				for(; i < count; i++) {
@@ -1689,7 +1695,7 @@ public class CFWSQL {
 	 * variable.
 	 * @param doPrepared execute as prepared statement
 	 * 
-	 * @return number of updated rows, -1 in case of error
+	 * @return number of updated rows, - in case of error
 	 ****************************************************************/
 	public int executeBatch(boolean doPrepared) {
 		

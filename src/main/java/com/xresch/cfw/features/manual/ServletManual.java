@@ -124,7 +124,7 @@ public class ServletManual extends HttpServlet
 		
 		JsonArray jsonArray = new JsonArray();
 		int count = 0;
-		for(Entry<Float, JsonObject> entry : searchResults.entrySet()) {
+		for(Entry<Float, JsonObject> entry : searchResults.descendingMap().entrySet()) {
 
 			jsonArray.add(entry.getValue());
 			

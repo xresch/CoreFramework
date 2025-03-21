@@ -331,7 +331,7 @@ public class CFWDB {
 	 * 
 	 * @param sql string with placeholders
 	 * @param values the values to be placed in the prepared statement
-	 * @return true if update count is > 0, false otherwise
+	 * @return int update count, or -99 in case of errors
 	 ********************************************************************************************/
 	public static int preparedExecuteBatch(String sql, Object... values){	
 		return db.preparedExecuteBatch(sql, values);
