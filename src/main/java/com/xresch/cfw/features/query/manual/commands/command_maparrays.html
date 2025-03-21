@@ -1,0 +1,37 @@
+
+<p>This command allows you to map two or more arrays to an array of objects.
+This function was created out of the need to have the possibility to convert API responses, that return 1 record with multiple arrays of column data.
+These arrays of column data can be converted into actual records using this command. 
+</p>
+
+<p>This example shows how arrays are mapped by their position in the array:
+</p>
+<pre><code class="language-cfwquery">| source empty records = 3
+| set # the values will be mapped to a new object based on their index
+	number = 	[1		, 2		,3		,4		,5	  ]
+	value = 	[11.1	, 22.2	, 33.3	, 44.4	, 55.5]
+	boolean = 	[true	, false						  ]
+| maparrays number, value, boolean
+	name = "mapped"
+| formatfield
+	mapped = ['list', "bullets", "10px", false]</code></pre>
+
+
+<p>After mapping the arrays, we can use the unbox command to convert the data to actual table rows:
+</p>
+<pre><code class="language-cfwquery">| source random records = 3
+| keep FIRSTNAME
+| set 
+	number = 	[1		, 2		,3		,4		,5	  ]
+	value = 	[11.1	, 22.2	, 33.3	, 44.4	, 55.5]
+	boolean = 	[true	, false						  ]
+| maparrays number, value, boolean
+	name = "mapped"
+| unbox mapped
+| unbox FIRSTNAME, mapped replace = true
+| formatcss
+	fields = FIRSTNAME 
+	style =  "background-color: " + randomColorGroup(FIRSTNAME)
+			+"; color: white"</code></pre>
+
+
