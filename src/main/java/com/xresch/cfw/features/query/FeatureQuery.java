@@ -426,6 +426,18 @@ public class FeatureQuery extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuTools-Query")
 				, null);
 		
+		//----------------------------------
+		// Register Root Manual Page
+		// Don't put this into the registerManual() function
+		// to keep order of the manual
+		ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
+				new ManualPage("Query")
+					.faicon("fas fa-terminal")
+					.addPermission(PERMISSION_QUERY_USER)
+					.addPermission(PERMISSION_QUERY_ADMIN)
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "000_query.html"))
+				;
+		
 	}
 
 	@Override
@@ -568,17 +580,7 @@ public class FeatureQuery extends CFWAppFeature {
 	public void registerManual() {
 		
 		CFWQuery pseudoQuery = new CFWQuery();
-		
-		//----------------------------------
-		// Root Page
-		ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
-				new ManualPage("Query")
-					.faicon("fas fa-terminal")
-					.addPermission(PERMISSION_QUERY_USER)
-					.addPermission(PERMISSION_QUERY_ADMIN)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "000_query.html"))
-				;
-		
+				
 		//----------------------------------
 		// Cheat Sheet
 		ROOT_MANUAL_PAGE.addChild(new ManualPage("Cheat Sheet")

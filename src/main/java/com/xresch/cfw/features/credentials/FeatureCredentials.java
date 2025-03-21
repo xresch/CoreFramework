@@ -87,7 +87,9 @@ public class FeatureCredentials extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuTools-Credentials")
 				, null);
 		
-	
+		//----------------------------------
+    	// Manual
+		createCredentialsManual();
 		
 	}
 
@@ -161,10 +163,6 @@ public class FeatureCredentials extends CFWAppFeature {
 		//----------------------------------
     	// Servlets
     	app.addAppServlet(ServletCredentialsList.class,  URI_CREDENTIALS_LIST);
-
-    	//----------------------------------
-    	// Manual
-		createCredentialsManual();
 		
 	}
 
