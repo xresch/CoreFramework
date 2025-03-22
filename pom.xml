@@ -451,6 +451,15 @@
 					<target>17</target>
 				</configuration>
 			</plugin>
+			
+			<!-- ================= INSTALL ================== -->
+			<plugin>
+			  <artifactId>maven-install-plugin</artifactId>
+			  <version>2.3.1</version>
+			  <configuration>
+			    <createChecksum>true</createChecksum>
+			  </configuration>
+			</plugin>
 
 			<!-- ================= SUREFIRE ================== -->
 			<plugin>
