@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
@@ -143,89 +144,82 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 		long earliest = this.getParent().getContext().getEarliestMillis();
 		long latest = this.getParent().getContext().getLatestMillis();
 		
+		//----------------------------
+		// Generate Records
+		JsonArray array = generateRandomRecords(records, type, seriesCount, earliest, latest);
+		
+		for(JsonElement element : array) {
+			outQueue.add(new EnhancedJsonObject(element.getAsJsonObject()));
+		}
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private JsonArray generateRandomRecords(
+			  int records
+			, String type
+			, int seriesCount
+			, long earliest
+			, long latest
+		){
+		
 		long diff = latest - earliest;
 		long diffStep = diff / records;
+		
+		JsonArray result = new JsonArray();
 		
 		// if-statement not inside for-loop to increase performance
 		if(type.equals("default")) {
 			for(int i = 0; i < records; i++) {
 				
-				EnhancedJsonObject person = new EnhancedJsonObject( CFWRandom.randomJSONObjectMightyPerson(4) );
+				JsonObject person = CFWRandom.randomJSONObjectMightyPerson(4);
 				person.addProperty("INDEX", i );
 				person.addProperty("TIME", earliest +(i * diffStep));
-				outQueue.add(person);
+				result.add(person);
 
 			}
 		}else if(type.equals("numbers")) {
 			
 			for(int i = 0; i < records; i++) {
 				
-				EnhancedJsonObject object = new EnhancedJsonObject( CFWRandom.randomJSONObjectNumberData(0) );
+				JsonObject object = CFWRandom.randomJSONObjectNumberData(0);
 				object.addProperty("TIME", earliest +(i * diffStep));
-				outQueue.add(object);
+				result.add(object);
 
 			}
 		}else if(type.equals("arrays")) {
 			
 			for(int i = 0; i < records; i++) {
-				
-				EnhancedJsonObject object = new EnhancedJsonObject( CFWRandom.randomJSONObjectArrayData(0) );
+				JsonObject object = CFWRandom.randomJSONObjectArrayData(0);
 				object.addProperty("TIME", earliest +(i * diffStep));
-				outQueue.add(object);
-
+				result.add(object);
 			}
+			
 		}else if(type.equals("series")) {
-			JsonArray array = CFW.Random.randomJSONArrayOfSeriesData(seriesCount, records, earliest, latest);
+			return CFW.Random.randomJSONArrayOfSeriesData(seriesCount, records, earliest, latest);
 			
-			for(int i = 0; i < array.size(); i++) {
-				
-				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
-				outQueue.add(object);
-				
-			}
+
 		}else if(type.equals("stats")) {
-			JsonArray array = CFW.Random.randomJSONArrayOfStatisticalSeriesData(seriesCount, records, earliest, latest);
-			
-			for(int i = 0; i < array.size(); i++) {
-				
-				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
-				outQueue.add(object);
+			return CFW.Random.randomJSONArrayOfStatisticalSeriesData(seriesCount, records, earliest, latest);
 
-			}
 		}else if(type.equals("trading")) {
-			JsonArray array = CFW.Random.randomJSONArrayOfTradingData(seriesCount, records, earliest, latest);
+			return CFW.Random.randomJSONArrayOfTradingData(seriesCount, records, earliest, latest);
 			
-			for(int i = 0; i < array.size(); i++) {
-				
-				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
-				outQueue.add(object);
-
-			}
 		}else if(type.equals("tickets")) {
 			
-			JsonArray array = CFW.Random.randomJSONArrayOfSupportTickets(records);
+			return CFW.Random.randomJSONArrayOfSupportTickets(records);
 			
-			for(int i = 0; i < array.size(); i++) {
-				
-				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
-				outQueue.add(object);
-
-			}
 		}else if(type.equals("batchjobs")) {
 			
-			JsonArray array = CFW.Random.randomJSONArrayOfBatchCalls(seriesCount, records, earliest, latest, 7) ;
+			return CFW.Random.randomJSONArrayOfBatchCalls(seriesCount, records, earliest, latest, 7) ;
 			
-			for(int i = 0; i < array.size(); i++) {
-				
-				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
-				outQueue.add(object);
 
-			}
 		}else if(type.equals("various")) {
 			
 			for(int i = 0; i < records; i++) {
 				
-				EnhancedJsonObject object = new EnhancedJsonObject( CFWRandom.randomJSONObjectVariousData(0) );
+				JsonObject object = CFWRandom.randomJSONObjectVariousData(0);
 				
 				JsonObject graphData = new JsonObject();
 				graphData.addProperty("x", i+0);
@@ -234,12 +228,12 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				
 				object.addProperty("TIME", earliest +(i * diffStep));
 				
-				outQueue.add(object);
+				result.add(object);
 
 			}
 		}
 		
-
+		return result;
 	}
 
 }
