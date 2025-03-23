@@ -785,6 +785,42 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
+	 * Creates a random list of records of a specific type of data.
+	 * 
+	 * @param count number of records to generate
+	 * @param type the type of data to generate
+	 * @param seriesCount count of series, ignored if the data type has no series 
+	 * @param earliest time to generate (epoch millis)
+	 * @param earliest time to generate (epoch millis)
+	 * 
+	 ******************************************************************************/
+	public static JsonArray records(
+			  int count
+			, String type
+			, int seriesCount
+			, long earliest
+			, long latest
+		){
+				
+		type = type.trim().toLowerCase();
+		
+		switch(type) {
+		
+			case "default":		return  CFW.Random.randomJSONArrayOfMightyPeople(count, 5, earliest, latest);
+			case "numbers":		return CFW.Random.randomJSONArrayOfNumberData(count, 0, earliest, latest);
+			case "arrays":		return CFW.Random.randomJSONArrayOfArrayData(count, 0, earliest, latest);
+			case "series":		return CFW.Random.randomJSONArrayOfSeriesData(seriesCount, count, earliest, latest);
+			case "stats":		return CFW.Random.randomJSONArrayOfStatisticalSeriesData(seriesCount, count, earliest, latest);
+			case "trading":		return CFW.Random.randomJSONArrayOfTradingData(seriesCount, count, earliest, latest);
+			case "tickets": 	return CFW.Random.randomJSONArrayOfSupportTickets(count);
+			case "batchjobs":	return CFW.Random.randomJSONArrayOfBatchCalls(seriesCount, count, earliest, latest, 7);
+			case "various":		return CFW.Random.randomJSONArrayOfVariousData(count, 0, earliest, latest);
+			
+			default: 			return  CFW.Random.randomJSONArrayOfMightyPeople(count, 5, earliest, latest);
+		}
+
+	}
+	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 
 	 * @param count
@@ -859,10 +895,107 @@ public class CFWRandom {
 	 * @param count
 	 ******************************************************************************/
 	public static JsonArray randomJSONArrayOfMightyPeople(int count) { 
+		
+		long now = System.currentTimeMillis();
+		return randomJSONArrayOfMightyPeople(count,  0, CFWTimeUnit.h.offset(now, -1), now);
+	}
+	
+	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count number of records
+	 * @param nullRatioPercent how often null values should be added in records
+	 * @param earliest time
+	 * @param latest time
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfMightyPeople(int count, int nullRatioPercent, long earliest, long latest) { 
 		JsonArray array = new JsonArray();
-				
+		
+		long diff = latest - earliest;
+		long diffStep = diff / count;
+		
 		for(int i = 0; i < count; i++) {
-			array.add(randomJSONObjectMightyPerson());
+			JsonObject person = CFWRandom.randomJSONObjectMightyPerson(nullRatioPercent);
+			person.addProperty("INDEX", i );
+			person.addProperty("TIME", earliest +(i * diffStep));
+			array.add(person);
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of records containing number data.
+	 * 
+	 * @param count number of records
+	 * @param nullRatioPercent how often null values should be added in records
+	 * @param earliest time
+	 * @param latest time
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfNumberData(int count, int nullRatioPercent, long earliest, long latest) { 
+		JsonArray array = new JsonArray();
+		
+		long diff = latest - earliest;
+		long diffStep = diff / count;
+		
+		for(int i = 0; i < count; i++) {
+			JsonObject object = CFWRandom.randomJSONObjectNumberData(nullRatioPercent);
+			object.addProperty("TIME", earliest +(i * diffStep));
+			array.add(object);
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of records containing array data.
+	 * 
+	 * @param count number of records
+	 * @param nullRatioPercent how often null values should be added in records
+	 * @param earliest time
+	 * @param latest time
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfArrayData(int count, int nullRatioPercent, long earliest, long latest) { 
+		JsonArray array = new JsonArray();
+		
+		long diff = latest - earliest;
+		long diffStep = diff / count;
+		
+		for(int i = 0; i < count; i++) {
+			JsonObject object = CFWRandom.randomJSONObjectArrayData(nullRatioPercent);
+			object.addProperty("TIME", earliest +(i * diffStep));
+			array.add(object);
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of records containing various data.
+	 * 
+	 * @param count number of records
+	 * @param nullRatioPercent how often null values should be added in records
+	 * @param earliest time
+	 * @param latest time
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfVariousData(int count, int nullRatioPercent, long earliest, long latest) { 
+		JsonArray array = new JsonArray();
+		
+		long diff = latest - earliest;
+		long diffStep = diff / count;
+		
+		for(int i = 0; i < count; i++) {
+			JsonObject object = CFWRandom.randomJSONObjectVariousData(nullRatioPercent);
+			
+			JsonObject graphData = new JsonObject();
+			graphData.addProperty("x", i+0);
+			graphData.addProperty("y", Math.sin(i+1));
+			object.add("GRAPH_DATA", graphData);
+			
+			object.addProperty("TIME", earliest +(i * diffStep));
+			
+			array.add(object);
 		}
 		
 		return array;

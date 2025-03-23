@@ -146,94 +146,12 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 		
 		//----------------------------
 		// Generate Records
-		JsonArray array = generateRandomRecords(records, type, seriesCount, earliest, latest);
+		JsonArray array = CFW.Random.records(records, type, seriesCount, earliest, latest);
 		
 		for(JsonElement element : array) {
 			outQueue.add(new EnhancedJsonObject(element.getAsJsonObject()));
 		}
 	}
 	
-	/******************************************************************
-	 *
-	 ******************************************************************/
-	private JsonArray generateRandomRecords(
-			  int records
-			, String type
-			, int seriesCount
-			, long earliest
-			, long latest
-		){
-		
-		long diff = latest - earliest;
-		long diffStep = diff / records;
-		
-		JsonArray result = new JsonArray();
-		
-		// if-statement not inside for-loop to increase performance
-		if(type.equals("default")) {
-			for(int i = 0; i < records; i++) {
-				
-				JsonObject person = CFWRandom.randomJSONObjectMightyPerson(4);
-				person.addProperty("INDEX", i );
-				person.addProperty("TIME", earliest +(i * diffStep));
-				result.add(person);
-
-			}
-		}else if(type.equals("numbers")) {
-			
-			for(int i = 0; i < records; i++) {
-				
-				JsonObject object = CFWRandom.randomJSONObjectNumberData(0);
-				object.addProperty("TIME", earliest +(i * diffStep));
-				result.add(object);
-
-			}
-		}else if(type.equals("arrays")) {
-			
-			for(int i = 0; i < records; i++) {
-				JsonObject object = CFWRandom.randomJSONObjectArrayData(0);
-				object.addProperty("TIME", earliest +(i * diffStep));
-				result.add(object);
-			}
-			
-		}else if(type.equals("series")) {
-			return CFW.Random.randomJSONArrayOfSeriesData(seriesCount, records, earliest, latest);
-			
-
-		}else if(type.equals("stats")) {
-			return CFW.Random.randomJSONArrayOfStatisticalSeriesData(seriesCount, records, earliest, latest);
-
-		}else if(type.equals("trading")) {
-			return CFW.Random.randomJSONArrayOfTradingData(seriesCount, records, earliest, latest);
-			
-		}else if(type.equals("tickets")) {
-			
-			return CFW.Random.randomJSONArrayOfSupportTickets(records);
-			
-		}else if(type.equals("batchjobs")) {
-			
-			return CFW.Random.randomJSONArrayOfBatchCalls(seriesCount, records, earliest, latest, 7) ;
-			
-
-		}else if(type.equals("various")) {
-			
-			for(int i = 0; i < records; i++) {
-				
-				JsonObject object = CFWRandom.randomJSONObjectVariousData(0);
-				
-				JsonObject graphData = new JsonObject();
-				graphData.addProperty("x", i+0);
-				graphData.addProperty("y", Math.sin(i+1));
-				object.add("GRAPH_DATA", graphData);
-				
-				object.addProperty("TIME", earliest +(i * diffStep));
-				
-				result.add(object);
-
-			}
-		}
-		
-		return result;
-	}
 
 }
