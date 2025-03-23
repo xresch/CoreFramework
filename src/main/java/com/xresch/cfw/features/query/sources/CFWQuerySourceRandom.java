@@ -18,6 +18,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.utils.CFWRandom;
+import com.xresch.cfw.utils.CFWRandom.RandomDataType;
 
 /**************************************************************************************************************
  * 
@@ -144,9 +145,20 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 		long earliest = this.getParent().getContext().getEarliestMillis();
 		long latest = this.getParent().getContext().getLatestMillis();
 		
+		//------------------------------
+		// Check Data Type
+		type = type.trim().toUpperCase();
+		
+		if( !RandomDataType.has(type) ) {
+			CFW.Messages.addErrorMessage("source random: Unknown type '"+type+"'");
+			return;
+		}
+		
+		RandomDataType dataType = RandomDataType.valueOf(type);
+		
 		//----------------------------
 		// Generate Records
-		JsonArray array = CFW.Random.records(records, type, seriesCount, earliest, latest);
+		JsonArray array = CFW.Random.records(records, dataType, seriesCount, earliest, latest);
 		
 		for(JsonElement element : array) {
 			outQueue.add(new EnhancedJsonObject(element.getAsJsonObject()));

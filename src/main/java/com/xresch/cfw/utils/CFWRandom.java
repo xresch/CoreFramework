@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -13,7 +14,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
@@ -785,6 +785,34 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
+	 * Enum of data types used in the next method.
+	 * 
+	 ******************************************************************************/
+	public enum RandomDataType {
+		  DEFAULT 
+		, NUMBERS
+		, ARRAYS
+		, SERIES
+		, STATS
+		, TRADING
+		, TICKETS
+		, BATCHJOBS
+		, VARIOUS
+		;
+		
+		private static HashSet<String> names = new HashSet<>();
+		static {
+			for(RandomDataType type : RandomDataType.values()) {
+				names.add(type.name());
+			}
+		}
+
+		public static boolean has(String value) {
+			return names.contains(value);
+		}
+	}
+	
+	/******************************************************************************
 	 * Creates a random list of records of a specific type of data.
 	 * 
 	 * @param count number of records to generate
@@ -796,25 +824,23 @@ public class CFWRandom {
 	 ******************************************************************************/
 	public static JsonArray records(
 			  int count
-			, String type
+			, RandomDataType type
 			, int seriesCount
 			, long earliest
 			, long latest
 		){
-				
-		type = type.trim().toLowerCase();
-		
+
 		switch(type) {
 		
-			case "default":		return  CFW.Random.randomJSONArrayOfMightyPeople(count, 5, earliest, latest);
-			case "numbers":		return CFW.Random.randomJSONArrayOfNumberData(count, 0, earliest, latest);
-			case "arrays":		return CFW.Random.randomJSONArrayOfArrayData(count, 0, earliest, latest);
-			case "series":		return CFW.Random.randomJSONArrayOfSeriesData(seriesCount, count, earliest, latest);
-			case "stats":		return CFW.Random.randomJSONArrayOfStatisticalSeriesData(seriesCount, count, earliest, latest);
-			case "trading":		return CFW.Random.randomJSONArrayOfTradingData(seriesCount, count, earliest, latest);
-			case "tickets": 	return CFW.Random.randomJSONArrayOfSupportTickets(count);
-			case "batchjobs":	return CFW.Random.randomJSONArrayOfBatchCalls(seriesCount, count, earliest, latest, 7);
-			case "various":		return CFW.Random.randomJSONArrayOfVariousData(count, 0, earliest, latest);
+			case DEFAULT:		return  CFW.Random.randomJSONArrayOfMightyPeople(count, 5, earliest, latest);
+			case NUMBERS:		return CFW.Random.randomJSONArrayOfNumberData(count, 0, earliest, latest);
+			case ARRAYS:		return CFW.Random.randomJSONArrayOfArrayData(count, 0, earliest, latest);
+			case SERIES:		return CFW.Random.randomJSONArrayOfSeriesData(seriesCount, count, earliest, latest);
+			case STATS:			return CFW.Random.randomJSONArrayOfStatisticalSeriesData(seriesCount, count, earliest, latest);
+			case TRADING:		return CFW.Random.randomJSONArrayOfTradingData(seriesCount, count, earliest, latest);
+			case TICKETS: 		return CFW.Random.randomJSONArrayOfSupportTickets(count);
+			case BATCHJOBS:		return CFW.Random.randomJSONArrayOfBatchCalls(seriesCount, count, earliest, latest, 7);
+			case VARIOUS:		return CFW.Random.randomJSONArrayOfVariousData(count, 0, earliest, latest);
 			
 			default: 			return  CFW.Random.randomJSONArrayOfMightyPeople(count, 5, earliest, latest);
 		}
