@@ -126,14 +126,23 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 	@Override
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
+		//----------------------------
+		// Determine Records
 		int records = (int)parameters.getField("records").getValue();
 		if(records <= 0) { records = 1; }
 		
+		if(isLimitReached(limit, records)){
+			records = Math.min(limit, records);
+		}
+		
+		//----------------------------
+		// Get Parameters
 		String type = (String)parameters.getField("type").getValue();
 		int seriesCount = (Integer)parameters.getField("seriesCount").getValue();
 
 		long earliest = this.getParent().getContext().getEarliestMillis();
 		long latest = this.getParent().getContext().getLatestMillis();
+		
 		long diff = latest - earliest;
 		long diffStep = diff / records;
 		
@@ -145,8 +154,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				person.addProperty("INDEX", i );
 				person.addProperty("TIME", earliest +(i * diffStep));
 				outQueue.add(person);
-				
-				if( isLimitReached(limit, i)) { break; }
+
 			}
 		}else if(type.equals("numbers")) {
 			
@@ -155,8 +163,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				EnhancedJsonObject object = new EnhancedJsonObject( CFWRandom.randomJSONObjectNumberData(0) );
 				object.addProperty("TIME", earliest +(i * diffStep));
 				outQueue.add(object);
-				
-				if( isLimitReached(limit, i)) { break; }
+
 			}
 		}else if(type.equals("arrays")) {
 			
@@ -165,8 +172,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				EnhancedJsonObject object = new EnhancedJsonObject( CFWRandom.randomJSONObjectArrayData(0) );
 				object.addProperty("TIME", earliest +(i * diffStep));
 				outQueue.add(object);
-				
-				if( isLimitReached(limit, i)) { break; }
+
 			}
 		}else if(type.equals("series")) {
 			JsonArray array = CFW.Random.randomJSONArrayOfSeriesData(seriesCount, records, earliest, latest);
@@ -176,7 +182,6 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
 				outQueue.add(object);
 				
-				if( isLimitReached(limit, i)) { break; }
 			}
 		}else if(type.equals("stats")) {
 			JsonArray array = CFW.Random.randomJSONArrayOfStatisticalSeriesData(seriesCount, records, earliest, latest);
@@ -185,8 +190,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				
 				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
 				outQueue.add(object);
-				
-				if( isLimitReached(limit, i)) { break; }
+
 			}
 		}else if(type.equals("trading")) {
 			JsonArray array = CFW.Random.randomJSONArrayOfTradingData(seriesCount, records, earliest, latest);
@@ -195,8 +199,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				
 				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
 				outQueue.add(object);
-				
-				if( isLimitReached(limit, i)) { break; }
+
 			}
 		}else if(type.equals("tickets")) {
 			
@@ -206,8 +209,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				
 				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
 				outQueue.add(object);
-				
-				if( isLimitReached(limit, i)) { break; }
+
 			}
 		}else if(type.equals("batchjobs")) {
 			
@@ -217,8 +219,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				
 				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
 				outQueue.add(object);
-				
-				if( isLimitReached(limit, i)) { break; }
+
 			}
 		}else if(type.equals("various")) {
 			
@@ -233,11 +234,8 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				
 				object.addProperty("TIME", earliest +(i * diffStep));
 				
-				
-				
 				outQueue.add(object);
-				
-				if( isLimitReached(limit, i)) { break; }
+
 			}
 		}
 		
