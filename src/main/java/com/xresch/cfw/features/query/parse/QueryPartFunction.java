@@ -112,7 +112,7 @@ public class QueryPartFunction extends QueryPart {
 		
 		instance.setParentCommand(this.parent);
 		
-		String instanceID = CFW.Random.randomStringAlphaNumerical(32);
+		String instanceID = CFW.Random.stringAlphaNum(32);
 		managedInstances.put(instanceID, instance);
 		return instanceID;
 	}

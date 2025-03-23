@@ -260,7 +260,7 @@ public class ServletParameter extends HttpServlet
 				CFWField paramField = def.getFieldForSettings(request, ID, null);
 				param.paramType(paramField.fieldType());
 				param.paramSettingsLabel(def.getParamUniqueName());
-				param.name(label.toLowerCase().replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
+				param.name(label.toLowerCase().replace(" ", "_")+"_"+CFW.Random.stringAlphaNum(6));
 				param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
 				param.isModeChangeAllowed(false);
 				param.isDynamic(def.isDynamic());
@@ -291,7 +291,7 @@ public class ServletParameter extends HttpServlet
 			}else {
 				param.widgetType(widgetType);
 				param.paramSettingsLabel(widgetSetting);
-				param.name(widgetSetting.replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
+				param.name(widgetSetting.replace(" ", "_")+"_"+CFW.Random.stringAlphaNum(6));
 				param.paramType(settingsField.fieldType()); // used to fetch similar field types
 				param.getField(DashboardParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue(), true);
 				param.mode(DashboardParameterMode.MODE_GLOBAL_OVERRIDE);
@@ -380,7 +380,7 @@ public class ServletParameter extends HttpServlet
 		
 		//--------------------------------------------
 		// Create Form
-		CFWMultiForm parameterEditForm = new CFWMultiForm("cfwParameterEditMultiForm"+CFW.Random.randomStringAlphaNumerical(12), "Save", parameterList);
+		CFWMultiForm parameterEditForm = new CFWMultiForm("cfwParameterEditMultiForm"+CFW.Random.stringAlphaNum(12), "Save", parameterList);
 		
 		//--------------------------------------------
 		// Create Form Handler

@@ -31,7 +31,7 @@ public class APICreateUserObject extends CFWObject{
 	
 	public User getUserWithPassword() { 
 		if(user.isForeign()) {
-			String randomPW = CFW.Random.randomStringAlphaNumSpecial(24);
+			String randomPW = CFW.Random.stringAlphaNumSpecial(24);
 			user.setNewPassword(randomPW, randomPW);
 		}else {
 			String newPW = this.password.getValue();

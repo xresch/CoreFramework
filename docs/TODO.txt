@@ -165,6 +165,7 @@ DONE
 ====
 
 ------- current -------
+- CFWRandom: Refactoring - removing "random" from methods. 
 
 ------- v.11.0.0 -------
 - BREAKING CHANGE: Query Alerting Tasks: if the result is empty, alerting will consider there is no problem

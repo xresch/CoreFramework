@@ -155,7 +155,7 @@ public class CFWQueryFunctionRandomColorHSL extends CFWQueryFunction {
 		//----------------------------------
 		// Return Number
 		return QueryPartValue.newString(
-				CFW.Random.randomColorHSL(minS, maxS, minL, maxL)
+				CFW.Random.colorHSL(minS, maxS, minL, maxL)
 			);
 		
 	}

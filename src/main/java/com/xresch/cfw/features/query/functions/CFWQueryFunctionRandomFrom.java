@@ -141,14 +141,14 @@ public class CFWQueryFunctionRandomFrom extends CFWQueryFunction {
 		if(listValue != null && listValue.isJsonArray()) {
 			JsonArray array = listValue.getAsJsonArray();
 			
-			int randomIndex = CFW.Random.randomFromZeroToInteger(array.size()-1);
+			int randomIndex = CFW.Random.fromZeroToInteger(array.size()-1);
 			return QueryPartValue.newFromJsonElement(array.get(randomIndex));
 			
 		}else if(listValue.isJsonObject()) {
 			JsonObject json = listValue.getAsJsonObject();
 			String[] memberNames = json.keySet().toArray(new String[] {});
 			
-			String random = CFW.Random.randomFromArray(memberNames);
+			String random = CFW.Random.fromArray(memberNames);
 			return QueryPartValue.newString(random);
 			
 		}

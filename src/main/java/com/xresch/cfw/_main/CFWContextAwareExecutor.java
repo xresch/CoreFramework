@@ -22,7 +22,7 @@ public class CFWContextAwareExecutor extends ThreadPoolExecutor {
 		LinkedBlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
 
 		BasicThreadFactory factory = new BasicThreadFactory.Builder()
-				.namingPattern("[Pool:"+poolName+"-"+CFW.Random.randomStringAlphaNumerical(6)+"] thread-%d")
+				.namingPattern("[Pool:"+poolName+"-"+CFW.Random.stringAlphaNum(6)+"] thread-%d")
 				.daemon(false)
 				.priority(Thread.NORM_PRIORITY)
 				.build();

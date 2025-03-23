@@ -231,7 +231,7 @@ public abstract class WidgetBaseSQLQueryStatus extends WidgetDefinition {
 	}
 	
 	public JsonArray createSampleData() { 	
-		return CFW.Random.randomJSONArrayOfMightyPeople(12);
+		return CFW.Random.jsonArrayOfMightyPeople(12);
 	}
 	
 //	@Override
@@ -459,7 +459,7 @@ public abstract class WidgetBaseSQLQueryStatus extends WidgetDefinition {
 			//----------------------------------------
 			// RESOLVE
 			if(type.equals(AlertType.RESOLVE)) {
-				String message = CFW.Random.randomIssueResolvedMessage();
+				String message = CFW.Random.issueResolvedMessage();
 				String messageHTML = "<p>"+message+"</p>"+widgetLinkHTML;
 				
 				CFW.Messages.addSuccessMessage("Issue has resolved.");

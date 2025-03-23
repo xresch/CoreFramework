@@ -358,48 +358,42 @@ public class CFWRandom {
 	};
 	
 	/*4 Random integer between 0 and 9999 generated at startup. Useful to make sure content is reloaded after startup.*/
-	public static final int STARTUP_RANDOM_INT = randomFromZeroToInteger(9999);
+	public static final int STARTUP_RANDOM_INT = fromZeroToInteger(9999);
 	
 	/*4 Random alphanumerical characters generated at startup. Useful to make sure content is reloaded after startup.*/
-	public static final String STARTUP_RANDOM_ALPHANUM = randomStringAlphaNumerical(4);
+	public static final String STARTUP_RANDOM_ALPHANUM = stringAlphaNum(4);
 	
 	/******************************************************************************
-	 * 
+	 * Returns an instance of Random.
 	 ******************************************************************************/
 	public static Random getInstance() { return random; }
 	
 	/******************************************************************************
 	 * 
 	 ******************************************************************************/
-	public static Boolean randomBoolean() { return randomBoolean(0);}
-	
-	/******************************************************************************
-	 * 
-	 ******************************************************************************/
-	public static Boolean randomBoolean(int nullRatioPercent) { 
-
-		if( checkReturnNull(nullRatioPercent) ) { return null; }
-		return random.nextInt(100) > 50 ? true : false; 
-	}
-	
-	/******************************************************************************
-	 * 
-	 ******************************************************************************/
-	public static <T> T randomFromArray(T[] array) {
-	    return randomFromArray(0, array);
-	}
-	
-	/******************************************************************************
-	 * 
-	 ******************************************************************************/
 	public static boolean checkReturnNull(int nullRatioPercent) {
 		
-		if(nullRatioPercent >= randomIntegerInRange(1, 100) ) {
+		if(nullRatioPercent >= integerInRange(1, 100) ) {
 			return true;
 		}
 		
 		return false;
 	}
+	
+	/******************************************************************************
+	 * Returns a random Boolean
+	 ******************************************************************************/
+	public static Boolean bool() { return bool(0);}
+	
+	/******************************************************************************
+	 * Returns a random Boolean and maybe null.
+	 ******************************************************************************/
+	public static Boolean bool(int nullRatioPercent) { 
+
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		return random.nextInt(100) > 50 ? true : false; 
+	}
+
 	
 	/******************************************************************************
 	 * Returns a random item from Set.
@@ -411,7 +405,7 @@ public class CFWRandom {
 	 * @return random value, null if Set is empty or null
 	 * 
 	 ******************************************************************************/
-	public static <T> T randomFromSet(int nullRatioPercent, Set<T> set) {
+	public static <T> T fromSet(int nullRatioPercent, Set<T> set) {
 		
 		if(set == null || set.isEmpty()) {
 			return null;
@@ -437,6 +431,25 @@ public class CFWRandom {
 		
 	}
 	
+	/******************************************************************************
+	 * Returns a random String from an array.
+	 * 
+	 * @param array to choose from
+	 * 
+	 ******************************************************************************/
+	public static String fromArray(String[] array) {
+	    int index = random.nextInt(array.length);
+	    return array[index];
+	}
+	
+	/******************************************************************************
+	 * Returns a random value from the given array.
+	 ******************************************************************************/
+	public static <T> T fromArray(T[] array) {
+	    return fromArray(0, array);
+	}
+	
+
 
 	/******************************************************************************
 	 * Returns a random item from an array.
@@ -445,7 +458,7 @@ public class CFWRandom {
 	 * should be returned.
 	 * 
 	 ******************************************************************************/
-	public static <T> T randomFromArray(int nullRatioPercent, T[] array) {
+	public static <T> T fromArray(int nullRatioPercent, T[] array) {
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
 		
@@ -453,69 +466,60 @@ public class CFWRandom {
 		return array[index];
 	}
 	
-	/******************************************************************************
-	 * Returns a random item from an array.
-	 * 
-	 * @param array to choose from
-	 * 
-	 ******************************************************************************/
-	public static String randomFromArray(String[] array) {
-	    int index = random.nextInt(array.length);
-	    return array[index];
-	}
+
 	
 	//==============================================================================
 	// Various methods calling randomFromArray
 	//==============================================================================
-	public static String randomFirstnameOfGod(int nullRatioPercent) { return randomFromArray(nullRatioPercent, firstnameGods); }
-	public static String randomLastnameSweden(int nullRatioPercent) { return randomFromArray(nullRatioPercent, lastnameSweden); }
-	public static String randomMythicalLocation(int nullRatioPercent) { return randomFromArray(nullRatioPercent, mythicalLocations); }
-	public static String randomUltimateServiceName(int nullRatioPercent) { return randomFromArray(nullRatioPercent, ultimateServiceNames); }
-	public static String randomColorName(int nullRatioPercent) { return randomFromArray(nullRatioPercent, colorNames); }
-	public static String randomFruitName(int nullRatioPercent) { return randomFromArray(nullRatioPercent, fruitNames); }
-	public static String randomItalianDessert(int nullRatioPercent) { return randomFromArray(nullRatioPercent, italianDesserts); }
-	public static String randomExaggaratingAdjective(int nullRatioPercent) { return randomFromArray(nullRatioPercent, exaggeratingAdjectives); }
-	public static String randomIssueResolvedMessage(int nullRatioPercent) { return randomFromArray(nullRatioPercent, issueResolvedMessages); }
-	public static String randomMessageOfObedience(int nullRatioPercent) { return randomFromArray(nullRatioPercent, messagesOfObedience); }
+	public static String firstnameOfGod(int nullRatioPercent) { return fromArray(nullRatioPercent, firstnameGods); }
+	public static String lastnameSweden(int nullRatioPercent) { return fromArray(nullRatioPercent, lastnameSweden); }
+	public static String mythicalLocation(int nullRatioPercent) { return fromArray(nullRatioPercent, mythicalLocations); }
+	public static String ultimateServiceName(int nullRatioPercent) { return fromArray(nullRatioPercent, ultimateServiceNames); }
+	public static String colorName(int nullRatioPercent) { return fromArray(nullRatioPercent, colorNames); }
+	public static String fruitName(int nullRatioPercent) { return fromArray(nullRatioPercent, fruitNames); }
+	public static String italianDessert(int nullRatioPercent) { return fromArray(nullRatioPercent, italianDesserts); }
+	public static String exaggaratingAdjective(int nullRatioPercent) { return fromArray(nullRatioPercent, exaggeratingAdjectives); }
+	public static String issueResolvedMessage(int nullRatioPercent) { return fromArray(nullRatioPercent, issueResolvedMessages); }
+	public static String messageOfObedience(int nullRatioPercent) { return fromArray(nullRatioPercent, messagesOfObedience); }
 	
-	public static String randomJobTitle(int nullRatioPercent) { 
+	public static String jobTitle(int nullRatioPercent) { 
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
 		
-		return randomFromArray(jobTitleAdjective)
-		+ " " +randomFromArray(jobTitleTopic)
-		+ " " +randomFromArray(jobTitleRole)
+		return fromArray(jobTitleAdjective)
+		+ " " +fromArray(jobTitleTopic)
+		+ " " +fromArray(jobTitleRole)
 			; 
 	}
 	
-	public static String randomStatisticsTitle(int nullRatioPercent) { 
+	public static String statisticsTitle(int nullRatioPercent) { 
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
 		
-		return randomFromArray(statisticsTitleAdjective)
-		+ " " +randomFromArray(statisticsTitleObject)
-		+ " " +randomFromArray(statisticsTitleVerb)
+		return fromArray(statisticsTitleAdjective)
+		+ " " +fromArray(statisticsTitleObject)
+		+ " " +fromArray(statisticsTitleVerb)
 			; 
 	}
 	
-	public static String randomMethodName(int nullRatioPercent) { 
+	public static String methodName(int nullRatioPercent) { 
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
 		
-		return randomFromArray(methodNamePrefix)
-		+randomFromArray(methodNameItem)
-		+randomFromArray(methodNameSuffix)
+		return fromArray(methodNamePrefix)
+		+fromArray(methodNameItem)
+		+fromArray(methodNameSuffix)
 		+ "()"
 			; 
 	}
 	
-	public static String randomCompanyTitle(int nullRatioPercent) { 
+	public static String companyTitle(int nullRatioPercent) { 
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
 		
-		return randomFromArray(companyTitleFirst)
-		+ " " +randomFromArray(companyTitleSecond)
-		+ " " +randomFromArray(companyTitleThird)
+		return fromArray(companyTitleFirst)
+		+ " " +fromArray(companyTitleSecond)
+		+ " " +fromArray(companyTitleThird)
 			; 
 	}
 	
@@ -523,38 +527,38 @@ public class CFWRandom {
 	//==============================================================================
 	// Overload methonds for above with 0% null ratio
 	//==============================================================================
-	public static String randomFirstnameOfGod() { return randomFirstnameOfGod(0); }
-	public static String randomLastnameSweden() { return randomLastnameSweden(0); }
-	public static String randomMythicalLocation() { return randomMythicalLocation(0); }
-	public static String randomUltimateServiceName() { return randomUltimateServiceName(0); }
-	public static String randomColorName() { return randomColorName(0); }
-	public static String randomFruitName() { return randomFruitName(0); }
-	public static String randomItalianDessert() { return randomItalianDessert(0); }
-	public static String randomExaggaratingAdjective() { return randomExaggaratingAdjective(0); }
-	public static String randomIssueResolvedMessage() { return randomIssueResolvedMessage(0); }
-	public static String randomMessageOfObedience() { return randomMessageOfObedience(0); }
-	public static String randomJobTitle() { return randomJobTitle(0); }
-	public static String randomStatisticsTitle() { return randomStatisticsTitle(0); }
-	public static String randomMethodName() { return randomMethodName(0); }
-	public static String randomCompanyTitle() { return randomCompanyTitle(0); }
+	public static String firstnameOfGod() { return firstnameOfGod(0); }
+	public static String lastnameSweden() { return lastnameSweden(0); }
+	public static String mythicalLocation() { return mythicalLocation(0); }
+	public static String ultimateServiceName() { return ultimateServiceName(0); }
+	public static String colorName() { return colorName(0); }
+	public static String fruitName() { return fruitName(0); }
+	public static String italianDessert() { return italianDessert(0); }
+	public static String exaggaratingAdjective() { return exaggaratingAdjective(0); }
+	public static String issueResolvedMessage() { return issueResolvedMessage(0); }
+	public static String messageOfObedience() { return messageOfObedience(0); }
+	public static String jobTitle() { return jobTitle(0); }
+	public static String statisticsTitle() { return statisticsTitle(0); }
+	public static String methodName() { return methodName(0); }
+	public static String companyTitle() { return companyTitle(0); }
 
 	/******************************************************************************
 	 * Creates a random Message Type.
 	 ******************************************************************************/
-	public static MessageType randomMessageType() { 
-		return randomFromArray(MessageType.values());
+	public static MessageType messageType() { 
+		return fromArray(MessageType.values());
 	}
 	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static String[] randomArrayOfExaggaratingAdjectives(int count) { 
+	public static String[] arrayOfExaggaratingAdjectives(int count) { 
 		
 		String[] stringArray = new String[count];
 			
 		for(int i = 0; i < count; i++) {
-			stringArray[i] = randomExaggaratingAdjective();
+			stringArray[i] = exaggaratingAdjective();
 		}
 		
 		return stringArray;
@@ -564,7 +568,7 @@ public class CFWRandom {
 	 * Creates a random integer between 0(inclusive) and the given number(inclusive).
 	 * 
 	 ******************************************************************************/
-	public static Integer randomFromZeroToInteger(int upperInclusive) {
+	public static Integer fromZeroToInteger(int upperInclusive) {
 		
 		return ThreadLocalRandom.current().nextInt(upperInclusive+1);
 	}
@@ -574,16 +578,16 @@ public class CFWRandom {
 	 * Returns nulls for a certain percentage
 	 * 
 	 ******************************************************************************/
-	public static Integer randomIntegerInRange(int lowerInclusive, int upperInclusive, int nullRatioPercent) {
+	public static Integer integerInRange(int lowerInclusive, int upperInclusive, int nullRatioPercent) {
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
 		
-		return randomIntegerInRange(lowerInclusive, upperInclusive);
+		return integerInRange(lowerInclusive, upperInclusive);
 	}
 	/******************************************************************************
 	 * Creates a random integer between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
-	public static Integer randomIntegerInRange(int lowerInclusive, int upperInclusive) {
+	public static Integer integerInRange(int lowerInclusive, int upperInclusive) {
 		
 		return ThreadLocalRandom.current().nextInt(lowerInclusive, upperInclusive+1);
 	}
@@ -592,7 +596,7 @@ public class CFWRandom {
 	 * Creates a random long between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
-	public static Long randomLongInRange(long lowerInclusive, long upperInclusive) {
+	public static Long longInRange(long lowerInclusive, long upperInclusive) {
 		return ThreadLocalRandom.current().nextLong(lowerInclusive, upperInclusive+1);
 	}
 	
@@ -600,7 +604,7 @@ public class CFWRandom {
 	 * Creates a random double between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
-	public static Double randomDoubleInRange(double lowerInclusive, double upperInclusive) {
+	public static Double doubleInRange(double lowerInclusive, double upperInclusive) {
 		
 		return ThreadLocalRandom.current().nextDouble(lowerInclusive, upperInclusive+1);
 	}
@@ -609,18 +613,18 @@ public class CFWRandom {
 	 * Creates a random float between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
-	public static Float randomFloatInRange(float lowerInclusive, float upperInclusive, int nullRatioPercent) {
+	public static Float floatInRange(float lowerInclusive, float upperInclusive, int nullRatioPercent) {
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
 		
-		return randomFloatInRange(lowerInclusive, upperInclusive);
+		return floatInRange(lowerInclusive, upperInclusive);
 	}
 	
 	/******************************************************************************
 	 * Creates a random float between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
-	public static Float randomFloatInRange(float lowerInclusive, float upperInclusive) {
+	public static Float floatInRange(float lowerInclusive, float upperInclusive) {
 		
 		float randomFloat = ThreadLocalRandom.current().nextFloat();
 		float diff = upperInclusive - lowerInclusive;
@@ -633,9 +637,9 @@ public class CFWRandom {
 	 * 
 	 * @return
 	 ******************************************************************************/
-	public static BigDecimal randomBigDecimalInRange(long lowerInclusive, long upperInclusive) {
+	public static BigDecimal bigDecimal(long lowerInclusive, long upperInclusive) {
 		
-		long number = CFW.Random.randomLongInRange(lowerInclusive, upperInclusive);
+		long number = CFW.Random.longInRange(lowerInclusive, upperInclusive);
 		return new BigDecimal(number);
 
 	}
@@ -645,8 +649,8 @@ public class CFWRandom {
 	 * 
 	 * @return
 	 ******************************************************************************/
-	public static BigDecimal randomBigDecimalInRange(int lowerInclusive, int upperInclusive, int maxDecimals) {
-		return randomBigDecimalInRange((long)lowerInclusive, (long)upperInclusive, maxDecimals);
+	public static BigDecimal bigDecimal(int lowerInclusive, int upperInclusive, int maxDecimals) {
+		return bigDecimal((long)lowerInclusive, (long)upperInclusive, maxDecimals);
 	}
 	
 	/******************************************************************************
@@ -654,12 +658,12 @@ public class CFWRandom {
 	 * 
 	 * @return
 	 ******************************************************************************/
-	public static BigDecimal randomBigDecimalInRange(long lowerInclusive, long upperInclusive, int maxDecimals) {
+	public static BigDecimal bigDecimal(long lowerInclusive, long upperInclusive, int maxDecimals) {
 		
-		long number = CFW.Random.randomLongInRange(lowerInclusive, upperInclusive);
+		long number = CFW.Random.longInRange(lowerInclusive, upperInclusive);
 		
 		
-		long decimals = CFW.Random.randomLongInRange(1, 9 * (10 ^ (maxDecimals-1)));
+		long decimals = CFW.Random.longInRange(1, 9 * (10 ^ (maxDecimals-1)));
 		
 		BigDecimal decimal = new BigDecimal(number+"."+decimals);
 		
@@ -671,9 +675,9 @@ public class CFWRandom {
 	 * Creates a random Timestamp between given milliseconds(inclusive).
 	 * 
 	 ******************************************************************************/
-	public static Timestamp randomTimestampInRange(Timestamp earliestInclusive, Timestamp latestInclusive) {
+	public static Timestamp timestamp(Timestamp earliestInclusive, Timestamp latestInclusive) {
 		
-		return randomTimestampInRange(earliestInclusive.getTime(), latestInclusive.getTime());
+		return timestamp(earliestInclusive.getTime(), latestInclusive.getTime());
 	}
 	
 	/******************************************************************************
@@ -687,9 +691,9 @@ public class CFWRandom {
 		</code></pre>
 	 * 
 	 ******************************************************************************/
-	public static Timestamp randomTimestampInRange(long earliestInclusive, long latestInclusive) {
+	public static Timestamp timestamp(long earliestInclusive, long latestInclusive) {
 		
-		long timeMillis = randomLongInRange(earliestInclusive, latestInclusive);
+		long timeMillis = longInRange(earliestInclusive, latestInclusive);
 		return new Timestamp(timeMillis);
 	}
 		
@@ -700,7 +704,7 @@ public class CFWRandom {
 	 * @param byteCount number of bytes to create
 	 * @return
 	 ******************************************************************************/
-	public static String randomString(int byteCount) {
+	public static String string(int byteCount) {
 	
 		StringBuilder builder = new StringBuilder();
 	
@@ -719,7 +723,7 @@ public class CFWRandom {
 	 * @param byteCount number of bytes to create
 	 * @return
 	 ******************************************************************************/
-	public static String randomStringAlphaNumerical(int byteCount) {
+	public static String stringAlphaNum(int byteCount) {
 	
 		StringBuilder builder = new StringBuilder();
 	
@@ -737,7 +741,7 @@ public class CFWRandom {
 	 * @param byteCount number of bytes to create
 	 * @return
 	 ******************************************************************************/
-	public static String randomStringAlphaNumSpecial(int byteCount) {
+	public static String stringAlphaNumSpecial(int byteCount) {
 	
 		StringBuilder builder = new StringBuilder();
 	
@@ -757,11 +761,11 @@ public class CFWRandom {
 	 * @param minL The minimum Lightness in percent 0-100
 	 * @param maxL The maximum Lightness in percent 0-100
 	 ************************************************************************************************/
-	public static String randomColorHSL(int minS, int maxS, int minL, int maxL) { 
+	public static String colorHSL(int minS, int maxS, int minL, int maxL) { 
 		
-		int h = randomIntegerInRange(0,256);
-		int s = randomIntegerInRange(minS, maxS);
-		int l = randomIntegerInRange(minL, maxL);
+		int h = integerInRange(0,256);
+		int s = integerInRange(minS, maxS);
+		int l = integerInRange(minL, maxL);
 		
 		return "hsla("+h+","+s+"%,"+l+"%, 1.0)";
 		
@@ -775,10 +779,10 @@ public class CFWRandom {
 	 * @param minL The minimum Lightness in percent 0-100
 	 * @param maxL The maximum Lightness in percent 0-100
 	 ************************************************************************************************/
-	public static String randomColorSL(int hue, int minS, int maxS, int minL, int maxL) { 
+	public static String colorSL(int hue, int minS, int maxS, int minL, int maxL) { 
 		
-		int s = randomIntegerInRange(minS, maxS);
-		int l = randomIntegerInRange(minL, maxL);
+		int s = integerInRange(minS, maxS);
+		int l = integerInRange(minL, maxL);
 		
 		return "hsla("+Math.abs(hue % 360)+","+s+"%,"+l+"%, 1.0)";
 		
@@ -832,17 +836,17 @@ public class CFWRandom {
 
 		switch(type) {
 		
-			case DEFAULT:		return  CFW.Random.randomJSONArrayOfMightyPeople(count, 5, earliest, latest);
-			case NUMBERS:		return CFW.Random.randomJSONArrayOfNumberData(count, 0, earliest, latest);
-			case ARRAYS:		return CFW.Random.randomJSONArrayOfArrayData(count, 0, earliest, latest);
-			case SERIES:		return CFW.Random.randomJSONArrayOfSeriesData(seriesCount, count, earliest, latest);
-			case STATS:			return CFW.Random.randomJSONArrayOfStatisticalSeriesData(seriesCount, count, earliest, latest);
-			case TRADING:		return CFW.Random.randomJSONArrayOfTradingData(seriesCount, count, earliest, latest);
-			case TICKETS: 		return CFW.Random.randomJSONArrayOfSupportTickets(count);
-			case BATCHJOBS:		return CFW.Random.randomJSONArrayOfBatchCalls(seriesCount, count, earliest, latest, 7);
-			case VARIOUS:		return CFW.Random.randomJSONArrayOfVariousData(count, 0, earliest, latest);
+			case DEFAULT:		return  CFW.Random.jsonArrayOfMightyPeople(count, 5, earliest, latest);
+			case NUMBERS:		return CFW.Random.jsonArrayOfNumberData(count, 0, earliest, latest);
+			case ARRAYS:		return CFW.Random.jsonArrayOfArrayData(count, 0, earliest, latest);
+			case SERIES:		return CFW.Random.jsonArrayOfSeriesData(seriesCount, count, earliest, latest);
+			case STATS:			return CFW.Random.jsonArrayOfStatisticalSeriesData(seriesCount, count, earliest, latest);
+			case TRADING:		return CFW.Random.jsonArrayOfTradingData(seriesCount, count, earliest, latest);
+			case TICKETS: 		return CFW.Random.jsonArrayOfSupportTickets(count);
+			case BATCHJOBS:		return CFW.Random.jsonArrayOfBatchCalls(seriesCount, count, earliest, latest, 7);
+			case VARIOUS:		return CFW.Random.jsonArrayOfVariousData(count, 0, earliest, latest);
 			
-			default: 			return  CFW.Random.randomJSONArrayOfMightyPeople(count, 5, earliest, latest);
+			default: 			return  CFW.Random.jsonArrayOfMightyPeople(count, 5, earliest, latest);
 		}
 
 	}
@@ -851,11 +855,11 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfRandomStrings(int count, int stringLength) { 
+	public static JsonArray jsonArrayOfRandomStrings(int count, int stringLength) { 
 		JsonArray array = new JsonArray();
 				
 		for(int i = 0; i < count; i++) {
-			array.add(randomString(stringLength));
+			array.add(string(stringLength));
 		}
 		
 		return array;
@@ -866,18 +870,18 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfMixedTypes(int minElements, int maxElements) { 
+	public static JsonArray jsonArrayOfMixedTypes(int minElements, int maxElements) { 
 		JsonArray array = new JsonArray();
 		
-		int count = randomIntegerInRange(minElements, maxElements);
+		int count = integerInRange(minElements, maxElements);
 		for(int i = 0; i < count; i++) {
 			
 			switch(i % 4) {
-				case 0: array.add(randomMythicalLocation(15));  break;
-				case 1: array.add(randomBoolean(15));  break;
-				case 2: array.add(randomIntegerInRange(0, 100));  break;
-				case 3: array.add(randomFloatInRange(0, 10000));  break;
-				default: array.add(randomStringAlphaNumSpecial(6));  break;
+				case 0: array.add(mythicalLocation(15));  break;
+				case 1: array.add(bool(15));  break;
+				case 2: array.add(integerInRange(0, 100));  break;
+				case 3: array.add(floatInRange(0, 10000));  break;
+				default: array.add(stringAlphaNumSpecial(6));  break;
 			}
 			
 		}
@@ -890,11 +894,11 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfCharacters(int count) { 
+	public static JsonArray jsonArrayOfCharacters(int count) { 
 		JsonArray array = new JsonArray();
 				
 		for(int i = 0; i < count; i++) {
-			array.add(randomString(1));
+			array.add(string(1));
 		}
 		
 		return array;
@@ -905,11 +909,11 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfIntegers(int count, int lowerInclusive, int upperInclusive) { 
+	public static JsonArray jsonArrayOfIntegers(int count, int lowerInclusive, int upperInclusive) { 
 		JsonArray array = new JsonArray();
 				
 		for(int i = 0; i < count; i++) {
-			array.add(randomIntegerInRange(lowerInclusive, upperInclusive));
+			array.add(integerInRange(lowerInclusive, upperInclusive));
 		}
 		
 		return array;
@@ -920,10 +924,10 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfMightyPeople(int count) { 
+	public static JsonArray jsonArrayOfMightyPeople(int count) { 
 		
 		long now = System.currentTimeMillis();
-		return randomJSONArrayOfMightyPeople(count,  0, CFWTimeUnit.h.offset(now, -1), now);
+		return jsonArrayOfMightyPeople(count,  0, CFWTimeUnit.h.offset(now, -1), now);
 	}
 	
 	
@@ -935,14 +939,14 @@ public class CFWRandom {
 	 * @param earliest time
 	 * @param latest time
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfMightyPeople(int count, int nullRatioPercent, long earliest, long latest) { 
+	public static JsonArray jsonArrayOfMightyPeople(int count, int nullRatioPercent, long earliest, long latest) { 
 		JsonArray array = new JsonArray();
 		
 		long diff = latest - earliest;
 		long diffStep = diff / count;
 		
 		for(int i = 0; i < count; i++) {
-			JsonObject person = CFWRandom.randomJSONObjectMightyPerson(nullRatioPercent);
+			JsonObject person = CFWRandom.jsonObjectMightyPerson(nullRatioPercent);
 			person.addProperty("INDEX", i );
 			person.addProperty("TIME", earliest +(i * diffStep));
 			array.add(person);
@@ -959,14 +963,14 @@ public class CFWRandom {
 	 * @param earliest time
 	 * @param latest time
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfNumberData(int count, int nullRatioPercent, long earliest, long latest) { 
+	public static JsonArray jsonArrayOfNumberData(int count, int nullRatioPercent, long earliest, long latest) { 
 		JsonArray array = new JsonArray();
 		
 		long diff = latest - earliest;
 		long diffStep = diff / count;
 		
 		for(int i = 0; i < count; i++) {
-			JsonObject object = CFWRandom.randomJSONObjectNumberData(nullRatioPercent);
+			JsonObject object = CFWRandom.jsonObjectNumberData(nullRatioPercent);
 			object.addProperty("TIME", earliest +(i * diffStep));
 			array.add(object);
 		}
@@ -982,14 +986,14 @@ public class CFWRandom {
 	 * @param earliest time
 	 * @param latest time
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfArrayData(int count, int nullRatioPercent, long earliest, long latest) { 
+	public static JsonArray jsonArrayOfArrayData(int count, int nullRatioPercent, long earliest, long latest) { 
 		JsonArray array = new JsonArray();
 		
 		long diff = latest - earliest;
 		long diffStep = diff / count;
 		
 		for(int i = 0; i < count; i++) {
-			JsonObject object = CFWRandom.randomJSONObjectArrayData(nullRatioPercent);
+			JsonObject object = CFWRandom.jsonObjectArrayData(nullRatioPercent);
 			object.addProperty("TIME", earliest +(i * diffStep));
 			array.add(object);
 		}
@@ -1005,14 +1009,14 @@ public class CFWRandom {
 	 * @param earliest time
 	 * @param latest time
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfVariousData(int count, int nullRatioPercent, long earliest, long latest) { 
+	public static JsonArray jsonArrayOfVariousData(int count, int nullRatioPercent, long earliest, long latest) { 
 		JsonArray array = new JsonArray();
 		
 		long diff = latest - earliest;
 		long diffStep = diff / count;
 		
 		for(int i = 0; i < count; i++) {
-			JsonObject object = CFWRandom.randomJSONObjectVariousData(nullRatioPercent);
+			JsonObject object = CFWRandom.jsonObjectVariousData(nullRatioPercent);
 			
 			JsonObject graphData = new JsonObject();
 			graphData.addProperty("x", i+0);
@@ -1032,11 +1036,11 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfSupportTickets(int count) { 
+	public static JsonArray jsonArrayOfSupportTickets(int count) { 
 		JsonArray array = new JsonArray();
 				
 		for(int i = 0; i < count; i++) {
-			array.add(randomJSONObjectSupportTickets());
+			array.add(jsonObjectSupportTickets());
 		}
 		
 		return array;
@@ -1046,11 +1050,11 @@ public class CFWRandom {
 	 * 
 	 * @param valuesCount
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfBatchCalls(int seriesCount, int valuesCount, long earliest, long latest, int maxDepth) { 
+	public static JsonArray jsonArrayOfBatchCalls(int seriesCount, int valuesCount, long earliest, long latest, int maxDepth) { 
 		JsonArray array = new JsonArray();
 		for(int k = 0; k < seriesCount; k++) {
 			JsonArray series = new JsonArray();
-			randomJSONArrayOfBatchCalls(series, randomUltimateServiceName(), valuesCount, earliest, latest, maxDepth);
+			jsonArrayOfBatchCalls(series, ultimateServiceName(), valuesCount, earliest, latest, maxDepth);
 			array.addAll(series);
 		}
 		return array;
@@ -1061,7 +1065,7 @@ public class CFWRandom {
 	 * 
 	 * @param valuesCount
 	 ******************************************************************************/
-	private static JsonArray randomJSONArrayOfBatchCalls(JsonArray array, String serviceName, int valuesCount, long earliest, long latest, int maxDepth) { 
+	private static JsonArray jsonArrayOfBatchCalls(JsonArray array, String serviceName, int valuesCount, long earliest, long latest, int maxDepth) { 
 		
 		
 		long span = latest - earliest;
@@ -1070,16 +1074,16 @@ public class CFWRandom {
 		JsonObject currentItem = new JsonObject();
 						
 		currentItem.addProperty("SERVICE", serviceName);
-		currentItem.addProperty("NAME", randomMethodName());
-		currentItem.addProperty("QUEUED", earliest - randomLongInRange( 0, (span / 3) ) );
+		currentItem.addProperty("NAME", methodName());
+		currentItem.addProperty("QUEUED", earliest - longInRange( 0, (span / 3) ) );
 		currentItem.addProperty("START", earliest);
 		currentItem.addProperty("END", latest);
 		currentItem.addProperty("DURATION", latest - earliest);
-		currentItem.addProperty("REPORTED", latest + randomLongInRange( 0 , (span / 3) ) );
-		currentItem.addProperty("RESULTS", randomIntegerInRange(0,10000) );
-		currentItem.addProperty("ERRORS", (randomIntegerInRange(0, 100) > 20) 
+		currentItem.addProperty("REPORTED", latest + longInRange( 0 , (span / 3) ) );
+		currentItem.addProperty("RESULTS", integerInRange(0,10000) );
+		currentItem.addProperty("ERRORS", (integerInRange(0, 100) > 20) 
 											? 0 
-											: randomIntegerInRange(5,1000) 
+											: integerInRange(5,1000) 
 											);
 
 		if(maxDepth == 0 || array.size() >= valuesCount) {
@@ -1094,13 +1098,13 @@ public class CFWRandom {
 		// Create Values for Series
 		int directCalls = 0;
 		if(maxDepth > 0) {
-			directCalls = randomIntegerInRange(0, (maxDepth / 2)+1);
+			directCalls = integerInRange(0, (maxDepth / 2)+1);
 		}
 		
 		// tighten the timeframe
 		long oneTwentieth = (latest - earliest) / 20;
-		earliest = earliest + randomLongInRange( 0, oneTwentieth );
-		latest =  latest + randomLongInRange( 0, oneTwentieth );
+		earliest = earliest + longInRange( 0, oneTwentieth );
+		latest =  latest + longInRange( 0, oneTwentieth );
 		
 		long currentEarliest = earliest;
 		long remainder = latest - earliest;
@@ -1109,10 +1113,10 @@ public class CFWRandom {
 			
 			long part = remainder / (directCalls-j);
 			
-			long currentLatest = currentEarliest + randomLongInRange( Math.round(part * 0.75), part);
+			long currentLatest = currentEarliest + longInRange( Math.round(part * 0.75), part);
 		
 			
-			randomJSONArrayOfBatchCalls(array, serviceName, valuesCount, currentEarliest, currentLatest, maxDepth - 1);
+			jsonArrayOfBatchCalls(array, serviceName, valuesCount, currentEarliest, currentLatest, maxDepth - 1);
 			
 			//---------------------------
 			// Check Size Limit Reached
@@ -1135,7 +1139,7 @@ public class CFWRandom {
 	 * 
 	 * @param valuesCount
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfStatisticalSeriesData(int seriesCount, int valuesCount, long earliest, long latest) { 
+	public static JsonArray jsonArrayOfStatisticalSeriesData(int seriesCount, int valuesCount, long earliest, long latest) { 
 		JsonArray array = new JsonArray();
 		
 		long timerange = latest - earliest;
@@ -1146,7 +1150,7 @@ public class CFWRandom {
 		//--------------------------------------
 		// Create Series 
 		for(int i = 0; i < seriesCount; i++) {
-			String statisticName = randomStatisticsTitle();
+			String statisticName = statisticsTitle();
 
 			//--------------------------------------
 			// Create Values for Series
@@ -1154,18 +1158,18 @@ public class CFWRandom {
 				
 				JsonObject currentItem = new JsonObject();
 				
-				int count = randomIntegerInRange(5,100);
+				int count = integerInRange(5,100);
 				
 				ArrayList<BigDecimal> values = new ArrayList<>();
-				int lowerBound = randomIntegerInRange(0, 20);
-				int upperBound = randomIntegerInRange(40, 100);
+				int lowerBound = integerInRange(0, 20);
+				int upperBound = integerInRange(40, 100);
 				
-				int outlierPercentage = randomIntegerInRange(0,100);
-				if     (outlierPercentage > 95) { upperBound = randomIntegerInRange(200,500); }
-				else if(outlierPercentage > 90) { upperBound = randomIntegerInRange(100,200); }
+				int outlierPercentage = integerInRange(0,100);
+				if     (outlierPercentage > 95) { upperBound = integerInRange(200,500); }
+				else if(outlierPercentage > 90) { upperBound = integerInRange(100,200); }
 					
 				for(int k = 0; k < count; k++) {
-					values.add( randomBigDecimalInRange(lowerBound, upperBound, randomFromArray(decimals) ) );
+					values.add( bigDecimal(lowerBound, upperBound, fromArray(decimals) ) );
 				}
 				currentItem.addProperty("TIME", earliest+(timestep*j));
 				currentItem.addProperty("STATISTIC", statisticName);
@@ -1194,7 +1198,7 @@ public class CFWRandom {
 	 * 
 	 * @param valuesCount
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfTradingData(int seriesCount, int valuesCount, long earliest, long latest) { 
+	public static JsonArray jsonArrayOfTradingData(int seriesCount, int valuesCount, long earliest, long latest) { 
 		JsonArray array = new JsonArray();
 		
 		long timerange = latest - earliest;
@@ -1203,11 +1207,11 @@ public class CFWRandom {
 		//--------------------------------------
 		// Create Series 
 		for(int i = 0; i < seriesCount; i++) {
-			String symbol = randomString(3).toUpperCase();
-			String stockName = randomCompanyTitle();
+			String symbol = string(3).toUpperCase();
+			String stockName = companyTitle();
 			
-			float open = randomFloatInRange(0, randomFromArray(new Integer[]{1,10, 50, 100, 100, 100, 200, 500, 1000, 3000}) );
-			float volatilityPercent = randomFloatInRange(0.01f, 0.1f);
+			float open = floatInRange(0, fromArray(new Integer[]{1,10, 50, 100, 100, 100, 200, 500, 1000, 3000}) );
+			float volatilityPercent = floatInRange(0.01f, 0.1f);
 			float lowerVolatility = 1.0f - volatilityPercent;
 			float highervolatility = 1.0f + volatilityPercent;
 			
@@ -1217,9 +1221,9 @@ public class CFWRandom {
 				
 				JsonObject currentItem = new JsonObject();
 				
-				float close = randomFloatInRange(open * lowerVolatility, open * highervolatility);
-				float high = randomFloatInRange(Math.max(open, close), Math.max(open, close) * 1.1f);
-				float low = randomFloatInRange(Math.min(open, close), Math.min(open, close) * 0.9f);
+				float close = floatInRange(open * lowerVolatility, open * highervolatility);
+				float high = floatInRange(Math.max(open, close), Math.max(open, close) * 1.1f);
+				float low = floatInRange(Math.min(open, close), Math.min(open, close) * 0.9f);
 				
 
 				currentItem.addProperty("TIME", earliest+(timestep*j));
@@ -1246,7 +1250,7 @@ public class CFWRandom {
 	 * 
 	 * @param valuesCount
 	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfSeriesData(int seriesCount, int valuesCount, long earliest, long latest) { 
+	public static JsonArray jsonArrayOfSeriesData(int seriesCount, int valuesCount, long earliest, long latest) { 
 		JsonArray array = new JsonArray();
 		
 		long timerange = latest - earliest;
@@ -1258,9 +1262,9 @@ public class CFWRandom {
 		//--------------------------------------
 		// Create Series 
 		for(int i = 0; i < seriesCount; i++) {
-			String warehouse = randomColorName()+" "+randomStringAlphaNumerical(1).toUpperCase()+randomIntegerInRange(1, 9);
-			String item = randomFruitName();
-			float priceMultiplier = randomFloatInRange(0.5f, 5.6f);
+			String warehouse = colorName()+" "+stringAlphaNum(1).toUpperCase()+integerInRange(1, 9);
+			String item = fruitName();
+			float priceMultiplier = floatInRange(0.5f, 5.6f);
 						
 			//--------------------------------------
 			// Create Values for Series
@@ -1270,18 +1274,18 @@ public class CFWRandom {
 				currentItem.addProperty("TIME", earliest+(timestep*j));
 				currentItem.addProperty("WAREHOUSE", warehouse);
 				currentItem.addProperty("ITEM", item);
-				currentItem.addProperty("CLASS", randomFromArray(classesArray));
+				currentItem.addProperty("CLASS", fromArray(classesArray));
 				
 				currentItem.addProperty("COUNT", generator.getValue(j) );
 				
 				//--------------------------------------
 				// Additional Values
-				Float price = randomFloatInRange(0.5f, 1.6f) * priceMultiplier;
-				int boxSize = randomFromArray(boxsizeArray);
+				Float price = floatInRange(0.5f, 1.6f) * priceMultiplier;
+				int boxSize = fromArray(boxsizeArray);
 				
 				currentItem.addProperty("PRICE", price);
 				currentItem.addProperty("BOX_SIZE", boxSize);
-				currentItem.addProperty("PERCENT", randomIntegerInRange(1, 100));
+				currentItem.addProperty("PERCENT", integerInRange(1, 100));
 				
 				currentItem.addProperty("TOTAL", price * boxSize );
 				
@@ -1304,9 +1308,10 @@ public class CFWRandom {
 	 ******************************************************************************/
 	public class RandomSeriesGenerator{
 		
-		private int seriesType = randomIntegerInRange(0, 7);
-		private float jumpPosition1 = randomFloatInRange(0.3f, 5f);
-		private float jumpPosition2 = randomFloatInRange(0.3f, 5f);
+		private int seriesType = integerInRange(0, 9);
+		private int base = integerInRange(0, 100);
+		private float jumpPosition1 = floatInRange(0.3f, 5f);
+		private float jumpPosition2 = floatInRange(0.3f, 5f);
 		private float smallerJump = Math.min(jumpPosition1, jumpPosition2);
 		private float biggerJump = Math.max(jumpPosition1, jumpPosition2);
 		
@@ -1322,61 +1327,69 @@ public class CFWRandom {
 			
 			switch(seriesType) {
 				case 0: // random
-					return randomIntegerInRange(0, 100);
+					return integerInRange(0, 100);
 				
 				case 1: // increase
-					return (int) ((Math.abs(Math.sin(index)) * 30) + randomIntegerInRange(5, 15)) * (index / 10);
+					return (int) ((Math.abs(Math.sin(index)) * 30) + integerInRange(5, 15) * (index / 10.0) );
 				
 				case 2: // decrease
 					float divisor = totalValuesCount / ((totalValuesCount - index) / 1.1f);
-					return (int) Math.round( ((Math.abs(Math.sin(index)) * 30) + randomIntegerInRange(5, 15)) / divisor) ;
+					return (int) Math.round( ((Math.abs(Math.sin(index)) * 30) + integerInRange(5, 15)) / divisor) ;
 				
 				case 3: //jump up
 					if((totalValuesCount / (float)(index+1)) > jumpPosition1) {
-						return randomIntegerInRange(10, 30);
+						return integerInRange(10, 30);
 					}else {
-						return 70+randomIntegerInRange(0, 30);
+						return 70 + integerInRange(0, 30);
 					}
 				
 				case 4: //jump down
 					if((totalValuesCount / (float)(index+1)) > jumpPosition2) {
-						return randomIntegerInRange(60, 100);
+						return integerInRange(60, 100);
 					}else {
-						return randomIntegerInRange(5, 30);
+						return integerInRange(5, 30);
 					}
 				
 				case 5: //jump up & down
 					if((totalValuesCount / (float)(index+1)) > biggerJump) {
-						return randomIntegerInRange(15, 25);
+						return integerInRange(15, 25);
 					}else if ( (totalValuesCount / (float)(index+1)) > smallerJump) {
-						return 70+randomIntegerInRange(0, 30);
+						return 70 + integerInRange(0, 30);
 					}else {
-						return randomIntegerInRange(15, 25);
+						return integerInRange(15, 25);
 					}	
 	
 				case 6: //jump down & up
 					if((totalValuesCount / (float)(index+1)) > biggerJump) {
-						return randomIntegerInRange(70, 90);
+						return integerInRange(70, 90);
 					}else if ( (totalValuesCount / (float)(index+1)) > smallerJump) {
-						return randomIntegerInRange(10, 25);
+						return integerInRange(10, 25);
 					}else {
-						return randomIntegerInRange(70, 90);
+						return integerInRange(70, 90);
 					}
 				
-				case 7: // Sinus
-					return (int) Math.round( 50+(Math.abs(Math.sin(index/4)) * 30) + randomIntegerInRange(0, 5) );
+				case 7: // Sine Wave Increasing
+					return (int) Math.round( (base + (Math.sin(index/4.0) * 10)) * (index / 25.0) );
+				
+				case 8: // Sine Wave Decreasing
+					float divisorSine = totalValuesCount / ((totalValuesCount - index) / 1.1f);
+					return (int) Math.round( (base + (Math.sin(index/4.0) * 10) + integerInRange(0, 3)) / divisorSine );
+				
+				case 9: // Sine Random
+					return (int) Math.round( base + (Math.abs(Math.sin(index/4.0)) * 10) + integerInRange(0, 5) );
 
-				case 8: // Sinus + Cos Increasing
+				case 10: // Sinus + Cos Increasing
 					return (int) Math.round( (
 								(Math.abs(Math.cos((index)/6)) * 10) 
-								+ (Math.abs(Math.sin(index/4)) * 30) 
-								+ randomIntegerInRange(0, 5)
-							) * (index / 10)
+								+ (Math.abs(Math.sin(index/4)) * 20) 
+								+ integerInRange(0, 5)
+								* (index / 10.0)
+							) 
 						);
 			}
 			
 			// default to random
-			return randomIntegerInRange(0, 100);
+			return integerInRange(0, 100);
 		}
 		
 
@@ -1388,9 +1401,9 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonObject randomJSONObjectMightyPerson() { 
+	public static JsonObject jsonObjectMightyPerson() { 
 		
-		return randomJSONObjectMightyPerson(0);
+		return jsonObjectMightyPerson(0);
 		
 	}
 	
@@ -1399,21 +1412,21 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonObject randomJSONObjectMightyPerson(int nullRatioPercent) { 
+	public static JsonObject jsonObjectMightyPerson(int nullRatioPercent) { 
 		long currentTime = new Date().getTime();
 		
 		JsonObject object = new JsonObject();
 		
 		String id = UUID.randomUUID().toString().substring(0, 22);
 		object.addProperty("ID",  id);
-		object.addProperty("FIRSTNAME", CFW.Random.randomFirstnameOfGod());
-		object.addProperty("LASTNAME", CFW.Random.randomLastnameSweden(nullRatioPercent));
-		object.addProperty("LOCATION", CFW.Random.randomMythicalLocation(nullRatioPercent));
+		object.addProperty("FIRSTNAME", CFW.Random.firstnameOfGod());
+		object.addProperty("LASTNAME", CFW.Random.lastnameSweden(nullRatioPercent));
+		object.addProperty("LOCATION", CFW.Random.mythicalLocation(nullRatioPercent));
 
-		object.addProperty("LIKES_TIRAMISU", CFW.Random.randomBoolean(nullRatioPercent));
-		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.randomLongInRange(100, 10000)*1000000) );
+		object.addProperty("LIKES_TIRAMISU", CFW.Random.bool(nullRatioPercent));
+		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.longInRange(100, 10000)*1000000) );
 		object.addProperty("URL", "http://www.example.url/mightyperson?id="+id);
-		object.addProperty("VALUE", CFW.Random.randomIntegerInRange(1, 100));
+		object.addProperty("VALUE", CFW.Random.integerInRange(1, 100));
 
 		
 		return object;
@@ -1425,7 +1438,7 @@ public class CFWRandom {
 	 * @param count
 	 ******************************************************************************/
 	private static final String[] ticketStatus = new String[] { "New", "New", "Open", "Open", "Open", "Open", "Blocked", "In Progress", "Rejected", "Closed"};
-	public static JsonObject randomJSONObjectSupportTickets() { 
+	public static JsonObject jsonObjectSupportTickets() { 
 		long currentTime = new Date().getTime();
 		
 		JsonObject object = new JsonObject();
@@ -1434,30 +1447,30 @@ public class CFWRandom {
 		// Base Values
 		String id = UUID.randomUUID().toString().substring(0, 22);
 		object.addProperty("LINK", "http://serviceportal.example.url/ticket?id="+id);
-		object.addProperty("TICKET_ID",  "TKT-00"+randomIntegerInRange(10000, 99999));
-		String status = randomFromArray(ticketStatus);
+		object.addProperty("TICKET_ID",  "TKT-00"+integerInRange(10000, 99999));
+		String status = fromArray(ticketStatus);
 		object.addProperty("STATUS",  status);
-		object.addProperty("PRIORITY",  randomIntegerInRange(1, 9));
-		object.addProperty("TITLE",  randomFromArray(firstWorldProblemTitles));
-		object.addProperty("SERVICE",  randomUltimateServiceName());
-		object.addProperty("USER_ID", "u"+randomIntegerInRange(10000, 99999) );
-		object.addProperty("USERNAME", CFW.Random.randomLastnameSweden().toUpperCase()+" "+CFW.Random.randomFirstnameOfGod());
+		object.addProperty("PRIORITY",  integerInRange(1, 9));
+		object.addProperty("TITLE",  fromArray(firstWorldProblemTitles));
+		object.addProperty("SERVICE",  ultimateServiceName());
+		object.addProperty("USER_ID", "u"+integerInRange(10000, 99999) );
+		object.addProperty("USERNAME", CFW.Random.lastnameSweden().toUpperCase()+" "+CFW.Random.firstnameOfGod());
 		
 		//--------------------------------------
 		// Assignee: 50% Unassigned when Status == New
-		if(status.equals("New") && randomIntegerInRange(0, 100) > 50) { 
+		if(status.equals("New") && integerInRange(0, 100) > 50) { 
 			object.add("ASSIGNEE_ID", JsonNull.INSTANCE );
 			object.add("ASSIGNEE_NAME", JsonNull.INSTANCE); 
 		}else {
-			object.addProperty("ASSIGNEE_ID", "u"+randomIntegerInRange(10000, 99999) );
-			object.addProperty("ASSIGNEE_NAME", CFW.Random.randomLastnameSweden().toUpperCase()+" "+CFW.Random.randomFirstnameOfGod());
+			object.addProperty("ASSIGNEE_ID", "u"+integerInRange(10000, 99999) );
+			object.addProperty("ASSIGNEE_NAME", CFW.Random.lastnameSweden().toUpperCase()+" "+CFW.Random.firstnameOfGod());
 		}
 		
 		//--------------------------------------
 		// Times
-		int createdOffsetMinutes = CFW.Random.randomIntegerInRange(200, 10000);
+		int createdOffsetMinutes = CFW.Random.integerInRange(200, 10000);
 		long createdMillis = CFWTimeUnit.m.offset(currentTime, createdOffsetMinutes);
-		int updatedOffsetMinutes = CFW.Random.randomIntegerInRange(10, createdOffsetMinutes-(createdOffsetMinutes/6));
+		int updatedOffsetMinutes = CFW.Random.integerInRange(10, createdOffsetMinutes-(createdOffsetMinutes/6));
 		long updatedMillis = CFWTimeUnit.m.offset(currentTime, updatedOffsetMinutes);
 		
 		object.addProperty("TIME_CREATED", createdMillis );
@@ -1465,7 +1478,7 @@ public class CFWRandom {
 		
 		//--------------------------------------
 		// Health
-		object.addProperty("HEALTH", CFW.Random.randomIntegerInRange(1, 100));
+		object.addProperty("HEALTH", CFW.Random.integerInRange(1, 100));
 
 		
 		return object;
@@ -1475,21 +1488,21 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonObject randomJSONObjectNumberData(int nullRatioPercent) { 
+	public static JsonObject jsonObjectNumberData(int nullRatioPercent) { 
 
 		//-------------------------------------------
 		// Prepare values in thousand steps
-		double multiplier = Math.pow(1000, randomIntegerInRange(0, 4));
-		double thousands = randomIntegerInRange(0, 1000) * multiplier;
-		BigDecimal tiny = randomBigDecimalInRange(0, 1000).setScale(12).divide( new BigDecimal(multiplier+1000), CFW.Math.ROUND_UP );
+		double multiplier = Math.pow(1000, integerInRange(0, 4));
+		double thousands = integerInRange(0, 1000) * multiplier;
+		BigDecimal tiny = bigDecimal(0, 1000).setScale(12).divide( new BigDecimal(multiplier+1000), CFW.Math.ROUND_UP );
 		
 		JsonObject object = new JsonObject();
 		
 		object.addProperty("UUID", UUID.randomUUID().toString());
 		object.addProperty("THOUSANDS",   thousands);
-		object.addProperty("FLOAT",   CFW.Random.randomFloatInRange(1, 10000000));
+		object.addProperty("FLOAT",   CFW.Random.floatInRange(1, 10000000));
 		object.addProperty("TINY_DECIMAL",   tiny);
-		object.addProperty("BIG_DECIMAL",   CFW.Random.randomBigDecimalInRange(1, 1000000, 2));
+		object.addProperty("BIG_DECIMAL",   CFW.Random.bigDecimal(1, 1000000, 2));
 		
 
 		return object;
@@ -1500,15 +1513,15 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonObject randomJSONObjectArrayData(int nullRatioPercent) { 
+	public static JsonObject jsonObjectArrayData(int nullRatioPercent) { 
 
 
 		JsonObject object = new JsonObject();
 		
-		object.add("ARRAY_NUMBERS", randomJSONArrayOfIntegers(12,0,100));
-		object.add("ARRAY_CHARACTERS", randomJSONArrayOfCharacters(10));
-		object.add("ARRAY_STRINGS", randomJSONArrayOfRandomStrings(6, 6));
-		object.add("ARRAY_MIXED", randomJSONArrayOfMixedTypes(5, 8));
+		object.add("ARRAY_NUMBERS", jsonArrayOfIntegers(12,0,100));
+		object.add("ARRAY_CHARACTERS", jsonArrayOfCharacters(10));
+		object.add("ARRAY_STRINGS", jsonArrayOfRandomStrings(6, 6));
+		object.add("ARRAY_MIXED", jsonArrayOfMixedTypes(5, 8));
 		return object;
 	}
 	
@@ -1517,16 +1530,16 @@ public class CFWRandom {
 	 * 
 	 * @param count
 	 ******************************************************************************/
-	public static JsonObject randomJSONObjectVariousData(int nullRatioPercent) { 
+	public static JsonObject jsonObjectVariousData(int nullRatioPercent) { 
 
 		JsonObject object = new JsonObject();
 		
 		object.addProperty("UUID", UUID.randomUUID().toString());
-		object.addProperty("BOOLEAN_STRING", ""+CFW.Random.randomBoolean(nullRatioPercent));
+		object.addProperty("BOOLEAN_STRING", ""+CFW.Random.bool(nullRatioPercent));
 		object.add("ALWAYS_NULL", JsonNull.INSTANCE);
-		object.addProperty("COLOR", randomColorName(nullRatioPercent));
-		object.addProperty("FRUIT", randomFruitName(nullRatioPercent));
-		object.addProperty("STATUS", randomFromArray(new String[] {"Excellent", "Good", "Warning", "Emergency", "Danger"}));
+		object.addProperty("COLOR", colorName(nullRatioPercent));
+		object.addProperty("FRUIT", fruitName(nullRatioPercent));
+		object.addProperty("STATUS", fromArray(new String[] {"Excellent", "Good", "Warning", "Emergency", "Danger"}));
 
 		return object;
 	}

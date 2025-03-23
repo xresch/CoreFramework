@@ -48,7 +48,7 @@ public class APITokenPermission extends CFWObject {
 	private CFWField<String> apiName = CFWField.newString(FormFieldType.TEXT, APITokenPermissionFields.API_NAME)
 			.setDescription("The apiName which can be used to access the API.")
 			.addValidator(new LengthValidator(1, 512))
-			.setValue(CFW.Random.randomStringAlphaNumerical(64));
+			.setValue(CFW.Random.stringAlphaNum(64));
 	
 	private CFWField<String> actionName = CFWField.newString(FormFieldType.TEXT, APITokenPermissionFields.ACTION_NAME)
 			.setDescription("The action name of this permission.")

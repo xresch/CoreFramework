@@ -608,7 +608,7 @@ public class ServletDashboardViewMethods
 				
 				settings.mapJsonFields(JSON_SETTINGS, false, true);
 				
-				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeReplacedByJavascript");
+				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.stringAlphaNumSpecial(6), "n/a-willBeReplacedByJavascript");
 				
 				form.appendToPayload(json);
 			}else {
@@ -744,7 +744,7 @@ public class ServletDashboardViewMethods
 				taskParams.mapJsonFields(widget.taskParameters(), true, true);
 				formObject.addAllFields(taskParams.getFields());
 				
-				CFWForm taskParamForm = formObject.toForm("cfwWidgetTaskParamForm"+CFW.Random.randomStringAlphaNumerical(16), "Save");
+				CFWForm taskParamForm = formObject.toForm("cfwWidgetTaskParamForm"+CFW.Random.stringAlphaNum(16), "Save");
 				
 				taskParamForm.setFormHandler(new CFWFormHandler() {
 					

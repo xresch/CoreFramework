@@ -176,7 +176,7 @@ public class CFWQueryFunctionRandomColorGroup extends CFWQueryFunction {
 		// Return Number
 		if(group == null) {
 			 return QueryPartValue.newString(
-					CFW.Random.randomColorHSL(minS, maxS, minL, maxL)
+					CFW.Random.colorHSL(minS, maxS, minL, maxL)
 				);
 		}
 		
@@ -188,9 +188,9 @@ public class CFWQueryFunctionRandomColorGroup extends CFWQueryFunction {
 		// make sure there is enough difference
 		if( Math.abs(lastHueValue - hueValue) < 50) {
 			if(lastHueValue < hueValue) {
-				hueValue += 50 - Math.abs(lastHueValue - hueValue) + CFW.Random.randomIntegerInRange(-10, +10);
+				hueValue += 50 - Math.abs(lastHueValue - hueValue) + CFW.Random.integerInRange(-10, +10);
 			}else {
-				hueValue -= 50 - Math.abs(lastHueValue - hueValue) + CFW.Random.randomIntegerInRange(-10, +10);;
+				hueValue -= 50 - Math.abs(lastHueValue - hueValue) + CFW.Random.integerInRange(-10, +10);;
 			}
 		}
 		
@@ -199,7 +199,7 @@ public class CFWQueryFunctionRandomColorGroup extends CFWQueryFunction {
 		//----------------------------------
 		// Create Color
 		QueryPartValue color =  QueryPartValue.newString(
-				CFW.Random.randomColorSL(hueValue, minS, maxS, minL, maxL)
+				CFW.Random.colorSL(hueValue, minS, maxS, minL, maxL)
 			);
 		
 		groupColorsCache.put(group, color);

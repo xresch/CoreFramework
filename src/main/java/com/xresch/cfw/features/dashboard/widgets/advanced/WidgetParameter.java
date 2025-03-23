@@ -233,7 +233,7 @@ public class WidgetParameter extends WidgetDefinition {
 		//--------------------------------------
 		// Create Form with Custom onclick event
 		
-		CFWForm paramForm = new CFWForm("cfwWidgetParameterForm"+CFW.Random.randomStringAlphaNumerical(12), buttonLabel);
+		CFWForm paramForm = new CFWForm("cfwWidgetParameterForm"+CFW.Random.stringAlphaNum(12), buttonLabel);
 		paramForm.isInlineForm(true);
 		paramForm.addAttribute("onclick", "cfw_parameter_fireParamWidgetUpdate(this);");
 		

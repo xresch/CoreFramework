@@ -141,7 +141,7 @@ public class CFWQueryFunctionRandomFloat extends CFWQueryFunction {
 		//----------------------------------
 		// Return Number
 		return QueryPartValue.newNumber(
-				CFW.Random.randomFloatInRange(lowerInclusive, upperInclusive, nullPercentage)
+				CFW.Random.floatInRange(lowerInclusive, upperInclusive, nullPercentage)
 			);
 		
 	}

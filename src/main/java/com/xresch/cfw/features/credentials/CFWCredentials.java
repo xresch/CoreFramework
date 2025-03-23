@@ -123,7 +123,7 @@ public class CFWCredentials extends CFWObject {
 	
 	private CFWField<String> salt = CFWField.newString(FormFieldType.NONE, CFWCredentialsFields.SALT)
 			.setDescription("The salt for the encrypting the password.")
-			.setValue(CFW.Random.randomStringAlphaNumSpecial(32))
+			.setValue(CFW.Random.stringAlphaNumSpecial(32))
 			;
 	
 	private CFWField<String> domain = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.DOMAIN)

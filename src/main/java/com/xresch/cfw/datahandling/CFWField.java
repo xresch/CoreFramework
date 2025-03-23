@@ -1267,7 +1267,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	private void createPasswordField(StringBuilder html, String cssClasses) {
 		
 		if(this.value != null && !value.toString().isEmpty()) {
-			String placeholderName = PASSWORD_STUB_PREFIX + CFWRandom.randomStringAlphaNumSpecial(7);
+			String placeholderName = PASSWORD_STUB_PREFIX + CFWRandom.stringAlphaNumSpecial(7);
 			pwCache.put(placeholderName, this.value.toString());
 			this.addAttribute("value", placeholderName);
 		}

@@ -135,7 +135,7 @@ public class CFWQueryParser {
 	private JsonArray traceArray;
 	
 	//Used for GIB!-Ea-stere-gg
-	String obedienceMessage = CFW.Random.randomMessageOfObedience();
+	String obedienceMessage = CFW.Random.messageOfObedience();
 	
 	//Manage open arrays and groups.
 	private Stack<CFWQueryParserContext> contextStack = new Stack<>();

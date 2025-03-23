@@ -64,7 +64,7 @@ public class CFWJobTaskTestAlerting extends CFWJobTask {
 		
 		alertObject.mapJobExecutionContext(context);
 		
-		boolean randomCondition = CFW.Random.randomBoolean();
+		boolean randomCondition = CFW.Random.bool();
 		CFW.Messages.addInfoMessage("Last Condition: "+randomCondition);
 		
 		AlertType type = alertObject.checkSendAlert(randomCondition, null);
@@ -76,12 +76,12 @@ public class CFWJobTaskTestAlerting extends CFWJobTask {
 			
 			
 			if(type.equals(AlertType.RAISE)) {
-				alertObject.doSendAlert(context, CFW.Random.randomMessageType(), "[TEST] Alert: A situation is occuring!", message, messageHTML);
+				alertObject.doSendAlert(context, CFW.Random.messageType(), "[TEST] Alert: A situation is occuring!", message, messageHTML);
 			}
 			
 			if(type.equals(AlertType.RESOLVE)) {
-				message += " "+CFW.Random.randomIssueResolvedMessage();
-				messageHTML += "<p>"+CFW.Random.randomIssueResolvedMessage()+"</p>";
+				message += " "+CFW.Random.issueResolvedMessage();
+				messageHTML += "<p>"+CFW.Random.issueResolvedMessage()+"</p>";
 				alertObject.doSendAlert(context, MessageType.SUCCESS, "[TEST] Alert: A situation has resolved!.", message, messageHTML);
 			}
 		}

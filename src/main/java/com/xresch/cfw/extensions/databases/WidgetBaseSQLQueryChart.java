@@ -229,7 +229,7 @@ public abstract class WidgetBaseSQLQueryChart extends WidgetDefinition {
 	}
 	
 	public JsonArray createSampleData( long earliest, long latest) { 	
-		return CFW.Random.randomJSONArrayOfSeriesData(3,24, earliest, latest);
+		return CFW.Random.jsonArrayOfSeriesData(3,24, earliest, latest);
 	}
 	
 //	@Override

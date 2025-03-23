@@ -181,7 +181,7 @@ public class ServletContextSettings extends HttpServlet
 			
 			//--------------------------------
 			// Create Form
-			CFWForm createContextSettingsForm = settings.toForm("cfwCreateContextSettingsForm"+CFWRandom.randomStringAlphaNumSpecial(12),
+			CFWForm createContextSettingsForm = settings.toForm("cfwCreateContextSettingsForm"+CFWRandom.stringAlphaNumSpecial(12),
 																	"{!cfw_core_add!}");
 			
 			createContextSettingsForm.setFormHandler(new CFWFormHandler() {

@@ -358,7 +358,7 @@ public class ServletJobs extends HttpServlet
 		
 		//-----------------------------------
 		// Create Form	
-		CFWForm createCFWJobForm = job.toForm("cfwCreateCFWJobForm"+CFWRandom.randomStringAlphaNumerical(8), "Create Job");
+		CFWForm createCFWJobForm = job.toForm("cfwCreateCFWJobForm"+CFWRandom.stringAlphaNum(8), "Create Job");
 		
 		createCFWJobForm.setFormHandler(new CFWFormHandler() {
 			

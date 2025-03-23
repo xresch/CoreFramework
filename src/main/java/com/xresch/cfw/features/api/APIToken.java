@@ -57,7 +57,7 @@ public class APIToken extends CFWObject {
 	private CFWField<String> token = CFWField.newString(FormFieldType.TEXT, APITokenFields.TOKEN)
 			.setDescription("The token which can be used to access the API.")
 			.addValidator(new LengthValidator(1, 512))
-			.setValue(CFW.Random.randomStringAlphaNumerical(32));
+			.setValue(CFW.Random.stringAlphaNum(32));
 	
 	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, APITokenFields.DESCRIPTION)
 			.setDescription("An optional description for the token.")
