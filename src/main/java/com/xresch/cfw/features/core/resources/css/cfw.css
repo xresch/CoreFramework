@@ -1452,6 +1452,30 @@ label {
 .maxvw-100{ max-width: 100vw;} 
 
 /*************************************************************************
+ * min viewport height
+ *************************************************************************/
+.minvh-5 { min-height: 5vh;}
+.minvh-10 { min-height: 10vh;}
+.minvh-15 { min-height: 15vh;} 
+.minvh-20 { min-height: 20vh;}
+.minvh-25 { min-height: 25vh;} 
+.minvh-30 { min-height: 30vh;}
+.minvh-35 { min-height: 35vh;} 
+.minvh-40 { min-height: 40vh;}
+.minvh-45 { min-height: 45vh;} 
+.minvh-50 { min-height: 50vh;}
+.minvh-55 { min-height: 55vh;} 
+.minvh-60 { min-height: 60vh;}
+.minvh-65 { min-height: 65vh;} 
+.minvh-70 { min-height: 70vh;}
+.minvh-75 { min-height: 75vh;} 
+.minvh-80 { min-height: 80vh;}
+.minvh-85 { min-height: 85vh;} 
+.minvh-90 { min-height: 90vh;}
+.minvh-95 { min-height: 95vh;} 
+.minvh-100{ min-height: 100vh;} 
+
+/*************************************************************************
  * max viewport height
  *************************************************************************/
 .maxvh-5 { max-height: 5vh;}

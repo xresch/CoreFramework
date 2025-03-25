@@ -2,6 +2,7 @@
  * This file contains the methods needed to render the Query results.
  * 
  ******************************************************************************/
+CFW_QUERY_URL = "/app/query";
 
 /*******************************************************************************
  * 
@@ -962,6 +963,41 @@ function cfw_query_formatUppercase(span){
 	span.removeClass('text-lowercase');
 
 }
+
+/*******************************************************************************
+ * Execute the query and fetch data from the server.
+ * 
+ * @param target the target element to render the query results into  
+ * @param query the query to execute 
+ * @param earliest time in epoch milliseconds
+ * @param latest time in epoch milliseconds
+ * @param parameters json object with parameters for the query 
+ * 
+ ******************************************************************************/
+function cfw_query_executeAndRender(target, earliest, latest, parameters, query){
+	
+	var params = {action: "execute"
+		, item: "query"
+		, query: query
+		, saveToHistory: false
+		, timeframe: {earliest: earliest, latest: latest}
+		, parameters: JSON.stringify(parameters)
+	};
+	
+	//-----------------------------------
+	// Do Execution	
+	CFW.http.postJSON(CFW_QUERY_URL, params, 
+		function(data) {
+			
+			if(data.success){
+				cfw_query_renderAllQueryResults(target, data.payload);
+			}
+			
+			
+	});
+
+}
+
 
 
 /*******************************************************************************
