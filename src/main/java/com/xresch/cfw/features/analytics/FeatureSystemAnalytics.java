@@ -47,7 +47,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		CFW.Registry.Jobs.registerTask(new CFWJobTaskTestAlerting());
 		
     	//----------------------------------
-    	// Register Regular Menu
+    	// Register Admin Menu
 		String SYSTEM_ANALYTICS = "System Analytics";
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
@@ -57,6 +57,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuSystemAnalytics")
 				, null);
 		
+		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("DB Analytics")
 					.faicon("fas fa-database")
@@ -65,6 +66,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuSystemAnalytics-DBAnalytics")
 				, SYSTEM_ANALYTICS);
 		
+		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("CPU Sampling")
 					.faicon("fas fa-microchip")
@@ -73,6 +75,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuSystemAnalytics-CPUSampling")
 				, SYSTEM_ANALYTICS);
 		
+		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Servlet Context Tree")
 					.faicon("fas fa-sitemap")
@@ -81,6 +84,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuSystemAnalytics-ServletContextTree")
 				, SYSTEM_ANALYTICS);
 		
+		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Session Overview")
 					.faicon("fas fa-database")
@@ -89,6 +93,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuSystemAnalytics-SessionOverview")
 				, SYSTEM_ANALYTICS);
 		
+		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("System Properties")
 					.faicon("fas fa-cubes")
@@ -97,6 +102,16 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuSystemAnalytics-SystemProperties")
 				, SYSTEM_ANALYTICS);
 		
+		//------------------------------
+		CFW.Registry.Components.addAdminCFWMenuItem(
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Versions")
+				.faicon("fas fa-cubes")
+				.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
+				.href("/app/versions")	
+				.addAttribute("id", "cfwMenuSystemAnalytics-Versions")
+				, SYSTEM_ANALYTICS);
+		
+		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Cache Statistics")
 					.faicon("fas fa-sd-card")
@@ -105,6 +120,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuSystemAnalytics-CacheStats")
 				, SYSTEM_ANALYTICS);
 		
+		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Log Configuration")
 					.faicon("fas fa-book-open")
@@ -113,6 +129,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuSystemAnalytics-LogConfig")
 				, SYSTEM_ANALYTICS);
 		
+		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Metrics")
 					.faicon("fas fa-thermometer-half")
@@ -145,6 +162,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
     	app.addAppServlet(ServletCacheStatistics.class,  "/cachestatistics");
     	app.addAppServlet(ServletLogConfiguration.class,  "/logconfiguration");
     	app.addAppServlet(ServletSessionOverview.class,  "/sessionoverview");
+    	app.addAppServlet(ServletVersions.class,  "/versions");
     	
 		//-----------------------------------------
 		// Prometheus Endpoint

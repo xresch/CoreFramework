@@ -8,17 +8,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,6 +61,35 @@ public class CFWFiles {
 	
 	static String[] cachedFiles = new String[15];
 	static int fileCounter = 0;
+		
+	/***********************************************************************
+	 * Returns a list of filenames in a directory
+	 * 
+	 * @param dir the directory.
+	 * @param includeDirs toogle if directories should be listed as well.
+	 * 
+	 * @return Set of filenames
+	 * 
+	 ***********************************************************************/
+	public static Set<String> listFilesInFolder(String dir, boolean includeDirs) {
+	    try (Stream<Path> stream = Files.list(Paths.get(dir))) {
+	        
+//	    	if(!includeDirs) { 
+//	    		stream.filter(file -> !Files.isDirectory(file));
+//	    	}
+		          
+	    	return stream
+	    	  .filter(file -> (includeDirs || !Files.isDirectory(file)))
+	          .map(Path::getFileName)
+	          .map(Path::toString)
+	          .collect(Collectors.toSet());
+	    } catch (IOException e) {
+	    	new CFWLog(logger)
+					.severe("Could not list files in directory: "+dir, e);
+	    	
+	    	return new HashSet<>();
+		}
+	}
 	
 	/***********************************************************************
 	 * Returns the file content of the given file path as a string.
