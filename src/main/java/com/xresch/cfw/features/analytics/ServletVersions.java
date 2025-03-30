@@ -42,7 +42,7 @@ public class ServletVersions extends HttpServlet
 			if( Files.isDirectory(Paths.get("./lib")) ){
 				Set<String> libFiles = CFW.Files.listFilesInFolder("./lib", false);
 				for(String file : libFiles) {
-					System.out.println("file: "+file);
+					
 					file = file.replace(".jar", "");
 					int index = file.lastIndexOf("-");
 					if(index != -1) {
