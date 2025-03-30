@@ -1010,10 +1010,12 @@ function cfw_query_executeAndRender(target, earliest, latest, parameters, query)
  ******************************************************************************/
 function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 	resultTarget.html("");
+	
 	//-----------------------------------
 	// Handle Emptiness 
 	if(queryResultsPayload == null || queryResultsPayload.length == 0){
 		resultTarget.append("The result is empty.");
+		return;
 	}
 	
 	//-----------------------------------

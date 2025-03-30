@@ -168,6 +168,7 @@ DONE
 - CFWRandom: Refactoring - removing "random" from methods. 
 - CFWRandom: Added endpoint /cfw/random to get random test data
 - System Analytics: Added page "Versions" 
+- Query: Fixed messages not displayed when result is empty.
 
 
 
