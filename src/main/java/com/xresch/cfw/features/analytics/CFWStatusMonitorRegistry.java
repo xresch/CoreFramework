@@ -26,7 +26,7 @@ public class CFWStatusMonitorRegistry {
 	private static TreeMap<String,  CFWStatusMonitor> statusMonitorMap = new TreeMap<>();
 
 	private static JsonObject cachedStatusList;
-	private static CFWStateOption cachedWorstStatus;
+	private static CFWStateOption cachedWorstStatus = CFWStateOption.NONE;
 
 	/***********************************************************************
 	 * Adds a CFWStatusMonitor class to the registry.
