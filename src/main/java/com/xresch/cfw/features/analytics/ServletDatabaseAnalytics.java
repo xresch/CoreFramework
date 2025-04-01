@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;

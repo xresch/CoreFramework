@@ -412,6 +412,32 @@ function cfw_colors_randomSL(hue, minS, maxS, minL, maxL) {
 }
 
 /************************************************************************************************
+ * Returns the style class string for the enum constant in CFWState.CFWStateOption in java.
+ * @param cfwStateOption 
+ ************************************************************************************************/
+function cfw_colors_getCFWStateStyle(cfwStateOption) {
+	
+	if(CFW.utils.isNullOrEmpty(cfwStateOption)){
+		return CFW.style.none;
+	}
+	
+	//--------------------
+	// Add Colors
+	switch(cfwStateOption.trim().toUpperCase()){
+		case "GREEN": 			return CFW.style.green; 		
+		case "LIMEGREEN": 		return CFW.style.limegreen;  					
+		case "YELLOW": 			return CFW.style.yellow;  		
+		case "ORANGE": 			return CFW.style.orange; 		
+		case "RED": 			return CFW.style.red; 			
+		case "DISABLED": 		return CFW.style.disabled; 		
+		case "NOT_EVALUATED":	return CFW.style.notevaluated; 	
+		case "NONE":			return CFW.style.none; 			
+		default:				return CFW.style.none; 			
+	}
+	
+	return style;
+}
+/************************************************************************************************
  * Returns the style class string that indicates the status that is worse.
  * If both are null, returns CFW.style.green.
  * @param thresholdClassOne threshold class 
@@ -6112,6 +6138,7 @@ var CFW = {
 		randomRGB: cfw_colors_randomRGB,
 		randomHSL: cfw_colors_randomHSL,
 		randomSL: cfw_colors_randomSL,
+		getCFWStateStyle: cfw_colors_getCFWStateStyle,
 		getThresholdDirection: cfw_colors_getThresholdDirection,
 		getThresholdStyle: cfw_colors_getThresholdStyle,
 		getThresholdIndicator: cfw_colors_getThresholdIndicator,

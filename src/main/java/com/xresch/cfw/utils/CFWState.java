@@ -8,6 +8,12 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2023
+ * @license MIT-License
+ **************************************************************************************************************/
+
 public class CFWState {
 	
 	public enum CFWStateOption{
@@ -280,6 +286,21 @@ public class CFWState {
 	 ************************************************************************************************/
 	public static boolean compareIsEqualsOrMoreDangerous(CFWStateOption baseCondition, CFWStateOption actualCondition) {
 		return getConditionSeverity(baseCondition) <= getConditionSeverity(actualCondition);
+	}
+	
+	/************************************************************************************************
+	 * Returns the condition which is more dangerous.
+	 *  
+	 * @param baseCondition the condition against to compare to
+	 * @param actualCondition the condition that should be checked if it is equals or more dangerous
+	 ************************************************************************************************/
+	public static CFWStateOption compareAndGetMoreDangerous(CFWStateOption baseCondition, CFWStateOption actualCondition) {
+		
+		if(compareIsEqualsOrMoreDangerous(baseCondition, actualCondition)) {
+			return actualCondition;
+		}
+		
+		return baseCondition;
 	}
 	
 	/************************************************************************************************

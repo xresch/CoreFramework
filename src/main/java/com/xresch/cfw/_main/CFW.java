@@ -23,6 +23,7 @@ import com.xresch.cfw.extensions.databases.oracle.FeatureDBExtensionsOracle;
 import com.xresch.cfw.extensions.databases.postgres.FeatureDBExtensionsPostgres;
 import com.xresch.cfw.extensions.influxdb.FeatureInfluxDB;
 import com.xresch.cfw.extensions.web.FeatureWebExtensions;
+import com.xresch.cfw.features.analytics.CFWStatusMonitorRegistry;
 import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.api.CFWRegistryAPI;
 import com.xresch.cfw.features.api.FeatureAPI;
@@ -203,6 +204,7 @@ public class CFW {
 		public static class Objects extends CFWRegistryObjects {} 
 		public static class Parameters extends CFWRegistryParameters {} 
 		public static class Query extends CFWQueryRegistry {} 
+		public static class StatusMonitor extends CFWStatusMonitorRegistry {} 
 		public static class Widgets extends CFWRegistryWidgets {} 
 	}
 	public static class Schedule extends CFWTaskScheduler {}

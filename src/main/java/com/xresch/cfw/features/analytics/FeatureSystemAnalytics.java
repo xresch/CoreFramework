@@ -8,6 +8,7 @@ import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 import io.prometheus.client.exporter.MetricsServlet;
 import io.prometheus.client.hotspot.BufferPoolsExports;
@@ -27,8 +28,9 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.analytics.resources";
 	
-	private static ScheduledFuture<?> cpuSamplingTask;
-	private static ScheduledFuture<?> cpuSamplingAgeOutTask;
+	private static ScheduledFuture<?> taskcpuSampling;
+	private static ScheduledFuture<?> taskCpuSamplingAgeOut;
+	private static ScheduledFuture<?> taskStatusMonitorUpdate;
 
 	public static final String PERMISSION_SYSTEM_ANALYTICS = "System Analytics";
 	@Override
@@ -56,6 +58,15 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.addAttribute("id", "cfwMenuSystemAnalytics")
 				, null);
+		
+		//------------------------------
+		CFW.Registry.Components.addAdminCFWMenuItem(
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Status Monitor")
+				.faicon("fas fa-tv")
+				.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
+				.href("/app/statusmonitor")
+				.addAttribute("id", "cfwMenuSystemAnalytics-StatusMonitor")
+				, SYSTEM_ANALYTICS);
 		
 		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
@@ -162,6 +173,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
     	app.addAppServlet(ServletCacheStatistics.class,  "/cachestatistics");
     	app.addAppServlet(ServletLogConfiguration.class,  "/logconfiguration");
     	app.addAppServlet(ServletSessionOverview.class,  "/sessionoverview");
+    	app.addAppServlet(ServletStatusMonitor.class,  "/statusmonitor");
     	app.addAppServlet(ServletVersions.class,  "/versions");
     	
 		//-----------------------------------------
@@ -194,23 +206,37 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
+		
+		
+		//--------------------------------
+		// Setup Status Monitor Update
+		if(taskStatusMonitorUpdate != null) {
+			taskStatusMonitorUpdate.cancel(false);
+		}
+		
+		int millisOf5min = (int)CFWTimeUnit.m.toMillis(5);
+		taskStatusMonitorUpdate = CFW.Schedule.runPeriodicallyMillis(0, millisOf5min, new TaskStatusMonitorUpdate());
+		
+		//-----------------------------
+		// CPU Sampling
 		String mode = CFW.Properties.MODE;
 		if(mode.equals(CFW.MODE_FULL) || mode.equals(CFW.MODE_APP)) {
+			
 			//--------------------------------
 			// Setup CPU Sampling Task
-			if(cpuSamplingTask != null) {
-				cpuSamplingTask.cancel(false);
+			if(taskcpuSampling != null) {
+				taskcpuSampling.cancel(false);
 			}
 			int millis = (int)(1000 * CFW.DB.Config.getConfigAsFloat(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_CPU_SAMPLING_SECONDS));
-			cpuSamplingTask = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskCPUSampling());
+			taskcpuSampling = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskCPUSampling());
 			
 			//--------------------------------
 			// Setup CPU Sampling AgeOut Task
-			if(cpuSamplingAgeOutTask != null) {
-				cpuSamplingAgeOutTask.cancel(false);
+			if(taskCpuSamplingAgeOut != null) {
+				taskCpuSamplingAgeOut.cancel(false);
 			}
 			
-			cpuSamplingAgeOutTask = CFW.Schedule.runPeriodically(0, 3000, new TaskCPUSamplingAgeOut());
+			taskCpuSamplingAgeOut = CFW.Schedule.runPeriodically(0, 3000, new TaskCPUSamplingAgeOut());
 		}
 	}
 
