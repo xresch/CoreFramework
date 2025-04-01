@@ -1,11 +1,17 @@
 package com.xresch.cfw.features.analytics;
 
+import java.util.ArrayList;
 import java.util.concurrent.ScheduledFuture;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemCustom;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemDynamic;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
@@ -47,6 +53,41 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		// Register Job Tasks
 		CFW.Registry.Jobs.registerTask(new CFWJobTaskThreadDumps());
 		CFW.Registry.Jobs.registerTask(new CFWJobTaskTestAlerting());
+		
+		//----------------------------------
+		// Register Job Tasks
+		CFW.Registry.Components.addGlobalJavascript(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "cfw_statusmonitor_common.js");
+    	
+		//----------------------------------
+    	// Register Button Menu
+		CFWHTMLItemMenuItem statusMonitorMenu = (CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Status Monitor", "{!cfw_core_statusmonitor!}") 
+			.faicon("fas fa-circle")
+			.onclick("cfw_statusmonitor_loadInMenu();")
+			.addCssClass("cfw-menuitem-statusmonitor")
+			.addAttribute("id", "cfwMenuButtons-StatusMonitor")
+			// hacking the dynamic color or the enu item
+			.setDynamicCreator(new CFWHTMLItemDynamic() {		
+				
+				@Override
+				public ArrayList<CFWHTMLItem> createDynamicItems() {
+					ArrayList<CFWHTMLItem> list = new ArrayList<>();
+					
+					CFWHTMLItemMenuItem custom = 
+							(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("") 
+							.addCssClass("d-none")
+							.addAttribute("id", "cfw-worst-status")
+							.addAttribute(
+									  "data-worst-status"
+									, CFW.Registry.StatusMonitor.getWorstStatus().toString()
+							)
+							;
+					
+					list.add(custom);
+					return list;
+				}
+			});
+		
+		CFW.Registry.Components.addButtonsMenuItem(statusMonitorMenu, null);
 		
     	//----------------------------------
     	// Register Admin Menu

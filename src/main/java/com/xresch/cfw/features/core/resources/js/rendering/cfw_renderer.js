@@ -719,7 +719,7 @@ function cfw_renderer_tiles(renderDef) {
 				
 	for(var i = 0; i < renderDef.data.length; i++ ){
 		var currentRecord = renderDef.data[i];
-		var currentTile = $('<div class="p-1">');
+		var currentTile = $('<div class="p-1 ptr">');
 		
 		//=====================================
 		// Add padding
@@ -999,7 +999,7 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 				
 	for(var i = 0; i < renderDef.data.length; i++ ){
 		var currentRecord = renderDef.data[i];
-		var currentTile = $('<div class="p-0 flex-fill">&nbsp;</div>');
+		var currentTile = $('<div class="p-0 flex-fill ptr">&nbsp;</div>');
 		currentTile.css('height', "100%");
 		currentTile.css('min-height', settings.minheight);
 		
@@ -1315,7 +1315,7 @@ function cfw_renderer_statuslist(renderDef) {
 	for(var i = 0; i < renderDef.data.length; i++ ){
 		var currentRecord = renderDef.data[i];
 		var currentListItem = $('<div class="d-flex flex-row align-items-center">')
-		var currentTile = $('<div>');
+		var currentTile = $('<div class="ptr">');
 		
 		currentTile.css('width', 20*settings.sizefactor+"px");
 		currentTile.css('height', 20*settings.sizefactor+"px");

@@ -4,13 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -20,7 +15,7 @@ import com.xresch.cfw.utils.CFWState.CFWStateOption;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2024
+ * @author Reto Scheiwiller, (c) Copyright 2025
  *@license PESA License
  **************************************************************************************************************/
 public class CFWStatusMonitorRegistry {
@@ -31,6 +26,7 @@ public class CFWStatusMonitorRegistry {
 	private static TreeMap<String,  CFWStatusMonitor> statusMonitorMap = new TreeMap<>();
 
 	private static JsonObject cachedStatusList;
+	private static CFWStateOption cachedWorstStatus;
 
 	/***********************************************************************
 	 * Adds a CFWStatusMonitor class to the registry.
@@ -101,6 +97,13 @@ public class CFWStatusMonitorRegistry {
 	}
 	
 	/***********************************************************************
+	 * Returns the current worst status
+	 * 
+	 ***********************************************************************/
+	public static CFWStateOption getWorstStatus()  {
+		return cachedWorstStatus;
+	}
+	/***********************************************************************
 	 * Returns the list of statuses with their categories.
 	 * { "categoryA": 
 	 * 		[ 	{statusObject}
@@ -169,6 +172,8 @@ public class CFWStatusMonitorRegistry {
 				};
 			}
 		}
+		
+		cachedWorstStatus = worstStatus;
 		
 		result.addProperty("worstStatus", worstStatus.toString());
 		result.addProperty("time", System.currentTimeMillis());

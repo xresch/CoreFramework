@@ -933,7 +933,7 @@ label {
 .smap-cell{
 	padding: 0;
 	border: 1px rgba(0,0,0,0.2) solid; 
-	
+	cursor: pointer;
 }
 /*************************************************************************
  * Tags Input
@@ -1528,7 +1528,7 @@ label {
 /*************************************************************************
  * Cursors
  *************************************************************************/
-.cursor-pointer{	cursor: pointer; }
+.cursor-pointer, .ptr {	cursor: pointer; }
 .cursor-wait{		cursor: wait; }
 .cursor-move{		cursor: move; }
 

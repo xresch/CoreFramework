@@ -259,6 +259,7 @@ public abstract class CFWHTMLItem {
 	public CFWHTMLItem setDynamicCreator(CFWHTMLItemDynamic creator) {
 		fireChange();
 		this.creator = creator;
+		creator.setParent(this);
 		return this;
 	}
 		
