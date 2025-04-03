@@ -36,6 +36,11 @@ public abstract class AbstractResponse {
 	//##############################################################################
 	// Setters
 	//##############################################################################
+	public void setContentType(String contentType) {
+		CFW.Context.Request.getHttpServletResponse().setContentType(contentType);
+		
+	}
+	
 	public void setContent(StringBuilder content) {this.content = content;}
 	
 	public boolean useGlobaleLocale() {

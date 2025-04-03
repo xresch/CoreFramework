@@ -29,51 +29,42 @@ import com.xresch.cfw.logging.CFWLog;
  *   - "+" stands for 1 to any number of repetitions
  *   - "?" stands for optional, or sometimes not neccessary(e.g. semicolon between repetitions when there is no repetition)
  * 
- * Query
- * -----
- * A query string can contain one or multiple <CFWQuery> separated by semicolon.
  * 
- * <QUERY_STRING> ::= (<CFWQuery> (";")? )+
- * <CFWQuery> ::= (<CFWQueryCommand>)+ 
  * 
- * Commands
- * --------
- * Commands are splitted by the operator '|'
- * Commands define which QueryParts they accept in which order.
- * 
- * <QueryPartCommand>			::= "|" <commandName> (<QueryPart>)*
- * 
- * 		<commandName> 			::= <LITERAL_STRING>
- * 		
- * 		<QueryPart> 			::= (<QueryPartValue>|<QueryPartList> | <QueryPartFunction> | <QueryPartAssignment> 
- * 									  | <QueryPartBinaryExpression> | <QueryPartBinaryExpression> | <QueryPartGroup> 
- * 									)+
- * QueryParts
- * ----------		
- * <QueryPartValue>		::= Actual values: (<STRING> | <NUMBER> | <BOOLEAN> | <NULL> | <JSON_OBJECT> | <JSON_ARRAY>)
- * 		<STRING>		::= <LITERAL_STRING> or quoted with single quotes, double quotes or back ticks
- *		<NUMBER>		::= positive or negative numbers
- *		<BOOLEAN>		::= ("true" | "false")
- *		<NULL>			::= "null"
- * 		<JSON_OBJECT>	::= Object as JSON string, like {"a": 1, "b": 22}
- *		<JSON_ARRAY>	::= represented by <QueryPartList>
- * 
- * <QueryPartList>		::= ("[")? (<QueryPart> (",")? )+ ("]")?
- * 
- * <QueryPartFunction> 	::= <functionName> "(" (<QueryPart> (",")? )* ")"
- * 
- * <QueryPartAssignment> ::=  <QueryPart> "=" <QueryPart>
- * 
- * <QueryPartBinaryExpression> ::= (<QueryPart> <OPERATOR> <QueryPart>) 
- * 		<OPERATOR>		::= (<KEYWORD> | | "="  | ">=" | "<=" | "==" | "!=" | "~=" | ">"  | "<"  | "+" | "-" | "*" | "/" | "^" | "%" | "&" | "!")
- * 		<KEYWORD>		::= ("AND" | "OR" | "NOT" )
- * 
- * <QueryPartGroup> 	::=  "(" <QueryPart>+ ")"
- * 
- * <QueryPartJsonMemberAccess> ::=  <FIELDNAME> "." <ACCESS>
- * 		<FIELDNAME>		::= <LITERAL_STRING>, name of the field containing an object or array.
- * 		<ACCESS>		::= (<MEMBER_NAME> | "[" <nameOrNumber> "]")
- * 		
+ * EBNF (more or less)
+ * ----
+	query ::= (command)* (";" query)?
+	command ::= "|" identifier params
+	params ::= param+
+	param ::= key "=" value | key | value | expression
+	key ::= value
+	value ::= literal | function-call | expression | group | array | object
+	function-call ::= function-name "(" params ")"
+	function-name ::= identifier
+	expression ::= value (operator expression)?
+	group ::= "(" value ")"
+	array ::= "[" array-elements "]"
+	array-elements ::= value ("," array-elements)?
+	object ::= "{" object-members "}"
+	object-members ::= key-value-pair ("," object-members)?
+	key-value-pair ::= object-key ":" value
+	object-key ::= '"' string-content '"'
+	operator ::= "==" | "!=" | "~=" | "<=" | ">=" | "<" | ">"
+	identifier ::= letter identifier-rest*
+	identifier-rest ::= letter | digit | "_"
+	literal ::= number | string | boolean | null
+	number ::= digit+
+	string ::= '"' string-content '"' | "'" string-content "'" | "`" string-content "`"
+	string-content ::= character+
+	boolean ::= "true" | "false"
+	null ::= "null"
+	digit ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+	letter ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
+	text ::= character+
+	character ::= letter | digit | symbol
+	symbol ::= "." | "," | ";" | ":" | "!" | "?" | "+" | "-" | "*" | "/" | "=" | "<" | ">" | "(" | ")" | "[" | "]" | "{" | "}" | "|" | "&" | "^" | "%" | "$" | "#" | "@" | "~" | "`" | "\\" | '"' | "'"
+	member-access ::= access-identifier "[" value "]" | access-identifier "." access-identifier
+	access-identifier ::= string | string-content | member-access
  * 
  * @author Reto Scheiwiller, (c) Copyright 2022 
  * @license MIT-License

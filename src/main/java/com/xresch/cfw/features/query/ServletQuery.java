@@ -1,6 +1,8 @@
 package com.xresch.cfw.features.query;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -8,7 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jsoup.Jsoup;
+
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.JSON;
@@ -24,6 +29,7 @@ import com.xresch.cfw.features.query.database.CFWDBQueryHistory;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
+import com.xresch.cfw.response.PlaintextResponse;
 
 /**************************************************************************************************************
  * 
@@ -116,6 +122,9 @@ public class ServletQuery extends HttpServlet
 					case "queryhistorylist": jsonResponse.getContent().append(CFWDBQueryHistory.getHistoryForUserAsJSON());
 											break;						
 	  										
+					case "aitraining": 		getAITrainingFile(request, jsonResponse);
+											break;
+					
 					default: 				CFW.Messages.itemNotSupported(item);
 											break;
 				}
@@ -232,7 +241,6 @@ public class ServletQuery extends HttpServlet
 			saveToHistory = true;
 		}
 
-		
 		String queryParamsString = request.getParameter("parameters");
 		
 		JsonObject queryParamsObject = new JsonObject();
@@ -293,6 +301,260 @@ public class ServletQuery extends HttpServlet
 		
 		jsonResponse.addCustomAttribute("formid", uniqueFormID);
 
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void getAITrainingFile(HttpServletRequest request, JSONResponse jsonResponse) {
+		
+		JsonObject file = generateAITrainingFile(request, jsonResponse);
+		
+		PlaintextResponse response = new PlaintextResponse();
+		response.append(CFW.JSON.toJSON(file));
+
+		response.setContentType("application/json");
+		
+
+	}
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private JsonObject generateAITrainingFile(HttpServletRequest request, JSONResponse jsonResponse) {
+				
+		CFWQuery pseudoQuery = new CFWQuery();
+		
+		JsonObject result = new JsonObject();
+		
+		//-------------------------
+		// AI Instructions
+		JsonArray instructions = new JsonArray();
+//		instructions.add("Apply all of the following instructions and do not skip any.");
+		instructions.add("The goal of this file is to make you as an AI able to understand a new query language.");
+		instructions.add("This file itself is not an example of a query.");
+		instructions.add("This file contains information about a query language.");
+		instructions.add("This file has nested fields 'examples' which do contain examples of queries.");
+		instructions.add("Do only use what you find in this file to generate queries.");
+		instructions.add("Mainly use the code examples you find in the nested fields 'examples' to generate queries.");
+		instructions.add("CFW stands for 'Core Framework', the framwork that contains the code of query engine.");
+		instructions.add("EMP stands for 'Engineered Monitoring Platform', the web application that is using the query language.");
+		instructions.add("When parsing, parse the whole file and not just a part of it.");
+		instructions.add("When parsing, make sure to parse and understand the examples.");
+		instructions.add("When parsing, do not output everything you find in the file. Output the instructions in this list you have properly executed. When done with processing return a single message like 'I am ready to generate queries for you'.");
+		instructions.add("Do not include any sources from other languages.");
+		instructions.add("Do not include any commands from other languages.");
+		instructions.add("Do not include any functions from other languages.");
+		// instructions.add("Do not include things you know from other languages.");
+		// instructions.add("When generating queries: Do not use syntax from other languages.");
+		instructions.add("When generating queries: Always include pipe symbols ('|') to separate commands.");
+		instructions.add("Always include pipe symbols ('|') before the first command of the query.");
+		instructions.add("If a query is generated without pipe symbols ('|'), automatically detect and add them before each command.");
+		instructions.add("The pipe symbol (\"|\") before each command must be included.");
+		instructions.add("Do not invent new sources, only use the sources given in the file.");
+		instructions.add("Do not invent new commands, only use the commands given in the file.");
+		instructions.add("Do not invent new functions, only use the functions given in the file.");
+		instructions.add("Use bash or shell for code formatting of the output.");
+		
+		result.add("instructions_for_ai", instructions);
+		
+		//-------------------------
+		// Language Description
+		JsonArray description = new JsonArray();
+		description.add("The language is used to to query data from one or multiple sources.");
+		description.add("The data is processed as a stream of records.");
+		description.add("Records can have one or multiple fields that have values.");
+		description.add("The main parts of the language are: sources, commands, and functions.");
+		description.add("Commands are preceeded by a pipe-symbol '|', for example '| <command>'. Records are passed from one command to the next through the whole pipeline.");
+		description.add("Commands are used to fetch data, manipulate data and define how data should be displayed.");
+		description.add("Some of the most important commands are: source, set, filter, sort, keep, remove, move, display, formatfield, formatrecord, chart");
+		description.add("Commands can have zero or more parameters.");
+		description.add("Commands have tags that indicate their usage.");
+		description.add("Different commands can have different structures of parameters. Some take key-value-pairs, while others take strings and others take arrays or combinations of those types.");
+		description.add("Functions are used to manipulate data.");
+		description.add("Functions can have zero or more parameters.");
+		description.add("Functions have tags that indicate their usage.");
+		description.add("To get the selected time, there are the two functions 'earliest' and 'latest'.");
+		description.add("There is a special command 'source', which should not be confused with the actual sources. The command 'source' takes a name of a source as it's first parameter(e.g. '| source web'). Then it takes all the parameters of the specified source.(e.g. \"| source web as=html url='https://www.acme.com'\").");
+		description.add("Available sources are listed in this file by the field 'sources' with details and example queries.");
+		description.add("Available commands are listed in this file by the field 'commands' with details and example queries.");
+		description.add("Available functions are listed in this file by the field 'functions' with details and example queries.");
+		description.add("Comments: Everything after a hashtag '#' until the end of a line is a comment.");
+		description.add("Comments: Everything between '/*' and '*/' is a comment. The '*/' is optional, if it is not present, everything from '/*' to the end of the query is considered a comment.");
+		description.add("Comments: The command 'off' can be used to turn off a command.");
+
+		result.add("language_description", description);
+		
+		//-------------------------
+		// Language Syntax	
+
+//		result.addProperty("syntax", """
+//query ::= (command)* (";" query)?
+//command ::= "|" identifier params
+//params ::= param+
+//param ::= key "=" value | key | value | expression
+//key ::= value
+//value ::= literal | function-call | expression | group | array | object
+//function-call ::= function-name "(" params ")"
+//function-name ::= identifier
+//expression ::= value (operator expression)?
+//group ::= "(" value ")"
+//array ::= "[" array-elements "]"
+//array-elements ::= value ("," array-elements)?
+//object ::= "{" object-members "}"
+//object-members ::= key-value-pair ("," object-members)?
+//key-value-pair ::= object-key ":" value
+//object-key ::= '"' string-content '"'
+//operator ::= "==" | "!=" | "~=" | "<=" | ">=" | "<" | ">"
+//identifier ::= letter identifier-rest*
+//identifier-rest ::= letter | digit | "_"
+//literal ::= number | string | boolean | null
+//number ::= digit+
+//string ::= '"' string-content '"' | "'" string-content "'" | "`" string-content "`"
+//string-content ::= character+
+//boolean ::= "true" | "false"
+//null ::= "null"
+//digit ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+//letter ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
+//text ::= character+
+//character ::= letter | digit | symbol
+//symbol ::= "." | "," | ";" | ":" | "!" | "?" | "+" | "-" | "*" | "/" | "=" | "<" | ">" | "(" | ")" | "[" | "]" | "{" | "}" | "|" | "&" | "^" | "%" | "$" | "#" | "@" | "~" | "`" | "\\" | '"' | "'"
+//member-access ::= access-identifier "[" value "]" | access-identifier "." access-identifier
+//access-identifier ::= string | string-content | member-access
+//			""");
+		
+		//-------------------------
+		// Language Names
+		JsonArray languageNames = new JsonArray();
+		languageNames.add("CFW Query");
+		languageNames.add("EMP Query");
+		
+		result.add("query_language_names", languageNames);
+				
+		//-------------------------
+		// Operators
+		JsonObject operators = new JsonObject();
+		operators.addProperty("==", "Checks if the values are equal.");
+		operators.addProperty("!=", "Checks if the values are not equal.");
+		operators.addProperty("~=", "Checks if the field matches a regular expression.");
+		operators.addProperty("<=", "Checks if the field value is smaller or equals.");
+		operators.addProperty(">=", "Checks if the field value is greater or equals.");
+		operators.addProperty("<", "Checks if the field value is smaller.");
+		operators.addProperty(">", "Checks if the field value is greater.");
+		operators.addProperty("AND", "Used to combine two or more conditions. Condition matches only if both sides are true.");
+		operators.addProperty("OR", "Used to combine two or more conditions. Condition matches if either side is true.");
+		operators.addProperty("NOT", "Used to negate the result of the next condition.");
+  
+		result.add("operators", operators);
+		
+		//-------------------------
+		// Sources 
+		
+		JsonObject sources = new JsonObject();
+		result.add("sources", sources);
+		
+		TreeMap<String, Class<? extends CFWQuerySource>> sourcelist = CFW.Registry.Query.getSourceList();
+		
+		for(String sourceName : sourcelist.keySet()) {
+			
+			try {
+				
+				CFWQuerySource current = CFW.Registry.Query.createSourceInstance(pseudoQuery, sourceName);
+				JsonObject sourceObject = new JsonObject();
+				sourceObject.addProperty("name", sourceName);
+				sourceObject.addProperty("description_short", current.descriptionShort());
+				//sourceObject.addProperty("description_detailed_html", current.descriptionHTML());
+				sourceObject.addProperty("time_handling", current.descriptionTime());
+				sourceObject.addProperty("required_permissions", current.descriptionRequiredPermission());
+				sourceObject.addProperty("parameters_list_html", current.getParameterListHTML());
+				
+				
+				JsonArray examplesArray = new JsonArray();
+				List<String> codeExamples = Jsoup.parse(current.descriptionHTML()).getElementsByTag("code").eachText();
+				for(String example : codeExamples) {
+					examplesArray.add(example);
+				}
+				sourceObject.add("examples", examplesArray);
+				
+				sources.add(sourceName, sourceObject);
+				
+			}catch(Exception e) {
+				new CFWLog(logger).severe("Error while creating object for source: "+sourceName, e);
+			}
+		}
+		
+		//-------------------------
+		// Commands 
+		
+		JsonObject commands = new JsonObject();
+		result.add("commands", commands);
+		
+		TreeMap<String, Class<? extends CFWQueryCommand>> commandlist = CFW.Registry.Query.getCommandList();
+		
+		for(String commandName : commandlist.keySet()) {
+			
+			try {
+				
+				CFWQueryCommand current = CFW.Registry.Query.createCommandInstance(pseudoQuery, commandName);
+				JsonObject commandObject = new JsonObject();
+				commandObject.addProperty("name", commandName);
+				commandObject.addProperty("description", current.descriptionShort());
+				//commandObject.addProperty("description_detailed_html", current.descriptionHTML());
+				commandObject.addProperty("syntax", current.descriptionSyntax());
+				commandObject.addProperty("syntax_details_and_parameters_html", current.descriptionSyntaxDetailsHTML());
+				commandObject.add("tags", CFW.JSON.toJSONElement(current.getTags()) );
+				
+				JsonArray examplesArray = new JsonArray();
+				List<String> codeExamples = Jsoup.parse(current.descriptionHTML()).getElementsByTag("code").eachText();
+				for(String example : codeExamples) {
+					examplesArray.add(example);
+				}
+				commandObject.add("examples", examplesArray);
+				
+				commands.add(commandName, commandObject);
+				
+			}catch(Exception e) {
+				new CFWLog(logger).severe("Error while creating object for command: "+commandName, e);
+			}
+		}
+		
+		//-------------------------
+		// Functions 
+		
+		JsonObject functions = new JsonObject();
+		result.add("functions", functions);
+		
+		TreeMap<String, Class<? extends CFWQueryFunction>> functionlist = CFW.Registry.Query.getFunctionList();
+		
+		for(String functionName : functionlist.keySet()) {
+			
+			try {
+				
+				CFWQueryFunction current = CFW.Registry.Query.createFunctionInstance(pseudoQuery.getContext(), functionName);
+				JsonObject functionObject = new JsonObject();
+				functionObject.addProperty("name", functionName);
+				functionObject.addProperty("description", current.descriptionShort());
+				//functionObject.addProperty("description_detailed_html", current.descriptionHTML());
+				functionObject.addProperty("syntax", current.descriptionSyntax());
+				functionObject.addProperty("syntax_details_and_parameters_html", current.descriptionSyntaxDetailsHTML());
+				functionObject.add("tags", CFW.JSON.toJSONElement(current.getTags()) );
+				
+				JsonArray examplesArray = new JsonArray();
+				List<String> codeExamples = Jsoup.parse(current.descriptionHTML()).getElementsByTag("code").eachText();
+				for(String example : codeExamples) {
+					examplesArray.add(example);
+				}
+				functionObject.add("examples", examplesArray);
+				
+				functions.add(functionName, functionObject);
+				
+			}catch(Exception e) {
+				new CFWLog(logger).severe("Error while creating object for function: "+functionName, e);
+			}
+		}
+		
+		//-------------------------
+		// Return Result 
+		return result;
 	}
 	
 	/******************************************************************
