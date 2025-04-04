@@ -329,11 +329,12 @@ public class ServletQuery extends HttpServlet
 		//-------------------------
 		// AI Instructions
 		JsonArray instructions = new JsonArray();
+		
 //		instructions.add("Apply all of the following instructions and do not skip any.");
 		instructions.add("The goal of this file is to make you as an AI able to understand a new query language.");
 		instructions.add("This file itself is not an example of a query.");
 		instructions.add("This file contains information about a query language.");
-		instructions.add("This file has nested fields 'examples' which do contain examples of queries.");
+		instructions.add("This file has nested fields named 'query_examples' which do contain examples of queries.");
 		instructions.add("Do only use what you find in this file to generate queries.");
 		instructions.add("Mainly use the code examples you find in the nested fields 'examples' to generate queries.");
 		instructions.add("CFW stands for 'Core Framework', the framwork that contains the code of query engine.");
@@ -349,13 +350,19 @@ public class ServletQuery extends HttpServlet
 		instructions.add("When generating queries: Always include pipe symbols ('|') to separate commands.");
 		instructions.add("Always include pipe symbols ('|') before the first command of the query.");
 		instructions.add("If a query is generated without pipe symbols ('|'), automatically detect and add them before each command.");
-		instructions.add("The pipe symbol (\"|\") before each command must be included.");
+		instructions.add("The pipe symbol ('|') before each command must be included.");
 		instructions.add("Do not invent new sources, only use the sources given in the file.");
 		instructions.add("Do not invent new commands, only use the commands given in the file.");
 		instructions.add("Do not invent new functions, only use the functions given in the file.");
 		instructions.add("Use bash or shell for code formatting of the output.");
 		
-		result.add("instructions_for_ai", instructions);
+		result.add("instructions", instructions);
+		
+		
+		//-------------------------
+		// All Examples: Intentionally Duplicate
+		JsonArray query_examples = new JsonArray();
+		result.add("query_examples", query_examples);
 		
 		//-------------------------
 		// Language Description
@@ -473,7 +480,8 @@ public class ServletQuery extends HttpServlet
 				for(String example : codeExamples) {
 					examplesArray.add(example);
 				}
-				sourceObject.add("examples", examplesArray);
+				sourceObject.add("query_examples", examplesArray);
+				query_examples.addAll(examplesArray);
 				
 				sources.add(sourceName, sourceObject);
 				
@@ -508,7 +516,8 @@ public class ServletQuery extends HttpServlet
 				for(String example : codeExamples) {
 					examplesArray.add(example);
 				}
-				commandObject.add("examples", examplesArray);
+				commandObject.add("query_examples", examplesArray);
+				query_examples.addAll(examplesArray);
 				
 				commands.add(commandName, commandObject);
 				
@@ -543,7 +552,8 @@ public class ServletQuery extends HttpServlet
 				for(String example : codeExamples) {
 					examplesArray.add(example);
 				}
-				functionObject.add("examples", examplesArray);
+				functionObject.add("query_examples", examplesArray);
+				query_examples.addAll(examplesArray);
 				
 				functions.add(functionName, functionObject);
 				

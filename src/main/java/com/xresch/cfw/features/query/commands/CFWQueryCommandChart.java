@@ -71,6 +71,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 			+"<li>time</li>"
 			+"<li>linear</li>"
 			+"<li>logarithmic</li>"
+			+"<li>category</li>"
 		+"</ul>"
 	+"<p><b>ytype:&nbsp;</b>Type of the y-axis:</p>"	
 		+"<ul>"

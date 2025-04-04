@@ -84,6 +84,22 @@
 	detailssize=50 # number representing percentage
 	detailsposition=bottom</code></pre>	
 	
+<h2>Category Bar Chart</h2>
+<p>You can create a category bar charts by setting the parameter xtype to category:</p>	
+<pre><code class="language-cfwquery">| source random records=100 type=series
+| set ITEM = randomFrom(["Apple", "Pear", "Orange", "Peach", "Lemon"])
+| stats
+	by = [WAREHOUSE, ITEM] 
+    COUNT=count()
+| chart by = [WAREHOUSE] 
+    type=bar
+    x=ITEM
+    xtype=category
+    y=COUNT
+    multichart=false
+</code></pre>
+
+
 <h2>Gantt Chart</h2>
 <p><b>Note:</b> Using the chart-command for creating Gantt Charts is not recommended if you don't know how much data you have to display. 
 Use the <a href="#" onclick="cfw_manual_loadPage('Query|Commands|formatboxplot')">formatboxplot</a> command instead to create a gantt-chart-like view inside of a table.  </p>
