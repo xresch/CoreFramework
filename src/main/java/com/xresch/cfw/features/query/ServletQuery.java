@@ -360,7 +360,7 @@ public class ServletQuery extends HttpServlet
 		
 		
 		//-------------------------
-		// All Examples: Intentionally Duplicate
+		// All Examples: Intentional Duplicate
 		JsonArray query_examples = new JsonArray();
 		result.add("query_examples", query_examples);
 		

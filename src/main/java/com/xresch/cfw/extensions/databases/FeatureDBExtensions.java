@@ -40,6 +40,10 @@ public class FeatureDBExtensions extends CFWAppFeature {
 		
 		CFW.Localization.registerLocaleFile(Locale.ENGLISH, FeatureJobs.getJobsURI(), english);
 		
+		//-------------------------------------
+		// Register Status Monitor
+		CFW.Registry.StatusMonitor.registerStatusMonitor(new CFWStatusMonitorDatabase());
+		
 		//----------------------------------
 		// Register Manual Page
 		CFW.Registry.Manual.addManualPage(null,

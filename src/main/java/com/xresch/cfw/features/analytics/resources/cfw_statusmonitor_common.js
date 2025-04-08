@@ -21,7 +21,11 @@ function cfw_statusmonitor_applyColorOnLoad(){
 		
 		let style = CFW.colors.getCFWStateStyle(worstStatus);
 		
-		CFW.colors.colorizeElement(faicon, style, "text");
+		if(style == CFW.style.none){
+			menuButton.remove();
+		}else{
+			CFW.colors.colorizeElement(faicon, style, "text");
+		}
 		
 		
 	}
@@ -57,6 +61,7 @@ function cfw_statusmonitor_fetchStatusMonitorsAndDisplay(isMenu){
 							.find(".dropdown-submenu")
 							;
 				target.addClass("p-1")
+				target.css("width", "250px")
 			if(!isMenu){
 				rendererName = 'statuslist';
 				target = $("#statusmonitor");
@@ -91,13 +96,21 @@ function cfw_statusmonitor_fetchStatusMonitorsAndDisplay(isMenu){
 				 	labels: {},
 				 	customizers: {},
 					rendererSettings: {
-						tiles: {sizefactor: 0.3, borderstyle: "ellipsis"}
+						tiles: {
+							sizefactor: 0.3
+							//, borderstyle: "ellipsis"
+						}
 					}
 				};
 			
 			for(let category in payload.categories)	{	
 				let categoryArray = payload.categories[category];
 				rendererSettings.data = categoryArray;
+				
+				// Do not display empty categories
+				if(categoryArray == null || categoryArray.length <= 0 ){
+					continue;
+				}
 				
 				for(let index in categoryArray){
 					let current = categoryArray[index];

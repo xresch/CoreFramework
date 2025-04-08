@@ -29,10 +29,8 @@ import com.xresch.cfw.logging.CFWLog;
  *   - "+" stands for 1 to any number of repetitions
  *   - "?" stands for optional, or sometimes not neccessary(e.g. semicolon between repetitions when there is no repetition)
  * 
- * 
- * 
  * EBNF (more or less)
- * ----
+ * --------------------
 	query ::= (command)* (";" query)?
 	command ::= "|" identifier params
 	params ::= param+

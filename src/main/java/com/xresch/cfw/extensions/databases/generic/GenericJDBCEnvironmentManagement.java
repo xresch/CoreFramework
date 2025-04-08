@@ -65,16 +65,8 @@ public class GenericJDBCEnvironmentManagement {
 		
 		if(environment.isDBDefined()) {
 			
-
-			DBInterface db = DBInterface.createDBInterface(
-					id+"-"+environment.getDefaultObject().name()+":GenericJBDC",
-					environment.dbDriver(), 
-					environment.dbConnectionURL(), 
-					environment.dbUser(), 
-					environment.dbPassword()
-			);
-			
-			environment.setDBInstance(db);
+			environment.resetDBInstance();
+			environment.getDBInstance();
 			environmentsWithDB.put(environment.getDefaultObject().id(), environment);
 		}
 	}

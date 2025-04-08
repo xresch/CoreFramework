@@ -237,7 +237,7 @@ public class CFWDBContextSettings {
 	}
 	
 	/***************************************************************
-	 * Select a dashboard by it's ID and return it as JSON string.
+	 * Returns context settings for the selected type.
 	 * @param activeOnly TODO
 	 * @param id of the dashboard
 	 * @return Returns a dashboard or null if not found or in case of exception.

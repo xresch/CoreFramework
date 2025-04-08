@@ -16,6 +16,7 @@ public class CFWRegistryContextSettings {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWRegistryContextSettings.class.getName());
 	
+	// contains type and class
 	private static TreeMap<String, Class<? extends AbstractContextSettings>> contextSettings = new TreeMap<String, Class<? extends AbstractContextSettings>>();
 	
 	/***********************************************************************

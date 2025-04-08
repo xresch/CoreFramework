@@ -1045,47 +1045,66 @@ public class DBInterface {
 		
 		BasicDataSource datasource;
 		
-		try {
-			//Driver name com.microsoft.sqlserver.jdbc.SQLServerDriver
-			//Connection URL Example: "jdbc:sqlserver://localhost:1433;databaseName=AdventureWorks;user=MyUserName;password=*****;";  
-			datasource = new BasicDataSource();
-			
-			datasource.setDriverClassName(driverName);
-			datasource.setUrl(url);	
-			
-			// try to recover when DB connection was lost
-			datasource.setRemoveAbandonedOnBorrow(true);
-			datasource.setRemoveAbandonedTimeout(60);
-			datasource.setTestOnBorrow(true);
-			
-			
-			if(validationQuery != null) {
-				datasource.setValidationQuery(validationQuery);
-			}
-
-			datasource.setUsername(username);
-			datasource.setPassword(password);
-			
-			DBInterface.setDefaultConnectionPoolSettings(datasource);
-			
-			//----------------------------------
-			// Test connection
-			//pooledSource.setLoginTimeout(5);
-			Connection connection = datasource.getConnection();
-			connection.close();
-			
-			DBInterface.registerManagedConnectionPool(uniquepoolName, datasource);
-			
-		} catch (Exception e) {
-			new CFWLog(logger)
-				.severe("Exception occured initializing DBInterface.", e);
-			return null;
+		//Driver name com.microsoft.sqlserver.jdbc.SQLServerDriver
+		//Connection URL Example: "jdbc:sqlserver://localhost:1433;databaseName=AdventureWorks;user=MyUserName;password=*****;";  
+		datasource = new BasicDataSource();
+		
+		datasource.setDriverClassName(driverName);
+		datasource.setUrl(url);	
+		
+		// try to recover when DB connection was lost
+		datasource.setRemoveAbandonedOnBorrow(true);
+		datasource.setRemoveAbandonedTimeout(60);
+		datasource.setTestOnBorrow(true);
+		
+		
+		if(validationQuery != null) {
+			datasource.setValidationQuery(validationQuery);
 		}
 		
+		datasource.setUsername(username);
+		datasource.setPassword(password);
+		
+		DBInterface.setDefaultConnectionPoolSettings(datasource);
+		
+		//----------------------------------
+		// Test connection
+		//pooledSource.setLoginTimeout(5);
 		DBInterface db = new DBInterface(uniquepoolName, datasource);
+		
+		if ( db.checkCanConnect() ) {
+			DBInterface.registerManagedConnectionPool(uniquepoolName, datasource);
+			new CFWLog(logger).off("Created DBInteface: "+ url);
+		}
 
-		new CFWLog(logger).off("Created DBInteface: "+ url);
 		return db;
+	}
+	
+	/********************************************************************************************
+	 * Checks if the DBInterface can connect with the given pool.
+	 ********************************************************************************************/
+	public boolean checkCanConnect() {
+		Connection connection = null;
+		try {
+			
+			if(pooledSource == null) {
+				return false;
+			}
+			connection = pooledSource.getConnection();
+		} catch (Exception e) {
+			new CFWLog(logger).severe("Failed to connect to database: "+e.getMessage(), e);
+			return false;
+		}finally {
+			if(connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					new CFWLog(logger).severe("Failed to close connection.", e);
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	/********************************************************************************************

@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.contextsettings;
 
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.utils.CFWState.CFWStateOption;
 
 public abstract class AbstractContextSettings extends CFWObject {
 	
@@ -13,6 +14,19 @@ public abstract class AbstractContextSettings extends CFWObject {
 	 **************************************************************/
 	public abstract boolean isDeletable(int settingsID);
 
+	/**************************************************************
+	 * Override this method to enable monitoring.
+	 **************************************************************/
+	public boolean isMonitoringEnabled() {
+		return false;
+	}
+	
+	/**************************************************************
+	 * Override this method, check the status and return the state of the monitor.
+	 **************************************************************/
+	public CFWStateOption getStatus() {
+		return CFWStateOption.NONE;
+	}
 
 	/**************************************************************
 	 * Returns ContextSetting object containing the default fields
