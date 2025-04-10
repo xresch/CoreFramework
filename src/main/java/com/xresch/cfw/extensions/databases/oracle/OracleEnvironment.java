@@ -7,6 +7,7 @@ import com.xresch.cfw.db.DBInterface;
 import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
+import com.xresch.cfw.utils.CFWState.CFWStateOption;
 
 /**************************************************************************************************************
  * 
@@ -85,6 +86,72 @@ public class OracleEnvironment extends AbstractContextSettings {
 			return false;
 		}
 
+	}
+	/**************************************************************
+	 * 
+	 **************************************************************/
+	public boolean isMonitoringEnabled() {
+		return true;
+	}
+	
+	/**************************************************************
+	 *
+	 **************************************************************/
+	public CFWStateOption getStatus() {
+		
+		if(!isDBDefined()) {
+			return CFWStateOption.NONE;
+		}
+		
+		this.getDBInstance();
+		if(dbInstance == null) {
+			return CFWStateOption.NONE;
+		}
+		
+		if (this.dbInstance.checkCanConnect()) {
+			return CFWStateOption.GREEN;
+		}
+		
+		return CFWStateOption.RED;
+		
+	}
+	
+	/**************************************************************
+	 * Creates the DB instance if not not already exists.
+	 * 
+	 **************************************************************/
+	public DBInterface getDBInstance() {
+		
+		//----------------------------------
+		// Create Instance
+		if(dbInstance == null) {
+			int id = this.getDefaultObject().id();
+			String name = this.getDefaultObject().name();
+			
+			// adding zeroDateTimeBehaviour to prevent SQLExceptions
+			DBInterface db = DBInterface.createDBInterfaceOracle(
+					"CFW_Oracle",
+					this.dbHost(), 
+					this.dbPort(), 
+					this.dbName(), 
+					this.dbType(), 
+					this.dbUser(), 
+					this.dbPassword()
+			);
+			
+			dbInstance = db;
+		}
+		//----------------------------------
+		// Create Instance
+		return dbInstance;
+	}
+	
+	/**************************************************************
+	 * Resets the DB instance.
+	 * 
+	 **************************************************************/
+	public void resetDBInstance() {
+		this.dbInstance = null;
 	}
 	
 	public boolean isDBDefined() {
@@ -169,10 +236,6 @@ public class OracleEnvironment extends AbstractContextSettings {
 		this.timezone.setValue(value);
 		return this;
 	}	
-
-	public DBInterface getDBInstance() {
-		return dbInstance;
-	}
 
 	public void setDBInstance(DBInterface dbInstance) {
 		this.dbInstance = dbInstance;

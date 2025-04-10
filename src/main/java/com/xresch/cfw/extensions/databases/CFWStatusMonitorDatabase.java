@@ -2,10 +2,14 @@ package com.xresch.cfw.extensions.databases;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.extensions.databases.generic.GenericJDBCEnvironment;
+import com.xresch.cfw.extensions.databases.mssql.MSSQLEnvironment;
+import com.xresch.cfw.extensions.databases.mysql.MySQLEnvironment;
+import com.xresch.cfw.extensions.databases.oracle.OracleEnvironment;
 import com.xresch.cfw.extensions.databases.postgres.PostgresEnvironment;
 import com.xresch.cfw.features.analytics.CFWStatusMonitor;
 import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
@@ -36,7 +40,7 @@ public class CFWStatusMonitorDatabase implements CFWStatusMonitor {
 	public HashMap<JsonObject, CFWStateOption> getStatuses() {
 		
 		
-		HashMap<JsonObject, CFWStateOption> result = new HashMap<>();
+		LinkedHashMap<JsonObject, CFWStateOption> result = new LinkedHashMap<>();
 		
 		//----------------------------------
 		// Generic JDBC
@@ -50,6 +54,7 @@ public class CFWStatusMonitorDatabase implements CFWStatusMonitor {
 			JsonObject object = new JsonObject();
 			object.addProperty("name", jdbc.getDefaultObject().name()); 
 			object.addProperty("type", jdbc.getDefaultObject().type()); 
+			object.addProperty("driver", jdbc.dbDriver()); 
 			
 			result.put(object, state);
 		}
@@ -60,6 +65,54 @@ public class CFWStatusMonitorDatabase implements CFWStatusMonitor {
 		for(AbstractContextSettings  setting : postgresList) {
 			
 			PostgresEnvironment jdbc = (PostgresEnvironment)setting;
+			
+			CFWStateOption state = jdbc.getStatus();
+			
+			JsonObject object = new JsonObject();
+			object.addProperty("name", jdbc.getDefaultObject().name()); 
+			object.addProperty("type", jdbc.getDefaultObject().type()); 
+			
+			result.put(object, state);
+		}
+		
+		//----------------------------------
+		// MSSQL
+		ArrayList<AbstractContextSettings> mssqlList = CFW.DB.ContextSettings.getContextSettingsForType(MSSQLEnvironment.SETTINGS_TYPE, true);
+		for(AbstractContextSettings  setting : mssqlList) {
+			
+			MSSQLEnvironment jdbc = (MSSQLEnvironment)setting;
+			
+			CFWStateOption state = jdbc.getStatus();
+			
+			JsonObject object = new JsonObject();
+			object.addProperty("name", jdbc.getDefaultObject().name()); 
+			object.addProperty("type", jdbc.getDefaultObject().type()); 
+			
+			result.put(object, state);
+		}
+		
+		//----------------------------------
+		// MySQL
+		ArrayList<AbstractContextSettings> mysqlList = CFW.DB.ContextSettings.getContextSettingsForType(MySQLEnvironment.SETTINGS_TYPE, true);
+		for(AbstractContextSettings  setting : mysqlList) {
+			
+			MySQLEnvironment jdbc = (MySQLEnvironment)setting;
+			
+			CFWStateOption state = jdbc.getStatus();
+			
+			JsonObject object = new JsonObject();
+			object.addProperty("name", jdbc.getDefaultObject().name()); 
+			object.addProperty("type", jdbc.getDefaultObject().type()); 
+			
+			result.put(object, state);
+		}
+		
+		//----------------------------------
+		// Oracle
+		ArrayList<AbstractContextSettings> oracleList = CFW.DB.ContextSettings.getContextSettingsForType(OracleEnvironment.SETTINGS_TYPE, true);
+		for(AbstractContextSettings  setting : oracleList) {
+			
+			OracleEnvironment jdbc = (OracleEnvironment)setting;
 			
 			CFWStateOption state = jdbc.getStatus();
 			

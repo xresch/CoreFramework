@@ -64,17 +64,9 @@ public class OracleEnvironmentManagement {
 		environmentsWithDB.remove(environment.getDefaultObject().id());
 				
 		if(environment.isDBDefined()) {
-			DBInterface db = DBInterface.createDBInterfaceOracle(
-					"EMP_Oracle",
-					environment.dbHost(), 
-					environment.dbPort(), 
-					environment.dbName(), 
-					environment.dbType(), 
-					environment.dbUser(), 
-					environment.dbPassword()
-			);
+			environment.resetDBInstance();
+			environment.getDBInstance();
 			
-			environment.setDBInstance(db);
 			environmentsWithDB.put(environment.getDefaultObject().id(), environment);
 		}
 	}

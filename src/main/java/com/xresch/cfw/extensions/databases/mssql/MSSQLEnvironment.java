@@ -7,6 +7,7 @@ import com.xresch.cfw.db.DBInterface;
 import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
+import com.xresch.cfw.utils.CFWState.CFWStateOption;
 
 /**************************************************************************************************************
  * 
@@ -62,7 +63,74 @@ public class MSSQLEnvironment extends AbstractContextSettings {
 		this.addFields(dbHost, dbPort, dbName, dbUser, dbPassword, isUpdateAllowed, timezone);
 	}
 		
+	/**************************************************************
+	 * 
+	 **************************************************************/
+	public boolean isMonitoringEnabled() {
+		return true;
+	}
 	
+	/**************************************************************
+	 *
+	 **************************************************************/
+	public CFWStateOption getStatus() {
+		
+		if(!isDBDefined()) {
+			return CFWStateOption.NONE;
+		}
+		
+		this.getDBInstance();
+		if(dbInstance == null) {
+			return CFWStateOption.NONE;
+		}
+		
+		if (this.dbInstance.checkCanConnect()) {
+			return CFWStateOption.GREEN;
+		}
+		
+		return CFWStateOption.RED;
+		
+	}
+	
+	/**************************************************************
+	 * Creates the DB instance if not not already exists.
+	 * 
+	 **************************************************************/
+	public DBInterface getDBInstance() {
+		
+		//----------------------------------
+		// Create Instance
+		if(dbInstance == null) {
+			int id = this.getDefaultObject().id();
+			String name = this.getDefaultObject().name();
+			
+			DBInterface db = DBInterface.createDBInterfaceMSSQL(
+					id+"-"+name+":MicrosoftSQL",
+					this.dbHost(), 
+					this.dbPort(), 
+					this.dbName(), 
+					this.dbUser(), 
+					this.dbPassword()
+			);
+			
+			dbInstance = db;
+		}
+		//----------------------------------
+		// Create Instance
+		return dbInstance;
+	}
+	
+	/**************************************************************
+	 * Resets the DB instance.
+	 * 
+	 **************************************************************/
+	public void resetDBInstance() {
+		this.dbInstance = null;
+	}
+	
+	/**************************************************************
+	 * 
+	 **************************************************************/
 	@Override
 	public boolean isDeletable(int id) {
 		
@@ -81,6 +149,9 @@ public class MSSQLEnvironment extends AbstractContextSettings {
 
 	}
 	
+	/**************************************************************
+	 * 
+	 **************************************************************/
 	public boolean isDBDefined() {
 		if(dbHost.getValue() != null
 		&& dbPort.getValue() != null
@@ -152,10 +223,6 @@ public class MSSQLEnvironment extends AbstractContextSettings {
 	public MSSQLEnvironment timezone(String value) {
 		this.timezone.setValue(value);
 		return this;
-	}	
-
-	public DBInterface getDBInstance() {
-		return dbInstance;
 	}
 
 	public void setDBInstance(DBInterface dbInstance) {

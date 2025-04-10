@@ -64,16 +64,10 @@ public class MSSQLEnvironmentManagement {
 		environmentsWithDB.remove(id);
 		
 		if(environment.isDBDefined()) {
-			DBInterface db = DBInterface.createDBInterfaceMSSQL(
-					id+"-"+environment.getDefaultObject().name(),
-					environment.dbHost(), 
-					environment.dbPort(), 
-					environment.dbName(), 
-					environment.dbUser(), 
-					environment.dbPassword()
-			);
 			
-			environment.setDBInstance(db);
+			environment.resetDBInstance();
+			environment.getDBInstance();
+			
 			environmentsWithDB.put(environment.getDefaultObject().id(), environment);
 		}
 	}

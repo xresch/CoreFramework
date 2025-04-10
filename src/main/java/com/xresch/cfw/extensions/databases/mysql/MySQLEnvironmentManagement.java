@@ -65,21 +65,13 @@ public class MySQLEnvironmentManagement {
 		environmentsWithDB.remove(id);
 		
 		if(environment.isDBDefined()) {
-			// adding zeroDateTimeBehaviour to prevent SQLExceptions
-			DBInterface db = DBInterface.createDBInterfaceMySQL(
-					id+"-"+environment.getDefaultObject().name(),
-					environment.dbHost(), 
-					environment.dbPort(), 
-					environment.dbName()+"?zeroDateTimeBehavior=convertToNull", 
-					environment.dbUser(), 
-					environment.dbPassword()
-			);
 			
-			environment.setDBInstance(db);
+			environment.resetDBInstance();
+			environment.getDBInstance();
+			
 			environmentsWithDB.put(environment.getDefaultObject().id(), environment);
 		}
 	}
-	
 	
 	public static MySQLEnvironment getEnvironment(int id) {
 		if(!isInitialized) { initialize(); }
