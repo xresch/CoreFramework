@@ -71,16 +71,9 @@ public class PostgresEnvironmentManagement {
 		
 		if(environment.isDBDefined()) {
 			// adding zeroDateTimeBehaviour to prevent SQLExceptions
-			DBInterface db = DBInterface.createDBInterfacePostgres(
-					id+"-"+environment.getDefaultObject().name(),
-					environment.dbHost(), 
-					environment.dbPort(), 
-					environment.dbName()+"?zeroDateTimeBehavior=convertToNull", 
-					environment.dbUser(), 
-					environment.dbPassword()
-			);
+			environment.resetDBInstance();
+			environment.getDBInstance();
 			
-			environment.setDBInstance(db);
 			environmentsWithDB.put(environment.getDefaultObject().id(), environment);
 		}
 	}

@@ -1,14 +1,13 @@
 package com.xresch.cfw.extensions.databases.postgres;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.db.DBInterface;
 import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
+import com.xresch.cfw.utils.CFWState.CFWStateOption;
 
 /**************************************************************************************************************
  * 
@@ -62,8 +61,39 @@ public class PostgresEnvironment extends AbstractContextSettings {
 	private void initializeFields() {
 		this.addFields(dbHost, dbPort, dbName, dbUser, dbPassword, isUpdateAllowed, timezone);
 	}
-		
 	
+	/**************************************************************
+	 * 
+	 **************************************************************/
+	public boolean isMonitoringEnabled() {
+		return true;
+	}
+	
+	/**************************************************************
+	 *
+	 **************************************************************/
+	public CFWStateOption getStatus() {
+		
+		if(!isDBDefined()) {
+			return CFWStateOption.NONE;
+		}
+		
+		this.getDBInstance();
+		if(dbInstance == null) {
+			return CFWStateOption.NONE;
+		}
+		
+		if (this.dbInstance.checkCanConnect()) {
+			return CFWStateOption.GREEN;
+		}
+		
+		return CFWStateOption.RED;
+		
+	}
+	
+	/**************************************************************
+	 * 
+	 **************************************************************/
 	@Override
 	public boolean isDeletable(int id) {
 		
@@ -80,6 +110,42 @@ public class PostgresEnvironment extends AbstractContextSettings {
 			return false;
 		}
 
+	}
+	
+	/**************************************************************
+	 * Creates the DB instance if not not already exists.
+	 * 
+	 **************************************************************/
+	public DBInterface getDBInstance() {
+		
+		//----------------------------------
+		// Create Instance
+		if(dbInstance == null) {
+			int id = this.getDefaultObject().id();
+			String name = this.getDefaultObject().name();
+			
+			DBInterface db = DBInterface.createDBInterfacePostgres(
+					id+"-"+name+":PostGres",
+					this.dbHost(), 
+					this.dbPort(), 
+					this.dbName()+"?zeroDateTimeBehavior=convertToNull", 
+					this.dbUser(), 
+					this.dbPassword()
+			);
+			
+			dbInstance = db;
+		}
+		//----------------------------------
+		// Create Instance
+		return dbInstance;
+	}
+	
+	/**************************************************************
+	 * Resets the DB instance.
+	 * 
+	 **************************************************************/
+	public void resetDBInstance() {
+		this.dbInstance = null;
 	}
 	
 	public boolean isDBDefined() {
@@ -153,10 +219,6 @@ public class PostgresEnvironment extends AbstractContextSettings {
 	public PostgresEnvironment timezone(String value) {
 		this.timezone.setValue(value);
 		return this;
-	}
-
-	public DBInterface getDBInstance() {
-		return dbInstance;
 	}
 
 	public void setDBInstance(DBInterface dbInstance) {

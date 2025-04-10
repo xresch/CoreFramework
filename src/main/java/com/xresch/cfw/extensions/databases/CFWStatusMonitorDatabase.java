@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.extensions.databases.generic.GenericJDBCEnvironment;
+import com.xresch.cfw.extensions.databases.postgres.PostgresEnvironment;
 import com.xresch.cfw.features.analytics.CFWStatusMonitor;
 import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
 import com.xresch.cfw.utils.CFWState.CFWStateOption;
@@ -34,12 +35,31 @@ public class CFWStatusMonitorDatabase implements CFWStatusMonitor {
 	@Override
 	public HashMap<JsonObject, CFWStateOption> getStatuses() {
 		
+		
 		HashMap<JsonObject, CFWStateOption> result = new HashMap<>();
 		
+		//----------------------------------
+		// Generic JDBC
 		ArrayList<AbstractContextSettings> jdbcList = CFW.DB.ContextSettings.getContextSettingsForType(GenericJDBCEnvironment.SETTINGS_TYPE, true);
 		for(AbstractContextSettings  setting : jdbcList) {
 			
 			GenericJDBCEnvironment jdbc = (GenericJDBCEnvironment)setting;
+			
+			CFWStateOption state = jdbc.getStatus();
+			
+			JsonObject object = new JsonObject();
+			object.addProperty("name", jdbc.getDefaultObject().name()); 
+			object.addProperty("type", jdbc.getDefaultObject().type()); 
+			
+			result.put(object, state);
+		}
+		
+		//----------------------------------
+		// PostGres
+		ArrayList<AbstractContextSettings> postgresList = CFW.DB.ContextSettings.getContextSettingsForType(PostgresEnvironment.SETTINGS_TYPE, true);
+		for(AbstractContextSettings  setting : postgresList) {
+			
+			PostgresEnvironment jdbc = (PostgresEnvironment)setting;
 			
 			CFWStateOption state = jdbc.getStatus();
 			
