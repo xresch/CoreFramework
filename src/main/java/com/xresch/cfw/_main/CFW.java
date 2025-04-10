@@ -366,6 +366,19 @@ public class CFW {
 	    }
 	    
 	    //--------------------------------
+	    // Add Shutdown Hook
+	    Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            @Override
+            public void run()
+            {
+            	CFW.Context.App.getApp().stop();
+            	System.exit(0);
+            	return;
+            }
+        });
+	    
+	    //--------------------------------
 	    // Load Application settings
 	    // before DB to load DB related settings as well
 	    appToStart.settings();

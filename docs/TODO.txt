@@ -167,7 +167,8 @@ DONE
 ------- current -------
 - NEW FEATURE: Status Monitoring of connected systems.
 - NEW FEATURE: System Analytics: Added page "Versions" 
-
+- Status Monitor: Added monitoring for Database Connections: Postgres, MySQL, MSSQL, Oracle, JDBC
+- Shutdown: Added shutdown hook for better shutdown handling
 - CFWRandom: Refactoring - removing "random" from methods. 
 - CFWRandom: Added endpoint /cfw/random to get random test data
 - Query: Fixed messages not displayed when result is empty.
