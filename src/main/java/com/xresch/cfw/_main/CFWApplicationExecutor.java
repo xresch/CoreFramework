@@ -2,6 +2,7 @@ package com.xresch.cfw._main;
 
 import java.io.IOException;
 import java.net.URL;
+import java.security.KeyStore;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw.features.core.acme.CFWACMEClient;
 import com.xresch.cfw.features.core.auth.AuthenticationHandler;
 import com.xresch.cfw.features.usermgmt.SessionTrackableDataStore;
 import com.xresch.cfw.features.usermgmt.SessionTracker;
@@ -436,10 +438,7 @@ public class CFWApplicationExecutor {
 			httpsConf.addCustomizer( new org.eclipse.jetty.server.ForwardedRequestCustomizer());
 			httpsConf.setRequestHeaderSize(CFWProperties.HTTP_MAX_REQUEST_HEADER_SIZE);
 			
-			SslContextFactory sslContextFactory = new SslContextFactory.Server();
-			sslContextFactory.setKeyStorePath(CFWProperties.HTTPS_KEYSTORE_PATH);
-			sslContextFactory.setKeyStorePassword(CFWProperties.HTTPS_KEYSTORE_PASSWORD);
-			sslContextFactory.setKeyManagerPassword(CFWProperties.HTTPS_KEYMANAGER_PASSWORD);
+			SslContextFactory sslContextFactory = CFWACMEClient.getSSLContextFactory();
 			
 			ServerConnector httpsConnector = new ServerConnector(server,
 					new SslConnectionFactory(sslContextFactory, "http/1.1"),
@@ -450,6 +449,7 @@ public class CFWApplicationExecutor {
 			
 			connectorArray.add(httpsConnector);
 		}
+		
 		
 		server.setConnectors(connectorArray.toArray(new Connector[] {}));
 		

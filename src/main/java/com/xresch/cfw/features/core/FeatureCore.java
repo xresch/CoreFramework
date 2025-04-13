@@ -16,6 +16,7 @@ import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw.features.core.acme.TaskACMEUpdateCertificates;
 import com.xresch.cfw.features.core.auth.SSOProviderSettingsManagement;
 import com.xresch.cfw.features.core.auth.ServletChangePassword;
 import com.xresch.cfw.features.core.auth.ServletLogin;
@@ -292,6 +293,7 @@ public class FeatureCore extends CFWAppFeature {
 		//-------------------------------
 		// Initialize Backup Task
 		TaskDatabaseBackup.setupTask();
+		TaskACMEUpdateCertificates.setupTask();
 		
 	}
 

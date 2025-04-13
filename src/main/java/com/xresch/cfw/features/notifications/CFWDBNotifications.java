@@ -84,6 +84,11 @@ public class CFWDBNotifications {
 	public static Integer 	createGetPrimaryKey(Notification item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, item);}
 	
 	
+	public static boolean createForAdminUsers(Notification templateNotification) 		{ 
+		ArrayList<User> ultimateUsers = CFW.DB.Roles.getAdminsAndSuperusers();
+		return createForUsers(ultimateUsers, templateNotification);
+	}
+	
 	public static boolean createForUsers(Collection<User> users, Notification templateNotification) 		{ 
 		
 		boolean success = true;

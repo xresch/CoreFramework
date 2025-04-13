@@ -67,6 +67,9 @@ public class CFWProperties {
 	/**  (Property=cfw_https_port, Default=443) */
 	public static int HTTPS_PORT = 443;
 		
+	/**  (Property=cfw_https_acme_enabled, Default=false */
+	public static boolean HTTPS_ACME_ENABLED = false;
+	
 	/**  (Property=cfw_https_keystore_path, Default=./config/keystore.jks) */
 	public static String HTTPS_KEYSTORE_PATH = "./config/keystore.jks";
 	
@@ -79,6 +82,28 @@ public class CFWProperties {
 	/** Max size in bytes for request headers. (Property=cfw_http_max_request_header_size, Default=65535) */
 	public static int HTTP_MAX_REQUEST_HEADER_SIZE = 65535;
 	
+	/**  (Property=cfw_https_acme_folder, Default=./config/acme */
+	public static String HTTPS_ACME_FOLDER = "./config/acme";
+	
+	/**  (Property=cfw_https_acme_url, Default="acme://letsencrypt.org" */
+	public static String HTTPS_ACME_URL = "acme://letsencrypt.org";
+	
+	/**  (Property=cfw_https_acme_email, Default="" */
+	public static String HTTPS_ACME_EMAIL = "";
+	
+	/**  (Property=cfw_https_acme_domains, Default="" */
+	public static String HTTPS_ACME_DOMAINS = "";
+	
+	/**  (Property=cfw_https_acme_password, Default="" */
+	public static String HTTPS_ACME_PASSWORD = "";
+	
+	/**  (Property=cfw_https_accept_terms, Default=false */
+	public static boolean HTTPS_ACME_ACCEPT_TERMS = false;
+	
+	/**  (Property=cfw_https_acme_renewal_threshold, Default=14 */
+	public static int HTTPS_ACME_RENEWAL_THRESHOLD = 14;
+
+			
 	//##########################################################################################
 	// PROXY
 	//##########################################################################################	
@@ -187,7 +212,7 @@ public class CFWProperties {
 	/** The name of the database server. (Property=cfw_h2_server, Default="localhost") */
 	public static String DB_SERVER = "localhost";
 	
-	/** The directory where the database should be stored. (Property=cfw_h2_path, Default="false") */
+	/** The directory where the database and other data should be stored. (Property=cfw_h2_path, Default="false") */
 	public static String DB_STORE_PATH = "./datastore";
 	
 	/** The name of the database. (Property=cfw_h2_db_name, Default="h2database") */
@@ -231,9 +256,19 @@ public class CFWProperties {
 		HTTPS_ENABLED 					= CFWProperties.configAsBoolean("cfw_https_enabled", HTTPS_ENABLED);
 		HTTPS_PORT 						= CFWProperties.configAsInt("cfw_https_port", HTTPS_PORT);
 
+		HTTPS_ACME_ENABLED	 			= CFWProperties.configAsBoolean("cfw_https_acme_enabled", HTTPS_ACME_ENABLED);
+		
 		HTTPS_KEYSTORE_PATH 			= CFWProperties.configAsString("cfw_https_keystore_path", HTTPS_KEYSTORE_PATH);
 		HTTPS_KEYSTORE_PASSWORD			= CFWProperties.configAsString("cfw_https_keystore_password", HTTPS_KEYSTORE_PASSWORD);
 		HTTPS_KEYMANAGER_PASSWORD		= CFWProperties.configAsString("cfw_https_keymanager_password", HTTPS_KEYMANAGER_PASSWORD);
+		
+		HTTPS_ACME_FOLDER 				= CFWProperties.configAsString("cfw_https_acme_folder", HTTPS_ACME_FOLDER);
+		HTTPS_ACME_URL					= CFWProperties.configAsString("cfw_https_acme_url", HTTPS_ACME_URL);
+		HTTPS_ACME_EMAIL 				= CFWProperties.configAsString("cfw_https_acme_email", HTTPS_ACME_EMAIL);
+		HTTPS_ACME_DOMAINS 				= CFWProperties.configAsString("cfw_https_acme_domains", HTTPS_ACME_DOMAINS);
+		HTTPS_ACME_PASSWORD 			= CFWProperties.configAsString("cfw_https_acme_password", HTTPS_ACME_PASSWORD);
+		HTTPS_ACME_ACCEPT_TERMS 		= CFWProperties.configAsBoolean("cfw_https_accept_terms", HTTPS_ACME_ACCEPT_TERMS);
+		HTTPS_ACME_RENEWAL_THRESHOLD 	= CFWProperties.configAsInt("cfw_https_acme_renewal_threshold", HTTPS_ACME_RENEWAL_THRESHOLD);
 		
 		HTTP_MAX_REQUEST_HEADER_SIZE 	= CFWProperties.configAsInt("cfw_http_max_request_header_size", HTTP_MAX_REQUEST_HEADER_SIZE);
 		
