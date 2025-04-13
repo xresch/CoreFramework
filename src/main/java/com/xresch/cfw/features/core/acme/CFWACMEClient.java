@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Date;
@@ -19,8 +20,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.shredzone.acme4j.Account;
 import org.shredzone.acme4j.AccountBuilder;
@@ -36,13 +35,15 @@ import org.shredzone.acme4j.util.KeyPairUtils;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw._main.CFWMessages.MessageType;
+import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.notifications.Notification;
 import com.xresch.cfw.logging.CFWLog;
 
 public class CFWACMEClient {
 	
+	private static final String CERTIFICATE_NAME = "ACMECertificate";
+
 	private static final Logger logger = CFWLog.getLogger(CFW.class.getName());
 	
 	private static boolean IS_INITIALIZED = false;
@@ -107,32 +108,38 @@ public class CFWACMEClient {
 	/******************************************************************
 	 * 
 	 ******************************************************************/
-	private static boolean certificateNeedsRenewal() {
-		
-		try {
-			//-----------------------
-			// True if non-existent
-			if (!Files.exists(Paths.get(CERTIFICATE_FILE))) {
-				return true;
-			}
-			
-			//-----------------------
-			// Check if exists
-			int threshold = CFW.Properties.HTTPS_ACME_RENEWAL_THRESHOLD;
-			CertificateFactory cf = CertificateFactory.getInstance("X.509");
-			try (InputStream in = new FileInputStream(CERTIFICATE_FILE)) {
-				X509Certificate cert = (X509Certificate) cf.generateCertificate(in);
-				long millisUntilExpiry = cert.getNotAfter().getTime() - new Date().getTime();
-				long daysUntilExpiry = TimeUnit.MILLISECONDS.toDays(millisUntilExpiry);
-				return daysUntilExpiry < threshold;
-			}
-			
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			return true; // Default to renewal if any error occurs
-		}
-	}
+    private static boolean certificateNeedsRenewal() throws Exception {
+        	
+    	//-----------------------
+		// Check if exists
+        if (!Files.exists(Paths.get(KEYSTORE_FILE))) {
+            return true;
+        }
+        
+        //-----------------------
+		// Get KeyStore
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        try (InputStream in = new FileInputStream(KEYSTORE_FILE)) {
+            keyStore.load(in, CFW.Properties.HTTPS_ACME_PASSWORD.toCharArray());
+        }
+        
+        //-----------------------
+		// Get Certificate
+        X509Certificate cert = (X509Certificate) keyStore.getCertificate(CERTIFICATE_NAME);
+        if (cert == null) {
+            return true;
+        }
+        
+        //-----------------------
+		// Check expired
+        int threshold = CFW.Properties.HTTPS_ACME_RENEWAL_THRESHOLD;
+        long millisUntilExpiry = cert.getNotAfter().getTime() - new Date().getTime();
+        long daysUntilExpiry = TimeUnit.MILLISECONDS.toDays(millisUntilExpiry);
+       
+        return daysUntilExpiry < threshold;
+
+    }
+    
 
 	/******************************************************************
 	 * 
@@ -214,7 +221,9 @@ public class CFWACMEClient {
 		// Get Certificate
 		Certificate certificate = order.getCertificate();
 		new CFWLog(logger).info("ACME: Certificate:" + certificate.getCertificate().toString());
-		
+	
+		// Note: This causes a compilation error, changed certificateNeedsRenewal()-method to 
+		// check java Keystore file instead.
 //        try (FileWriter fw = new FileWriter(CERTIFICATE_FILE)) {
 //            for (X509Certificate cert : certificate.getCertificateChain()) {
 //            	new CFWLog(logger).info("ACME: Store Certificate with Signature: " + cert.getSignature());
@@ -232,7 +241,7 @@ public class CFWACMEClient {
         java.security.KeyStore keyStore = java.security.KeyStore.getInstance("JKS");
         keyStore.load(null, null);
         keyStore.setKeyEntry(
-        		"letsencrypt"
+        		  CERTIFICATE_NAME
         		, domainKeyPair.getPrivate()
         		, password.toCharArray()
         		, certificate.getCertificateChain().toArray(new java.security.cert.Certificate[0])
@@ -241,7 +250,6 @@ public class CFWACMEClient {
             keyStore.store(out, password.toCharArray());
         }
 		
-
 	}
 	
 	/******************************************************************
