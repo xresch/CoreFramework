@@ -220,7 +220,6 @@ public class CFWACMEClient {
 		//--------------------------------
 		// Get Certificate
 		Certificate certificate = order.getCertificate();
-		new CFWLog(logger).info("ACME: Certificate:" + certificate.getCertificate().toString());
 	
 		// Note: This causes a compilation error, changed certificateNeedsRenewal()-method to 
 		// check java Keystore file instead.
