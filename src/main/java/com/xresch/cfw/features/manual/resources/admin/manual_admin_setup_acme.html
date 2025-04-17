@@ -1,0 +1,40 @@
+
+
+<p>Automated Certificate Management Environment(ACME) is used to automatically fetch certificates from a Certificate Authority(CA).
+In case of this application, this is used for SSL certificates used for making HTTPS connections secure.</p>
+
+<h3>How it Works</h3>
+<p>Following are some details how it works in this application. Example settings you will find in the next section.</p>
+<ul>
+	<li><b>Port 80:&nbsp;</b>Must be open and set in the cfw.properties as the HTTP port. The Certificate Authority will send requests to the application using this port.</li>
+	<li><b>Location:&nbsp;</b>The keys and keystore-file will be saved to a folder specified by the property 'cfw_https_acme_folder'. </li>
+	<li><b>Startup:&nbsp;</b>The application will check on startup if certificates are out-dated and have to be renewed.</li>
+	<li><b>Restart:&nbsp;</b>After certificates have been renewed, a restart is required for them to be properly loaded.</li>
+	<li><b>Renewal Checks:&nbsp;</b>Will be executed every 4 hours at the time of the application startup.</li>
+	<li><b>Browser Warnings:&nbsp;</b>Your browsers might still show a warning for a while after a successful update of certificates. Check in an incognito window if it works. </li>
+</ul>
+
+<h3>ACME Settings</h3>
+<p>
+Following are the most important ACME settings in the file /config/cfw.properties.
+To find more details about each setting check the comments in the file.</p>
+<pre><code>
+
+#http must be enabled and port must be 80 (ACME workflow)
+cfw_http_enabled=true
+cfw_http_port=80
+
+#redirect must be false
+cfw_http_redirect_to_https=false
+
+# set to true
+cfw_https_acme_enabled=true
+
+#set your preferences and accept terms of service of your provider
+cfw_https_acme_url=acme://letsencrypt.org
+cfw_https_acme_email=example@example.com
+cfw_https_acme_domains=example.com,mydomain.ch
+cfw_https_acme_password=changeme
+cfw_https_accept_terms=false
+cfw_https_acme_renewal_threshold=14</code></pre>
+

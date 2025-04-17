@@ -112,6 +112,12 @@ public class FeatureManual extends CFWAppFeature {
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES+".admin", "manual_admin_setup.html")
 			);
 				
+		TOP_PAGE_ADMIN.addChild(new ManualPage("Setup: ACME Certificates")
+				.faicon("fas fa-certificate")
+				.addPermission(PERMISSION_ADMIN_MANUAL)
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES+".admin", "manual_admin_setup_acme.html")
+				);
+		
 		TOP_PAGE_ADMIN.addChild(new ManualPage("Setup: Authentication")
 				.faicon("fas fa-user")
 				.addPermission(PERMISSION_ADMIN_MANUAL)
