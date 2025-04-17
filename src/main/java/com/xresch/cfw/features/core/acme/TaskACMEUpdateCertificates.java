@@ -1,16 +1,13 @@
 package com.xresch.cfw.features.core.acme;
 
-import java.util.Calendar;
-import java.util.Timer;
 import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.db.TaskDatabaseBackup;
-import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw._main.CFWMessages.MessageType;
+import com.xresch.cfw.features.notifications.Notification;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.schedule.CFWScheduledTask;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 public class TaskACMEUpdateCertificates extends CFWScheduledTask {
 	
@@ -38,7 +35,7 @@ public class TaskACMEUpdateCertificates extends CFWScheduledTask {
 		int oneDayInSeconds =  24 * 60 * 60;
 
 		future = CFW.Schedule.runPeriodically(
-				  oneDayInSeconds
+				  0
 				, oneDayInSeconds
 				, new TaskACMEUpdateCertificates()
 			);
@@ -50,10 +47,39 @@ public class TaskACMEUpdateCertificates extends CFWScheduledTask {
 		try {
 			CFWACMEClient.fetchCACertificate();
 		} catch (Exception e) {
-			new CFWLog(logger).warn(
-					"Exception while trying to retrieve certificate from CA authority: "+e.getMessage()
-					, e
-				);
+			
+			//----------------------------
+			// Notification
+			CFW.DB.Notifications.createForAdminUsers(
+				new Notification()
+					.category("ACME")
+					.messageType(MessageType.ERROR)
+					.title("ACME: Error retrieving Certificate from Authority")
+					.message("""
+						<p>The application was unable to retrieve a certificate from the certificate authority.</p>
+						<p><b>Certificate Authority:&nbsp;</b> %s</p>
+						<p><b>Domains:&nbsp;</b> %s</p>
+						<p><b>Error Message:&nbsp;</b> %s</p>
+						<p><b>Error Stacktrace:&nbsp;</b> %s</p>
+					""".formatted(
+							  CFW.Properties.HTTPS_ACME_URL
+							, CFW.Properties.HTTPS_ACME_DOMAINS
+							, e.getMessage()
+							, CFW.Utils.Text.stacktraceToString(e)
+							
+						)
+					)
+			);
+			
+			//----------------------------
+			// Log
+			new CFWLog(logger)
+					.severe(
+						"ACME: Error while attempting to retrieve certificate from CA authority: " 
+						+ e.getMessage()
+						, e
+					);
+			
 		}
 	}
 	

@@ -12,7 +12,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
 //@WebServlet("/.well-known/acme-challenge/*")
-public class LetsEncryptServlet extends HttpServlet {
+public class ACMEChallengeServlet extends HttpServlet {
    
 	private static final long serialVersionUID = 1L;
 	

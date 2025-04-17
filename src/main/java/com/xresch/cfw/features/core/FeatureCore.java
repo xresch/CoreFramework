@@ -4,6 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import org.shredzone.acme4j.provider.letsencrypt.LetsEncryptAcmeProvider;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw._main.CFWProperties;
@@ -16,6 +18,7 @@ import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw.features.core.acme.ACMEChallengeServlet;
 import com.xresch.cfw.features.core.acme.TaskACMEUpdateCertificates;
 import com.xresch.cfw.features.core.auth.SSOProviderSettingsManagement;
 import com.xresch.cfw.features.core.auth.ServletChangePassword;
@@ -259,6 +262,7 @@ public class FeatureCore extends CFWAppFeature {
 	    
 	    //-----------------------------------------
 		// Unsecured Core Servlets
+	    app.addUnsecureServlet(ACMEChallengeServlet.class,  "/.well-known/acme-challenge/*");
 		app.addUnsecureServlet(ServletLocalization.class,  	"/cfw/locale");
 		app.addUnsecureServlet(ServletFormHandler.class,	"/cfw/formhandler");
 		app.addUnsecureServlet(ServletAutocomplete.class,  	"/cfw/autocomplete");

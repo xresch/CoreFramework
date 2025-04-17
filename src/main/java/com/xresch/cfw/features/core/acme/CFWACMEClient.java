@@ -285,51 +285,6 @@ public class CFWACMEClient {
 		if( CFW.Properties.HTTPS_ACME_ENABLED ) {
 			
 			//----------------------------
-			// Fetch if not fetched
-			if(!IS_FETCHED) { 
-				try {
-					fetchCACertificate();
-				} catch (Exception e) {
-					
-					//----------------------------
-					// Notification
-					CFW.DB.Notifications.createForAdminUsers(
-						new Notification()
-							.category("ACME")
-							.messageType(MessageType.ERROR)
-							.title("ACME: Error retrieving Certificate from Authority")
-							.message("""
-								<p>The application was unable to retrieve a certificate from the certificate authority.</p>
-								<p><b>Certificate Authority:&nbsp;</b> %s</p>
-								<p><b>Domains:&nbsp;</b> %s</p>
-								<p><b>Error Message:&nbsp;</b> %s</p>
-								<p><b>Error Stacktrace:&nbsp;</b> %s</p>
-							""".formatted(
-									  CFW.Properties.HTTPS_ACME_URL
-									, CFW.Properties.HTTPS_ACME_DOMAINS
-									, e.getMessage()
-									, CFW.Utils.Text.stacktraceToString(e)
-									
-								)
-							)
-					);
-					
-					//----------------------------
-					// Log
-					new CFWLog(logger)
-							.severe(
-								"ACME: Error while retrieving certificate: " 
-								+ e.getMessage()
-								, e
-							);
-					
-					//----------------------------
-					// Return Default
-					return sslContextFactory;
-				} 
-			}
-			
-			//----------------------------
 			// If fetched return ACME Factory
 			if(IS_FETCHED) {
 				sslContextFactory = new SslContextFactory.Server();
