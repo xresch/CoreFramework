@@ -5,16 +5,17 @@
  * Overview of Relevant z-indexes
  * ==============================
  * 
- * Toast Messages >> 	#cfw-toasts 			z-index: 2048;
- * BT Tooltip >> 		.tooltip 				z-index: 1070;
- * BT Popover >> 		.popover 				z-index: 1060;
- * Confirm Dialog >>	.cfw-confirm-dialog		z-index: 1055;
- * BT Modals >> 		.modal 					z-index: 1050;
- * BT Modal BG >> 		.modal -backdrop		z-index: 1040;
- * Loaders >> 			#cfw-loader-body   		z-index: 1024;
- * BT Dropdown Menu >> .dropdown-menu 			z-index: 1000;
- * Sticky Headers >>	.cfw-sticky-th 			z-index: 999;
- * Autocomplete >>		.autocomplete-wrapper 	z-index: 99;
+ * Toast Messages >> 	#cfw-toasts 						z-index: 2048;
+ * BT Tooltip >> 		.tooltip 							z-index: 1070;
+ * BT Popover >> 		.popover 							z-index: 1060;
+ * Confirm Dialog >>	.cfw-confirm-dialog					z-index: 1055;
+ * BT Modals >> 		.modal 								z-index: 1050;
+ * BT Modal BG >> 		.modal -backdrop					z-index: 1040;
+ * Loaders >> 			#cfw-loader-body   					z-index: 1024;
+ * BT Dropdown Menu >> 	.dropdown-menu 						z-index: 1000;
+ * Autocomplete >>		.autocomplete-wrapper 				z-index: 99;
+ * Menu Button >>		.cfw-dataviewer-settings-button 	z-index: 75;
+ * Sticky Headers >>	.cfw-sticky-th 						z-index: 50;
  *
  *
  * @author Reto Scheiwiller, (c) Copyright 2019
@@ -1077,7 +1078,7 @@ label {
 }
 
 .cfw-dataviewer-settings-button {
-	z-index: 24;
+	z-index: 75;
 	position: absolute;
     right: 18px;
     opacity: 33%;
@@ -1098,14 +1099,6 @@ label {
 }
 
 .cfw-dataviewer-renderresult pre{
-	overflow: unset;
-}
-
-.cfw-dashboard-widget-body .cfw-dataviewer-renderresult .flex-grow-1{
-	width: auto;
-}
-.cfw-dashboard-widget-body pre{
-	max-height: 100%;
 	overflow: unset;
 }
 
@@ -1263,8 +1256,8 @@ label {
 
 .cfw-sticky-th {
     position: sticky;
-    top: 0px;
-    z-index: 999;
+    top: 45px;
+    z-index: 50;
     background: inherit;
 }
 

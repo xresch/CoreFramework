@@ -783,15 +783,25 @@ function cfw_colors_getSplitThresholdStyle(
  *************************************************************************************/
 function cfw_utils_filterItems(context, searchField, itemSelector){
 
-	var filterContext = $(context);
-	var input = $(searchField);
+	let filterContext = $(context);
+	let input = $(searchField);
 	
-	var filter = input.val().toUpperCase();
+	let filter = input.val().toUpperCase();
+	
+	//--------------------------
+	// To regex, or not to regex, that is the question
+	let regex = null;
+	if(filter.indexOf("*") > -1){
+		regex =  new RegExp(filter.replace(/\*/g, '.*'));
+	}
 	
 	filterContext.find(itemSelector).each(function( index ) {
 		  var current = $(this);
 
-		  if (current.html().toUpperCase().indexOf(filter) > -1) {
+		  if ( 
+			  (regex == null && current.html().toUpperCase().indexOf(filter) > -1)
+			  || (regex != null && regex.test(current.html().toUpperCase()) )
+		  ){
 			  
 			  current.css("display", "");
 			  

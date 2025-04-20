@@ -20,7 +20,7 @@
     margin-bottom: 10px;
     position: sticky;
     top: 40px;
-    z-index: 32;
+    z-index: 75;
     background: inherit;
     width: 101%;
 }
@@ -35,7 +35,8 @@
 }
 
 .cfw-dashboard-widget-body {
-    padding: 0.4rem;
+    margin-top: 0.4rem;
+    padding-left: 0.0rem 0.4rem 0.4rem 0.4rem;
     overflow-x: auto;
     overflow-y: auto; 
     background: inherit;
@@ -45,6 +46,19 @@
     align-items: flex-start;
     align-content: start;
 }
+
+.cfw-dashboard-widget-body .cfw-dataviewer-renderresult .flex-grow-1{
+	width: auto;
+}
+.cfw-dashboard-widget-body pre{
+	max-height: 100%;
+	overflow: unset;
+}
+
+.cfw-dashboard-widget-body .cfw-sticky-th {
+    top: 0px;
+}
+
 
 /*when title is left, give body a min-width */
 .flex-row > .cfw-dashboard-widget-body {

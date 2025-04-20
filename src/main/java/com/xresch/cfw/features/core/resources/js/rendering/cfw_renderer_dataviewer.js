@@ -300,8 +300,20 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			//---------------------------------
 			// Filter
 			filterquery = filterquery.toLowerCase();
+			
+			let regex = null;
+			if(filterquery.indexOf("*") > -1){
+				regex =  new RegExp(filterquery.replace(/\*/g, '.*'));
+			}
+
 			let filteredData = _.filter(renderDef.data, function(o) { 
-				    return JSON.stringify(o).toLowerCase().includes(filterquery); 
+				let jsonString = JSON.stringify(o).toLowerCase();
+				
+				return ( 
+				  (regex == null && jsonString.indexOf(filterquery) > -1)
+				  || (regex != null && regex.test(jsonString) )
+			  );
+
 			});
 			
 			//---------------------------------
