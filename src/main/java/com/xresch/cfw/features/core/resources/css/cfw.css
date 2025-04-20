@@ -1263,7 +1263,7 @@ label {
 
 .cfw-sticky-th {
     position: sticky;
-    top: 50px;
+    top: 0px;
     z-index: 999;
     background: inherit;
 }

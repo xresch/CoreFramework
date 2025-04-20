@@ -321,7 +321,7 @@ class CFWFormField{
 		 
 		 if(this.settings.stickyheader){
 			 this.thead.find("th").addClass("cfw-sticky-th bg-dark text-light");
-			 this.isResponsive = false;
+			 this.settings.responsive = false;
 			 this.table.css("width", "100%");
 		 }
 		 
