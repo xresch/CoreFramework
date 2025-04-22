@@ -2,6 +2,7 @@ package com.xresch.cfw.utils.json;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.security.cert.X509Certificate;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -16,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -707,6 +709,36 @@ public class CFWJson {
 
 		return csv.toString();
 		
+	}
+	
+	/*************************************************************************************
+	 * Returns a JSON representation for a certificate.
+	 *  
+	 *************************************************************************************/
+	public static JsonObject certificateX509ToJson(X509Certificate cert) {
+		
+		//-----------------------
+		// Check expired
+	    long millisUntilExpiry = cert.getNotAfter().getTime() - System.currentTimeMillis();
+	    long daysUntilExpiry = TimeUnit.MILLISECONDS.toDays(millisUntilExpiry);
+	    
+	    //-----------------------
+	    // Check expired
+	    JsonObject result = new JsonObject();
+	    
+	    result.addProperty("Signature Algorithm", cert.getSigAlgName());
+	    result.addProperty("Signature Algorithm OID", cert.getSigAlgOID());
+	    result.addProperty("Issuer X500 Principal Name", cert.getIssuerX500Principal().getName());
+	    result.addProperty("Subject X500 Principal Name", cert.getSubjectX500Principal().getName());
+	    result.addProperty("Certificate Type", cert.getType());
+	    result.addProperty("Certificate Serial Number", cert.getSerialNumber());
+	    result.addProperty("Certificate Version", cert.getVersion());
+	    result.addProperty("Certificate Valid From", cert.getNotBefore().getTime());
+	    result.addProperty("Certificate Valid Until", cert.getNotAfter().getTime());
+	    result.addProperty("Certificate Days Until Expiry", daysUntilExpiry);
+	    result.addProperty("Certificate Public Key", cert.getPublicKey().toString());
+	
+	    return result;
 	}
 	
 	

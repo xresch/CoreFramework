@@ -79,17 +79,28 @@ public class CFWApplicationExecutor {
 	static DefaultSessionIdManager idmanager;
 	private SessionHandler sessionHandler;	
 	
+	private ArrayList<Connector> connectorArray = null;
+	
 	public WebAppContext applicationContext;
 	
 	public CFWAppInterface application;
 	
 	public CFWApplicationExecutor(CFWAppInterface application) throws Exception {  
+		
 		this.application = application;
 		
+    	initialize();
+         
+	}
 
-    	//---------------------------------------
+	/**************************************************************************************************
+	 * 
+	 **************************************************************************************************/
+	private void initialize() {
+		
+		//---------------------------------------
     	// Create Server 
-        server = createServer();
+        createServer();
         applicationContext = new WebAppContext();
         applicationContext.setContextPath("/");
         applicationContext.setServer(server);
@@ -103,7 +114,6 @@ public class CFWApplicationExecutor {
     	// Default Multipart Config
         int maxSize = 1024*1024*CFW.Properties.APPLICATION_MAX_UPLOADSIZE;
         globalMultipartConfig = new MultipartConfigElement(null, maxSize, maxSize, maxSize);
-         
 	}
 	
 	
@@ -405,61 +415,100 @@ public class CFWApplicationExecutor {
 	/***********************************************************************
 	 * Create a Server with the defined HTTP and HTTPs settings in the 
 	 * cfw.properties.
-	 * @return Server instance
+	 * 
 	 ***********************************************************************/
-	private Server createServer() {
-		Server server = new Server();
-		ArrayList<Connector> connectorArray = new ArrayList<>();
+	private void createServer() {
+		
+		server = new Server();
 		
 		CFWApplicationExecutor.idmanager = new DefaultSessionIdManager(server);
 	    server.setSessionIdManager(CFWApplicationExecutor.idmanager);
 		
-		if(CFWProperties.HTTP_ENABLED) {
-			HttpConfiguration httpConf = new HttpConfiguration();
-			httpConf.setSecurePort(CFWProperties.HTTPS_PORT);
-			httpConf.setSecureScheme("https");
-		    // Add support for X-Forwarded headers
-			httpConf.addCustomizer( new org.eclipse.jetty.server.ForwardedRequestCustomizer());
-			httpConf.setRequestHeaderSize(CFWProperties.HTTP_MAX_REQUEST_HEADER_SIZE);
+	    setConnectorsOfServer();
+		
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	public void setConnectorsOfServer() {
+		
+		try {
+			//---------------------------------
+			// Remove Connectors if Exists
+			if(connectorArray != null) {
+				
+				for(Connector connector : connectorArray) {
+					connector.stop();
+					server.removeConnector(connector);
+				}
+			}
 			
-			ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(httpConf));
-			httpConnector.setName("unsecured");
-			httpConnector.setHost(CFWProperties.HTTP_CONNECTOR_HOST);
-			httpConnector.setPort(CFWProperties.HTTP_PORT);
-			connectorArray.add(httpConnector);
+			//---------------------------------
+			// Create New Connectors
+			connectorArray = new ArrayList<>();
+		
+		
+			//---------------------------------
+			// HTTP Connector
+			
+			if(CFWProperties.HTTP_ENABLED) {
+				HttpConfiguration httpConf = new HttpConfiguration();
+				httpConf.setSecurePort(CFWProperties.HTTPS_PORT);
+				httpConf.setSecureScheme("https");
+			    // Add support for X-Forwarded headers
+				httpConf.addCustomizer( new org.eclipse.jetty.server.ForwardedRequestCustomizer());
+				httpConf.setRequestHeaderSize(CFWProperties.HTTP_MAX_REQUEST_HEADER_SIZE);
+				
+				ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(httpConf));
+				httpConnector.setName("unsecured");
+				httpConnector.setHost(CFWProperties.HTTP_CONNECTOR_HOST);
+				httpConnector.setPort(CFWProperties.HTTP_PORT);
+				
+				connectorArray.add(httpConnector);
+				
+				if(server.isStarted()) { httpConnector.start(); }
+			}
+			
+			//---------------------------------
+			// HTTPS Connector
+			if(CFWProperties.HTTPS_ENABLED) {
+				HttpConfiguration httpsConf = new HttpConfiguration();
+				httpsConf.addCustomizer(new SecureRequestCustomizer());
+				httpsConf.setSecurePort(CFWProperties.HTTPS_PORT);
+				httpsConf.setSecureScheme("https");
+				// Add support for X-Forwarded headers
+				httpsConf.addCustomizer( new org.eclipse.jetty.server.ForwardedRequestCustomizer());
+				httpsConf.setRequestHeaderSize(CFWProperties.HTTP_MAX_REQUEST_HEADER_SIZE);
+				
+				SslContextFactory sslContextFactory = CFWACMEClient.getSSLContextFactory();
+				
+				ServerConnector httpsConnector = new ServerConnector(server,
+						new SslConnectionFactory(sslContextFactory, "http/1.1"),
+						new HttpConnectionFactory(httpsConf));
+				httpsConnector.setName("secured");
+				httpsConnector.setHost(CFWProperties.HTTP_CONNECTOR_HOST);
+				httpsConnector.setPort(CFWProperties.HTTPS_PORT);
+
+				connectorArray.add(httpsConnector);
+				
+				if(server.isStarted()) { httpsConnector.start(); }
+			}
+		}catch(Exception e) {
+			new CFWLog(logger)
+					.severe("Error while creating connectors: "+e.getMessage());
 		}
-		
-		if(CFWProperties.HTTPS_ENABLED) {
-			HttpConfiguration httpsConf = new HttpConfiguration();
-			httpsConf.addCustomizer(new SecureRequestCustomizer());
-			httpsConf.setSecurePort(CFWProperties.HTTPS_PORT);
-			httpsConf.setSecureScheme("https");
-			// Add support for X-Forwarded headers
-			httpsConf.addCustomizer( new org.eclipse.jetty.server.ForwardedRequestCustomizer());
-			httpsConf.setRequestHeaderSize(CFWProperties.HTTP_MAX_REQUEST_HEADER_SIZE);
-			
-			SslContextFactory sslContextFactory = CFWACMEClient.getSSLContextFactory();
-			
-			ServerConnector httpsConnector = new ServerConnector(server,
-					new SslConnectionFactory(sslContextFactory, "http/1.1"),
-					new HttpConnectionFactory(httpsConf));
-			httpsConnector.setName("secured");
-			httpsConnector.setHost(CFWProperties.HTTP_CONNECTOR_HOST);
-			httpsConnector.setPort(CFWProperties.HTTPS_PORT);
-			
-			connectorArray.add(httpsConnector);
-		}
-		
-		
+		//---------------------------------
+		// Add to Server
 		server.setConnectors(connectorArray.toArray(new Connector[] {}));
 		
-		return server;
+		
 	}
 		
 	/**************************************************************************************************
 	 * @throws Exception
 	 **************************************************************************************************/
-	public void start() throws Exception {
+	public void startServer() throws Exception {
 		
 		if(isStarted) {
 			return;
@@ -519,12 +568,28 @@ public class CFWApplicationExecutor {
         server.start();
         server.join();
 	}
-
-		
+	
 	/**************************************************************************************************
 	 * 
 	 **************************************************************************************************/
-	public static void sendStopRequest() {
+	private void stopServer() throws Exception {
+
+		try {
+			isStarted = false;
+			// Jetty Default Shutdown
+			server.stop();
+			
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Error while stopping jetty server: "+e.getMessage(), e);
+		}
+	}
+
+
+	/**************************************************************************************************
+	 * 
+	 **************************************************************************************************/
+	public static void sendShutdownRequest() {
 		
 		System.out.println("Try to stop running application instance.");
 		
@@ -561,19 +626,17 @@ public class CFWApplicationExecutor {
 	/**************************************************************************************************
 	 * 
 	 **************************************************************************************************/
-	public void stop() {
+	public void shutdownApplication() {
 		
-		CFWLog log = new CFWLog(logger);
-		log.info("Shutdown request recieved");
-
+		new CFWLog(logger).info("Shutdown request recieved");
 		
 		//----------------------------------
-		// Shutdown server
+		// Stop Server 
 		try {
-			// Jetty Default Shutdown
-			server.stop();
+			stopServer();
 		} catch (Exception e) {
-			log.severe("Error while stopping applicationserver:"+e.getMessage(), e);
+			new CFWLog(logger)
+				.severe("Error while stopping jetty server: "+e.getMessage(), e);
 		}
 		
 		//----------------------------------
@@ -595,6 +658,8 @@ public class CFWApplicationExecutor {
 		System.exit(0);
        
 	}
+
+
 	
 	/**************************************************************************************************
 	 * 

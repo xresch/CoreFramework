@@ -120,11 +120,11 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		
 		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("CPU Sampling")
-					.faicon("fas fa-microchip")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Certificate Details")
+					.faicon("fas fa-certificate")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
-					.href("/app/cpusampling")	
-					.addAttribute("id", "cfwMenuSystemAnalytics-CPUSampling")
+					.href("/app/certdetails")
+					.addAttribute("id", "cfwMenuSystemAnalytics-CertificateDetails")
 				, SYSTEM_ANALYTICS);
 		
 		//------------------------------
@@ -183,6 +183,15 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		
 		//------------------------------
 		CFW.Registry.Components.addAdminCFWMenuItem(
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("CPU Sampling")
+					.faicon("fas fa-microchip")
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
+					.href("/app/cpusampling")	
+					.addAttribute("id", "cfwMenuSystemAnalytics-CPUSampling")
+				, SYSTEM_ANALYTICS);
+		
+		//------------------------------
+		CFW.Registry.Components.addAdminCFWMenuItem(
 				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Metrics")
 					.faicon("fas fa-thermometer-half")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
@@ -207,8 +216,9 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		
 		//-----------------------------------------
 		// Servlets
+		app.addAppServlet(ServletDatabaseAnalytics.class,  "/dbanalytics");
+		app.addAppServlet(ServletCertificatesDetails.class,  "/certdetails");
     	app.addAppServlet(ServletCPUSampling.class,  "/cpusampling");
-    	app.addAppServlet(ServletDatabaseAnalytics.class,  "/dbanalytics");
     	app.addAppServlet(ServletContextTree.class,  "/servletcontexttree");
     	app.addAppServlet(ServletSystemProperties.class,  "/systemproperties");
     	app.addAppServlet(ServletCacheStatistics.class,  "/cachestatistics");

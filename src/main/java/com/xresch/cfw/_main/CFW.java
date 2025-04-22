@@ -120,6 +120,8 @@ public class CFW {
 	
 	private static boolean isConfigFolderPrepared = false;
 	
+	private static CFWApplicationExecutor executor;
+	
 	public static String MODE_FULL = "FULL";
 	public static String MODE_APP = "APP";
 	public static String MODE_DATABASE = "DB";
@@ -359,7 +361,7 @@ public class CFW {
 	    //--------------------------------
 	    // Handle Shutdown request.
 	    if (CFW.CLI.isArgumentLoaded(CLI.STOP)) {
-    		CFWApplicationExecutor.sendStopRequest();
+    		CFWApplicationExecutor.sendShutdownRequest();
     		appToStart.stopApp();
 			System.exit(0);
     		return;
@@ -372,7 +374,7 @@ public class CFW {
             @Override
             public void run()
             {
-            	CFW.Context.App.getApp().stop();
+            	CFW.Context.App.getApp().shutdownApplication();
             	System.exit(0);
             	return;
             }
@@ -437,7 +439,7 @@ public class CFW {
 			
     		//----------------------------------------
 			// Add Features
-    		CFWApplicationExecutor executor = new CFWApplicationExecutor(appToStart);
+    		executor = new CFWApplicationExecutor(appToStart);
 			
 			for(CFWAppFeature feature : features) {
 				if(feature.isFeatureEnabled()) {
@@ -470,7 +472,7 @@ public class CFW {
 			// Handle Startup Notifications
 			appToStart.startApp(executor);
 			try {
-				executor.start();
+				executor.startServer();
 			} catch (Exception e) {
 				new CFWLog(logger)
 					.severe("Exception occured during application startup.", e);
@@ -667,6 +669,16 @@ public class CFW {
 		//---------------------------
 		// Do Application init
 		appToStart.startTasks();
+		
+	}
+	
+	/***********************************************************************
+	 * Returns the application executor.
+	 *  
+	 ***********************************************************************/
+	public static CFWApplicationExecutor getExecutor() {
+		
+		return executor;
 		
 	}
 	

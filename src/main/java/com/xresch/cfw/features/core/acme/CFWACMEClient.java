@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyStore;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +33,7 @@ import org.shredzone.acme4j.challenge.Http01Challenge;
 import org.shredzone.acme4j.util.KeyPairUtils;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw._main.CFWProperties;
@@ -80,18 +80,53 @@ public class CFWACMEClient {
 	
 	/******************************************************************
 	 * 
+	 * @param forceRenewal if renewal threshold should be ignored
 	 ******************************************************************/
-	public static void fetchCACertificate() throws Exception {
+	public static void fetchCACertificate(boolean forceRenewal) throws Exception {
 		
 		initialize();
 		
-		//Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    	
+    	//-----------------------
+		// Check ACME Enabled
+    	if(!CFW.Properties.HTTPS_ACME_ENABLED) {
+    		throw new Exception("ACME certificate is disabled in cfw.properties.");
+        }
 		
+
 		new File(ACME_FOLDER).mkdirs(); // Ensure the directory exists
 
-		if (certificateNeedsRenewal()) {
+		if (forceRenewal || certificateNeedsRenewal()) {
 			new CFWLog(logger).info("ACME: Renew certificate from certificate authority.");
 			renewCertificate();
+			
+			String enforcedDetail = "";
+			if(forceRenewal) {
+				enforcedDetail = "<p><b>User that Enforced:&nbsp;</b> "+CFW.Context.Request.getUser().username()+"</p>";
+			}
+			//----------------------------
+			// Notification
+			CFW.DB.Notifications.createForAdminUsers(
+				new Notification()
+					.category("ACME")
+					.messageType(MessageType.INFO)
+					.title("ACME: Certificate Renewed")
+					.message("""
+						<p>The certificate has been renewed!</p>
+						<p><b>Certificate Authority:&nbsp;</b> %s</p>
+						<p><b>Domains:&nbsp;</b> %s</p>
+						<p><b>Forced Renewal:&nbsp;</b> %s</p>
+					"""
+					+ enforcedDetail
+					.formatted(
+							  CFW.Properties.HTTPS_ACME_URL
+							, CFW.Properties.HTTPS_ACME_DOMAINS
+							, forceRenewal
+							
+						)
+					)
+			);
+			
 		}
 		
 		IS_FETCHED = true;
@@ -105,6 +140,61 @@ public class CFWACMEClient {
 		return challenges;
 	}
 	
+	/******************************************************************
+	 * 
+	 ******************************************************************/
+    public static JsonObject getCertificateDetails(){
+        	
+    	JsonObject result = new JsonObject();
+    	initialize();
+    	
+    	//-----------------------
+		// Check ACME Enabled
+    	if(!CFW.Properties.HTTPS_ACME_ENABLED) {
+        	result.addProperty("Message", "ACME certificates is disabled in cfw.properties.");
+            return result;
+        }
+    	
+    	//-----------------------
+		// Check Keystore exists
+        if (!Files.exists(Paths.get(KEYSTORE_FILE))) {
+        	
+        	result.addProperty("Message", "Keystore file does not exist: "+KEYSTORE_FILE);
+            return result;
+        }
+        
+        try {
+	        //-----------------------
+			// Get KeyStore
+	        KeyStore keyStore = KeyStore.getInstance("JKS");
+	        try (InputStream in = new FileInputStream(KEYSTORE_FILE)) {
+	            keyStore.load(in, CFW.Properties.HTTPS_ACME_PASSWORD.toCharArray());
+	        }
+	        
+	        //-----------------------
+			// Get Certificate
+	        X509Certificate cert = (X509Certificate) keyStore.getCertificate(CERTIFICATE_NAME);
+	        if (cert == null) {
+	        	result.addProperty("Message", "No Certificate named '"+CERTIFICATE_NAME+"' found in keystore: "+KEYSTORE_FILE);
+	            return result;
+	        }
+	        
+	        // int threshold = CFW.Properties.HTTPS_ACME_RENEWAL_THRESHOLD;
+	        result = CFW.JSON.certificateX509ToJson(cert);
+	        
+        } catch(Exception e) {
+        	result.addProperty("Error Message", e.getMessage());
+        	result.addProperty(
+        						  "Error Stacktrace"
+        						, CFW.Utils.Text.stacktraceToString(e)
+        					);
+        }
+        
+        return result;
+
+    }
+
+
 	/******************************************************************
 	 * 
 	 ******************************************************************/
@@ -246,7 +336,13 @@ public class CFWACMEClient {
         		, certificate.getCertificateChain().toArray(new java.security.cert.Certificate[0])
         	);
         try (FileOutputStream out = new FileOutputStream(KEYSTORE_FILE)) {
-            keyStore.store(out, password.toCharArray());
+            
+        	keyStore.store(out, password.toCharArray());
+            
+        	//------------------------
+        	// Restart Jetty
+        	new CFWLog(logger).info("ACME: Re-initialize connectors to load new SSL Certificate.");
+            CFW.getExecutor().setConnectorsOfServer();
         }
 		
 	}

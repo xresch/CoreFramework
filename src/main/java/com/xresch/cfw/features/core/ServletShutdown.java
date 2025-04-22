@@ -39,7 +39,7 @@ public class ServletShutdown extends HttpServlet
 			new Thread() {
 				 public void run()
 		            {
-		                executor.stop(); 
+		                executor.shutdownApplication(); 
 		            }
 			}.start();
 			

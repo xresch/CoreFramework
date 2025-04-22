@@ -45,7 +45,7 @@ public class TaskACMEUpdateCertificates extends CFWScheduledTask {
 	public void execute() {
 		
 		try {
-			CFWACMEClient.fetchCACertificate();
+			CFWACMEClient.fetchCACertificate(false);
 		} catch (Exception e) {
 			
 			//----------------------------

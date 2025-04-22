@@ -93,7 +93,7 @@ public class _MainForTesting implements CFWAppInterface {
         //###################################################################
         app.setDefaultURL("/general", false);
         try {
-			app.start();
+			app.startServer();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -167,6 +167,8 @@ DONE
 ------- current -------
 - NEW FEATURE: Status Monitoring of connected systems.
 - NEW FEATURE: System Analytics: Added page "Versions" 
+- NEW FEATURE: System Analytics: Added page "Status Monitor" 
+- NEW FEATURE: System Analytics: Added page "Certificate Details" 
 - Status Monitor: Added monitoring for Database Connections: Postgres, MySQL, MSSQL, Oracle, JDBC
 - Shutdown: Added shutdown hook for better shutdown handling
 - CFWRandom: Refactoring - removing "random" from methods. 
