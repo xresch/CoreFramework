@@ -16,8 +16,8 @@ sudo reboot
 
 #===========================================
 # Install Java
-
-yum install java-1.8.0-openjdk
+# outdated Centos7: yum install java-1.8.0-openjdk
+sudo dnf install java-17-openjdk.x86_64
 
 #===========================================
 # Open Firewall Ports

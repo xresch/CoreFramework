@@ -57,10 +57,12 @@
 							let inputField = $(this);
 							let name = inputField.attr('name');
 							let type = inputField.attr('type');
+							let cfwtype = inputField.attr('cfwtype');
 							
 							//--------------------
 							// Skip Hidden Fields
 							if(type == "hidden"
+							&& cfwtype != "TIMEFRAMEPICKER"
 							&& inputField.data("role") != "chartsettings"){ 
 								return; 
 							}
@@ -70,6 +72,7 @@
 							let viewerCustomValue = storedViewerParams[name];
 
 							if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
+								
 								if(type == 'radio'){
 									//$('input[name="'+name+'"]').prop("checked", false);
 									parentDiv.find('input[name="'+name+'"]').each(function(){
@@ -85,7 +88,7 @@
 								
 								//----------------------------------------------
 								// Select
-								else if (inputField.attr('cfwtype') == "SELECT"){
+								else if (cfwtype == "SELECT"){
 									cfw_setSelectValue(
 										inputField.attr('id')
 										, viewerCustomValue);
@@ -108,27 +111,39 @@
 									for(let key in tagsInputValues){
 										inputField.tagsinput('add', { "value": key , "label": tagsInputValues[key] });
 									}
-									
+								}	
 								//----------------------------------------------
 								// Tags
-								}else if(inputField.hasClass('cfw-tags')){
+								else if(inputField.hasClass('cfw-tags')){
 									let tagsInputValues = viewerCustomValue.split(',');
 									//must be initialized to add values
 									inputField.tagsinput('removeAll');
 									for(let index in tagsInputValues){
 										inputField.tagsinput('add', tagsInputValues[index]);
 									}
+								}
 									
 								//----------------------------------------------
 								// Chart Settings
-								}else if(inputField.data("role") == "chartsettings"){
+								else if(inputField.data("role") == "chartsettings"){
 									let chartsettingsValues = JSON.parse(viewerCustomValue);
 									let wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');
-									 cfw_internal_applyChartSettings(inputField.attr('id'), wrapper, chartsettingsValues);
-								}else{
+									cfw_internal_applyChartSettings(inputField.attr('id'), wrapper, chartsettingsValues);
+								}
+								
+								//----------------------------------------------
+								// Timeframe Picker
+								else if( cfwtype == "TIMEFRAMEPICKER" ){
+									let pickerValues = JSON.parse(viewerCustomValue);
+									cfw_timeframePicker_applyTime(inputField.attr('id'), pickerValues);
+								}
+								//----------------------------------------------
+								// Everything Else
+								else{
 									// stringify value, else it won't work properly with booleans
 									inputField.val(""+viewerCustomValue);
 								}
+
 							}
 						});
 					}

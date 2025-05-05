@@ -2611,14 +2611,7 @@ function cfw_initializeTimeframePicker(fieldID, initialData, onchangeCallbackFun
 	//----------------------------------
 	// Initialize Value, do not trigger
 	// callback
-	if(initialData != null){
-
-		if(initialData.offset == null){
-			cfw_timeframePicker_setCustom(fieldID, initialData.earliest, initialData.latest);
-		}else{
-			cfw_timeframePicker_setOffset("#"+fieldID, initialData.offset);
-		}
-	}
+	cfw_timeframePicker_applyTime(fieldID, initialData);
 	
 	
 	//----------------------------------
@@ -2628,6 +2621,23 @@ function cfw_initializeTimeframePicker(fieldID, initialData, onchangeCallbackFun
 	}
 }
 
+/*******************************************************************************
+ * 
+ * @param fieldID without id-hashtag
+ * @param timeObject json object like retrieved from a timeframe picker 
+ * 			{ offset: "", earliest: "", latest: ""}
+ ******************************************************************************/
+function cfw_timeframePicker_applyTime(fieldID, timeObject){
+	
+	if(timeObject != null){
+
+		if(timeObject.offset == null){
+			cfw_timeframePicker_setCustom(fieldID, timeObject.earliest, timeObject.latest);
+		}else{
+			cfw_timeframePicker_setOffset("#"+fieldID, timeObject.offset);
+		}
+	}
+}
 /*******************************************************************************
  * 
  ******************************************************************************/
