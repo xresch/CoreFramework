@@ -178,6 +178,10 @@ DONE
 - Parameters: Fixed Time Range parameters not keeping value after refresh.
 - Query: Fixed messages not displayed when result is empty.
 
+- Query: Added Functions:
+	- decodeBase64
+	- encodeBase64
+	
 ------- v.11.0.0 -------
 - BREAKING CHANGE: Query Alerting Tasks: if the result is empty, alerting will consider there is no problem
 - BREAKING CHANGE: Query alias "reorder" removed to avoid confusion, use "keep" instead

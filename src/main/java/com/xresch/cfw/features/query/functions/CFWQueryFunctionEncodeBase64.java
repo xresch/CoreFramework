@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.TreeSet;
 
 import com.xresch.cfw._main.CFW;
@@ -16,12 +17,12 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionEncode extends CFWQueryFunction {
+public class CFWQueryFunctionEncodeBase64 extends CFWQueryFunction {
 
 	
-	private static final String FUNCTION_NAME = "encode";
+	private static final String FUNCTION_NAME = "encodeBase64";
 
-	public CFWQueryFunctionEncode(CFWQueryContext context) {
+	public CFWQueryFunctionEncodeBase64(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -55,7 +56,7 @@ public class CFWQueryFunctionEncode extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Encodes URI entities in a string.";
+		return "Encodes a string to Base64.";
 	}
 	
 	/***********************************************************************************************
@@ -109,8 +110,9 @@ public class CFWQueryFunctionEncode extends CFWQueryFunction {
 		if(stringToEncode == null) { 
 			return QueryPartValue.newString(""); 
 		}else {
+			
 			return QueryPartValue.newString(
-					CFW.HTTP.encode(stringToEncode)
+					Base64.getUrlEncoder().encodeToString(stringToEncode.getBytes())
 				);
 		}
 		

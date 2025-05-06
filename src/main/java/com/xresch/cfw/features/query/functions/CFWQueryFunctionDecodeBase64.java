@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.TreeSet;
 
 import com.xresch.cfw._main.CFW;
@@ -16,12 +17,12 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionEncode extends CFWQueryFunction {
+public class CFWQueryFunctionDecodeBase64 extends CFWQueryFunction {
 
 	
-	private static final String FUNCTION_NAME = "encode";
+	private static final String FUNCTION_NAME = "decodeBase64";
 
-	public CFWQueryFunctionEncode(CFWQueryContext context) {
+	public CFWQueryFunctionDecodeBase64(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -48,14 +49,14 @@ public class CFWQueryFunctionEncode extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(stringToEncode)";
+		return FUNCTION_NAME+"(stringToDecode)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Encodes URI entities in a string.";
+		return "Decodes Base64 values int a plaintext string.";
 	}
 	
 	/***********************************************************************************************
@@ -63,7 +64,7 @@ public class CFWQueryFunctionEncode extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>stringToEncode:&nbsp;</b>The string that should be encoded.</p>"
+		return "<p><b>stringToDecode:&nbsp;</b>The string that should be decoded.</p>"
 			;
 	}
 
@@ -104,13 +105,13 @@ public class CFWQueryFunctionEncode extends CFWQueryFunction {
 		
 		//----------------------------------
 		// Get String
-		String stringToEncode = parameters.get(0).getAsString();
+		String stringToDecode = parameters.get(0).getAsString();
 		
-		if(stringToEncode == null) { 
+		if(stringToDecode == null) { 
 			return QueryPartValue.newString(""); 
 		}else {
 			return QueryPartValue.newString(
-					CFW.HTTP.encode(stringToEncode)
+					new String(Base64.getDecoder().decode(stringToDecode))
 				);
 		}
 		

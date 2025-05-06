@@ -19,6 +19,8 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 public class CFWQueryFunctionDecode extends CFWQueryFunction {
 
 	
+	private static final String FUNCTION_NAME = "decode";
+
 	public CFWQueryFunctionDecode(CFWQueryContext context) {
 		super(context);
 	}
@@ -28,7 +30,7 @@ public class CFWQueryFunctionDecode extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "decode";
+		return FUNCTION_NAME;
 	}
 	
 	/***********************************************************************************************
@@ -46,7 +48,7 @@ public class CFWQueryFunctionDecode extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "decode(stringToDecode)";
+		return FUNCTION_NAME+"(stringToDecode)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -61,7 +63,7 @@ public class CFWQueryFunctionDecode extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>stringToDecode:&nbsp;</b>The string that should be encoded.</p>"
+		return "<p><b>stringToDecode:&nbsp;</b>The string that should be decoded.</p>"
 			;
 	}
 
@@ -70,7 +72,7 @@ public class CFWQueryFunctionDecode extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_decode.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 

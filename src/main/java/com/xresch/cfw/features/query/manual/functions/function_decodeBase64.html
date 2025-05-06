@@ -1,0 +1,11 @@
+
+<p>This function decodes Base64 values to plain strings.</p>
+
+<p>Following code will create random data, encodes and decodes the values for demonstration:</p>
+
+<pre><code class="language-cfwquery">| source random records=100 type=various
+| keep TIME, GRAPH_DATA
+| set 
+	ENCODED=encodeBase64(GRAPH_DATA)
+	DECODED=decodeBase64(ENCODED)</code></pre>
+
