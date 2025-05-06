@@ -324,6 +324,10 @@ label {
  * Bootstrap Dropdown, Submenus and Menu Enhancements
  *************************************************************************/
 
+.dropdown-item {
+    padding: 0.15rem 0.75rem;
+}
+
 .dropdown-scroll{
 	max-height: 50vh;
     overflow-x: auto;
