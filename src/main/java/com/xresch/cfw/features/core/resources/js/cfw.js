@@ -4639,6 +4639,7 @@ function cfw_ui_showModal(modalTitle
 				+ '      <div class="modal-footer">'
 				+ '         <button id="'+modalID+'-closebutton" type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>'
 				+ '      </div>'
+				+ '      <div class="modal-bg-blur"></div>'
 				+ '    </div>'
 				+ '  </div>'
 				+ '</div>');
