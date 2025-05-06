@@ -9,6 +9,7 @@
 ;
 | source random records=4
 ; 
+# concat the results
 | resultconcat</code></pre>
 
 <p>You can as well name the results using the metadata command, and only concatenate specific results:
@@ -21,10 +22,10 @@
 ;
 | metadata name = "Result Three"
 | source random records=30
-;
+; 
+# concat the results
 | metadata name = "Concatenated 1&amp;3"
 | resultconcat "Result One", "Result Three"</code></pre>
-
 
 <p>You can use resultconcat inside another query to append results.
 Following executes two queries, then executes a third one and appends the results of 'Result One' to it:
