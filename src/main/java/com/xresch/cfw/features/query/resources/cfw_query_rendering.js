@@ -750,12 +750,14 @@ function cfw_query_formatSpecial(span, value){
 			case "css":			cfw_query_formatSpecial_CSS(span, value);   break;
 			case "display":		cfw_query_formatSpecial_Display(span, value);   break;
 			case "link":		cfw_query_formatSpecial_Link(span, value);   break;
+			case "subquery":	cfw_query_formatSpecial_Subquery(span, value);   break;
 			default:			break;
 		}
 	}
 
 	
 }
+
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -797,6 +799,65 @@ function cfw_query_formatSpecial_Boxplot(span, object){
 	//---------------------------------
 	// Any other data type
 	span.text(values);
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatSpecial_Subquery(span, object){
+	
+	let icon = object.icon;
+	let linkText = object.label;
+	let isButton = true; //object.button;
+
+	if(linkText == null )	{linkText = "";}
+	if(icon == null )		{icon = "fa-external-link-square-alt";}
+	
+	//----------------------------
+	// Create Button
+	let nbsp = (!CFW.utils.isNullOrEmpty(linkText)) ? "&nbsp;" : "";
+	let linkElement = $('<a>'+nbsp+linkText+'</a>');
+	linkElement
+		//.attr('href', value)
+		.attr('onclick', 'cfw_query_formatSpecial_Subquery_onClick(this);')
+		.css('color', 'unset');
+	
+	if(isButton){
+		linkElement.attr('role', 'button')
+			 .addClass('btn btn-sm btn-primary text-white');
+	}	
+	
+	if(icon != null){
+		linkElement.prepend('<i class="fas '+icon+'"></i>');
+	}
+	
+	//----------------------------
+	// Add Data
+	linkElement.data("object", object);
+	
+	//----------------------------
+	// Append Button
+	span.html('');
+	span.append(linkElement);
+
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatSpecial_Subquery_onClick(element){
+	
+	let clicked = $(element);
+	
+	let object = clicked.data('object');
+	
+	let query = object.query;
+	//let earliest = object.earliest;
+	//let latest = object.latest;
+	let title = object.title;
+
+	cfw_query_executeAndShowModal(title, query);
+	
 }
 
 /*******************************************************************************
@@ -966,6 +1027,34 @@ function cfw_query_formatUppercase(span){
 
 /*******************************************************************************
  * Execute the query and fetch data from the server.
+ * Opens a modal panel to display the data.
+ * 
+ * @param target the target element to render the query results into  
+ * @param query the query to execute 
+ * @param earliest time in epoch milliseconds
+ * @param latest time in epoch milliseconds
+ * @param parameters json object with parameters for the query 
+ * 
+ ******************************************************************************/
+function cfw_query_executeAndShowModal(modalTitle, query){
+	
+	// ----------------------------
+	// Create Modal
+	let queryResultDiv = $('<div>');
+		
+	CFW.ui.showModalLarge(modalTitle, queryResultDiv, null, true);
+	
+	// ----------------------------
+	// Execute Query
+	let editor = cfw_query_editor_initializeEditor(queryResultDiv, query, false);
+	
+	editor.executeQuery();
+	
+}
+
+/*******************************************************************************
+ * Execute the query and fetch data from the server.
+ * Renders the data into the target element.
  * 
  * @param target the target element to render the query results into  
  * @param query the query to execute 

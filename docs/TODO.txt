@@ -178,6 +178,9 @@ DONE
 - Parameters: Fixed Time Range parameters not keeping value after refresh.
 - Query: Fixed messages not displayed when result is empty.
 
+- Query: Added Commands:
+	- formatquery
+	
 - Query: Added Functions:
 	- decodeBase64
 	- encodeBase64

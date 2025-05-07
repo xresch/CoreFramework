@@ -1,0 +1,66 @@
+
+<p>Creates a new field which contains a button that executes a query when clicked. The results will be shown in a modal panel.
+The modal panel will have a query editor and the result below it. With this you can adjust the query as needed.
+This is one way to get more details for your data. In case you want to display the data directly in the main result, you can use the subquery function.
+</p>
+
+
+<h3>Minimal Example</h3>
+<p>Following is a minimal example on how to create a box plot. In this case we only get a simple box and the result ends up looking like a gantt chart: </p>
+<pre><code class="language-cfwquery">| source random
+| formatquery
+	query = `| source random records=1000 | filter FIRSTNAME == '`+FIRSTNAME+`' `
+</code></pre>
+
+
+<h3>Advanced Example</h3>
+<p>Following is a more advanced example that customizes the fieldame, the button and the title of the modal panel: </p>
+<pre><code class="language-cfwquery">| source random
+| formatquery
+	field = "Details"
+	label = "More"
+	icon = "fa-plus-square"
+	title = "Show all with name " + FIRSTNAME
+	query = 
+`| source random records=1000
+| filter 
+	FIRSTNAME == '`+FIRSTNAME+`'
+	LIKES_TIRAMISU == true
+| formatrecord 	
+	[(VALUE == null), "cfw-gray"] 
+	[(VALUE &lt; 70), "cfw-green"] 
+	[(VALUE  &lt; 90), "cfw-orange"] 
+	[true, "cfw-red"] 
+| display as = properties`
+| display as=table</code></pre>
+
+
+<h3>Multiple Queries</h3>
+<p>You can use multiple formatquery commands to give different options to your users. For example, 
+the following gives the possibilities to filter by name and display data as a chart:</p>
+<pre><code class="language-cfwquery">| source random
+
+| formatquery
+	field = "Filter"
+	icon = "fa-filter"
+	title = "Show all with name " + FIRSTNAME
+	query = 
+`| source random records=1000
+| filter FIRSTNAME == '`+FIRSTNAME+`'
+| display as = properties`
+
+| formatquery
+	field = "Chart"
+	icon = "fa-chart-area"
+	title = "Statistics for "+ FIRSTNAME
+	query = 
+`| source random records=100 type="stats" seriesCount = 1
+| chart 
+	type = line
+	x = TIME 
+	y = [MIN, AVG, P90, MAX]
+	tension = 0.4 # 0 to 1, makes lines smoother
+	height='50vh'
+	pointradius=2`
+	
+| display as=table</code></pre>

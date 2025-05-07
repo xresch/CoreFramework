@@ -115,48 +115,6 @@ function cfw_query_historyItemEdit(element){
 
 }
 
-
-/******************************************************************
- * Print the editor tab.
- ******************************************************************/
-function cfw_query_initializeEditor(){
-
-	var parent = $('#tab-content-editor');
-
-	parent.append(`
-		<div>
-			
-			<div class="row">
-				<div class="col-12">
-					<textarea id="query" name="query" class="query-original query-text-format" spellcheck="false" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
-				</div>
-			</div>
-			
-		</div>
-		
-		<div id="cfw-query-results" class="monospace">
-		</div>
-	`);
-	
-	var $QUERYAREA = $('#query');
-	
-	CFW_QUERY_EDITOR = new CFWQueryEditor($QUERYAREA, {
-			// the div where the results should be sent to
-			 resultDiv: $("#cfw-query-results")
-			// the id of the timeframe picker, if null new one will be created (Default: null)
-			, timeframePickerID: null
-			// toggle is the query data should use URL params
-			, useURLParams: true
-			
-		});
-	
-	// -----------------------------
-	// Handle back button
-	window.onpopstate = function() {
-		CFW_QUERY_EDITOR.loadQueryFromURLAndExecute();
-	}
-}
-
 /******************************************************************
  * Full example using the dataviewer renderer.
  * 
@@ -337,7 +295,8 @@ function cfw_query_initialDraw(){
 	
 	//-----------------------------------
 	// Create Editor
-	cfw_query_initializeEditor();
+	let parent = $('#tab-content-editor');
+	CFW_QUERY_EDITOR = cfw_query_editor_initializeEditor(parent);
 	
 }
 

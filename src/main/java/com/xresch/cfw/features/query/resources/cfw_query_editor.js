@@ -2,7 +2,57 @@
 CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = null;
 CFW_QUERY_URL = "/app/query";
 
+/******************************************************************
+ * Initialize a query editor with a result area.
+ * 
+ * @param parent the parent element for the editor.
+ * @param query initial query for the editor.
+ * @param useURLParams define if user
+ ******************************************************************/
+function cfw_query_editor_initializeEditor(parent, query, useURLParams){
 
+	if(useURLParams == null){ useURLParams = true; }
+	
+	let queryAreaID = "query-"+CFW.utils.randomString(16);
+	let resultID = "cfw-query-results-"+CFW.utils.randomString(16);
+	
+	
+	parent.append(`
+		<div>
+			<div class="row">
+				<div class="col-12">
+					<textarea id="${queryAreaID}" name="${queryAreaID}" class="query-original query-text-format" spellcheck="false" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
+				</div>
+			</div>
+		</div>
+		<div id="${resultID}" class="monospace">
+		</div>
+	`);
+	
+	let $QUERYAREA = $('#'+queryAreaID);
+	
+	let queryEditor = new CFWQueryEditor($QUERYAREA, {
+			// the div where the results should be sent to
+			 resultDiv: $("#"+resultID)
+			// the id of the timeframe picker, if null new one will be created (Default: null)
+			, timeframePickerID: null
+			// toggle is the query data should use URL params
+			, useURLParams: useURLParams
+			
+		});
+	
+	//-----------------------------
+	// Handle back button
+	if(query == null){
+		window.onpopstate = function() {
+			queryEditor.loadQueryFromURLAndExecute();
+		}
+	}else{
+		queryEditor.setQuery(query);
+	}
+	
+	return queryEditor;
+}
 
 /*******************************************************************************
  * 
@@ -706,7 +756,7 @@ class CFWQueryEditor{
 		
 		this.createAutocompleteForm();
 		
-		var fieldname = this.textarea.attr('id');
+		var fieldname = this.textarea.attr('name');
 
 		cfw_autocompleteInitialize(this.autocompleteFormID, fieldname, 0,10, null, true, CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
 			
