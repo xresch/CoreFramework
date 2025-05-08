@@ -4268,39 +4268,64 @@ function cfw_ui_createTOC(contentAreaSelector, resultSelector, headerTag){
 var LOADER_MESSAGES = [
    '<i class="fa fa-cog fa-spin fa-fw margin-bottom"></i> Loading...',
    '<i class="fa fa-cogs fa-spin fa-fw margin-bottom"></i> Something is going on here... ',
-   '<i class="fa fa-certificate fa-spin fa-fw margin-bottom"></i> IIT IS SPINNING!!! ',
+   '<i class="fa fa-certificate fa-spin fa-fw margin-bottom"></i> IT IS SPINNING!!! ',
+   '<i class="fa fa-dog fa-beat fa-fw margin-bottom"></i> Woof! Woof! Bark!!!',
    '<i class="fa fa-coffee fa-spin fa-fw margin-bottom"></i> You might want to go grab a coffee... ',
    '<i class="fa fa-copyright fa-spin fa-fw margin-bottom"></i> This could take a while... ',
    '<i class="fa fa-crosshairs fa-spin fa-fw margin-bottom"></i> Target locked, manifest rendering... ',
    '<i class="fa fa-cube fa-spin fa-fw margin-bottom"></i> Algorithm is running... ',
+   '<i class="fa fa-clover fa-bounce fa-fw margin-bottom"></i>&nbsp;<i class="fa fa-clover fa-bounce margin-bottom" style="--fa-animation-delay: 333ms"></i>&nbsp;<i class="fa fa-clover fa-bounce fa-fw margin-bottom" style="--fa-animation-delay: 666ms"></i> Good luck with that... ',
    '<i class="fa fa-exclamation-circle fa-spin fa-fw margin-bottom"></i> Attention! Content is being generated... ',
    '<i class="fa fa-football-ball fa-spin fa-fw margin-bottom"></i>Yay! It\'s a football! ',
    '<i class="fa fa-globe fa-spin fa-fw margin-bottom"></i> Sending Requests around the world... ',
    '<i class="fa fa-hourglass fa-spin fa-fw margin-bottom"></i> Processing in Progress... ',
-   '<i class="fa fa-location-arrow fa-spin fa-fw margin-bottom"></i> Searching for something I can display to you... ',
+   '<i class="fa fa-republican fa-beat fa-fw margin-bottom"></i> Manipulating elections... <i class="fa fa-democrat fa-beat fa-fw margin-bottom"></i>',
    '<i class="fa fa-cog fa-spin fa-fw margin-bottom"></i><i class="fa fa-cog fa-spin margin-bottom"></i><i class="fa fa-cog fa-spin fa-fw margin-bottom"></i> More gears for more loading... ',
    '<i class="fa fa-bug fa-spin fa-fw margin-bottom"></i> Loading potential buggy content... ',
    '<i class="fa fa-horse fa-spin fa-fw margin-bottom"></i> Feeding ze unicorns... ',
+   '<i class="fa fa-volleyball-ball fa-beat fa-fw margin-bottom"></i> Serving the ball...',
    '<i class="fa fa-bacon fa-spin fa-fw margin-bottom"></i> Frying some bacon... ',
+   '<i class="fas fa-plane-arrival fa-bounce fa-fw margin-bottom"></i> Landing the plane... ',
    '<i class="fa fa-ice-cream fa-spin fa-fw margin-bottom"></i> Melting the ice cream... ', 
-   '<i class="fa fa-dog fa-spin fa-fw margin-bottom"></i> Woof! Woof! Bark!!!',
    '<i class="fa fa-truck-monster fa-spin fa-fw margin-bottom"></i> Whoah, look at it go!',
    '<i class="fa fa-bell fa-spin fa-fw margin-bottom"></i> Waking up the minions...',
+   '<i class="fa fa-egg fa-bounce fa-fw margin-bottom"></i>&nbsp;<i class="fa fa-egg fa-bounce margin-bottom" style="--fa-animation-delay: 333ms"></i>&nbsp;<i class="fa fa-egg fa-bounce fa-fw margin-bottom" style="--fa-animation-delay: 666ms"></i> Boiling some eggs... ',
    '<i class="fab fa-windows fa-spin fa-fw margin-bottom"></i> Still faster than Windows...',
-   '<i class="fa fa-music fa-spin fa-fw margin-bottom"></i> Play elevator music...',
-   '<i class="fa fa-toilet-paper fa-spin fa-fw margin-bottom"></i> Flushing...',
+   '<i class="fas fa-star fa-beat fa-fw margin-bottom"></i> Gazing at stars... ',
+   '<i class="fa fa-music fa-beat fa-fw margin-bottom"></i> Play elevator music...',
    '<i class="fa fa-wrench fa-spin fa-fw margin-bottom"></i> Doing the needful...',
-   '<i class="fa fa-dice-one fa-spin fa-fw margin-bottom"></i>&nbsp;<i class="fa fa-dice-three fa-spin-reverse margin-bottom"></i>&nbsp;<i class="fa fa-dice-six fa-spin fa-fw margin-bottom"></i> Throwing the dices... ',
    '<i class="fa fa-puzzle-piece fa-spin fa-fw margin-bottom"></i> Putting pieces together...',
    '<i class="fa fa-dragon fa-spin fa-fw margin-bottom"></i> Taming the dragon...',
    '<i class="fa fa-hand-scissors fa-spin fa-fw margin-bottom"></i> Rock... paper... siccors!',
-   '<i class="fa fa-republican fa-spin fa-fw margin-bottom"></i> Manipulating elections... <i class="fa fa-democrat fa-spin fa-fw margin-bottom"></i>',
    '<i class="fa fa-snowflake fa-spin fa-fw margin-bottom"></i> Counting snowflakes... ',
+   '<i class="fa fa-dice-one fa-spin fa-fw margin-bottom"></i>&nbsp;<i class="fa fa-dice-three fa-spin margin-bottom" style="--fa-animation-delay: 333ms"></i>&nbsp;<i class="fa fa-dice-six fa-spin fa-fw margin-bottom" style="--fa-animation-delay: 666ms"></i> Throwing the dices... ',
    '<i class="fab fa-creative-commons-zero fa-spin fa-fw margin-bottom"></i> Dividing by zero... ',
    '<i class="fa fa-utensil-spoon fa-spin fa-fw margin-bottom"></i> Bending the spoon... ',
    '<i class="fa fa-binoculars fa-spin fa-fw margin-bottom"></i> Observing the birds... ',
    '<i class="fa fa-mask fa-spin fa-fw margin-bottom"></i> Hiding the secrets... ',
-   '<i class="fas fa-heartbeat fa-spin fa-fw margin-bottom"></i> Measuring heart beat... ',
+   '<i class="fas fa-peace fa-beat fa-fw margin-bottom"></i> Conducting peace negotiations... ',
+   '<i class="fa fa-yin-yang fa-spin fa-fw margin-bottom"></i> Channeling the chi...',
+   '<i class="fa fa-toilet-paper fa-bounce fa-fw margin-bottom"></i> Flushing...',
+   '<i class="fas fa-cat fa-bounce fa-fw margin-bottom"></i> Waiting for nine lives... ',
+   '<i class="fa fa-location-arrow fa-spin fa-fw margin-bottom"></i> Searching for something I can display to you... ',
+   '<i class="fas fa-dungeon fa-bounce fa-fw margin-bottom"></i> Conquering the dungeon... ',
+   '<i class="fa fa-virus fa-spin fa-fw margin-bottom"></i> Sterilizing the environment...',
+   '<i class="fa fa-feather fa-spin fa-fw margin-bottom"></i> Wingardium Leviosa...', 
+   '<i class="fa fa-magic-wand-sparkles fa-spin fa-fw margin-bottom"></i> Doing the magic...', 
+   '<i class="fa fa-paperclip fa-spin fa-fw margin-bottom"></i> Clipping the papers...', 
+   '<i class="fas fa-circle-radiation fa-beat fa-fw margin-bottom"></i> Measuring radiation levels... ',
+   '<i class="fa fa-ghost fa-bounce fa-fw margin-bottom"></i> Haunting the house...', 
+   '<i class="fa fa-chess-rook fa-bounce fa-fw margin-bottom"></i>&nbsp;<i class="fa fa-chess-king fa-bounce margin-bottom" style="--fa-animation-delay: 333ms"></i>&nbsp;<i class="fa fa-chess-knight fa-bounce fa-fw margin-bottom" style="--fa-animation-delay: 666ms"></i> Moving into checkmate... ',
+   '<i class="fa fa-spaghetti-monster-flying fa-bounce fa-fw margin-bottom"></i> Praying to pasta...', 
+   '<i class="fas fa-heartbeat fa-beat fa-fw margin-bottom"></i> Measuring heart beat... ',
+   '<i class="fas fa-car-rear fa-bounce fa-fw margin-bottom"></i> Driving to the destination... ',
+   '<i class="fas fa-bus fa-bounce fa-fw margin-bottom"></i> Waiting for the bus... ',
+   '<i class="fa fa-bowling-ball fa-spin fa-fw margin-bottom"></i> Throwing a strike... ',
+   '<i class="fas fa-location-dot fa-bounce fa-fw margin-bottom"></i> Marking the location... ',
+   '<i class="fas fa-face-grin-hearts fa-beat fa-fw margin-bottom"></i> Admiring the beauty... ',
+   '<i class="fas fa-bell fa-shake fa-fw margin-bottom"></i> Ringing the bell... ',
+   '<i class="fas fa-pizza-slice fa-beat fa-fw margin-bottom"></i> Ordering fast food... ',
+   '<i class="fas fa-parachute-box fa-shake fa-fw margin-bottom"></i> Dropping supply boxes... ', 
    ];
 
 /*******************************************************************************
@@ -4333,7 +4358,7 @@ function cfw_ui_toggleLoader(isVisible, targetID, text, icon){
 	// Set Defaults
 	if(text == null){	
 		icon = "";
-		let randomIndex = Math.ceil(Math.random() * (LOADER_MESSAGES.length) )-1;
+		let randomIndex = Math.floor(Math.random() * (LOADER_MESSAGES.length) );
 		text = LOADER_MESSAGES[randomIndex];
 
 	}else{
@@ -4343,6 +4368,7 @@ function cfw_ui_toggleLoader(isVisible, targetID, text, icon){
 			icon = '<i class="fa fa-cog fa-spin fa-1x fa-fw margin-bottom"></i>'; 
 		}
 	}
+	
 	//------------------------------------
 	// Get Target
 	if(targetID != null){
@@ -4355,8 +4381,12 @@ function cfw_ui_toggleLoader(isVisible, targetID, text, icon){
 		cssClass = "";
 	}
 	
-	loader = $("#"+loaderID);
+	//------------------------------------
+	// Get Existing loader
+	let loader = $("#"+loaderID);
 
+	//------------------------------------
+	// Create if not Exists
 	if(loader.length == 0){
 		loader = $('<div id="'+loaderID+'" class="'+cssClass+'">'
 				+'<div>'
@@ -4371,6 +4401,8 @@ function cfw_ui_toggleLoader(isVisible, targetID, text, icon){
 		target.prepend(loader);
 	}
 	
+	//------------------------------------
+	// Toggle visibility
 	if(isVisible){
 		var parent = loader.parent();
 		loader.find("span").html(text);
