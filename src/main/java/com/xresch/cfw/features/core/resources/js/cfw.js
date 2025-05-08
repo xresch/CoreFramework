@@ -4309,8 +4309,7 @@ var LOADER_MESSAGES = [
    '<i class="fas fa-cat fa-bounce fa-fw margin-bottom"></i> Waiting for nine lives... ',
    '<i class="fa fa-location-arrow fa-spin fa-fw margin-bottom"></i> Searching for something I can display to you... ',
    '<i class="fas fa-dungeon fa-bounce fa-fw margin-bottom"></i> Conquering the dungeon... ',
-   '<i class="fa fa-virus fa-spin fa-fw margin-bottom"></i> Sterilizing the environment...',
-   '<i class="fa fa-feather fa-spin fa-fw margin-bottom"></i> Wingardium Leviosa...', 
+   '<i class="fa fa-feather fa-spin fa-fw margin-bottom"></i> Wingardium Leviosaaa!!!', 
    '<i class="fa fa-magic-wand-sparkles fa-spin fa-fw margin-bottom"></i> Doing the magic...', 
    '<i class="fa fa-paperclip fa-spin fa-fw margin-bottom"></i> Clipping the papers...', 
    '<i class="fas fa-circle-radiation fa-beat fa-fw margin-bottom"></i> Measuring radiation levels... ',
@@ -4326,6 +4325,7 @@ var LOADER_MESSAGES = [
    '<i class="fas fa-bell fa-shake fa-fw margin-bottom"></i> Ringing the bell... ',
    '<i class="fas fa-pizza-slice fa-beat fa-fw margin-bottom"></i> Ordering fast food... ',
    '<i class="fas fa-parachute-box fa-shake fa-fw margin-bottom"></i> Dropping supply boxes... ', 
+   '<i class="fa fa-bacteria fa-bounce fa-fw margin-bottom"></i>&nbsp;<i class="fa fa-bacterium fa-bounce margin-bottom" style="--fa-animation-delay: 333ms"></i>&nbsp;<i class="fa fa-bacteria fa-bounce fa-fw margin-bottom" style="--fa-animation-delay: 666ms"></i> Sterilization in progress... ',
    ];
 
 /*******************************************************************************

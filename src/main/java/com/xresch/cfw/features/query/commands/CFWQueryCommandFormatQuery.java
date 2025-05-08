@@ -225,7 +225,7 @@ public class CFWQueryCommandFormatQuery extends CFWQueryCommand {
 			specialObject.addProperty("format", "subquery");
 			specialObject.addProperty("icon", icon.determineValue(record).getAsString());
 			specialObject.addProperty("label", label.determineValue(record).getAsString());
-			specialObject.addProperty("query", query.determineValue(record).getAsString());
+			specialObject.addProperty("query", query.determineValue(record).getAsString().trim());
 			//specialObject.addProperty("earliest", earliest.determineValue(record).getAsNumber());
 			//specialObject.addProperty("latest", latest.determineValue(record).getAsNumber());
 			specialObject.addProperty("title", title.determineValue(record).getAsString());
