@@ -427,9 +427,10 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	}
 	
 	/****************************************************************************
-	 * Overridden as this command does not manipulate any data.
-	 * Make the InQueue the same as the out Queue to directly give the input
-	 * from the previous command to the next command.
+	 * Set the inQueue of this command.
+	 * If  isManipulativeCommand(true), make the InQueue the same as the out Queue 
+	 * to directly give the input from the previous command to the next command.
+	 * 
 	 ****************************************************************************/
 	@Override
 	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setInQueue(LinkedBlockingQueue<EnhancedJsonObject> in) {

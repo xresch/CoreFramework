@@ -36,7 +36,9 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 	private ArrayList<QueryPart> parts;
 	
 	private ArrayList<String> fieldnames = new ArrayList<>();
-		
+
+	private boolean areFieldnamesRemoved = false;
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -155,9 +157,6 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 			}
 		}
 		
-		for(String fieldname : fieldnames) {
-			this.fieldnameRemove(fieldname);
-		}
 	}
 	
 	/***********************************************************************************************
@@ -166,6 +165,19 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
+		//-----------------------------
+		// Do this here to support if/else commands
+		if(!inQueue.isEmpty()) {
+			if(!areFieldnamesRemoved) {
+				for(String fieldname : fieldnames) {
+					this.fieldnameRemove(fieldname);
+				}
+				areFieldnamesRemoved = true;
+			}
+		}
+		
+		//-----------------------------
+		// Do the removing
 		while(keepPolling()) {
 			EnhancedJsonObject record = inQueue.poll();
 				

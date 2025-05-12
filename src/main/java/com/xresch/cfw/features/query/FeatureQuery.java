@@ -34,6 +34,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatQuery;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatRecord;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandForwardFill;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandGlobals;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandHide;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandIf;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandIndex;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandKeep;
@@ -71,6 +72,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandTail;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandUnbox;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandUndefinedTo;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandUnhide;
 import com.xresch.cfw.features.query.database.CFWQueryHistory;
 import com.xresch.cfw.features.query.database.TaskQueryHistoryLimitEntries;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionAbs;
@@ -244,6 +246,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandChart(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandChartFields(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandComment(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandCrates(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDecompose(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDisplay(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDisplayFields(null));
@@ -260,7 +263,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandFormatRecord(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandForwardFill(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandGlobals(null));
-		CFW.Registry.Query.registerCommand(new CFWQueryCommandCrates(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandHide(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandIf(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandIndex(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandKeep(null));
@@ -298,6 +301,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandTop(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandUnbox(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandUndefinedTo(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandUnhide(null));
 		
 		//----------------------------------
 		// Register Functions

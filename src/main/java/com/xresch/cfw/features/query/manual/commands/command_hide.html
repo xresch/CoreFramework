@@ -1,0 +1,12 @@
+
+<p>This command hides the fields from the UI but the data is still there. 
+In most cases you want to use the remove-command for performance reasons.
+This command is useful to provide additional data that is not shown in the UI but will be in downloaded data.</p>
+
+<p>Following code will create 1'234 random records, and hide the five specified fields:</p>
+
+<pre><code class="language-cfwquery">| source random records=1234
+| hide INDEX TIME, FIRSTNAME, LASTNAME, VALUE
+| display
+	download = true </code></pre>
+

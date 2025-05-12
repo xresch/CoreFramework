@@ -1,0 +1,14 @@
+
+<p>This command unhides the fields that where hidden with the hide-command. 
+This could be useful to hide data that often is null, but show it in case there is an actual value.</p>
+
+<p>Following code will create 1'234 random records, and hides some fields and unhides the value column if any of the VALUE is not null:</p>
+
+<pre><code class="language-cfwquery">| source random records=1234
+| hide INDEX TIME, FIRSTNAME, LASTNAME, VALUE
+| if (VALUE !=  null)
+	| unhide VALUE
+| end
+| display
+	download = true</code></pre>
+

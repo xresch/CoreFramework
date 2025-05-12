@@ -658,8 +658,8 @@ function cfw_renderer_dataviewer_triggerDownload(dataviewerID, renderer) {
 	
 	let dataviewerDiv = $("#"+dataviewerID);
 	let renderDef = dataviewerDiv.data('renderDef');
-	let data = renderDef.data;
-
+	renderDef.visiblefields = null;
+	
 	let renderedResult = CFW.render.getRenderer(renderer).render(renderDef);
 	let formattedData = renderedResult.find('code').text();
 	

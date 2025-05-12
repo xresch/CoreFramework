@@ -164,13 +164,15 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 		
 		//-----------------------------
 		// Do this here to support if/else commands
-		if(!isRenamed) {
-			for(Entry<String, JsonElement> entry : fieldnameMap.entrySet()) {
-				this.fieldnameRename(entry.getKey(), entry.getValue().getAsString());
+		if(!inQueue.isEmpty()) {
+			if(!isRenamed) {
+				for(Entry<String, JsonElement> entry : fieldnameMap.entrySet()) {
+					this.fieldnameRename(entry.getKey(), entry.getValue().getAsString());
+				}
+				isRenamed = true;
 			}
-			
-			isRenamed = true;
 		}
+	
 		
 		//-----------------------------
 		// Do renaming

@@ -102,9 +102,12 @@ Potential TODOs
 	- command if, else, end
 	- command formatcss
 	- command formatdisplay
+	- command formatquery
+	- command hide
 	- command maparrays 
 	- command percentile
 	- command score
+	- command unhide
 	- metadata template
 	- function object
 	- function prev
@@ -182,6 +185,8 @@ DONE
 - Query Command: set - can now be used with if/else commands
 - Query: Added Commands:
 	- formatquery
+	- hide
+	- unhide
 	
 - Query: Added Functions:
 	- decodeBase64
