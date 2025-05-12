@@ -45,9 +45,7 @@ public class CFWQueryFieldnameManager {
 								break;
 								
 				case ADDALL:	for(String name : currentMod.fieldnames) {
-									if(!name.startsWith("_")) {
-										finalNames.add(name);
-									}
+									finalNames.add(name);
 								}
 								break;
 								

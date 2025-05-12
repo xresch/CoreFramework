@@ -36,6 +36,8 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 	
 	private ArrayList<QueryPart> parts;
 	
+	private boolean isRenamed = false;
+	
 	// key:oldname / value: newname
 	private JsonObject fieldnameMap = new JsonObject();
 		
@@ -152,9 +154,6 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 			}
 		}
 		
-		for(Entry<String, JsonElement> entry : fieldnameMap.entrySet()) {
-			this.fieldnameRename(entry.getKey(), entry.getValue().getAsString());
-		}
 	}
 	
 	/***********************************************************************************************
@@ -163,6 +162,18 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
+		//-----------------------------
+		// Do this here to support if/else commands
+		if(!isRenamed) {
+			for(Entry<String, JsonElement> entry : fieldnameMap.entrySet()) {
+				this.fieldnameRename(entry.getKey(), entry.getValue().getAsString());
+			}
+			
+			isRenamed = true;
+		}
+		
+		//-----------------------------
+		// Do renaming
 		while(keepPolling()) {
 			EnhancedJsonObject record = inQueue.poll();
 				
@@ -175,7 +186,7 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 			outQueue.add(record);
 			
 		}
-		
+				
 		this.setDoneIfPreviousDone();
 	
 	}

@@ -3,7 +3,9 @@ package com.xresch.cfw.features.query.commands;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -31,6 +33,7 @@ public class CFWQueryCommandSet extends CFWQueryCommand {
 	private ArrayList<QueryPartAssignment> assignments = new ArrayList<>();
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	
+	private boolean areFieldnamesAdded;
 	
 	/***********************************************************************************************
 	 * 
@@ -154,7 +157,15 @@ public class CFWQueryCommandSet extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-		//boolean printed = false;
+		//-----------------------------
+		// Do this here to support if/else commands
+		if(!areFieldnamesAdded) {
+			this.fieldnameAddAll(fieldnames);
+			areFieldnamesAdded = true;
+		}
+		
+		//-----------------------------
+		// Do set
 		while(keepPolling()) {
 			EnhancedJsonObject record = inQueue.poll();
 			

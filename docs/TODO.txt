@@ -177,7 +177,9 @@ DONE
 - Filters: Filtering now supports wildcards (*) and regex when at least one '*' is present.
 - Parameters: Fixed Time Range parameters not keeping value after refresh.
 - Query: Fixed messages not displayed when result is empty.
-
+- Query: Do not auto hide fields starting with "_"
+- Query Command: rename - can now be used with if/else commands
+- Query Command: set - can now be used with if/else commands
 - Query: Added Commands:
 	- formatquery
 	
