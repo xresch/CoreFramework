@@ -123,6 +123,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionLatest;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionLatestSet;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionLength;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionLiteral;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionLowercase;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionM;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionMax;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionMedian;
@@ -168,6 +169,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeframeOffset;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionToJSON;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTrim;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionType;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionUppercase;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionUserdata;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceAppDB;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceApplog;
@@ -353,6 +355,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLatestSet(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLength(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLiteral(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLowercase(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionM(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionMax(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionMedian(null));
@@ -398,6 +401,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionToJSON(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTrim(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionType(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionUppercase(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionUserdata(null));
 		 
 		//----------------------------------

@@ -13,15 +13,15 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionTrim extends CFWQueryFunction {
+public class CFWQueryFunctionUppercase extends CFWQueryFunction {
 
 	
-	public static final String FUNCTION_NAME = "trim";
+	public static final String FUNCTION_NAME = "uppercase";
 
-	public CFWQueryFunctionTrim(CFWQueryContext context) {
+	public CFWQueryFunctionUppercase(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -50,14 +50,14 @@ public class CFWQueryFunctionTrim extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(stringToTrim)";
+		return FUNCTION_NAME+"(string)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Removes whitespaces from the start and end of a string.";
+		return "Turns a string into uppercase.";
 	}
 	
 	/***********************************************************************************************
@@ -65,7 +65,7 @@ public class CFWQueryFunctionTrim extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>stringToTrim:&nbsp;</b>The string that should be trimmed.</p>"
+		return "<p><b>string:&nbsp;</b>The string that should be uppercased.</p>"
 			;
 	}
 
@@ -106,10 +106,10 @@ public class CFWQueryFunctionTrim extends CFWQueryFunction {
 		
 		//----------------------------------
 		// Get String
-		String stringToTrim = parameters.get(0).getAsString();
+		String string = parameters.get(0).getAsString();
 		
-		if(stringToTrim != null) { 
-			return QueryPartValue.newString(stringToTrim.trim()); 
+		if(string != null) { 
+			return QueryPartValue.newString(string.toUpperCase()); 
 		}else {
 			return QueryPartValue.newString(""); 
 		}

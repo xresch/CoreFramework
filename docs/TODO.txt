@@ -192,6 +192,8 @@ DONE
 - Query: Added Functions:
 	- decodeBase64
 	- encodeBase64
+	- lowercase
+	- uppercase
 	
 ------- v.11.0.0 -------
 - BREAKING CHANGE: Query Alerting Tasks: if the result is empty, alerting will consider there is no problem
