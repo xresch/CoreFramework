@@ -10,7 +10,6 @@
 			menuicon: "fas fa-chart-bar",
 			menulabel: CFWL('emp_widget_influxdb_influxql_chart', "InfluxQL Chart"),
 			description: CFWL('emp_widget_influxdb_influxql_chart_desc', "This widget uses a InfluxQL query to fetch time series and displays them as a chart."), 
-			usetimeframe: true,
 			createWidgetInstance: function (widgetObject, params, callback) {
 					
 				CFW.dashboard.fetchWidgetData(widgetObject, params, function(data){

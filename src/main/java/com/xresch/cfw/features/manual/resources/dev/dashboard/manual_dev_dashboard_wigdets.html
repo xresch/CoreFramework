@@ -36,9 +36,6 @@ The following are the fields of the widgetDefinition and the default values:
 		
 		// Override to customize initial settings
 		defaultsettings: null,
-		
-		//Set to true if this widget uses the time from the global timeframe picker. Timeframe will be added to the settings with the fields timeframe_earliest/timeframe_latest.
-		usetimeframe: false,
 			
 		// function that creates the widget content and returns them to the framework by calling the callback function
 		createWidgetInstance: function (widgetObject, params, callback) {	
@@ -256,25 +253,6 @@ CFW.dashboard.registerWidget("example_widget",
 		category: "Root Category | Sub Category | Sub Sub Category",
 		menuicon: "fas fa-cogs",
 		menulabel: CFWL('cfw_widget_webexservices,
-		[...]
-	}
-);</code>
-</pre>
-
-
-<h2>Creating a Timeframe Widget</h2>
-<p>
-A timeframe widget will use the timeframe set by the global timepicker.
-Such a widget needs to set the field "usetimeframe" to true in order for the timepicker to get displayed.
-</p>
-<pre>
-<code>CFW.dashboard.registerWidget("cfw_example_timeframe",
-	{
-		category: "Example | Timeframe",
-		menuicon: "fas fa-clock",
-		menulabel: CFWL('cfw_example_timeframe', "Timeframe Widget"),
-		description: CFWL('cfw_example_timeframe_desc', "This widget uses the global timeframe from the timeframe picker."), 
-		usetimeframe: true,
 		[...]
 	}
 );</code>

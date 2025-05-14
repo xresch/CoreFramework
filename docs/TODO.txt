@@ -179,6 +179,7 @@ DONE
 - Tables: Fixed Sticky headers setting not working
 - Filters: Filtering now supports wildcards (*) and regex when at least one '*' is present.
 - Parameters: Fixed Time Range parameters not keeping value after refresh.
+- Dashboard: Fixed Timeframe picker not displayed if widget is set to manual or parameter load
 - Query: Fixed messages not displayed when result is empty.
 - Query: Do not auto hide fields starting with "_"
 - Query Command: rename - can now be used with if/else commands

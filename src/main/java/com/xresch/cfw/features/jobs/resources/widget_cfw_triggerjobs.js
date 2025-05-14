@@ -77,7 +77,6 @@ function cfw_widget_triggerjobs_stop(id){
 			menuicon: "fas fa-magic",
 			menulabel: "Trigger Jobs",
 			description: "Allows a user to start and stop jobs.", 
-			usetimeframe: true,
 			createWidgetInstance: function (widgetObject, params, callback) {
 					
 				

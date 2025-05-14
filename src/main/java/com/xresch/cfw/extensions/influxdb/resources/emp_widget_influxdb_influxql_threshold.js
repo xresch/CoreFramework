@@ -10,7 +10,6 @@
 			menuicon: "fas fa-thermometer-half",
 			menulabel: CFWL('emp_widget_influxdb_influxql_threshold', "InfluxQL Threshold"),
 			description: CFWL('emp_widget_influxdb_influxql_threshold', "This widget uses a InfluxQL query to fetch time series and displays them as a chart."), 
-			usetimeframe: true,
 			createWidgetInstance: function (widgetObject, params, callback) {
 					
 				CFW.dashboard.fetchWidgetData(widgetObject, params, function(data){

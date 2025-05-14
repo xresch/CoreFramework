@@ -40,7 +40,6 @@ var CFW_DASHBOARD_COMMAND_BUNDLE = null;
 // -------------------------------------
 // TIMEFRAME
 // -------------------------------------
-var CFW_DASHBOARD_TIME_ENABLED = false;
 var CFW_DASHBOARD_TIME_FIELD_ID = "timeframePicker";
 var CFW_DASHBOARD_TIME_EARLIEST_EPOCH = moment().utc().subtract(30, 'm').utc().valueOf();
 var CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
@@ -404,10 +403,6 @@ function cfw_dashboard_registerWidget(widgetUniqueType, widgetObject){
 			description: "",
 			// Override to customize initial settings
 			defaultsettings: {},
-			// Set to true if this widget uses the time from the global
-			// timeframe picker. Timeframe will be added to the settings with
-			// the fields timeframe_earliest/timeframe_latest.
-			usetimeframe: false,
 			// function that creates the widget content and returns them to the
 			// framework by calling the callback function
 			createWidgetInstance: function (widgetObject2, params, callback) {				
@@ -1136,16 +1131,11 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 	// ----------------------------
 	// Check has Timeframe
 	urlParams.timeframe = $("#"+CFW_DASHBOARD_TIME_FIELD_ID).val();
-	if(definition.usetimeframe){
-		if(!CFW_DASHBOARD_TIME_ENABLED){
-			$('#timeframePickerHidder').removeClass('d-none');
-			CFW_DASHBOARD_TIME_ENABLED = true;
-		}
-		settings = _.cloneDeep(settings);
+	settings = _.cloneDeep(settings);
 		
-		//urlParams.timeframe_earliest = CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
-		//urlParams.timeframe_latest = CFW_DASHBOARD_TIME_LATEST_EPOCH;
-	}
+	//urlParams.timeframe_earliest = CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
+	//urlParams.timeframe_latest = CFW_DASHBOARD_TIME_LATEST_EPOCH;
+
 		
 	//--------------------------------------
 	// Add timeZoneOffset

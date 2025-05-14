@@ -15,7 +15,6 @@
 			menuicon: "fas fa-magic",
 			menulabel: CFWL('cfw_widget_queryresults', "Display Query Results"),
 			description: CFWL('cfw_widget_queryresults_desc', "Executes a CFWQL query and display its results."), 
-			usetimeframe: true,
 			createWidgetInstance: function (widgetObject, params, callback) {
 					
 				

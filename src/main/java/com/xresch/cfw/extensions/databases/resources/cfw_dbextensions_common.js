@@ -17,7 +17,6 @@ function createDatabaseQueryStatusWidget(widgetMenuLabel){
 		menuicon: "fas fa-thermometer-half",
 		menulabel: widgetMenuLabel,
 		description: CFWL('emp_widget_database_status_desc', "Executes a database query and displays the data. Records can be colored by applying a threshhold against the value of a column. Can have tasks that alerts when specific threasholds are reached."), 
-		usetimeframe: true,
 		createWidgetInstance: function (widgetObject, params, callback) {
 				
 			CFW.dashboard.fetchWidgetData(widgetObject, params, function(data){
@@ -145,7 +144,6 @@ function createDatabaseQueryChartWidget(widgetMenuLabel){
 		menuicon: "fas fa-chart-bar",
 		menulabel: widgetMenuLabel,
 		description: CFWL('emp_widget_database_chart_desc', "Executes a database query and displays the data as a chart."), 
-		usetimeframe: true,
 		createWidgetInstance: function (widgetObject, params, callback) {
 				
 			CFW.dashboard.fetchWidgetData(widgetObject, params, function(data){
