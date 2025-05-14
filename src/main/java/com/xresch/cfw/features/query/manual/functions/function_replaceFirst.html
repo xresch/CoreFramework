@@ -1,0 +1,10 @@
+
+<p>Use this function whenever you need to replace the first occurrence of a regular expression in a string.</p>
+
+<p>Following query creates example records and uses the replaceFirst function to replace a regex in the values of LASTNAME:</p>
+
+<pre><code class="language-cfwquery">| source random 
+| keep VALUE, FIRSTNAME, LASTNAME
+| set
+	REPLACE = replaceFirst(LASTNAME, "[s]", "z") # replaces first "s" with "z"	</code></pre>
+

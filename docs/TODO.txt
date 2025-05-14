@@ -193,6 +193,7 @@ DONE
 	- decodeBase64
 	- encodeBase64
 	- lowercase
+	- replaceFirst
 	- uppercase
 	
 ------- v.11.0.0 -------
