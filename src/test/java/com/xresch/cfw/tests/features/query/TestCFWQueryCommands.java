@@ -1,7 +1,6 @@
 package com.xresch.cfw.tests.features.query;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Calendar;
 
 import org.joda.time.Instant;

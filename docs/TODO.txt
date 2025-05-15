@@ -192,9 +192,11 @@ DONE
 - Query: Added Functions:
 	- decodeBase64
 	- encodeBase64
+	- endsWith
 	- lowercase
 	- matches
 	- replaceFirst
+	- startsWith
 	- uppercase
 	
 ------- v.11.0.0 -------

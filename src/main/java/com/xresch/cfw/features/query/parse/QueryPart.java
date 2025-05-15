@@ -106,9 +106,9 @@ public abstract class QueryPart {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	protected CFWQueryCommand getParentCommand() {
-		return parent;
-	}
+//	protected CFWQueryCommand getParentCommand() {
+//		return parent;
+//	}
 
 	
 	

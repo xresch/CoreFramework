@@ -1,0 +1,10 @@
+
+<p>This function checks if a string starts with a specific prefix.</p>
+
+<p>Following query creates example records and uses the startsWith function:</p>
+
+<pre><code class="language-cfwquery">| source random 
+| keep VALUE, FIRSTNAME, LASTNAME
+| set
+	EVAL = startsWith(LASTNAME, "B") # matches if LASTNAME starts with "B"</code></pre>
+

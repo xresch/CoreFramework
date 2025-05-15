@@ -1,0 +1,10 @@
+
+<p>This function checks if a string ends with a specific suffix.</p>
+
+<p>Following query creates example records and uses the endsWith function:</p>
+
+<pre><code class="language-cfwquery">| source random 
+| keep VALUE, FIRSTNAME, LASTNAME
+| set
+	EVAL = endsWith(LASTNAME, "n") # matches if LASTNAME ends with "n"</code></pre>
+
