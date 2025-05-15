@@ -57,7 +57,7 @@ public class CFWQueryFunctionTrim extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Removes whitespaces from the start and end of a string.";
+		return "Removes white spaces from the start and end of a string.";
 	}
 	
 	/***********************************************************************************************
@@ -109,7 +109,7 @@ public class CFWQueryFunctionTrim extends CFWQueryFunction {
 		String stringToTrim = parameters.get(0).getAsString();
 		
 		if(stringToTrim != null) { 
-			return QueryPartValue.newString(stringToTrim.trim()); 
+			return QueryPartValue.newString(stringToTrim.strip()); 
 		}else {
 			return QueryPartValue.newString(""); 
 		}
