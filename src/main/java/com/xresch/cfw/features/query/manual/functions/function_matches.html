@@ -1,0 +1,12 @@
+
+<p>This function checks if a string matches a given regular expression.
+The regex will have to match the full string, therefore you would in many cases need to include ".*" at the beginning and end of the regex.</p>
+
+<p>Following query creates example records and does various sample split-operations:</p>
+
+<pre><code class="language-cfwquery">| source random 
+| keep VALUE, FIRSTNAME, LASTNAME
+| set
+	ALWAYS_FALSE = matches(LASTNAME, "[s]") # doesn't work as regex must match full string
+	MATCH = matches(LASTNAME, ".*[s].*") # matches if LASTNAME contains s</code></pre>
+

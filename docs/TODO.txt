@@ -193,6 +193,7 @@ DONE
 	- decodeBase64
 	- encodeBase64
 	- lowercase
+	- matches
 	- replaceFirst
 	- uppercase
 	
