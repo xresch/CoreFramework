@@ -24,7 +24,7 @@ function cfw_storedQuerylist_createTabs(){
 		if(CFW.hasPermission('Query Store: Creator') 
 		|| CFW.hasPermission('Query Store: Admin')){
 			list.append(
-				'<li class="nav-item"><a class="nav-link" id="tab-mystoredQuery" data-toggle="pill" href="#" role="tab" onclick="cfw_storedQuerylist_draw({tab: \'mystoredQuery\'})"><i class="fas fa-user-circle mr-2"></i>My StoredQuery</a></li>'
+				'<li class="nav-item"><a class="nav-link" id="tab-mystoredQuery" data-toggle="pill" href="#" role="tab" onclick="cfw_storedQuerylist_draw({tab: \'mystoredQuery\'})"><i class="fas fa-user-circle mr-2"></i>My Store</a></li>'
 			);
 		}
 		
