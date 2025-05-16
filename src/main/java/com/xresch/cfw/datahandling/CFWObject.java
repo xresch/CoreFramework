@@ -281,10 +281,12 @@ public class CFWObject {
 	 * 
 	 ****************************************************************/
 	@SuppressWarnings("rawtypes")
-	public void addFields(CFWField ...fields) {
+	public CFWObject addFields(CFWField ...fields) {
 		for(CFWField<?> field : fields) {
 			this.addField(field);
 		}
+		
+		return this;
 	}
 	
 	/****************************************************************

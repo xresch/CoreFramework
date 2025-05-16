@@ -462,7 +462,7 @@ public class CFWStoredQuery extends CFWObject {
 		
 		result.addProperty("name", name.getValue());
 		result.addProperty("data", query.getValue());
-		result.addProperty("custom", checkPermissions.getValue());
+		result.addProperty("checkPermissions", checkPermissions.getValue());
 		
 		return result;
 	}
@@ -496,6 +496,15 @@ public class CFWStoredQuery extends CFWObject {
 		return this;
 	}
 	
+	public String query() {
+		return query.getValue();
+	}
+	
+	public CFWStoredQuery query(String query) {
+		this.query.setValue(query);
+		return this;
+	}
+	
 	public String description() {
 		return description.getValue();
 	}
@@ -512,6 +521,15 @@ public class CFWStoredQuery extends CFWObject {
 	
 	public CFWStoredQuery tags(ArrayList<String> tags) {
 		this.tags.setValue(tags);
+		return this;
+	}
+	
+	public boolean checkPermissions() {
+		return checkPermissions.getValue();
+	}
+	
+	public CFWStoredQuery checkPermissions(boolean checkPermissions) {
+		this.checkPermissions.setValue(checkPermissions);
 		return this;
 	}
 	

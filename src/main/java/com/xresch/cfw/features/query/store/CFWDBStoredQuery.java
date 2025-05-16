@@ -273,6 +273,30 @@ public class CFWDBStoredQuery {
 				.getAsJSON();
 	}
 	
+	
+	/***************************************************************
+	 * Return a list of all personal and shared queries the 
+	 * user can access.
+	 * 
+	 * @return Returns a resultSet with all storedQuery or null.
+	 ****************************************************************/
+	public static JsonArray getUserAndSharedStoredQueryList() {
+		
+		JsonArray userQueries = new CFWSQL(new CFWStoredQuery())
+				.queryCache()
+				.select()
+				.where(CFWStoredQueryFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
+				.orderby(CFWStoredQueryFields.NAME.toString())
+				.getAsJSONArray();
+		
+		JsonArray sharedQueries = getSharedStoredQueryListAsJSONArray();
+		
+		userQueries.addAll(userQueries);
+		
+		return userQueries;
+		
+	}
+	
 	/***************************************************************
 	 * Return a list of all user storedQuery as json string.
 	 * 
@@ -332,13 +356,25 @@ public class CFWDBStoredQuery {
 		}
 	}
 	
-	
 	/***************************************************************
-	 * Return a list of all user storedQuery as json string.
+	 * Return a list of all stored queries the user has access to
+	 * as json string.
 	 * 
-	 * @return Returns a result set with all users or null.
+	 * @return Returns a result set with stored queries
 	 ****************************************************************/
 	public static String getSharedStoredQueryListAsJSON() {
+		
+		return CFW.JSON.toJSON(
+				getSharedStoredQueryListAsJSONArray()
+			);
+	}
+	
+	/***************************************************************
+	 * Return a list of all stored queries the user has access to.
+	 * 
+	 * @return Returns a result set with stored queries.
+	 ****************************************************************/
+	public static JsonArray getSharedStoredQueryListAsJSONArray() {
 		
 		int userID = CFW.Context.Request.getUser().id();
 		String sharedUserslikeID = "%\""+userID+"\":%";
@@ -425,7 +461,7 @@ public class CFWDBStoredQuery {
 	
 		//-------------------------
 		// Return
-		return CFW.JSON.toJSON(sharedBoards);
+		return sharedBoards;
 	}
 	
 				
