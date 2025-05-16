@@ -74,6 +74,12 @@ import com.xresch.cfw.features.parameter.CFWRegistryParameters;
 import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.query.CFWQueryRegistry;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query.store.CFWDBStoredQuery;
+import com.xresch.cfw.features.query.store.CFWDBStoredQueryEditorGroupsMap;
+import com.xresch.cfw.features.query.store.CFWDBStoredQueryEditorsMap;
+import com.xresch.cfw.features.query.store.CFWDBStoredQuerySharedGroupsMap;
+import com.xresch.cfw.features.query.store.CFWDBStoredQuerySharedUserMap;
+import com.xresch.cfw.features.query.store.FeatureStoredQuery;
 import com.xresch.cfw.features.spaces.CFWDBSpace;
 import com.xresch.cfw.features.spaces.CFWDBSpaceGroup;
 import com.xresch.cfw.features.spaces.FeatureSpaces;
@@ -164,6 +170,13 @@ public class CFW {
 		public static class Notifications extends CFWDBNotifications{};
 		public static class Parameters extends CFWDBParameter{};
 		public static class Permissions extends CFWDBPermission{};
+		
+		public static class StoredQuery extends CFWDBStoredQuery{};
+		public static class StoredQueryEditors extends CFWDBStoredQueryEditorsMap{};
+		public static class StoredQueryEditorGroups extends CFWDBStoredQueryEditorGroupsMap{};
+		public static class StoredQuerySharedGroups extends CFWDBStoredQuerySharedGroupsMap{};
+		public static class StoredQuerySharedUsers extends CFWDBStoredQuerySharedUserMap{};
+		
 		public static class Roles extends CFWDBRole{};
 		public static class RoleEditors extends CFWDBRoleEditorsMap{};
 		public static class RolePermissionMap extends CFWDBRolePermissionMap{};
@@ -520,6 +533,7 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureParameter.class);	
 		
 		CFW.Registry.Features.addFeature(FeatureQuery.class);
+		CFW.Registry.Features.addFeature(FeatureStoredQuery.class);
 		
 		CFW.Registry.Features.addFeature(FeatureJobs.class);
 		

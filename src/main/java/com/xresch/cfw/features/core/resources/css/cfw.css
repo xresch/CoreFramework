@@ -693,7 +693,7 @@ label {
 }
 
 
-#cfw-loader-body {
+.cfw-loader-body {
 	z-index: 1024;
     position: fixed;
     top: 50%;

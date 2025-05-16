@@ -4386,7 +4386,7 @@ function cfw_ui_toggleLoader(isVisible, targetID, text, icon){
 	}else{
 		loaderID = "cfw-loader-body";
 		target = $("body");
-		cssClass = "";
+		cssClass = "cfw-loader-body";
 	}
 	
 	//------------------------------------
@@ -4416,6 +4416,108 @@ function cfw_ui_toggleLoader(isVisible, targetID, text, icon){
 		loader.find("span").html(text);
 		loader.css("display", "flex");
 		
+		if(targetID != null){
+			loader.width( parent.width() );
+			loader.height( parent.height() );
+		}
+	}else{
+		loader.css("display", "none");
+	}
+	
+}
+
+var LOADER_QUOTES = [
+     '<p><b>What do you call a magic dog?</b></p>  <p>A labracadabrador.</p>'
+   , '<p><b>Why did the frog take the bus to work today?</b></p>  <p>His car got toad away.</p>'
+   , '<p><b>What did one hat say to the other?</b></p>  <p>You wait here. I\'ll go on a head.</p>'
+   , '<p><b>What did the buffalo say when his son left for college?</b></p>  <p>Bison.</p>'
+   , '<p><b>What is an astronaut\'s favorite part on a computer?</b></p>  <p>The space bar.</p>'
+   , '<p><b>Why did the yogurt go to the art exhibition?</b></p>  <p>Because it was cultured.</p>'
+   , '<p><b>Did you hear about the two people who stole a calendar?</b></p>  <p>They each got six months.</p>'
+   , '<p><b>What do cows do on date night?</b></p>  <p>Go to the moo-vies.</p>'
+   , '<p><b>What do cows say when they hear a bad joke?</b></p>  <p>I am not amoosed.</p>'
+   , '<p><b>What did 0 say to 8?</b></p>  <p>Nice belt.</p>'
+   , '<p><b>Did you hear about the guy who invented the knock-knock joke?</b></p>  <p>He won the &quot;no-bell&quot; prize.</p>'
+   , '<p><b>Hear about the new restaurant called Karma?</b></p>  <p>There\'s no menu: You get what you deserve.</p>'
+   , '<p><b>Why don\'t scientists trust atoms?</b></p>  <p>Because they make up everything.</p>'
+   , '<p><b>Why can\'t you explain puns to kleptomaniacs?</b></p>  <p>They always take things literally.</p>'
+   , '<p><b>Why are ghosts such bad liars?</b></p>  <p>Because they are easy to see through.</p>'
+   , '<p><b>What do you call an alligator in a vest?</b></p>  <p>An investigator.</p>'
+   , '<p><i>&quot;Always forgive your enemies; nothing annoys them so much.&quot;</i></p>  <p>- Oscar Wilde</p>'
+   , '<p><i>&quot;Before you criticize someone, walk a mile in their shoes. That way, you\'ll be a mile from them, and you\'ll have their shoes.&quot;</i></p>  <p>- Jack Handy</p>'
+   , '<p><i>&quot;If I\'m not back in five minutes, just wait longer.&quot;</i></p>  <p>- Ace Ventura</p>'
+   , '<p><i>&quot;Do not take life too seriously. You will never get out of it alive.&quot;</i></p>  <p>- Elbert Hubbard</p>'
+   , '<p><i>&quot;Clothes make the man. Naked people have little or no influence in society.&quot;</i></p>  <p>- Mark Twain</p>'
+   , '<p><i>&quot;If you think you are too small to make a difference, try sleeping with a mosquito.&quot;</i></p>  <p>- Dalai Lama</p>'
+   , '<p><i>&quot;Remember, today is the tomorrow you worried about yesterday.&quot;</i></p>  <p>- Dale Carnegie</p>'
+   , '<p><i>&quot;The best thing about the future is that it comes one day at a time.&quot;</i></p>  <p>- Abraham Lincoln</p>'
+
+];
+
+/*******************************************************************************
+ * .
+ * 
+ * The following example shows how to call this method to create a proper rendering
+ * of the loader:
+ * 	
+ *  CFW.ui.toggleLoaderQuotes(true);
+ *	window.setTimeout( 
+ *	  function(){
+ *	    // Do your stuff
+ *	    CFW.ui.toggleLoaderQuotes(false);
+ *	  }, 100);
+ *
+ * @param isVisible true or false
+ * @param targetID the id of the element where the overlay should be loaded.
+ * 				   If undefined, the loader is added to the full body.
+ ******************************************************************************/
+function cfw_ui_toggleLoaderQuotes(isVisible, targetID){
+	
+	let loaderID;
+	let target;
+	let cssClass;
+
+	let randomIndex = Math.floor(Math.random() * (LOADER_QUOTES.length) );
+	let quote = LOADER_QUOTES[randomIndex];
+	
+	//------------------------------------
+	// Get Target
+	if(targetID != null){
+		loaderID = "cfw-quotesloader-"+targetID;
+		target = $("#"+targetID);
+		cssClass = "cfw-loader-custom";
+	}else{
+		loaderID = "cfw-quotesloader-body";
+		target = $("body");
+		cssClass = "cfw-loader-body";
+	}
+	
+	//------------------------------------
+	// Get Existing loader
+	let loader = $("#"+loaderID);
+
+	//------------------------------------
+	// Create if not Exists
+	if(loader.length == 0){
+		loader = $('<div id="'+loaderID+'" class="'+cssClass+'">'
+				+'<div class="d-flex flex-column flex-align-center">'
+					+'<i class="fa fa-cog fa-spin fa-2x fa-fw margin-bottom"></i>'
+					+'<div class="mt-1 text-center">'+quote+'</div>'
+				+'</div>'
+			+'</div>');	
+		
+		var bgColor = $('body').css("background-color");
+		loader.css("background-color", bgColor);
+				
+		target.prepend(loader);
+	}
+	
+	//------------------------------------
+	// Toggle visibility
+	if(isVisible){
+		var parent = loader.parent();
+		loader.css("display", "flex");
+		loader.find(".text-center").html(quote);
 		if(targetID != null){
 			loader.width( parent.width() );
 			loader.height( parent.height() );
@@ -6324,8 +6426,9 @@ var CFW = {
 		showModalLarge: cfw_ui_showModalLarge,
 		confirmExecute: cfw_ui_confirmExecute,
 		toggleLoader: cfw_ui_toggleLoader,
-		toggleDropdownMenuFixed: cfw_ui_toggleDropdownMenuFixed,
+		toggleLoaderQuotes: cfw_ui_toggleLoaderQuotes,
 		createLoaderHTML: cfw_ui_createLoaderHTML,
+		toggleDropdownMenuFixed: cfw_ui_toggleDropdownMenuFixed,
 		addAlert: cfw_ui_addAlert,
 		getWorkspace: cfw_ui_getWorkspace,
 		waitForAppear: cfw_ui_waitForAppear

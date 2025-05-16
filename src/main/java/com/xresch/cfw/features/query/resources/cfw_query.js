@@ -20,6 +20,14 @@ function cfw_query_createTabs(){
 		list.append('<li class="nav-item"><a class="nav-link" id="tab-editor" data-toggle="pill" href="#" role="tab" onclick="cfw_query_draw({tab: \'editor\'})"><i class="fas fa-pen mr-2"></i>Editor</a></li>');
 		list.append('<li class="nav-item"><a class="nav-link" id="tab-history" data-toggle="pill" href="#" role="tab" onclick="cfw_query_draw({tab: \'history\'})"><i class="fas fa-history mr-2"></i>History</a></li>');
 
+		//--------------------------------
+		// My StoredQuery Tab
+		if(CFW.hasPermission('Query Store: Viewer') 
+		|| CFW.hasPermission('Query Store: Creator') 
+		|| CFW.hasPermission('Query Store: Admin')){
+			list.append('<li class="nav-item"><a class="nav-link" id="tab-store" data-toggle="pill" href="#" role="tab" onclick="cfw_query_draw({tab: \'store\'})"><i class="fas fa-warehouse mr-2"></i>Store</a></li>');
+		}
+		
 		var parent = $("#cfw-container");
 		parent.append(list);
 		parent.append('<div id="tab-content-editor"></div>');
@@ -192,11 +200,6 @@ function cfw_query_printHistoryView(data){
 					}
 		 		},
 			actions: actionButtons,
-//				bulkActions: {
-//					"Edit": function (elements, records, values){ alert('Edit records '+values.join(',')+'!'); },
-//					"Delete": function (elements, records, values){ $(elements).remove(); },
-//				},
-//				bulkActionsPos: "both",
 			
 			rendererSettings: {
 				dataviewer: {
@@ -342,6 +345,9 @@ function cfw_query_draw(options){
 								break;	
 								
 			case "history":		CFW.http.getJSON(CFW_QUERY_URL, {action: "fetch", item: "queryhistorylist"}, cfw_query_printHistoryView);
+								break;	
+								
+			case "store":		cfw_storedQuerylist_initialDraw();
 								break;	
 								
 			default:			CFW.ui.addToastDanger('This tab is unknown: '+options.tab);

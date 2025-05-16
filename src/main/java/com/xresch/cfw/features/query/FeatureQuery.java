@@ -136,7 +136,7 @@ public class FeatureQuery extends CFWAppFeature {
 		//----------------------------------
 		// Register Objects
 		CFW.Registry.Objects.addCFWObject(CFWQueryHistory.class);
-		
+
 		//----------------------------------
 		// Register Global Javascript
 		CFW.Registry.Components.addGlobalCSSFile(FileDefinition.HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES , "cfw_query.css");
