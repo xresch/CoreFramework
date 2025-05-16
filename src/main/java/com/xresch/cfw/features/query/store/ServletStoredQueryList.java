@@ -39,9 +39,9 @@ import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 public class ServletStoredQueryList extends HttpServlet
 {
 
-	private static final String MESSAGE_SHARED_GLOBAL = "All storedQuery users will see this storedQuery. The storedQuery was saved as shared and no specific shared users or roles. ";
+	private static final String MESSAGE_SHARED_GLOBAL = "All Stored Query users will see this stored query. The stored query was saved as shared and without specific shared users or roles. ";
 
-	private static final String MESSAGE_NOT_SHARED = "Users won't be able to access your storedQuery until you set shared to true. The storedQuery was saved as not shared and with at least one shared users or roles. ";
+	private static final String MESSAGE_NOT_SHARED = "Users won't be able to access your Stored Query until you set shared to true. The Stored Query was saved as not shared and with at least one shared users or roles. ";
 
 	private static final long serialVersionUID = 1L;
 	
@@ -53,7 +53,6 @@ public class ServletStoredQueryList extends HttpServlet
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-		HTMLResponse html = new HTMLResponse("StoredQuery List");
 		
 		if(CFW.Context.Request.hasPermission(FeatureStoredQuery.PERMISSION_STOREDQUERY_VIEWER)
 		|| CFW.Context.Request.hasPermission(FeatureStoredQuery.PERMISSION_STOREDQUERY_CREATOR)
@@ -64,17 +63,9 @@ public class ServletStoredQueryList extends HttpServlet
 			String action = request.getParameter("action");
 			
 			if(action == null) {
-
-				//html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureSpaces.RESOURCE_PACKAGE, "cfw_storedQuery.css");
-				
-				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureStoredQuery.PACKAGE_RESOURCES, "cfw_storedQuery_list.js");
-				
-				//content.append(CFW.Files.readPackageResource(FeatureSpaces.RESOURCE_PACKAGE, "cfw_storedQuery.html"));
-				
-				html.addJavascriptCode("cfw_storedQuerylist_initialDraw();");
-				
-		        response.setContentType("text/html");
-		        response.setStatus(HttpServletResponse.SC_OK);
+				JSONResponse error = new JSONResponse();
+				error.setSuccess(false);
+				CFW.Messages.addErrorMessage("Action was not defined");
 			}else {
 				handleDataRequest(request, response);
 			}
