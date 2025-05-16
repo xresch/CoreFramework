@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import com.xresch.cfw.features.core.AutocompleteItem;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.FeatureQuery.CFWQueryComponentType;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandParamDefaults;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
@@ -32,8 +34,11 @@ public class CFWQueryAutocompleteHelper {
 	private	List<CFWQueryToken> currentQuery;
 	//private List<CFWQueryToken> commandPart;
 	
-	private List<CFWQueryToken> commandTokens;
-	private List<CFWQueryToken> commandTokensBeforeCursor;
+	private	ArrayList<CFWQueryToken> tokens;
+	
+	private List<CFWQueryToken> commandTokens;  // command at cursor position only
+	private List<CFWQueryToken> commandTokensBeforeCursor; // command at cursor position only
+
 	
 	/******************************************************************
 	 *
@@ -44,7 +49,7 @@ public class CFWQueryAutocompleteHelper {
 		this.cursorPosition = cursorPosition;
 		this.queryBeforeCursor = Strings.nullToEmpty(fullQueryString.substring(0, cursorPosition));
 		
-		ArrayList<CFWQueryToken> tokens = new CFWQueryTokenizer(fullQueryString, false, true)
+		tokens = new CFWQueryTokenizer(fullQueryString, false, true)
 				.keywords("AND", "OR", "NOT")
 				.getAllTokens();
 		
@@ -55,7 +60,6 @@ public class CFWQueryAutocompleteHelper {
 		//------------------------------------------
 		//Extract Current Command
 		commandTokens = extractCommandPart(currentQuery, cursorPosition);
-		
 		if(commandTokens.size() == 0) {
 			return ;
 		}
@@ -221,7 +225,7 @@ public class CFWQueryAutocompleteHelper {
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	public String getFullSearchValue() {
+	public String getFullQuery() {
 		return fullQueryString;
 	}
 
@@ -231,6 +235,36 @@ public class CFWQueryAutocompleteHelper {
 	public int getCursorPosition() {
 		return cursorPosition;
 	}
+	
+	/******************************************************************
+	 * Returns true if the query contains the command paramdefaults or
+	 * defaulparams.
+	 ******************************************************************/
+	public boolean hasParameters() {
+		
+		for(int i = 0; i < tokens.size(); i++) {
+			
+			CFWQueryToken token = tokens.get(i);
+
+			if(token.type() == CFWQueryTokenType.OPERATOR_OR) {
+				i++;
+				if(i < tokens.size()) {
+					
+					String commandName = tokens.get(i).value().toLowerCase();
+					
+					if(commandName.equals(CFWQueryCommandParamDefaults.COMMAND_NAME.toLowerCase())
+					 ||commandName.equals(CFWQueryCommandParamDefaults.COMMAND_NAME_ALIAS.toLowerCase())
+					 ){
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+		
+	}
+	
 	/********************************************************
 	 * Creates s html string, representing a button opening
 	 * the manual page on the query editor.

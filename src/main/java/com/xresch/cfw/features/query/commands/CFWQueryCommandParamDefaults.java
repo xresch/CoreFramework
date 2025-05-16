@@ -28,6 +28,7 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 public class CFWQueryCommandParamDefaults extends CFWQueryCommand {
 	
 	public static final String COMMAND_NAME = "paramdefaults";
+	public static final String COMMAND_NAME_ALIAS = "defaultparams";
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandParamDefaults.class.getName());
 	
@@ -47,7 +48,7 @@ public class CFWQueryCommandParamDefaults extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME, "defaultparams"};
+		return new String[] {COMMAND_NAME, COMMAND_NAME_ALIAS};
 	}
 	
 	/***********************************************************************************************
@@ -112,6 +113,7 @@ public class CFWQueryCommandParamDefaults extends CFWQueryCommand {
 				assignmentParts.add((QueryPartAssignment)currentPart);
 
 			}else {
+				// this is a must for CFWStoredQuery.updateQueryParams()
 				parser.throwParseException(COMMAND_NAME+": Only parameters(name=value) are allowed.", currentPart);
 			}
 		}

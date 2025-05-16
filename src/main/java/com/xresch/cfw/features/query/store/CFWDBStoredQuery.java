@@ -76,7 +76,8 @@ public class CFWDBStoredQuery {
 				CFW.Messages.addWarningMessage("The name '"+storedQuery.name()+"' is already in use.");
 				return false;
 			}
-
+			
+			storedQuery.updateQueryParams();
 			return true;
 		}
 	};
@@ -285,7 +286,8 @@ public class CFWDBStoredQuery {
 		JsonArray userQueries = new CFWSQL(new CFWStoredQuery())
 				.queryCache()
 				.select()
-				.where(CFWStoredQueryFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
+				.where(CFWStoredQueryFields.FK_ID_OWNER.toString()
+					 , CFW.Context.Request.getUser().id())
 				.orderby(CFWStoredQueryFields.NAME.toString())
 				.getAsJSONArray();
 		
@@ -396,6 +398,8 @@ public class CFWDBStoredQuery {
 			.select(CFWStoredQueryFields.PK_ID
 				  , CFWStoredQueryFields.NAME
 				  , CFWStoredQueryFields.QUERY
+				  , CFWStoredQueryFields.QUERY_PARAMS_DEFINED
+				  , CFWStoredQueryFields.QUERY_PARAMS
 				  , CFWStoredQueryFields.CHECK_PERMISSIONS
 				  , CFWStoredQueryFields.DESCRIPTION
 				  , CFWStoredQueryFields.TAGS
@@ -422,6 +426,8 @@ public class CFWDBStoredQuery {
 			.select(CFWStoredQueryFields.PK_ID
 					, CFWStoredQueryFields.NAME
 					, CFWStoredQueryFields.QUERY
+					, CFWStoredQueryFields.QUERY_PARAMS_DEFINED
+					, CFWStoredQueryFields.QUERY_PARAMS
 					, CFWStoredQueryFields.CHECK_PERMISSIONS
 					, CFWStoredQueryFields.DESCRIPTION
 					, CFWStoredQueryFields.TAGS

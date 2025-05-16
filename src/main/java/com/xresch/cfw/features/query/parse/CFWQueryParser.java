@@ -142,6 +142,12 @@ public class CFWQueryParser {
 		@Override public void setParentCommand(CFWQueryCommand parent) { /*do nothing */}
 	};
 	
+	public CFWQueryParser(
+			String inputQuery
+			, boolean checkSourcePermissions) {
+		
+		this(inputQuery, checkSourcePermissions, null, false);
+	}
 	
 	/***********************************************************************************************
 	 * 

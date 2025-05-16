@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.store;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -20,9 +21,18 @@ import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.query.CFWQuery;
+import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
+import com.xresch.cfw.features.query.CFWQueryCommand;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandParamDefaults;
+import com.xresch.cfw.features.query.parse.CFWQueryParser;
+import com.xresch.cfw.features.query.parse.CFWQueryToken;
+import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
+import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.SysoutInterceptor;
 import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
@@ -59,6 +69,8 @@ public class CFWStoredQuery extends CFWObject {
 		, QUERY
 		, CHECK_PERMISSIONS
 		, IS_SHARED
+		, QUERY_PARAMS_DEFINED // will be set when saved to DB
+		, QUERY_PARAMS	// will be set when saved to DB
 		, TAGS
 		// About these fields:
 		// First they have been only stored in this objects table CFW_QUERY_STORED as JSON.
@@ -102,6 +114,15 @@ public class CFWStoredQuery extends CFWObject {
 	private CFWField<Boolean> checkPermissions = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWStoredQueryFields.CHECK_PERMISSIONS)
 			.setDescription("(Optional)Set if permissions are checked while executing the stored query from another query.")
 			.setValue(false)
+			;
+	
+	private CFWField<Boolean> queryParamsDefined = CFWField.newBoolean(FormFieldType.NONE, CFWStoredQueryFields.QUERY_PARAMS_DEFINED)
+			.setDescription("Indicates if the stored query has parameters defined in the query or not.")
+			.setValue(false)
+			;
+	
+	private CFWField<String> queryParams = CFWField.newString(FormFieldType.NONE, CFWStoredQueryFields.QUERY_PARAMS)
+			.setDescription("The query parameter definition that is used for autocomplete.")
 			;
 	
 	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, CFWStoredQueryFields.DESCRIPTION)
@@ -175,8 +196,10 @@ public class CFWStoredQuery extends CFWObject {
 				, name
 				, description
 				, query
-				, checkPermissions
+				, queryParamsDefined
+				, queryParams
 				, tags
+				, checkPermissions
 				, isShared
 				, shareWithUsers
 				, shareWithGroups
@@ -207,6 +230,7 @@ public class CFWStoredQuery extends CFWObject {
 						CFWStoredQueryFields.PK_ID.toString(), 
 						CFWStoredQueryFields.FK_ID_OWNER.toString(),
 						CFWStoredQueryFields.NAME.toString(),
+						CFWStoredQueryFields.QUERY.toString(),
 						CFWStoredQueryFields.DESCRIPTION.toString(),
 						CFWStoredQueryFields.TAGS.toString(),
 						CFWStoredQueryFields.IS_SHARED.toString(),
@@ -452,7 +476,89 @@ public class CFWStoredQuery extends CFWObject {
 		return success;
 	}
 	
-	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public void updateQueryParams() {
+		
+		String queryString = this.query();
+		
+		CFWQueryAutocompleteHelper subHelper = 
+				new CFWQueryAutocompleteHelper(null, this.query(), 0);
+		
+		String replacement = "";
+		boolean hasParams = subHelper.hasParameters();
+		this.queryParamsDefined(hasParams);
+		
+		if(hasParams) {
+
+			String queryLower = queryString.toLowerCase();
+			int startIndex 					  = queryLower.indexOf(CFWQueryCommandParamDefaults.COMMAND_NAME.toLowerCase());
+			if(startIndex == -1) { startIndex = queryLower.indexOf(CFWQueryCommandParamDefaults.COMMAND_NAME_ALIAS.toLowerCase()); }
+			
+			//---------------------------------
+			// Extract Params
+			if(startIndex != -1) {
+				int endIndex = queryLower.indexOf("|", startIndex);
+				if(endIndex == -1) { endIndex = queryString.length();}
+				String paramsCommand = queryString.substring(startIndex, endIndex);
+				
+				ArrayList<CFWQueryToken> tokens = new CFWQueryTokenizer(paramsCommand, false, true)
+						.keywords("AND", "OR", "NOT")
+						.getAllTokens();
+				
+				//----------------------------------
+				// Skip if only command name and
+				// no actual parameters
+				if(tokens.size() <= 1) {
+					this.queryParamsDefined(false);
+					this.queryParams("");
+					return;
+				}
+				
+				//----------------------------------
+				// Create object()-definition
+				// i = 1 to skip command name
+				StringBuilder builder = new StringBuilder("object(\n\t\t  ");
+				
+				for(int i = 1; i < tokens.size()-1 ; ) {
+					CFWQueryToken paramName = tokens.get(i);
+					i++; // go to "=" token
+					int startPos = tokens.get(i).position() + 1;
+					i++; // skip "=" token
+					while( i < tokens.size()
+						&& tokens.get(i).type() != CFWQueryTokenType.OPERATOR_EQUAL
+						){
+						i++;
+					}
+					
+					int endPos = paramsCommand.length();
+					if(i < tokens.size()) {
+						i--; // go back to paramName
+						endPos = tokens.get(i).position();
+
+					}
+					
+					
+					
+					String paramValue = paramsCommand.substring(startPos, endPos);
+
+					builder.append("\"" + paramName + "\"")
+						   .append(", ")
+						   .append(paramValue.strip())
+						   .append("\n\t\t, ")
+						   ;
+				}
+				
+				builder.delete(builder.length() - 5, builder.length());
+				builder.append("\n\t)");
+				
+				this.queryParams(builder.toString());
+				
+			}
+		}
+		
+	}
 	/******************************************************************
 	 *
 	 ******************************************************************/
@@ -505,6 +611,24 @@ public class CFWStoredQuery extends CFWObject {
 		return this;
 	}
 	
+	public String queryParams() {
+		return queryParams.getValue();
+	}
+	
+	public CFWStoredQuery queryParams(String queryParams) {
+		this.queryParams.setValue(queryParams);
+		return this;
+	}
+	
+	public boolean queryParamsDefined() {
+		return queryParamsDefined.getValue();
+	}
+	
+	public CFWStoredQuery queryParamsDefined(boolean queryParamsDefined) {
+		this.queryParamsDefined.setValue(queryParamsDefined);
+		return this;
+	}
+	
 	public String description() {
 		return description.getValue();
 	}
@@ -523,6 +647,7 @@ public class CFWStoredQuery extends CFWObject {
 		this.tags.setValue(tags);
 		return this;
 	}
+	
 	
 	public boolean checkPermissions() {
 		return checkPermissions.getValue();
