@@ -293,7 +293,7 @@ public class CFWDBStoredQuery {
 		
 		JsonArray sharedQueries = getSharedStoredQueryListAsJSONArray();
 		
-		userQueries.addAll(userQueries);
+		userQueries.addAll(sharedQueries);
 		
 		return userQueries;
 		

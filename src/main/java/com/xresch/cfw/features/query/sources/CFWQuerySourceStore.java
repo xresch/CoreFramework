@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.HashSet;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -21,7 +22,6 @@ import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
-import com.xresch.cfw.features.query.commands.CFWQueryCommandParamDefaults;
 import com.xresch.cfw.features.query.store.CFWStoredQuery;
 import com.xresch.cfw.features.query.store.CFWStoredQuery.CFWStoredQueryFields;
 import com.xresch.cfw.features.usermgmt.User;
@@ -183,7 +183,34 @@ public class CFWQuerySourceStore extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public void parametersPermissionCheck(CFWObject parameters) throws ParseException {
-		//do nothing
+
+		//-----------------------------
+		// Resolve Stored Query ID
+		String queryString = (String)parameters.getField(FIELDNAME_QUERY).getValue();
+
+		if(Strings.isNullOrEmpty(queryString)) { return; }
+		
+		if(queryString.startsWith("{")) {
+			JsonObject settingsObject = CFW.JSON.fromJson(queryString).getAsJsonObject();
+			
+			if(settingsObject.get("id") != null) {
+				queryString = settingsObject.get("id").getAsInt()+"";
+			}
+		}
+		
+		int queryID = Integer.parseInt(queryString);
+		
+		//----------------------------------
+		// Check Permissions
+		// Done for the current query, checks
+		// if the user can access the stored query
+		CFWQueryContext context = this.getParent().getContext();
+		
+		if(context.checkPermissions()
+		&& ! CFW.DB.StoredQuery.hasUserAccessToStoredQuery(queryID)
+		){
+			throw new ParseException("source store: You are not allowed to use the specified stored query.", -1);
+		}
 	}
 	
 	
@@ -194,6 +221,8 @@ public class CFWQuerySourceStore extends CFWQuerySource {
 		// Resolve Stored Query ID
 		String queryString = (String)parameters.getField(FIELDNAME_QUERY).getValue();
 
+		if(Strings.isNullOrEmpty(queryString)) { return; }
+		
 		if(queryString.startsWith("{")) {
 			JsonObject settingsObject = CFW.JSON.fromJson(queryString).getAsJsonObject();
 			
@@ -218,12 +247,13 @@ public class CFWQuerySourceStore extends CFWQuerySource {
 		// Get Stored Query
 		CFWStoredQuery storedQuery = CFW.DB.StoredQuery.selectByID(queryID);
 		String query = storedQuery.query();
-
+		
 		//----------------------------------
 		// Create Subquery Context
 		CFWQueryContext subqueryContext = this.getParent().getContext().createClone(false);
 		
-		// override check permissions 
+		// override check permissions, this will apply to any checks
+		// done for the stored query, not for this query
 		boolean checkPermissions = storedQuery.checkPermissions();
 		if(subqueryContext.checkPermissions()) {
 			subqueryContext.checkPermissions(checkPermissions);
