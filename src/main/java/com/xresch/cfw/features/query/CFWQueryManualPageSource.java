@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -21,8 +22,12 @@ public class CFWQueryManualPageSource extends ManualPage {
 		
 		//--------------------------------
 		// Permissions Section
+		String permission = source.descriptionRequiredPermission();
+		if(Strings.isNullOrEmpty(permission)) {
+			permission = "None";
+		}
 		builder.append("<h2 class=\"toc-hidden\" >Required Permissions</h2>");
-		builder.append("<p>"+CFW.Security.escapeHTMLEntities(source.descriptionRequiredPermission())+"</p>" );
+		builder.append("<p>"+CFW.Security.escapeHTMLEntities(permission)+"</p>" );
 		
 		//--------------------------------
 		// Parameters Section

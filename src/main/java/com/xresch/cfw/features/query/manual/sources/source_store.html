@@ -1,0 +1,55 @@
+
+<p>
+	The store source let's you execute a query that you have stored and retrieve it's output like with any other source.
+	It will ignore the formatting you do in the stored query, it only takes the data.
+	You can provide the parameters for the query as well. The query store makes it easy to make templates
+	of often used queries, standardize them and make it easier to maintain them centralized.
+</p>
+
+<h3>Basic Example</h3>
+<p>Here is an example of a the store source executing a query.
+The easiest way to fill the query parameter is to use Ctrl + Space to get content-assist:</p>
+<pre><code class="language-cfwquery">| source store
+	query = {"id":123,"name":"My Stored Query"} </code></pre>
+
+<h3>Using Parameters</h3>
+<p>When you store your query, store it with a paramdefaults command. First, by doing so, you will 
+document what are the actual parameters usable in that query.
+Second, when you use Ctrl + Space for content assist, you will get the list of parameters as well.
+For example, lets say we have the following stored query:</p>
+<pre><code class="language-cfwquery">| paramdefaults
+	records = 888 			# three times infinity
+	tiramisu = true 		/* filter by dessert */
+	name_filter = "Aurora" 	# Flashy Name
+	"multiline" = `
+		test
+		bla
+		blub
+	`  /*
+		multiline
+		comment
+		*/
+| source random records = p(records)
+| filter
+	LIKES_TIRAMISU == p(tiramisu)
+	FIRSTNAME == p(name_filter)</code></pre>
+
+<p>Now when we use the Ctrl + Space and choose the query, the default parameters are filled in as well.
+The output will look like follows. The comments are included too, what gives you an easy way to help whoever will use the stored query.
+Any parameter is optional, if not defined, the default value is used.</p>
+<pre><code class="language-cfwquery">| source store
+	query = {"id":88,"name":"Query With Parameters"} 
+	params = object(
+		  "records", 888 			# three times infinity
+		, "tiramisu", true 		/* filter by dessert */
+		, "name_filter", "Aurora" 	# Flashy Name
+		, "multiline", `
+		test
+		bla
+		blub
+	`  /*
+		multiline
+		comment
+		*/
+	)</code></pre>
+
