@@ -29,18 +29,20 @@ import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 	
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWQuerySourceStore extends CFWQuerySource {
+public class CFWQuerySourceStored extends CFWQuerySource {
 
+	private static final String SOURCE_NAME = "stored";
+	
 	private static final String FIELDNAME_QUERY = "query";
 	private static final String FIELDNAME_PARAMS = "params";
 
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	public CFWQuerySourceStore(CFWQuery parent) {
+	public CFWQuerySourceStored(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -50,7 +52,7 @@ public class CFWQuerySourceStore extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String uniqueName() {
-		return "store";
+		return SOURCE_NAME;
 	}
 
 	/******************************************************************
@@ -74,7 +76,7 @@ public class CFWQuerySourceStore extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".sources", "source_store.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".sources", "source_"+SOURCE_NAME+".html");
 	}
 	
 	/******************************************************************
@@ -98,64 +100,69 @@ public class CFWQuerySourceStore extends CFWQuerySource {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		autocompleteStoredQuery(result, helper);
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static void autocompleteStoredQuery(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
 		
-		if( helper.getCommandTokenCount() >= 2 ) {
 			
-			JsonArray queryArray = CFW.DB.StoredQuery.getUserAndSharedStoredQueryList();
-			
-			AutocompleteList list = new AutocompleteList();
-			result.addList(list);
-			int i = 0;
-			
-			HashSet<Integer> encounteredIDs = new HashSet<>();
-			for (JsonElement element : queryArray ) {
+		JsonArray queryArray = CFW.DB.StoredQuery.getUserAndSharedStoredQueryList();
+		
+		AutocompleteList list = new AutocompleteList();
+		result.addList(list);
+		int i = 0;
+		
+		HashSet<Integer> encounteredIDs = new HashSet<>();
+		for (JsonElement element : queryArray ) {
 
-				JsonObject storedQuery = element.getAsJsonObject();
+			JsonObject storedQuery = element.getAsJsonObject();
+			
+			JsonObject envJson = new JsonObject();
+			int id = storedQuery.get(CFWStoredQueryFields.PK_ID.toString()).getAsInt();
+			String queryName = storedQuery.get(CFWStoredQueryFields.NAME.toString()).getAsString();
+			String query = storedQuery.get(CFWStoredQueryFields.QUERY.toString()).getAsString();
+
+			//deduplicate
+			if( !encounteredIDs.contains(id)) {
+				encounteredIDs.add(id);
 				
-				JsonObject envJson = new JsonObject();
-				int id = storedQuery.get(CFWStoredQueryFields.PK_ID.toString()).getAsInt();
-				String queryName = storedQuery.get(CFWStoredQueryFields.NAME.toString()).getAsString();
-				String query = storedQuery.get(CFWStoredQueryFields.QUERY.toString()).getAsString();
-
-				//deduplicate
-				if( !encounteredIDs.contains(id)) {
-					encounteredIDs.add(id);
-					
-					envJson.addProperty("id", id);
-					envJson.addProperty("name", queryName );
-					String queryParamString = "query = "+CFW.JSON.toJSON(envJson)+" ";
-					
-					//-------------------------
-					// Create Replacement
-					String replacement = queryParamString;
-					
-					boolean queryParamsDefined = storedQuery.get(CFWStoredQueryFields.QUERY_PARAMS_DEFINED.toString()).getAsBoolean();
-					if(queryParamsDefined) {
-						String queryParams = storedQuery.get(CFWStoredQueryFields.QUERY_PARAMS.toString()).getAsString();
-						replacement += "\n\tparams = "+queryParams;
-					}
-					
-					//-------------------------
-					// Add to Autocomplete
-					list.addItem(
-						helper.createAutocompleteItem(
-							""
-						  , replacement
-						  , queryName
-						  , queryParamString
-						)
-					);
-					
-					i++;
-					
-					if((i % 10) == 0) {
-						list = new AutocompleteList();
-						result.addList(list);
-					}
-					if(i == 50) { break; }
+				envJson.addProperty("id", id);
+				envJson.addProperty("name", queryName );
+				String queryParamString = "query = "+CFW.JSON.toJSON(envJson)+" ";
+				
+				//-------------------------
+				// Create Replacement
+				String replacement = queryParamString;
+				
+				boolean queryParamsDefined = storedQuery.get(CFWStoredQueryFields.QUERY_PARAMS_DEFINED.toString()).getAsBoolean();
+				if(queryParamsDefined) {
+					String queryParams = storedQuery.get(CFWStoredQueryFields.QUERY_PARAMS.toString()).getAsString();
+					replacement += "\n\tparams = "+queryParams;
 				}
 				
+				//-------------------------
+				// Add to Autocomplete
+				list.addItem(
+					helper.createAutocompleteItem(
+						""
+					  , replacement
+					  , queryName
+					  , queryParamString
+					)
+				);
+				
+				i++;
+				
+				if((i % 10) == 0) {
+					list = new AutocompleteList();
+					result.addList(list);
+				}
+				if(i == 50) { break; }
 			}
+			
 		}
 		
 	}
@@ -173,7 +180,7 @@ public class CFWQuerySourceStore extends CFWQuerySource {
 				)
 				.addField(
 					CFWField.newString(FormFieldType.TEXTAREA, FIELDNAME_PARAMS)
-						.setDescription("The parameters for the stored query.")
+						.setDescription("The parameters for the stored query (use Ctrl + Space for autocomplete).")
 				)
 			;
 	}
@@ -209,7 +216,7 @@ public class CFWQuerySourceStore extends CFWQuerySource {
 		if(context.checkPermissions()
 		&& ! CFW.DB.StoredQuery.hasUserAccessToStoredQuery(queryID)
 		){
-			throw new ParseException("source store: You are not allowed to use the specified stored query.", -1);
+			throw new ParseException("source "+SOURCE_NAME+": You are not allowed to use the specified stored query.", -1);
 		}
 	}
 	

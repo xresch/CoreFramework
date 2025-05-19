@@ -68,6 +68,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandSort;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandStats;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandStatsMatrix;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandStored;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTail;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandUnbox;
@@ -83,7 +84,7 @@ import com.xresch.cfw.features.query.sources.CFWQuerySourceCSV;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceEmpty;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
-import com.xresch.cfw.features.query.sources.CFWQuerySourceStore;
+import com.xresch.cfw.features.query.sources.CFWQuerySourceStored;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceText;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceThreaddump;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
@@ -205,6 +206,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandSort(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandStats(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandStatsMatrix(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandStored(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandTail(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandTop(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandUnbox(null));
@@ -323,7 +325,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerSource(new CFWQuerySourceEmpty(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceJson(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceRandom(null));
-		CFW.Registry.Query.registerSource(new CFWQuerySourceStore(null));
+		CFW.Registry.Query.registerSource(new CFWQuerySourceStored(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceText(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceThreaddump(null));
 		

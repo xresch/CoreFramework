@@ -1,15 +1,14 @@
 
 <p>
-	The store source let's you execute a query that you have stored and retrieve it's output like with any other source.
-	It will ignore the formatting you do in the stored query, it only takes the data.
-	You can provide the parameters for the query as well. The query store makes it easy to make templates
-	of often used queries, standardize them and make it easier to maintain them centralized.
+	The stored command let's you execute a query that you have stored and insert it at the place you specify the command.
+	This is useful to reuse frequently used blocks of commands as a template and have them in a central place for easier maintainability.
+	You can provide the parameters for the query as well.
 </p>
 
 <h3>Basic Example</h3>
-<p>Here is an example of a the store source executing a query.
+<p>Here is an example of a the stored command executing a query.
 The easiest way to fill the query parameter is to use Ctrl + Space to get content-assist:</p>
-<pre><code class="language-cfwquery">| source store
+<pre><code class="language-cfwquery">| stored
 	query = {"id":123,"name":"My Stored Query"} </code></pre>
 
 <h3>Using Parameters</h3>
@@ -37,7 +36,7 @@ For example, lets say we have the following stored query:</p>
 <p>Now when we use the Ctrl + Space and choose the query, the default parameters are filled in as well.
 The output will look like follows. The comments are included too, what gives you an easy way to help whoever will use the stored query.
 Any parameter is optional, if not defined, the default value is used.</p>
-<pre><code class="language-cfwquery">| source store
+<pre><code class="language-cfwquery">| stored
 	query = {"id":88,"name":"Query With Parameters"} 
 	params = object(
 		  "records", 888 			# three times infinity
