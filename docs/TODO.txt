@@ -187,12 +187,13 @@ DONE
 - Query Command: set - can now be used with if/else commands
 
 - Query: Added Sources:
-	- store
+	- stored
 	
 - Query: Added Commands:
 	- formatquery
 	- hide
 	- unhide
+	- stored
 	
 - Query: Added Functions:
 	- decodeBase64
