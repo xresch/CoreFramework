@@ -190,6 +190,8 @@ DONE
 	- stored
 	
 - Query: Added Commands:
+	- await
+	- each
 	- formatquery
 	- hide
 	- unhide

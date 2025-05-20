@@ -1,0 +1,10 @@
+
+<p>This command executes the given functions for every command.  If you need to execute functions once per query, use the execute-command.</p>
+
+<p>Here is an example that counts the total number of records using the each-command (this can also be achieved using the aggregate-command):</p>
+
+<pre><code class="language-cfwquery">| source random records = 1000
+| each globals(TOTAL, count()+1)
+| await
+| set TOTAL = g(TOTAL)</code></pre>
+

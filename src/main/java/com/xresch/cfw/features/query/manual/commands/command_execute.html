@@ -1,6 +1,7 @@
 
-<p>Following query uses the command to offset the timeframe for a second query:</p>
+<p>This command executes the given functions once per query. If you need to execute functions for every record, use the each-command.</p>
 
+<p>Following query uses the command to offset the timeframe for a second query:</p>
 <pre><code class="language-cfwquery">| globals multidisplay=2
 | source random records = 10
 | keep TIME

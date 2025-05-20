@@ -12,6 +12,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandAggregate;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandAwait;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandBollBands;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandChangepoint;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandChart;
@@ -22,6 +23,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandDecompose;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDisplay;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDisplayFields;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDistinct;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandEach;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandElse;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandEnd;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandExecute;
@@ -150,6 +152,7 @@ public class FeatureQuery extends CFWAppFeature {
 		// Register Commands
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandSource(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandAggregate(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandAwait(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandBollBands(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandChangepoint(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandChart(null));
@@ -160,6 +163,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDisplay(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDisplayFields(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDistinct(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandEach(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandElse(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandEnd(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandExecute(null));
