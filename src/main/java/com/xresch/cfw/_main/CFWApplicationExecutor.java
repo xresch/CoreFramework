@@ -423,6 +423,7 @@ public class CFWApplicationExecutor {
 		
 		CFWApplicationExecutor.idmanager = new DefaultSessionIdManager(server);
 	    server.setSessionIdManager(CFWApplicationExecutor.idmanager);
+	    server.setStopAtShutdown(true);
 		
 	    setConnectorsOfServer();
 		
@@ -628,11 +629,12 @@ public class CFWApplicationExecutor {
 	 **************************************************************************************************/
 	public void shutdownApplication() {
 		
-		new CFWLog(logger).info("Shutdown request recieved");
-		
+		new CFWLog(logger).info("Shutdown request received");
+
 		//----------------------------------
 		// Stop Server 
 		try {
+			new CFWLog(logger).info("Stop Web Server");
 			stopServer();
 		} catch (Exception e) {
 			new CFWLog(logger)
@@ -641,20 +643,38 @@ public class CFWApplicationExecutor {
 		
 		//----------------------------------
 		// Stop Features 
-	    ArrayList<CFWAppFeature> features = CFW.Registry.Features.getFeatureInstances();
-	    
-	    for(CFWAppFeature feature : features) {
-	    	feature.stopFeature();
-	    }
-	    
+		try {
+			new CFWLog(logger).info("Stop Application Features");
+		    ArrayList<CFWAppFeature> features = CFW.Registry.Features.getFeatureInstances();
+		    
+		    for(CFWAppFeature feature : features) {
+		    	feature.stopFeature();
+		    }
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Error while stopping application features: "+e.getMessage(), e);
+		}
 		//----------------------------------
 		// Stop Application
-	    application.stopApp();
-	    
+		try {
+		    new CFWLog(logger).info("Stop Application");
+		    application.stopApp();
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Error while stopping application: "+e.getMessage(), e);
+		}
+		
 		//----------------------------------
 		// Shutdown Database
-		CFW.DB.stopDBServer();
+		try {
+		    new CFWLog(logger).info("Stop Database Server");
+			CFW.DB.stopDBServer();
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Error while stopping database server: "+e.getMessage(), e);
+		}
 			
+		new CFWLog(logger).info("System.exit(0)");
 		System.exit(0);
        
 	}

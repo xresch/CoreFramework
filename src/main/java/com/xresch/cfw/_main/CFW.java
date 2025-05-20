@@ -388,7 +388,6 @@ public class CFW {
             public void run()
             {
             	CFW.Context.App.getApp().shutdownApplication();
-            	System.exit(0);
             	return;
             }
         });
