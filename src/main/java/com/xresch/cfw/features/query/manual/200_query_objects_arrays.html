@@ -101,7 +101,7 @@ Here an example on how to do that:
 	# [GRAPH_DATA.y] = ['decimals', 2] # this does not work</code></pre>
 
 
-
+<h2>Accessing Object Members with Fieldnames</h2>
 <p>In case you want to read the member name of the object from a record field, use '.[fieldname]' to access the member.
 Following query gets a random member name and accesses its value with the '.[randomName]' operator:</p>
 <pre><code class="language-cfwquery">| source empty records= 100
@@ -121,7 +121,8 @@ Following query gets a random member name and accesses its value with the '.[ran
   randomName = randomFrom(object) # get a random member name from the object (either: percent | float | category | subobject)
   memberValue = object.[randomName] # get the value of the random member
   memberSubValue = object.[randomName].value # access a value of a sub object</code></pre>
-  
+ 
+<h2>Accessing Object Members with Functions</h2>
 <p>When you use functions and the return value is an object or array, you can access members directly.
 Also you can use function return values inside of access expressions:</p>
 <pre><code class="language-cfwquery">| paramdefaults
@@ -145,6 +146,19 @@ Also you can use function return values inside of access expressions:</p>
 	temp = {"favorite": "tiramisu", "object": { "sub": 42  } }
 	FUNC_ACCESS = temp.param(favoriteField)			# returns "tiramisu"
 	FUNC_SUBACCESS = temp.param(objectField).sub	# returns 42	</code></pre>
+	
+
+<h3>Assigning Values to Arrays</h3>
+<p>In case you need to assign values to arrays, you can do that as well.
+Be aware that if the index is out of bounds, the assignment will add the value at the end of the array.
+Here is an example on how to create your own array in a global variable:</p>
+<pre><code class="language-cfwquery">| source random records = 3
+| keep FIRSTNAME, LASTNAME
+| globals ARRAY = []
+| set 
+	g(ARRAY)[count()] = "A"+count() 
+	length = length( g(ARRAY) )
+	test =  g(ARRAY)[count()]</code></pre>
 
 
 

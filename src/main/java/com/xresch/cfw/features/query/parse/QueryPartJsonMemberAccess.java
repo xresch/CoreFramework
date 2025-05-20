@@ -15,6 +15,7 @@ import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.parse.QueryPartValue.QueryPartValueType;
+import com.xresch.cfw.logging.SysoutInterceptor;
 
 /**************************************************************************************************************
  * Part that specifies a member access of a Json Field.
@@ -174,7 +175,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * To whomever dares to touch the code of this method: MAKE SURE TO THOUROUGHLY TEST THE CHANGES!
 	 * 
 	 ******************************************************************************************************/
-	public JsonElement accessMemberRecursively(EnhancedJsonObject rootObject, JsonElement currentElement) {
+	public JsonElement accessMemberRecursively(EnhancedJsonObject object, JsonElement currentElement) {
 		
 		//#############################################################################
 		// Handle Leftside, resolve json member
@@ -185,7 +186,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		//--------------------------
 		// Handle Function Call
 		if(leftside instanceof QueryPartFunction){
-			QueryPartValue functionResult = leftside.determineValue(rootObject);
+			QueryPartValue functionResult = leftside.determineValue(object);
 			QueryPartValueType type = functionResult.type();
 
 			if( type.equals(QueryPartValueType.JSON) ) {
@@ -193,7 +194,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			}else {
 				
 				nextElement = currentElement;
-				rightside = new QueryPartJsonMemberAccess(context, functionResult.determineValue(rootObject), rightside);
+				rightside = new QueryPartJsonMemberAccess(context, functionResult.determineValue(object), rightside);
 				
 			}
 		}
@@ -203,12 +204,12 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		else if(leftside instanceof QueryPartJsonMemberAccess){
 			
 			QueryPartJsonMemberAccess accessExpression = (QueryPartJsonMemberAccess)leftside;
-			nextElement = accessExpression.accessMemberRecursively(rootObject, currentElement);
+			nextElement = accessExpression.accessMemberRecursively(object, currentElement);
 		}
 
 		//--------------------------
 		// Handle Null
-		else if(rootObject == null) {
+		else if(object == null) {
 			
 			if(!(rightside instanceof QueryPartArray)) {
 				return new JsonPrimitive(leftside+"."+rightside.determineValue(null));
@@ -226,7 +227,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 				
 				QueryPartArray arrayExpression = (QueryPartArray)leftside;
 				nextElement = arrayExpression.getElementOfJsonArray(
-					currentElement.getAsJsonArray()
+					object, currentElement.getAsJsonArray()
 				);
 			}
 			
@@ -235,7 +236,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
 				
 				JsonObject jsonObject = currentElement.getAsJsonObject();
-				String memberName = ((QueryPart)leftside).determineValue(rootObject).getAsString();
+				String memberName = ((QueryPart)leftside).determineValue(object).getAsString();
 				
 				if(jsonObject.has(memberName)) {
 	
@@ -249,7 +250,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			// JsonObject: access member with object.[fieldname]...
 			else if(currentElement.isJsonObject() && (leftside instanceof QueryPartArray) ) {
 				ArrayList<QueryPart> partsArray = ((QueryPartArray)leftside).getAsParts();
-				nextElement = getMemberByFieldnameInArray(rootObject, currentElement, partsArray);
+				nextElement = getMemberByFieldnameInArray(object, currentElement, partsArray);
 			}
 			
 			//--------------------------
@@ -271,14 +272,14 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		// Handle Rightside, resolve value or next level
 		//#############################################################################
 		if(rightside instanceof QueryPartJsonMemberAccess) {
-			return ((QueryPartJsonMemberAccess)rightside).accessMemberRecursively(rootObject, nextElement);
+			return ((QueryPartJsonMemberAccess)rightside).accessMemberRecursively(object, nextElement);
 		}else {
 			if(nextElement == null || nextElement.isJsonNull()){
 				return null;
 			}else {
 				if(nextElement.isJsonArray() && (rightside instanceof QueryPartArray) ){
 					JsonElement valueOfMember = ((QueryPartArray)rightside).getElementOfJsonArray(
-							nextElement.getAsJsonArray()
+							object, nextElement.getAsJsonArray()
 						);
 
 					return valueOfMember;
@@ -286,14 +287,14 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 				//--------------------------
 				// JsonObject: access member with object.membername
 				}else if(nextElement.isJsonObject() && !(rightside instanceof QueryPartArray) ) {
-					JsonElement valueOfMember = nextElement.getAsJsonObject().get(rightside.determineValue(rootObject).getAsString());
+					JsonElement valueOfMember = nextElement.getAsJsonObject().get(rightside.determineValue(object).getAsString());
 					return valueOfMember;
 				}
 				//--------------------------
 				// JsonObject: access member with object.[fieldname]
 				else if(nextElement.isJsonObject() && (rightside instanceof QueryPartArray) ) {
 					ArrayList<QueryPart> partsArray = ((QueryPartArray)rightside).getAsParts();
-					return getMemberByFieldnameInArray(rootObject, nextElement, partsArray);
+					return getMemberByFieldnameInArray(object, nextElement, partsArray);
 					
 				}
 				
@@ -349,7 +350,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * 
 	 * 
 	 ******************************************************************************************************/
-	public boolean setValueRecursively(EnhancedJsonObject rootObject, JsonElement currentElement, JsonElement valueToSet) {
+	public boolean setValueRecursively(EnhancedJsonObject object, JsonElement currentElement, JsonElement valueToSet) {
 		
 		//======================================================
 		// Handle Leftside, resolve json member
@@ -357,10 +358,18 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		
 		JsonElement nextElement = null;
 		
-		if(leftside instanceof QueryPartJsonMemberAccess){
+		//--------------------------
+		// Handle Functions
+		if(leftside instanceof QueryPartFunction){
+			QueryPartValue value = leftside.determineValue(object);
+			if(value.isJson()) {
+				nextElement = value.getAsJsonElement();
+			}
+
+		}else if(leftside instanceof QueryPartJsonMemberAccess){
 			//--------------------------
 			// Handle JsonMemberAccess
-			nextElement = ((QueryPartJsonMemberAccess)leftside).accessMemberRecursively(rootObject, currentElement);
+			nextElement = ((QueryPartJsonMemberAccess)leftside).accessMemberRecursively(object, currentElement);
 			
 
 		}
@@ -369,7 +378,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			// Handle JsonArray
 			QueryPartArray arrayExpression = (QueryPartArray)leftside;
 			nextElement = arrayExpression.getElementOfJsonArray(
-				currentElement.getAsJsonArray()
+					object, currentElement.getAsJsonArray()
 			);
 			
 			//---------------------------
@@ -415,7 +424,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		// Handle Rightside, set value or next level
 		//======================================================
 		if(rightside instanceof QueryPartJsonMemberAccess) {
-			return ((QueryPartJsonMemberAccess)rightside).setValueRecursively(rootObject, nextElement, valueToSet);
+			return ((QueryPartJsonMemberAccess)rightside).setValueRecursively(object, nextElement, valueToSet);
 		}else {
 			if(nextElement == null || nextElement.isJsonNull()){
 				return false;
@@ -423,16 +432,22 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 				if(nextElement.isJsonArray() && (rightside instanceof QueryPartArray) ){
 					QueryPartArray arrayPart = (QueryPartArray)rightside;
 	
-					if(arrayPart.isIndex()) {
-						nextElement.getAsJsonArray().set(arrayPart.getIndex(), valueToSet);
+					if(arrayPart.isIndex(object)) {
+						Integer index = arrayPart.getIndex(object);
+						JsonArray array = nextElement.getAsJsonArray();
+						if(array.size() > 0 && index < array.size()) {
+							array.set(index, valueToSet);
+						}else {
+							array.add(valueToSet);
+						}
 						return true;
 					}else {
-						context.addMessage(MessageType.WARNING, "Unrecognized value for index: '"+arrayPart.determineValue(rootObject)+"'");
+						context.addMessage(MessageType.WARNING, "Unrecognized value for index: '"+arrayPart.determineValue(object)+"'");
 						return false;
 					}
 					
 				}else if(nextElement.isJsonObject() && !(rightside instanceof QueryPartArray) ) {
-					String newMemberName = rightside.determineValue(rootObject).getAsString();
+					String newMemberName = rightside.determineValue(object).getAsString();
 					nextElement.getAsJsonObject()
 						.add(newMemberName, valueToSet);
 					return true;
@@ -474,8 +489,10 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		debugObject.addProperty(QueryPart.FIELD_PARTTYPE, "JsonMemberAccess");
 		debugObject.add("leftside", leftside.createDebugObject(object));
 		debugObject.add("rightside", rightside.createDebugObject(object));
-		debugObject.add("leftEvaluated", leftside.determineValue(object).getAsJsonElement());
-		debugObject.add("rightEvaluated", rightside.determineValue(object).getAsJsonElement());
+		
+		// use clones to avoid potential issues caused by changing states
+		debugObject.add("leftEvaluated", leftside.clone().determineValue(object).getAsJsonElement());
+		debugObject.add("rightEvaluated", rightside.clone().determineValue(object).getAsJsonElement());
 		return debugObject;
 	}
 	

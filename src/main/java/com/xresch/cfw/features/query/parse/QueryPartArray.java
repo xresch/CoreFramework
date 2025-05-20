@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -10,6 +11,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * QueryPart that will hold the following expressions:
@@ -22,12 +24,15 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
  **************************************************************************************************************/
 public class QueryPartArray extends QueryPart {
 	
+	private static Logger logger = CFWLog.getLogger(QueryPartArray.class.getName());
+	
 	private ArrayList<QueryPart> partsArray;
 	private JsonArray cachedJsonArray = null;
 	private ArrayList<String> cachedStringArray = null;
 	
 	//holds index if this array is a index access expression(e.g. [1])
 	private Integer arrayIndex = null;
+	private Boolean isIndex = null;
 	
 	// true if the array was embraced with square braces
 	// Used in add()-method to determine whether the array should be unwrapped when added
@@ -203,15 +208,11 @@ public class QueryPartArray extends QueryPart {
 	 * Returns the values as QueryPartValue of type JSON containing a JsonArray
 	 * 
 	 ******************************************************************************************************/
-	public boolean isIndex() {
+	public boolean isIndex(EnhancedJsonObject object) {
+		
+		if(isIndex != null) { return isIndex; }
 		
 		if(partsArray.size() == 1) {
-			
-			QueryPartValue value = partsArray.get(0).determineValue(null);
-			if((value.isNumber() && value.isInteger()) ) {
-				arrayIndex = value.getAsInteger();
-				return true;
-			}
 			
 			// Assume is an index if the part is probably evaluating to a number
 			QueryPart part = partsArray.get(0);
@@ -219,21 +220,27 @@ public class QueryPartArray extends QueryPart {
 			|| part instanceof QueryPartFunction
 			|| part instanceof QueryPartGroup
 			) {
-				return true;
+				new Throwable().printStackTrace();
+				return isIndex = true;
 			}
 			
+			QueryPartValue value = partsArray.get(0).determineValue(object);
+			if((value.isNumber() && value.isInteger()) ) {
+				arrayIndex = value.getAsInteger();
+				return isIndex = true;
+			}
 			
 		}
 		
-		return false;
+		return isIndex = false;
 	}
 	
 	/******************************************************************************************************
 	 * isIndex() has to be called first before this method will return a correct result.
 	 * 
 	 ******************************************************************************************************/
-	public Integer getIndex() {
-		return arrayIndex;
+	public Integer getIndex(EnhancedJsonObject object) {
+		return partsArray.get(0).determineValue(object).getAsInteger();
 	}
 	
 	/******************************************************************************************************
@@ -256,20 +263,22 @@ public class QueryPartArray extends QueryPart {
 	/******************************************************************************************************
 	 * Returns the element in the array represented by the index of this QueryPartArray.
 	 * Returns a JsonNull object if not resolvable.
+	 * @param object TODO
 	 * 
 	 ******************************************************************************************************/
-	public JsonElement getElementOfJsonArray(JsonArray array) {
+	public JsonElement getElementOfJsonArray(EnhancedJsonObject object, JsonArray array) {
 		
-		if(this.isIndex()) {
-			int index = this.getIndex();
-			
+		if(this.isIndex(object)) {
+			int index = this.getIndex(object);
 			if(index < array.size()) {
 				return array.get(index);
 			}else {
-				CFW.Messages.addWarningMessage("Array index out of bounds.");
+				// Do not make exception logs as it might create huge amount of logs
+				CFW.Messages.addWarningMessage("QueryPartArray: Array index out of bounds.");
 			}
 		}else {
-			CFW.Messages.addWarningMessage("Array Expression is not an index.");
+			// Do not make exception logs as it might create huge amount of logs
+			CFW.Messages.addWarningMessage("QueryPartArray: Array Expression is not an index.");
 		}
 		
 		return JsonNull.INSTANCE;

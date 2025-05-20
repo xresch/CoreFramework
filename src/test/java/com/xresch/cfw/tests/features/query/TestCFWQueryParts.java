@@ -183,7 +183,7 @@ public class TestCFWQueryParts extends DBTestMaster {
 		
 		JsonArray array = arrayPart.getAsJsonArray(new EnhancedJsonObject(), true);
 		
-		Assertions.assertFalse(arrayPart.isIndex());
+		Assertions.assertFalse(arrayPart.isIndex(null));
 		Assertions.assertEquals(4, array.size());
 		
 		Assertions.assertTrue(array.get(0).isJsonNull());
@@ -197,8 +197,8 @@ public class TestCFWQueryParts extends DBTestMaster {
 		arrayPart = new QueryPartArray(context);
 		arrayPart.add(QueryPartValue.newNumber(8008));
 		
-		Assertions.assertTrue(arrayPart.isIndex());
-		Assertions.assertEquals(8008, arrayPart.getIndex());
+		Assertions.assertTrue(arrayPart.isIndex(null));
+		Assertions.assertEquals(8008, arrayPart.getIndex(null));
 	}
 	
 	
@@ -607,6 +607,60 @@ public class TestCFWQueryParts extends DBTestMaster {
 		Assertions.assertEquals("@misu3@", record.get("functionDotField").getAsString() );
 		Assertions.assertEquals("@Hera@", record.get("arrayDotFunction").getAsString() );
 		Assertions.assertEquals("@Jones@", record.get("arrayDotFunctionExtreme").getAsString() );
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testQueryPartJsonMemberAccess_accessArrayAndAssignValue() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source random records = 3
+| keep FIRSTNAME, LASTNAME
+| globals ARRAY = []
+| set 
+	g(ARRAY)[count()] = "A"+count() 
+	length = length( g(ARRAY) )
+	value =  g(ARRAY)[count()]
+				""";
+		
+		CFWQueryResultList resultArray = 
+				new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		CFWQueryResult queryResults = resultArray.get(0);
+		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+		
+		//------------------------------
+		// Check First Query Result
+		queryResults = resultArray.get(0);
+		System.out.println(CFW.JSON.toJSONPretty(queryResults.getRecords()));
+		
+		Assertions.assertEquals(1, resultArray.size());
+		Assertions.assertEquals(3, queryResults.getRecordCount());
+		
+		int i = -1;
+		//------------------------------
+		// First Record
+		JsonObject record = queryResults.getRecordAsObject(++i);		
+		Assertions.assertEquals(1, record.get("length").getAsInt() );
+		Assertions.assertEquals("A0", record.get("value").getAsString() );
+		
+		//------------------------------
+		// 2nd Record
+		record = queryResults.getRecordAsObject(++i);		
+		Assertions.assertEquals(2, record.get("length").getAsInt() );
+		Assertions.assertEquals("A1", record.get("value").getAsString() );
+		
+		//------------------------------
+		// 3rd Record
+		record = queryResults.getRecordAsObject(++i);		
+		Assertions.assertEquals(3, record.get("length").getAsInt() );
+		Assertions.assertEquals("A2", record.get("value").getAsString() );
+
 		
 	}
 	

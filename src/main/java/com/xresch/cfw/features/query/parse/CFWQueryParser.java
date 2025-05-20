@@ -910,7 +910,7 @@ public class CFWQueryParser {
 				
 				//--------------------------------------
 				//Create member access if previous is string/function and current is array
-				if(isPreviousArrayable && arrayPart.isIndex()) { 
+				if(isPreviousArrayable && arrayPart.isIndex(null)) { 
 					
 					QueryPart previousPart = popPreviousPart();
 					firstPart = QueryPartJsonMemberAccess.createMemberAccess(currentContext, previousPart, firstPart);
@@ -1082,15 +1082,17 @@ public class CFWQueryParser {
 			// QueryPartAssignment
 			case OPERATOR_EQUAL:
 				
-				this.consumeToken();
-
-				addTrace("Start Part", "Assignment", "");
-				QueryPart rightside = this.parseQueryPart(context);
-				if(firstPart == null) {
-					firstPart = this.popPreviousPart();
+				if(!contextStack.contains(CFWQueryParserContext.JSON_MEMBER_ACCESS)) {
+					this.consumeToken();
+	
+					addTrace("Start Part", "Assignment", "");
+					QueryPart rightside = this.parseQueryPart(context);
+					if(firstPart == null) {
+						firstPart = this.popPreviousPart();
+					}
+					resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
+					addTrace("End Part", "Assignment", "");
 				}
-				resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
-				addTrace("End Part", "Assignment", "");
 			break;
 			
 			//------------------------------
@@ -1180,7 +1182,9 @@ public class CFWQueryParser {
 					memberAccessValue = QueryPartValue.newString(nextToken.value());
 				}else {
 					// Handle Array Part Value
-					memberAccessValue = this.parseQueryPart(CFWQueryParserContext.JSON_MEMBER_ACCESS);
+					contextStack.add(CFWQueryParserContext.JSON_MEMBER_ACCESS);
+						memberAccessValue = this.parseQueryPart(CFWQueryParserContext.JSON_MEMBER_ACCESS);
+					contextStack.remove(CFWQueryParserContext.JSON_MEMBER_ACCESS);
 				}
 				
 				//-------------------------------
