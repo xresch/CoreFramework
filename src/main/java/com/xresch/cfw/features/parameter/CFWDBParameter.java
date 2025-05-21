@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
@@ -14,7 +13,8 @@ import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterFields;
-import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterMode;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterMode;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterScope;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -44,16 +44,10 @@ public class CFWDBParameter {
 				return false;
 			}
 			
-			//--------------------------
-			// Get Scope
-			String scope = FeatureParameter.SCOPE_DASHBOARD;
-			if(parameter.foreignKeyDashboard() == null) {
-				scope = FeatureParameter.SCOPE_QUERY;
-			}
 			
 			//--------------------------
 			// Check Name used
-			if(!checkIsParameterNameUsedOnCreate(scope, parameter)) {
+			if(!checkIsParameterNameUsedOnCreate(parameter)) {
 				return true;
 			}else {
 				new CFWLog(logger).severe("The parameter name is already in use: "+parameter.name());
@@ -76,16 +70,10 @@ public class CFWDBParameter {
 				return false;
 			}
 			
-			//--------------------------
-			// Get Scope
-			String scope = FeatureParameter.SCOPE_DASHBOARD;
-			if(parameter.foreignKeyDashboard() == null) {
-				scope = FeatureParameter.SCOPE_QUERY;
-			}
 			
 			//--------------------------
 			// Check Name used
-			if(!checkIsParameterNameUsedOnUpdate(scope, parameter)) {
+			if(!checkIsParameterNameUsedOnUpdate(parameter)) {
 				return true;
 			}else {
 				new CFWLog(logger).severe("The parameter name is already in use: "+parameter.name());
@@ -188,13 +176,13 @@ public class CFWDBParameter {
 	/***************************************************************
 	 * @param scope TODO
 	 * @return Returns true if the parameter name is already in use
-	 * for this dashboard, ignores the the given parameter in the check.
+	 * for the dashboard/query, ignores the the given parameter in the check.
 	 ****************************************************************/
-	public static boolean checkIsParameterNameUsedOnUpdate(String scope, CFWParameter parameter) {
+	public static boolean checkIsParameterNameUsedOnUpdate(CFWParameter parameter) {
 		
 		String idField = CFWParameterFields.FK_ID_DASHBOARD.toString();
 		Integer ID = parameter.foreignKeyDashboard();
-		if(FeatureParameter.SCOPE_QUERY.equals(scope)) {
+		if(CFWParameterScope.query.equals(parameter.scope())) {
 			idField = CFWParameterFields.FK_ID_QUERY.toString();
 			ID = parameter.foreignKeyQuery();
 		}
@@ -211,13 +199,14 @@ public class CFWDBParameter {
 	/***************************************************************
 	 * @param scope TODO
 	 * @return Returns true if the parameter name is already in use
-	 * for this dashboard.
+	 * for the dashboard/query.
 	 ****************************************************************/
-	public static boolean checkIsParameterNameUsedOnCreate(String scope, CFWParameter parameter) {
+	public static boolean checkIsParameterNameUsedOnCreate(CFWParameter parameter) {
+		
 		
 		String fieldname = CFWParameterFields.FK_ID_DASHBOARD.toString();
 		Integer ID = parameter.foreignKeyDashboard();
-		if(FeatureParameter.SCOPE_QUERY.equals(scope)) {
+		if(parameter.scope() == CFWParameterScope.query) {
 			fieldname = CFWParameterFields.FK_ID_QUERY.toString();
 			ID = parameter.foreignKeyQuery();
 		}
@@ -251,25 +240,42 @@ public class CFWDBParameter {
 	 * 
 	 * @return Returns an array with the parameters or an empty list.
 	 ****************************************************************/
-	public static ArrayList<CFWObject> getAvailableParamsForDashboard(String dashboardID, String widgetType, String widgetSetting, boolean allowGenericParams) {
+	public static ArrayList<CFWObject> getAvailableParamsForDashboard(String dashboardID, String widgetType, String label, boolean allowGenericParams) {
 		
 		CFWSQL sql = new CFWParameter()
 				.queryCache(CFWDBParameter.class, "autocompleteParametersForDashboard"+allowGenericParams)
 				.select()
 				.where(CFWParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.and(CFWParameterFields.MODE, DashboardParameterMode.MODE_SUBSTITUTE.toString())
+				.and(CFWParameterFields.MODE, CFWParameterMode.MODE_SUBSTITUTE.toString())
 				.and().custom("(")
 						.is(CFWParameterFields.WIDGET_TYPE, widgetType);
 						if(allowGenericParams) sql.or().isNull(CFWParameterFields.WIDGET_TYPE);
 						
 			sql.custom(")")
 				.and().custom("(")
-					.is(CFWParameterFields.LABEL, widgetSetting);
+					.is(CFWParameterFields.LABEL, label);
 					if(allowGenericParams) sql.or().isNull(CFWParameterFields.WIDGET_TYPE);
 					
 		return sql.custom(")")
 				.getAsObjectList();
 		
+	}
+	
+	/***************************************************************
+	 * Return a list of available parameters for the given field.
+	 * 
+	 * @return Returns an array with the parameters or an empty list.
+	 ****************************************************************/
+	public static ArrayList<CFWObject> getAvailableParamsForQuery(String queryID, String label) {
+		
+		return new CFWParameter()
+				.queryCache(CFWDBParameter.class, "autocompleteParametersForQuery")
+				.select()
+				.where(CFWParameterFields.FK_ID_QUERY, queryID)
+				.and().is(CFWParameterFields.LABEL, label)
+				.getAsObjectList()
+				;
+				
 	}
 	
 

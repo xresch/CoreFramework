@@ -19,7 +19,6 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -41,9 +40,8 @@ import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.parameter.CFWParameter;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterScope;
 import com.xresch.cfw.features.parameter.FeatureParameter;
-import com.xresch.cfw.features.query.CFWQuery;
-import com.xresch.cfw.features.query.CFWQueryManualPageSource;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
@@ -604,7 +602,7 @@ public class ServletDashboardViewMethods
 				// Create Form
 				
 				CFWObject settings = definition.getSettings();
-				CFWParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
+				CFWParameter.addParameterHandlingToField(CFWParameterScope.dashboard, settings, dashboardID, widgetType);
 				
 				settings.mapJsonFields(JSON_SETTINGS, false, true);
 				

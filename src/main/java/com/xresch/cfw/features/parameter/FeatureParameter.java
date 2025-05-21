@@ -25,11 +25,6 @@ public class FeatureParameter extends CFWAppFeature {
 	public static ManualPage ROOT_MANUAL_PAGE;
 
 	public static final String CFW_PARAMS = "params";
-
-	public static final String SCOPE_DASHBOARD = "dashboard";
-
-	public static final String SCOPE_QUERY = "query";
-	
 	
 	@Override
 	public void register() {

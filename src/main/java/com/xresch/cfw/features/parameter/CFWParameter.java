@@ -3,6 +3,7 @@ package com.xresch.cfw.features.parameter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -51,16 +52,32 @@ public class CFWParameter extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_DASHBOARD_PARAMETER";
 	
+	public enum CFWParameterScope{
+		  dashboard
+		, query
+		;
+		
+		private static HashSet<String> names = new HashSet<>();
+		static {
+			for(CFWParameterScope type : CFWParameterScope.values()) { 
+				names.add(type.name()); 
+			}
+		}
 
-	public enum DashboardParameterMode{
+		public static boolean has(String value) { return names.contains(value); }
+		
+	}
+	public enum CFWParameterMode{
 		MODE_SUBSTITUTE,
 		MODE_GLOBAL_OVERRIDE,
 		
 	}
+	
+
 	private static LinkedHashMap<String, String> modeOptions = new LinkedHashMap<String, String>();
 	static {
-		modeOptions.put(DashboardParameterMode.MODE_SUBSTITUTE.toString(), "Substitute");
-		modeOptions.put(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString(), "Global");
+		modeOptions.put(CFWParameterMode.MODE_SUBSTITUTE.toString(), "Substitute");
+		modeOptions.put(CFWParameterMode.MODE_GLOBAL_OVERRIDE.toString(), "Global");
 	}
 		
 	public enum CFWParameterFields{
@@ -255,6 +272,7 @@ public class CFWParameter extends CFWObject {
 		return this;
 	}
 	
+	
 	public Integer foreignKeyDashboard() {
 		return foreignKeyDashboard.getValue();
 	}
@@ -282,6 +300,13 @@ public class CFWParameter extends CFWObject {
 		return this;
 	}
 	
+	public CFWParameterScope scope() {
+		if(foreignKeyDashboard() != null) {
+			return CFWParameterScope.dashboard;
+		}else {
+			return CFWParameterScope.query;
+		}
+	}
 	public FormFieldType paramType() {
 		return FormFieldType.valueOf(paramType.getValue());
 	}
@@ -341,7 +366,7 @@ public class CFWParameter extends CFWObject {
 		return mode.getValue();
 	}
 	
-	public CFWParameter mode(DashboardParameterMode value) {
+	public CFWParameter mode(CFWParameterMode value) {
 		this.mode.setValue(value.toString());
 		return this;
 	}
@@ -444,7 +469,7 @@ public class CFWParameter extends CFWObject {
 				CFWParameter paramObject = new CFWParameter();
 				paramObject.mapJsonFields(current, true, true);
 				
-				if(paramObject.mode().equals(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString())
+				if(paramObject.mode().equals(CFWParameterMode.MODE_GLOBAL_OVERRIDE.toString())
 				&& ( paramObject.widgetType() == null || paramObject.widgetType().equals(widgetType)) ) {
 					globalOverrideParams.put(paramObject.paramSettingsLabel(), current.getAsJsonObject());
 					continue;
@@ -593,7 +618,7 @@ public class CFWParameter extends CFWObject {
 	 * 
 	 *****************************************************************/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void addParameterHandlingToField(CFWObject settings, String dashboardID, String widgetType) {
+	public static void addParameterHandlingToField(CFWParameterScope scope, CFWObject settings, String itemID, String widgetType) {
 		
 		if(!widgetType.equals(WidgetParameter.WIDGET_TYPE)) {
 			for(CFWField field : settings.getFields().values()) {
@@ -603,14 +628,22 @@ public class CFWParameter extends CFWObject {
 				CFWAutocompleteHandler handler = field.getAutocompleteHandler();
 				if(handler != null) {
 					// Wraps handler and adds itself to the field as the new handler
-					new ParameterAutocompleteWrapper(field, dashboardID, widgetType);
+					new ParameterAutocompleteWrapper(field, scope, itemID, widgetType);
 				}
 				
 				//------------------------------------
 				// SELECT Fields
 				String fieldname = field.getName();
 				if(field.fieldType() == FormFieldType.SELECT) {
-					ArrayList<CFWObject> availableParams = CFW.DB.Parameters.getAvailableParamsForDashboard(dashboardID, widgetType, fieldname, true);
+					
+					ArrayList<CFWObject>availableParams = null;
+					switch(scope) {
+						case dashboard:	availableParams = CFW.DB.Parameters.getAvailableParamsForDashboard(itemID, widgetType, fieldname, true); break;
+						case query:		availableParams = CFW.DB.Parameters.getAvailableParamsForQuery(itemID, fieldname);		break;
+						default:		CFW.Messages.addErrorMessage("Unsupported scope: "+scope.toString());
+										return;
+					}
+						
 					HashMap options = field.getOptions();
 					for(CFWObject object : availableParams) {
 						String param = "$"+((CFWParameter)object).name()+"$";

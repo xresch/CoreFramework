@@ -13,16 +13,19 @@ import com.xresch.cfw.features.core.AutocompleteItem;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterScope;
 
 class ParameterAutocompleteWrapper extends CFWAutocompleteHandler {
 
 	private CFWField wrappedField; 
-	private String dashboardID;
+	private CFWParameterScope scope;
+	private String itemID; // either dashboard or query ID
 	private String widgetType;
 	private CFWAutocompleteHandler wrappedHandler;
 	
-	public ParameterAutocompleteWrapper(CFWField settingsFieldToWrap, String dashboardID, String widgetType) {
-		this.dashboardID = dashboardID;
+	public ParameterAutocompleteWrapper(CFWField settingsFieldToWrap, CFWParameterScope scope, String itemID, String widgetType) {
+		this.itemID = itemID;
+		this.scope = scope;
 		this.widgetType = widgetType;
 		
 		this.wrappedField = settingsFieldToWrap;		
@@ -34,7 +37,7 @@ class ParameterAutocompleteWrapper extends CFWAutocompleteHandler {
 	}
 	@Override
 	public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-		
+				
 		//---------------------------
 		// Get Regular Result
 		AutocompleteResult wrappedResult = null;
@@ -44,8 +47,15 @@ class ParameterAutocompleteWrapper extends CFWAutocompleteHandler {
 		
 		//---------------------------
 		// Get Param Result
-		String widgetSetting = wrappedField.getName();
-		ArrayList<CFWObject> availableParams = CFW.DB.Parameters.getAvailableParamsForDashboard(dashboardID, widgetType, widgetSetting, true);
+		String fieldName = wrappedField.getName();
+
+		ArrayList<CFWObject> availableParams = null;
+		switch(scope) {
+			case dashboard:	availableParams = CFW.DB.Parameters.getAvailableParamsForDashboard(itemID, widgetType, fieldName, true); break;
+			case query:		availableParams = CFW.DB.Parameters.getAvailableParamsForQuery(itemID, fieldName);		break;
+			default:		CFW.Messages.addErrorMessage("Unsupported scope: "+scope.toString());
+							return wrappedResult;
+		}
 		
 		//---------------------------
 		// Prepare params Autocomplete
