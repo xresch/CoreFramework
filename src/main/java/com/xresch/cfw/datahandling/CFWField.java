@@ -731,7 +731,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 				) {
 					html.append("<span class=\"badge badge-info cfw-decorator\" data-toggle=\"tooltip\" data-placement=\"top\" data-html=\"true\" data-delay=\"500\""
 									+ " title=\""
-									+ description
+									+ CFW.Security.sanitizeHTML(description)
 										.replaceAll("\"", "&nbsp;")
 										.replaceAll("\n", "<br>")
 									+ "\"><i class=\"fa fa-sm fa-info\"></i></span>");
