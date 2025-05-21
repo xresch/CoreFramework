@@ -4,6 +4,7 @@ import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -49,6 +50,8 @@ public class CFWDBStoredQuery {
 			CFWStoredQueryFields.PK_ID.toString()
 		  , CFWStoredQueryFields.NAME.toString()
 		};
+	
+	private static final HashMap<Integer, WidgetStoredQuery> widgetCache = new HashMap<>();
 	
 	public static TreeSet<String> cachedTags = null;
 	
@@ -101,7 +104,12 @@ public class CFWDBStoredQuery {
 	//####################################################################################################
 	public static Integer createGetPrimaryKey(CFWStoredQuery item) { 
 		updateTags(item); 
-		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item);
+		Integer primaryKey =  CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item);
+		item.id(primaryKey);
+		updateWidgetCache(item);
+		
+		return primaryKey;
+		
 	}
 	
 	/**********************************************************************************
@@ -145,9 +153,13 @@ public class CFWDBStoredQuery {
 					return null;
 				}
 
-			CFW.DB.transactionCommit();
-			
-			CFW.Messages.addSuccessMessage("Stored query duplicated successfully.");
+				CFW.DB.transactionCommit();
+				
+				updateWidgetCache(duplicate);
+				
+				CFW.Messages.addSuccessMessage("Stored query duplicated successfully.");
+		}else {
+			CFW.DB.transactionRollback();
 		}
 			
 		
@@ -162,6 +174,7 @@ public class CFWDBStoredQuery {
 	//####################################################################################################
 	public static boolean update(CFWStoredQuery item) { 
 		updateTags(item); 
+		updateWidgetCache(item);
 		item.lastUpdated(new Timestamp(System.currentTimeMillis()));
 		return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item); 
 	}
@@ -207,7 +220,7 @@ public class CFWDBStoredQuery {
 	// DELETE
 	//####################################################################################################
 	public static boolean deleteByID(String id) {
-		
+		removeWidgetCache(Integer.parseInt(id));
 		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, CFWStoredQueryFields.PK_ID.toString(), id); 
 
 	}
@@ -780,6 +793,7 @@ public class CFWDBStoredQuery {
 		}
 	}
 	
+	
 	/********************************************************************************************
 	 * Fetch cachedTags from the database and stores them into the cache.
 	 * 
@@ -847,6 +861,64 @@ public class CFWDBStoredQuery {
 		}
 		
 		return CFW.JSON.toJSON(tags.toArray(new String[] {}));
+	}
+	
+	
+	/********************************************************************************************
+	 * Adds the tags to the cache for the specified storedQuery.
+	 * @param StoredQuery with the tags.
+	 * @return nothing
+	 * 
+	 ********************************************************************************************/
+	public static void updateWidgetCache(CFWStoredQuery storedQuery) {
+		
+		removeWidgetCache(storedQuery.id());
+		
+		int id = storedQuery.id();
+		if( !storedQuery.isArchived()
+		&&  storedQuery.makeWidget() 
+		){
+			
+			WidgetStoredQuery widget = new WidgetStoredQuery(storedQuery);
+			widgetCache.put(id, widget);
+			CFW.Registry.Widgets.add(widget);
+			CFW.Registry.Widgets.resetCachedFiles();
+		}
+	}
+	
+	/********************************************************************************************
+	 * Adds the tags to the cache for the specified storedQuery.
+	 * @param StoredQuery with the tags.
+	 * @return nothing
+	 * 
+	 ********************************************************************************************/
+	public static void removeWidgetCache(Integer storedQueryID) {
+		
+		WidgetStoredQuery widget = widgetCache.remove(storedQueryID);
+		CFW.Registry.Widgets.remove(widget);
+		CFW.Registry.Widgets.resetCachedFiles();
+	}
+	
+	/********************************************************************************************
+	 * Fetch cachedTags from the database and stores them into the cache.
+	 * 
+	 ********************************************************************************************/
+	public static void fetchAndCacheWidgets() {
+		
+		cachedTags = new TreeSet<String>();
+		
+		ArrayList<CFWStoredQuery> queryArray = new CFWSQL(new CFWStoredQuery())
+			.queryCache()
+			.select()
+			.where(CFWStoredQueryFields.IS_ARCHIVED, false)
+			.and(CFWStoredQueryFields.MAKE_WIDGET, true)
+			.getAsObjectListConvert(CFWStoredQuery.class);
+		
+		for(CFWStoredQuery query : queryArray) {
+			updateWidgetCache(query);
+		}
+		
+				
 	}
 
 	/*****************************************************************

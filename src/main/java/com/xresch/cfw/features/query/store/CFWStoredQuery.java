@@ -67,6 +67,8 @@ public class CFWStoredQuery extends CFWObject {
 		, NAME
 		, DESCRIPTION
 		, QUERY
+		, MAKE_WIDGET
+		, WIDGET_CATEGORY
 		, CHECK_PERMISSIONS
 		, IS_SHARED
 		, QUERY_PARAMS_DEFINED // will be set when saved to DB
@@ -116,11 +118,22 @@ public class CFWStoredQuery extends CFWObject {
 			.setValue(false)
 			;
 	
+	private CFWField<Boolean> makeWidget = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWStoredQueryFields.MAKE_WIDGET)
+			.setDescription("Toggle if this stored query should be made into a widget. Make sure to define parameters as well.")
+			.setValue(false)
+			;
+	
+	private CFWField<String> widgetCategory = CFWField.newString(FormFieldType.TEXT, CFWStoredQueryFields.WIDGET_CATEGORY)
+			.setDescription("(Optional)Define a category name for the widget.")
+			;
+	
+	// will be filled by code
 	private CFWField<Boolean> queryParamsDefined = CFWField.newBoolean(FormFieldType.NONE, CFWStoredQueryFields.QUERY_PARAMS_DEFINED)
 			.setDescription("Indicates if the stored query has parameters defined in the query or not.")
 			.setValue(false)
 			;
 	
+	// will be filled by code
 	private CFWField<String> queryParams = CFWField.newString(FormFieldType.NONE, CFWStoredQueryFields.QUERY_PARAMS)
 			.setDescription("The query parameter definition that is used for autocomplete.")
 			;
@@ -196,6 +209,8 @@ public class CFWStoredQuery extends CFWObject {
 				, name
 				, description
 				, query
+				, makeWidget
+				, widgetCategory
 				, queryParamsDefined
 				, queryParams
 				, tags
@@ -230,9 +245,11 @@ public class CFWStoredQuery extends CFWObject {
 						CFWStoredQueryFields.PK_ID.toString(), 
 						CFWStoredQueryFields.FK_ID_OWNER.toString(),
 						CFWStoredQueryFields.NAME.toString(),
-						CFWStoredQueryFields.QUERY.toString(),
 						CFWStoredQueryFields.DESCRIPTION.toString(),
+						CFWStoredQueryFields.QUERY.toString(),
 						CFWStoredQueryFields.TAGS.toString(),
+						CFWStoredQueryFields.MAKE_WIDGET.toString(),
+						CFWStoredQueryFields.WIDGET_CATEGORY.toString(),
 						CFWStoredQueryFields.IS_SHARED.toString(),
 						CFWStoredQueryFields.JSON_SHARE_WITH_USERS.toString(),
 						CFWStoredQueryFields.JSON_SHARE_WITH_GROUPS.toString(),
@@ -611,6 +628,24 @@ public class CFWStoredQuery extends CFWObject {
 		return this;
 	}
 	
+	public boolean makeWidget() {
+		return makeWidget.getValue();
+	}
+	
+	public CFWStoredQuery makeWidget(boolean value) {
+		this.makeWidget.setValue(value);
+		return this;
+	}
+	
+	public String widgetCategory() {
+		return widgetCategory.getValue();
+	}
+	
+	public CFWStoredQuery widgetCategory(String value) {
+		this.widgetCategory.setValue(value);
+		return this;
+	}
+	
 	public String queryParams() {
 		return queryParams.getValue();
 	}
@@ -624,8 +659,8 @@ public class CFWStoredQuery extends CFWObject {
 		return queryParamsDefined.getValue();
 	}
 	
-	public CFWStoredQuery queryParamsDefined(boolean queryParamsDefined) {
-		this.queryParamsDefined.setValue(queryParamsDefined);
+	public CFWStoredQuery queryParamsDefined(boolean value) {
+		this.queryParamsDefined.setValue(value);
 		return this;
 	}
 	

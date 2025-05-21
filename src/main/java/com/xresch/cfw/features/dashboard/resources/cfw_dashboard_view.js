@@ -3,7 +3,6 @@
 var CFW_DASHBOARDVIEW_URL = CFW.http.getURLPath();
 
 var CFW_DASHBOARD_URLPARAMS = CFW.http.getURLParamsDecoded();
-var CFW_DASHBOARD_PARAMS = null;
 	
 var CFW_DASHBOARD_EDIT_MODE = false;
 var CFW_DASHBOARD_EDIT_MODE_ADVANCED = true;
@@ -898,7 +897,7 @@ function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSetting
 			  action: 'update'
 			, item: itemToUpdate
 			, dashboardid: CFW_DASHBOARD_URLPARAMS.id
-			, params: JSON.stringify(cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS))
+			, params: JSON.stringify(cfw_parameter_getFinalPageParams())
 			, widget: JSON.stringify(widgetObject)
 		}; 
 		
@@ -1360,7 +1359,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 		
 		// ---------------------------------------
 		// Apply Parameters Placeholder
-		var finalParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
+		var finalParams = cfw_parameter_getFinalPageParams();
 		let parameterizedSettings = cfw_parameter_applyToFields(originalWidgetObject.JSON_SETTINGS, finalParams, originalWidgetObject.TYPE);
 		let widgetCloneParameterized = _.cloneDeep(originalWidgetObject);
 		widgetCloneParameterized.JSON_SETTINGS = parameterizedSettings;
@@ -1775,7 +1774,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			if($('#editWidgetComposite').is(":visible")){
 				let widgetType = $('#edited-widget-type').text();
 
-				let dashboardParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);		
+				let dashboardParams = cfw_parameter_getFinalPageParams();		
 				let parameterizedRequestAttributes = cfw_parameter_applyToFields(requestAttributes, dashboardParams, widgetType);
 								
 				Object.assign(requestAttributes, parameterizedRequestAttributes);
@@ -1791,7 +1790,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			if(form.attr('id').startsWith('cfwWidgetParameterForm')){
 				
 				// Applied Param values from dashboard
-				dashboardParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
+				dashboardParams = cfw_parameter_getFinalPageParams();
 				for(index in dashboardParams){
 					let param = dashboardParams[index];
 					
@@ -2001,7 +2000,7 @@ function cfw_dashboard_drawEveryWidget(data, manualLoad){
 	CFW_DASHBOARD_FULLREDRAW_COUNTER++;
 	
 	var widgetArray = data.payload.widgets;
-	CFW_DASHBOARD_PARAMS =  data.payload.params;
+	cfw_parameter_setPageParams(data.payload.params);
 	
 	var grid = cfw_dashboard_getGrid();
 	grid.removeAll();

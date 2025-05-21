@@ -78,6 +78,8 @@ public class CFWRegistryWidgets {
 	 * @param definition
 	 ***********************************************************************/
 	public static void remove(WidgetDefinition definition)  {
+		
+		if(definition == null) { return; }
 		definitionArray.remove(definition.getWidgetType());
 		resetCachedFiles();
 	}
@@ -117,5 +119,6 @@ public class CFWRegistryWidgets {
 		response.addCSSAssembly(cssAssembly);
 		response.addJSBottomAssembly(javascriptAssembly);
 	}
+	
 
 }

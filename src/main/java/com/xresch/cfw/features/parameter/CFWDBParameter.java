@@ -147,6 +147,15 @@ public class CFWDBParameter {
 	 * 
 	 * @return Returns an array with the parameters or an empty list.
 	 ****************************************************************/
+	public static ArrayList<CFWParameter> getParametersForQuery(int queryID) {
+		return getParametersForQuery(""+queryID);
+	}
+	
+	/***************************************************************
+	 * Return a list of all query parameters
+	 * 
+	 * @return Returns an array with the parameters or an empty list.
+	 ****************************************************************/
 	public static ArrayList<CFWParameter> getParametersForQuery(String queryID) {
 		
 		return new CFWSQL(new CFWParameter())

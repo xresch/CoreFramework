@@ -77,7 +77,7 @@ function cfw_query_editor_initializeEditor(parent, query, useURLParams){
 					let beforeCursor = originalQuery.substring(0, cursorPos);
 					
 					//TODO Find a more stable way to access params for currentPage
-					let params = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);	
+					let params = cfw_parameter_getFinalPageParams();						
 					
 					let beforeCursorNew = cfw_parameter_substituteInString(beforeCursor, params);
 					let newCursorPos = cursorPos + (beforeCursorNew.length - beforeCursor.length);
@@ -1064,9 +1064,8 @@ class CFWQueryEditor{
 		// Prepare Parameters
 		var pageParams;
 		var finalQuery = originalQuery;
-		if (typeof cfw_parameter_getFinalParams !== "undefined") { 
- 			pageParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
-			//finalQuery = cfw_parameter_substituteInString(originalQuery, pageParams);
+		if (typeof cfw_parameter_getFinalPageParams !== "undefined"){ 
+ 			pageParams = cfw_parameter_getFinalPageParams();
 		} 
 		
 		var queryParams = {};

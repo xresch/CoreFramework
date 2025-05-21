@@ -5,12 +5,28 @@ CFW_PARAMETER_SCOPE_DASHBOARD = "dashboard";
 CFW_PARAMETER_SCOPE_QUERY = "query";
 CFW_PARAMETER_ITEM_ID = -999;
 
+CFW_PARAMETER_PAGE_PARAMS = null;
+
 /*******************************************************************************
  * 
  ******************************************************************************/
 function cfw_parameter_setScope(scope, itemID){
 	CFW_PARAMETER_SCOPE = scope;
 	CFW_PARAMETER_ITEM_ID = itemID;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_parameter_setPageParams(pageParams){
+	CFW_PARAMETER_PAGE_PARAMS = pageParams;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_parameter_getFinalPageParams(){
+	return cfw_parameter_getFinalParams(CFW_PARAMETER_PAGE_PARAMS);
 }
 
 /*******************************************************************************

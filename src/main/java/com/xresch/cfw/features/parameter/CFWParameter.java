@@ -661,11 +661,28 @@ public class CFWParameter extends CFWObject {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void prepareParamObjectsForForm(HttpServletRequest request, ArrayList<CFWParameter> parameterList, CFWTimeframe timeframe, boolean doForWidget) {
 		
-		String dashboardID = request.getParameter("id");
+		//---------------------------------
+		// Get Dashboard ID if not null
+		String dashboardID = null;
+		
+		if(request != null) {
+			request.getParameter("id");
+		}
+		
+		//---------------------------------
+		// Sanitize Timeframe
+		if(timeframe == null) {
+			// default to last 30 minutes
+			timeframe = new CFWTimeframe();
+		}
+		
 		
 		//---------------------------------
 		// Get Parameters Selected by User
-		String userSelectedParamsJson = request.getParameter(FeatureParameter.CFW_PARAMS);
+		String userSelectedParamsJson = null;
+		if(request != null) {
+			request.getParameter(FeatureParameter.CFW_PARAMS);
+		}
 		
 		JsonObject userSelectedParamsObject = null;
 		if( !Strings.isNullOrEmpty(userSelectedParamsJson) ) {

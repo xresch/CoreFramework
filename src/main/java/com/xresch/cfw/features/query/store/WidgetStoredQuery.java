@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.query;
+package com.xresch.cfw.features.query.store;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -15,18 +15,17 @@ import javax.servlet.http.HttpServletRequest;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
@@ -38,6 +37,12 @@ import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject.AlertType;
+import com.xresch.cfw.features.parameter.CFWParameter;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterFields;
+import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.CFWQueryExecutor;
+import com.xresch.cfw.features.query.CFWQueryResultList;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -51,11 +56,11 @@ import com.xresch.cfw.validation.NotNullOrEmptyValidator;
  * @author Reto Scheiwiller, (c) Copyright 2023
  * @license MIT-License
  **************************************************************************************************************/
-public class WidgetQueryResults extends WidgetDefinition {
+public class WidgetStoredQuery extends WidgetDefinition {
 
 	private static final String MESSAGE_VALUE_NOT_NUMBER = "Value was not a number: ";
 	private static final String FIELDNAME_QUERY = "query";
-	private static Logger logger = CFWLog.getLogger(WidgetQueryResults.class.getName());
+	private static Logger logger = CFWLog.getLogger(WidgetStoredQuery.class.getName());
 	
 	private static final String FIELDNAME_DETAILFIELDS = "detailfields";
 	private static final String FIELDNAME_LABELFIELDS = "labelfields";
@@ -63,11 +68,19 @@ public class WidgetQueryResults extends WidgetDefinition {
 	private static final String FIELDNAME_URLFIELD = "urlfield";
 	private static final String FIELDNAME_ALERT_THRESHOLD = "ALERT_THRESHOLD";
 	
+	private CFWStoredQuery storedQuery;
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
+	public WidgetStoredQuery(CFWStoredQuery storedQuery) {
+		this.storedQuery = storedQuery;
+	}
+	
 	/******************************************************************************
 	 * 
 	 ******************************************************************************/
 	@Override
-	public String getWidgetType() {return "cfw_widget_queryresults";}
+	public String getWidgetType() {return "cfw_storedquery-"+storedQuery.id(); }
 	
 	/******************************************************************************
 	 * 
@@ -89,14 +102,14 @@ public class WidgetQueryResults extends WidgetDefinition {
 	 * 
 	 ************************************************************/
 	@Override
-	public String widgetName() { return "Display Query Results"; }
+	public String widgetName() { return storedQuery.name(); }
 	
 	/************************************************************
 	 * 
 	 ************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL, "widget_"+getWidgetType()+".html");
+		return storedQuery.description();
 	}
 	
 	/******************************************************************************
@@ -105,20 +118,33 @@ public class WidgetQueryResults extends WidgetDefinition {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public CFWObject getSettings() {
-		return new CFWObject()
-								
-				// Disable Security to not mess up Queries
-				.addField(
-						(CFWField)CFWField.newString(FormFieldType.QUERY_EDITOR, FIELDNAME_QUERY)
-						.setLabel("{!cfw_widget_queryresults_query!}")
-						.setDescription("{!cfw_widget_queryresults_query_desc!}")
-						.disableSanitization()
-						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-						// validation is done using canSave() method in this class
-						//.addValidator()
-				)
-				.addField(WidgetSettingsFactory.createSampleDataField())
-		;
+		
+		ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForQuery(storedQuery.id());
+
+		CFWObject settingsObject = new CFWObject() ;
+				
+		//--------------------------------------
+		// Add parameter fields to form
+		CFWParameter.prepareParamObjectsForForm(null, parameterList, null, true);
+		
+		for(CFWParameter param : parameterList) {
+			
+			
+			CFWField valueField = param.getField(CFWParameterFields.VALUE.toString());
+			valueField
+				//.addAttribute("data-settingslabel", param.paramSettingsLabel())
+				.setName(param.name())
+				.setLabel(CFW.Utils.Text.fieldNameToLabel(param.name()))
+				.setDescription(param.description())
+				//.isDecoratorDisplayed(true)
+				//.addCssClass(" form-control-sm cfw-widget-parameter-marker")
+				;
+
+			settingsObject.addField(valueField);
+		}
+		
+		return settingsObject;
+		
 	}
 	
 	/******************************************************************************
@@ -127,10 +153,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 	@Override
 	public boolean canSave(HttpServletRequest request, JSONResponse response, CFWObject settings, CFWObject settingsWithParams) {
 
-		
 		//----------------------------
 		// Get Query String
-		String queryString = (String)settingsWithParams.getField(FIELDNAME_QUERY).getValue();
+		String queryString = storedQuery.query();
 		if(Strings.isNullOrEmpty(queryString)) {
 			return true;
 		}
@@ -171,46 +196,18 @@ public class WidgetQueryResults extends WidgetDefinition {
 	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings
 			, CFWTimeframe timeframe) { 
 		
-		
-
-		//---------------------------------
-		// Example Data
-		JsonElement sampleDataElement = jsonSettings.get("sampledata");
-		
-		if(sampleDataElement != null 
-		&& !sampleDataElement.isJsonNull() 
-		&& sampleDataElement.getAsBoolean()) {
-			response.setPayload(createSampleData());
-			return;
-		}
-		
 		//---------------------------------
 		// Resolve Query
-		JsonElement queryElement = jsonSettings.get(FIELDNAME_QUERY);
-		if(queryElement == null || queryElement.isJsonNull()) {
-			return;
-		}
+//		JsonElement queryElement = jsonSettings.get(FIELDNAME_QUERY);
+//		if(queryElement == null || queryElement.isJsonNull()) {
+//			return;
+//		}
 		
-		String query = queryElement.getAsString();
+		String query = storedQuery.query();
 		
 		//---------------------------------
 		// Resolve Parameters
-		String dashboardParamsString = request.getParameter("params");
-		
-		JsonObject queryParams = new JsonObject();
-		if(!Strings.isNullOrEmpty(dashboardParamsString)) {
-			JsonArray boardParams = new JsonArray();
-			boardParams = CFW.JSON.stringToJsonElement(dashboardParamsString).getAsJsonArray();
-			
-			boardParams.forEach(new Consumer<JsonElement>() {
-
-				@Override
-				public void accept(JsonElement element) {
-					JsonObject object = element.getAsJsonObject();
-					queryParams.add(object.get("NAME").getAsString(), object.get("VALUE"));
-				}
-			});
-		}
+		JsonObject queryParams = jsonSettings;
 		
 		//---------------------------------
 		// Fetch Data, do not check permissions
@@ -222,16 +219,6 @@ public class WidgetQueryResults extends WidgetDefinition {
 		response.setPayload(resultList.toJson());	
 	}
 	
-	/******************************************************************************
-	 * 
-	 ******************************************************************************/
-	public JsonArray createSampleData() { 
-
-		return CFW.JSON.stringToJsonElement(
-			CFW.Files.readPackageResource(FeatureQuery.PACKAGE_RESOURCES, "cfw_widget_queryresults_sample.json")
-		).getAsJsonArray();
-		
-	}
 	
 	/******************************************************************************
 	 * 
@@ -239,9 +226,60 @@ public class WidgetQueryResults extends WidgetDefinition {
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
 		ArrayList<FileDefinition> array = new ArrayList<FileDefinition>();
-		//added globally array.add(  new FileDefinition(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_query_editor.js") );
-		//added globally array.add( new FileDefinition(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_query_rendering.js") );
-		array.add(  new FileDefinition(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_widget_queryresults.js") );
+		
+		//----------------------------------
+		// Register Main Javascript
+		array.add(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureStoredQuery.PACKAGE_RESOURCES, "cfw_query_stored_custom_widget.js") );
+		
+		//----------------------------------
+		// Register Widget
+		
+		String category = 
+				CFW.Security.escapeHTMLEntities(
+						MoreObjects.firstNonNull(storedQuery.widgetCategory(), "")
+					);
+		
+		if( Strings.isNullOrEmpty(category) ) {
+			category = "Custom";
+		}else {
+			category = "Custom | " + category;
+			String javascriptRegisterCategory =  
+					CFW.Files.readPackageResource( 
+								FeatureStoredQuery.PACKAGE_RESOURCES
+								, "cfw_query_stored_custom_widget_registeringCategory.js"
+							)
+							.replace("$category$", category )
+						;
+			
+			
+			array.add(new FileDefinition(javascriptRegisterCategory) );
+		}
+		//----------------------------------
+		// Register Widget
+		String queryName = 
+				CFW.Security.escapeHTMLEntities(
+						MoreObjects.firstNonNull(storedQuery.name(), "")
+					);
+		String description = 
+				CFW.Security.escapeHTMLEntities(
+						MoreObjects.firstNonNull(storedQuery.description(), "")
+					);
+		
+		String javascriptRegisterWidget =  
+				CFW.Files.readPackageResource( 
+							FeatureStoredQuery.PACKAGE_RESOURCES
+							, "cfw_query_stored_custom_widget_registeringTemplate.js"
+						)
+						.replace("$storedQueryID$", ""+storedQuery.id())
+						.replace("$queryName$", queryName)
+						.replace("$category$", category )
+						.replace("$description$", description )
+					;
+		
+		
+		array.add(new FileDefinition(javascriptRegisterWidget) );
+
+		
 		return array;
 	}
 
@@ -261,7 +299,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 	@Override
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = new HashMap<Locale, FileDefinition>();
-		map.put(Locale.ENGLISH, new FileDefinition(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "lang_en_query.properties"));
+		//map.put(Locale.ENGLISH, new FileDefinition(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "lang_en_query.properties"));
 		return map;
 	}
 	
@@ -270,9 +308,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 	 ******************************************************************************/
 	@Override
 	public boolean hasPermission(User user) {
-		return 
-			user.hasPermission(FeatureQuery.PERMISSION_QUERY_USER) 
-		||  user.hasPermission(FeatureQuery.PERMISSION_QUERY_ADMIN);
+		return CFW.DB.StoredQuery.hasUserAccessToStoredQuery(storedQuery.id());
 	}
 	
 	/*********************************************************************
@@ -357,22 +393,16 @@ public class WidgetQueryResults extends WidgetDefinition {
 		//----------------------------------------
 		// Fetch Data
 		JsonArray resultArray;
-		Boolean isSampleData = (Boolean)widgetSettings.getField(WidgetSettingsFactory.FIELDNAME_SAMPLEDATA).getValue();
-		if(isSampleData != null && isSampleData) {
-			resultArray = createSampleData();
-		}else {
-			String queryString = (String)widgetSettings.getField(FIELDNAME_QUERY).getValue();
-			if(Strings.isNullOrEmpty(queryString)) {
-				return;
-			}
-			
-			CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(false);
-			CFWQueryResultList resultList = executor.parseAndExecuteAll(queryString, timeframe);
-					
-			resultArray = resultList.toJsonRecords();	
+
+		String queryString = (String)widgetSettings.getField(FIELDNAME_QUERY).getValue();
+		if(Strings.isNullOrEmpty(queryString)) {
+			return;
 		}
 		
-		
+		CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(false);
+		CFWQueryResultList resultList = executor.parseAndExecuteAll(queryString, timeframe);
+				
+		resultArray = resultList.toJsonRecords();	
 		
 		//----------------------------------------
 		// Set Column default settings 
