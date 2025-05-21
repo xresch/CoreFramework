@@ -70,6 +70,7 @@ public class CFWParameter extends CFWObject {
 		LABEL,
 		PARAM_TYPE,
 		NAME,
+		DESCRIPTION,
 		VALUE,
 //		JSON_VALUE,  // to support form field types that need to start with 'JSON_'
 		MODE,
@@ -126,6 +127,11 @@ public class CFWParameter extends CFWObject {
 				}
 			});
 	
+
+	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, DashboardParameterFields.DESCRIPTION)
+			.setDescription("(Optional) A description for the parameter")
+			.addAttribute("rows", "1");
+	
 	// As the type of the value will be defined by the setting it is associated with, this is stored as JSON.
 	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE)
 			.setDescription("The value of the parameter as entered in the parameter editor. This might not be the final value(e.g. could also be a query for dynamic loading).")
@@ -169,7 +175,19 @@ public class CFWParameter extends CFWObject {
 		
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, widgetType, paramLabel, paramType, name, value, mode, isModeChangeAllowed, isDynamic);
+		this.addFields(
+					id
+					, foreignKeyDashboard
+					, widgetType
+					, paramLabel
+					, paramType
+					, name
+					, description
+					, value
+					, mode
+					, isModeChangeAllowed
+					, isDynamic
+				);
 	}
 
 	
@@ -195,6 +213,7 @@ public class CFWParameter extends CFWObject {
 					DashboardParameterFields.LABEL.toString(),
 					DashboardParameterFields.PARAM_TYPE.toString(),
 					DashboardParameterFields.NAME.toString(),
+					DashboardParameterFields.DESCRIPTION.toString(),
 					DashboardParameterFields.VALUE.toString(),
 					//DashboardParameterFields.JSON_VALUE.toString(),
 					DashboardParameterFields.IS_DYNAMIC.toString(),
@@ -270,6 +289,15 @@ public class CFWParameter extends CFWObject {
 	
 	public CFWParameter name(String value) {
 		this.name.setValue(value);
+		return this;
+	}
+	
+	public String description() {
+		return description.getValue();
+	}
+	
+	public CFWParameter description(String value) {
+		this.description.setValue(value);
 		return this;
 	}
 	

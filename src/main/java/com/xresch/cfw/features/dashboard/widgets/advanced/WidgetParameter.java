@@ -249,7 +249,8 @@ public class WidgetParameter extends WidgetDefinition {
 				.addAttribute("data-settingslabel", param.paramSettingsLabel())
 				.setName(param.name())
 				.setLabel(CFW.Utils.Text.fieldNameToLabel(param.name()))
-				.isDecoratorDisplayed(false)
+				.setDescription(param.description())
+				.isDecoratorDisplayed(true)
 				.addCssClass(" form-control-sm cfw-widget-parameter-marker");
 
 			paramForm.addField(valueField);
