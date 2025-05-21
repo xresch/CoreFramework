@@ -255,6 +255,12 @@ label {
 
 }
 
+.tooltip-inner {
+  max-width: 250px;
+  text-align: left;
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.75);
+}
+
 @media (min-width: 992px) {
   .modal-lg,
   .modal-xl {		max-width: 800px; } 

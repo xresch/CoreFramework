@@ -729,7 +729,12 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 				&& finalFieldType != FormFieldType.NONE
 				&& finalFieldType != FormFieldType.UNMODIFIABLE_TEXT
 				) {
-					html.append("<span class=\"badge badge-info cfw-decorator\" data-toggle=\"tooltip\" data-placement=\"top\" data-delay=\"500\" title=\""+description+"\"><i class=\"fa fa-sm fa-info\"></i></span>");
+					html.append("<span class=\"badge badge-info cfw-decorator\" data-toggle=\"tooltip\" data-placement=\"top\" data-html=\"true\" data-delay=\"500\""
+									+ " title=\""
+									+ description
+										.replaceAll("\"", "&nbsp;")
+										.replaceAll("\n", "<br>")
+									+ "\"><i class=\"fa fa-sm fa-info\"></i></span>");
 				}
 			html.append("</div>");
 		}
