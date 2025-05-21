@@ -13,7 +13,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
-import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterFields;
 import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -34,6 +34,8 @@ public class CFWDBParameter {
 	private static PrecheckHandler prechecksCreate =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
 			
+			//--------------------------
+			// Check null
 			CFWParameter parameter = (CFWParameter)object;
 			
 			if(parameter == null ) {
@@ -41,7 +43,17 @@ public class CFWDBParameter {
 					.warn("The parameter cannot be null.", new Throwable());
 				return false;
 			}
-			if(!checkIsParameterNameUsedOnCreate(parameter)) {
+			
+			//--------------------------
+			// Get Scope
+			String scope = FeatureParameter.SCOPE_DASHBOARD;
+			if(parameter.foreignKeyDashboard() == null) {
+				scope = FeatureParameter.SCOPE_QUERY;
+			}
+			
+			//--------------------------
+			// Check Name used
+			if(!checkIsParameterNameUsedOnCreate(scope, parameter)) {
 				return true;
 			}else {
 				new CFWLog(logger).severe("The parameter name is already in use: "+parameter.name());
@@ -53,6 +65,9 @@ public class CFWDBParameter {
 	
 	private static PrecheckHandler prechecksDeleteUpdate =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
+			
+			//--------------------------
+			// Check null
 			CFWParameter parameter = (CFWParameter)object;
 			
 			if(parameter == null ) {
@@ -60,7 +75,17 @@ public class CFWDBParameter {
 					.warn("The parameter cannot be null.", new Throwable());
 				return false;
 			}
-			if(!checkIsParameterNameUsedOnUpdate(parameter)) {
+			
+			//--------------------------
+			// Get Scope
+			String scope = FeatureParameter.SCOPE_DASHBOARD;
+			if(parameter.foreignKeyDashboard() == null) {
+				scope = FeatureParameter.SCOPE_QUERY;
+			}
+			
+			//--------------------------
+			// Check Name used
+			if(!checkIsParameterNameUsedOnUpdate(scope, parameter)) {
 				return true;
 			}else {
 				new CFWLog(logger).severe("The parameter name is already in use: "+parameter.name());
@@ -86,15 +111,15 @@ public class CFWDBParameter {
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean 	deleteByID(String id) 				{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, cfwObjectClass, DashboardParameterFields.PK_ID.toString(), Integer.parseInt(id)); }
-	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, cfwObjectClass, DashboardParameterFields.PK_ID.toString(), id); }
+	public static boolean 	deleteByID(String id) 				{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, cfwObjectClass, CFWParameterFields.PK_ID.toString(), Integer.parseInt(id)); }
+	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, cfwObjectClass, CFWParameterFields.PK_ID.toString(), id); }
 	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(prechecksDeleteUpdate, cfwObjectClass, itemIDs); }
 		
 	//####################################################################################################
 	// SELECT
 	//####################################################################################################
 	public static CFWParameter selectByID(int id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardParameterFields.PK_ID.toString(), id);
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWParameterFields.PK_ID.toString(), id);
 	}
 		
 	/***************************************************************
@@ -115,7 +140,7 @@ public class CFWDBParameter {
 	}
 	
 	/***************************************************************
-	 * Return a list of all user parameters
+	 * Return a list of all dashboard parameters
 	 * 
 	 * @return Returns an array with the parameters or an empty list.
 	 ****************************************************************/
@@ -124,7 +149,22 @@ public class CFWDBParameter {
 		return new CFWSQL(new CFWParameter())
 				.queryCache()
 				.select()
-				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
+				.where(CFWParameterFields.FK_ID_DASHBOARD, dashboardID)
+				.getAsObjectListConvert(CFWParameter.class);
+		
+	}
+	
+	/***************************************************************
+	 * Return a list of all query parameters
+	 * 
+	 * @return Returns an array with the parameters or an empty list.
+	 ****************************************************************/
+	public static ArrayList<CFWParameter> getParametersForQuery(String queryID) {
+		
+		return new CFWSQL(new CFWParameter())
+				.queryCache()
+				.select()
+				.where(CFWParameterFields.FK_ID_QUERY, queryID)
 				.getAsObjectListConvert(CFWParameter.class);
 		
 	}
@@ -139,38 +179,54 @@ public class CFWDBParameter {
 		return new CFWSQL(new CFWParameter())
 				.queryCache()
 				.select()
-				.where(DashboardParameterFields.PK_ID, parameterID)
+				.where(CFWParameterFields.PK_ID, parameterID)
 				.getAsJSON();
 		
 	}
 	
 	
 	/***************************************************************
+	 * @param scope TODO
 	 * @return Returns true if the parameter name is already in use
 	 * for this dashboard, ignores the the given parameter in the check.
 	 ****************************************************************/
-	public static boolean checkIsParameterNameUsedOnUpdate(CFWParameter parameter) {
+	public static boolean checkIsParameterNameUsedOnUpdate(String scope, CFWParameter parameter) {
+		
+		String idField = CFWParameterFields.FK_ID_DASHBOARD.toString();
+		Integer ID = parameter.foreignKeyDashboard();
+		if(FeatureParameter.SCOPE_QUERY.equals(scope)) {
+			idField = CFWParameterFields.FK_ID_QUERY.toString();
+			ID = parameter.foreignKeyQuery();
+		}
 		
 		return  0 < new CFWSQL(new CFWParameter())
-				.queryCache()
+				//.queryCache() cannot cache this query
 				.selectCount()
-				.where(DashboardParameterFields.FK_ID_DASHBOARD, parameter.foreignKeyDashboard())
-				.and(DashboardParameterFields.NAME, parameter.name())
-				.and().not().is(DashboardParameterFields.PK_ID, parameter.id())
+				.where(idField, ID)
+				.and(CFWParameterFields.NAME, parameter.name())
+				.and().not().is(CFWParameterFields.PK_ID, parameter.id())
 				.executeCount();
 		
 	}
 	/***************************************************************
+	 * @param scope TODO
 	 * @return Returns true if the parameter name is already in use
 	 * for this dashboard.
 	 ****************************************************************/
-	public static boolean checkIsParameterNameUsedOnCreate(CFWParameter parameter) {
+	public static boolean checkIsParameterNameUsedOnCreate(String scope, CFWParameter parameter) {
+		
+		String fieldname = CFWParameterFields.FK_ID_DASHBOARD.toString();
+		Integer ID = parameter.foreignKeyDashboard();
+		if(FeatureParameter.SCOPE_QUERY.equals(scope)) {
+			fieldname = CFWParameterFields.FK_ID_QUERY.toString();
+			ID = parameter.foreignKeyQuery();
+		}
 		
 		return  0 < new CFWSQL(new CFWParameter())
-				.queryCache()
+				//.queryCache() cannot cache this query
 				.selectCount()
-				.where(DashboardParameterFields.FK_ID_DASHBOARD, parameter.foreignKeyDashboard())
-				.and(DashboardParameterFields.NAME, parameter.name())
+				.where(fieldname, ID)
+				.and(CFWParameterFields.NAME, parameter.name())
 				.executeCount();
 		
 	}
@@ -178,16 +234,16 @@ public class CFWDBParameter {
 	/***************************************************************
 	 * @return Returns true if the parameter is of the specified dashboard
 	 ****************************************************************/
-	public static boolean checkIsParameterOfDashboard(String dashboardID, String parameterID) {
-		
-		return  1 == new CFWSQL(new CFWParameter())
-				.queryCache()
-				.selectCount()
-				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.and(DashboardParameterFields.PK_ID, parameterID)
-				.executeCount();
-		
-	}
+//	public static boolean checkIsParameterOfDashboard(String dashboardID, String parameterID) {
+//		
+//		return  1 == new CFWSQL(new CFWParameter())
+//				.queryCache()
+//				.selectCount()
+//				.where(CFWParameterFields.FK_ID_DASHBOARD, dashboardID)
+//				.and(CFWParameterFields.PK_ID, parameterID)
+//				.executeCount();
+//		
+//	}
 	
 	
 	/***************************************************************
@@ -200,16 +256,16 @@ public class CFWDBParameter {
 		CFWSQL sql = new CFWParameter()
 				.queryCache(CFWDBParameter.class, "autocompleteParametersForDashboard"+allowGenericParams)
 				.select()
-				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.and(DashboardParameterFields.MODE, DashboardParameterMode.MODE_SUBSTITUTE.toString())
+				.where(CFWParameterFields.FK_ID_DASHBOARD, dashboardID)
+				.and(CFWParameterFields.MODE, DashboardParameterMode.MODE_SUBSTITUTE.toString())
 				.and().custom("(")
-						.is(DashboardParameterFields.WIDGET_TYPE, widgetType);
-						if(allowGenericParams) sql.or().isNull(DashboardParameterFields.WIDGET_TYPE);
+						.is(CFWParameterFields.WIDGET_TYPE, widgetType);
+						if(allowGenericParams) sql.or().isNull(CFWParameterFields.WIDGET_TYPE);
 						
 			sql.custom(")")
 				.and().custom("(")
-					.is(DashboardParameterFields.LABEL, widgetSetting);
-					if(allowGenericParams) sql.or().isNull(DashboardParameterFields.WIDGET_TYPE);
+					.is(CFWParameterFields.LABEL, widgetSetting);
+					if(allowGenericParams) sql.or().isNull(CFWParameterFields.WIDGET_TYPE);
 					
 		return sql.custom(")")
 				.getAsObjectList();
@@ -234,7 +290,7 @@ public class CFWDBParameter {
 				.select();
 			
 			if(!Strings.isNullOrEmpty(dashboardID)) {
-				selectForExport.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID);
+				selectForExport.where(CFWParameterFields.FK_ID_DASHBOARD, dashboardID);
 				return  selectForExport.getObjectsAsJSONArray();
 			}
 							

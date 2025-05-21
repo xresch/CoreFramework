@@ -16,8 +16,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
@@ -30,6 +28,8 @@ import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
+import com.xresch.cfw.features.query.store.CFWStoredQuery;
+import com.xresch.cfw.features.query.store.CFWStoredQuery.CFWStoredQueryFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.CustomValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
@@ -63,9 +63,10 @@ public class CFWParameter extends CFWObject {
 		modeOptions.put(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString(), "Global");
 	}
 		
-	public enum DashboardParameterFields{
+	public enum CFWParameterFields{
 		PK_ID,
 		FK_ID_DASHBOARD,
+		FK_ID_QUERY,
 		WIDGET_TYPE,
 		LABEL,
 		PARAM_TYPE,
@@ -80,29 +81,35 @@ public class CFWParameter extends CFWObject {
 
 	private static Logger logger = CFWLog.getLogger(CFWParameter.class.getName());
 	
-	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.NONE, DashboardParameterFields.PK_ID.toString())
+	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.NONE, CFWParameterFields.PK_ID.toString())
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the parameter.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
-	private CFWField<Integer> foreignKeyDashboard = CFWField.newInteger(FormFieldType.NONE, DashboardParameterFields.FK_ID_DASHBOARD)
+	private CFWField<Integer> foreignKeyDashboard = CFWField.newInteger(FormFieldType.NONE, CFWParameterFields.FK_ID_DASHBOARD)
 			.setForeignKeyCascade(this, Dashboard.class, DashboardFields.PK_ID)
 			.setDescription("The id of the dashboard this parameter is related to.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
-	private CFWField<String> paramType = CFWField.newString(FormFieldType.NONE, DashboardParameterFields.PARAM_TYPE)
+	private CFWField<Integer> foreignKeyQuery = CFWField.newInteger(FormFieldType.NONE, CFWParameterFields.FK_ID_QUERY)
+			.setForeignKeyCascade(this, CFWStoredQuery.class, CFWStoredQueryFields.PK_ID)
+			.setDescription("The id of the query this parameter is related to.")
+			.apiFieldType(FormFieldType.NUMBER)
+			.setValue(null);
+	
+	private CFWField<String> paramType = CFWField.newString(FormFieldType.NONE, CFWParameterFields.PARAM_TYPE)
 			.setDescription("The type of the parameter.")
 			.setOptions(FormFieldType.values());
 	
-	private CFWField<String> widgetType = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.WIDGET_TYPE)
+	private CFWField<String> widgetType = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, CFWParameterFields.WIDGET_TYPE)
 			.setDescription("The type of the widget.");
 	
-	private CFWField<String> paramLabel = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.LABEL)
+	private CFWField<String> paramLabel = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, CFWParameterFields.LABEL)
 			.setDescription("The label of the parameter. Either custom or the name of the widget setting.");
 	
-	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.NAME)
+	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, CFWParameterFields.NAME)
 			.setDescription("The name of the parameter. This name will be used as a placeholder like '$name$' in the widget settings.")
 			.addValidator(new NotNullOrEmptyValidator())
 			.addValidator(new CustomValidator() {
@@ -128,12 +135,12 @@ public class CFWParameter extends CFWObject {
 			});
 	
 
-	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, DashboardParameterFields.DESCRIPTION)
+	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, CFWParameterFields.DESCRIPTION)
 			.setDescription("(Optional) A description for the parameter")
 			.addAttribute("rows", "1");
 	
 	// As the type of the value will be defined by the setting it is associated with, this is stored as JSON.
-	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE)
+	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, CFWParameterFields.VALUE)
 			.setDescription("The value of the parameter as entered in the parameter editor. This might not be the final value(e.g. could also be a query for dynamic loading).")
 			.disableSanitization();
 	
@@ -142,11 +149,11 @@ public class CFWParameter extends CFWObject {
 //			.setDescription("The value of the parameter as entered in the parameter editor. This might not be the final value(e.g. could also be a query for dynamic loading).")
 //			.disableSanitization();
 	
-	private CFWField<String> mode = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.MODE)
+	private CFWField<String> mode = CFWField.newString(FormFieldType.SELECT, CFWParameterFields.MODE)
 			.setDescription("The mode of the widget.")
 			.setOptions(modeOptions);
 		
-	private CFWField<Boolean> isModeChangeAllowed = CFWField.newBoolean(FormFieldType.NONE, DashboardParameterFields.IS_MODE_CHANGE_ALLOWED)
+	private CFWField<Boolean> isModeChangeAllowed = CFWField.newBoolean(FormFieldType.NONE, CFWParameterFields.IS_MODE_CHANGE_ALLOWED)
 			.setDescription("Define if the mode can be changed or not.")
 			.setValue(true)
 			.setChangeHandler(new CFWFieldChangeHandler<Boolean>() {
@@ -163,7 +170,7 @@ public class CFWParameter extends CFWObject {
 				}
 			});
 	
-	private CFWField<Boolean> isDynamic = CFWField.newBoolean(FormFieldType.NONE, DashboardParameterFields.IS_DYNAMIC)
+	private CFWField<Boolean> isDynamic = CFWField.newBoolean(FormFieldType.NONE, CFWParameterFields.IS_DYNAMIC)
 			.setDescription("Defines if the parameter loads values dynamically or is static.")
 			.setColumnDefinition("BOOLEAN DEFAULT FALSE");
 	
@@ -178,6 +185,7 @@ public class CFWParameter extends CFWObject {
 		this.addFields(
 					id
 					, foreignKeyDashboard
+					, foreignKeyQuery
 					, widgetType
 					, paramLabel
 					, paramType
@@ -201,24 +209,25 @@ public class CFWParameter extends CFWObject {
 		
 		String[] inputFields = 
 				new String[] {
-					DashboardParameterFields.PK_ID.toString(), 
-					DashboardParameterFields.FK_ID_DASHBOARD.toString(), 
+					CFWParameterFields.PK_ID.toString(), 
+					CFWParameterFields.FK_ID_DASHBOARD.toString(), 
 				};
 		
 		String[] outputFields = 
 				new String[] {
-					DashboardParameterFields.PK_ID.toString(), 
-					DashboardParameterFields.FK_ID_DASHBOARD.toString(), 
-					DashboardParameterFields.WIDGET_TYPE.toString(),
-					DashboardParameterFields.LABEL.toString(),
-					DashboardParameterFields.PARAM_TYPE.toString(),
-					DashboardParameterFields.NAME.toString(),
-					DashboardParameterFields.DESCRIPTION.toString(),
-					DashboardParameterFields.VALUE.toString(),
+					CFWParameterFields.PK_ID.toString(), 
+					CFWParameterFields.FK_ID_DASHBOARD.toString(), 
+					CFWParameterFields.FK_ID_QUERY.toString(), 
+					CFWParameterFields.WIDGET_TYPE.toString(),
+					CFWParameterFields.LABEL.toString(),
+					CFWParameterFields.PARAM_TYPE.toString(),
+					CFWParameterFields.NAME.toString(),
+					CFWParameterFields.DESCRIPTION.toString(),
+					CFWParameterFields.VALUE.toString(),
 					//DashboardParameterFields.JSON_VALUE.toString(),
-					DashboardParameterFields.IS_DYNAMIC.toString(),
-					DashboardParameterFields.MODE.toString(),
-					DashboardParameterFields.IS_MODE_CHANGE_ALLOWED.toString(),
+					CFWParameterFields.IS_DYNAMIC.toString(),
+					CFWParameterFields.MODE.toString(),
+					CFWParameterFields.IS_MODE_CHANGE_ALLOWED.toString(),
 				};
 
 		//----------------------------------
@@ -250,8 +259,17 @@ public class CFWParameter extends CFWObject {
 		return foreignKeyDashboard.getValue();
 	}
 	
-	public CFWParameter foreignKeyDashboard(Integer foreignKeyDashboard) {
-		this.foreignKeyDashboard.setValue(foreignKeyDashboard);
+	public CFWParameter foreignKeyDashboard(Integer value) {
+		this.foreignKeyDashboard.setValue(value);
+		return this;
+	}
+	
+	public Integer foreignKeyQuery() {
+		return foreignKeyQuery.getValue();
+	}
+	
+	public CFWParameter foreignKeyQuery(Integer value) {
+		this.foreignKeyQuery.setValue(value);
 		return this;
 	}
 	
@@ -627,7 +645,7 @@ public class CFWParameter extends CFWObject {
 		//===========================================
 		for(CFWParameter param : parameterList) {
 
-			CFWField<String> currentValueField = (CFWField<String>)param.getField(DashboardParameterFields.VALUE.toString());
+			CFWField<String> currentValueField = (CFWField<String>)param.getField(CFWParameterFields.VALUE.toString());
 			CFWField newValueField;
 			
 			if(param.widgetType() != null) {
@@ -643,7 +661,7 @@ public class CFWParameter extends CFWObject {
 				param.paramSettingsLabel(newValueField.getName()); //change value displayed in column "Widget Setting"
 				newValueField.setLabel("Value"); //Change name of column to "Value"
 				
-				newValueField.setName(DashboardParameterFields.VALUE.toString());
+				newValueField.setName(CFWParameterFields.VALUE.toString());
 				newValueField.setDescription("The value of the parameter.");
 				
 				//currentValue field is always a String field
@@ -659,7 +677,7 @@ public class CFWParameter extends CFWObject {
 					}else {
 						newValueField = def.getFieldForSettings(request, dashboardID, currentValueField.getValue());
 					}
-					newValueField.setName(DashboardParameterFields.VALUE.toString());
+					newValueField.setName(CFWParameterFields.VALUE.toString());
 					newValueField.setLabel("Value");
 				}else {
 					new CFWLog(logger).severe("Parameter definition could not be found:"+param.paramSettingsLabel(), new IllegalArgumentException());
@@ -669,7 +687,7 @@ public class CFWParameter extends CFWObject {
 
 			}
 			
-			param.getFields().remove(DashboardParameterFields.VALUE.toString());
+			param.getFields().remove(CFWParameterFields.VALUE.toString());
 			param.addField(newValueField);
 
 		}

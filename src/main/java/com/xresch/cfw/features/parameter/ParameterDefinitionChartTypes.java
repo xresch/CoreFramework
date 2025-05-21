@@ -10,7 +10,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterFields;
 
 public class ParameterDefinitionChartTypes extends ParameterDefinition {
 
@@ -60,7 +60,7 @@ public class ParameterDefinitionChartTypes extends ParameterDefinition {
 	@Override
 	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe, JsonObject  userSelectedParamValues) {
 
-		CFWField settingsField = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.VALUE);
+		CFWField settingsField = CFWField.newString(FormFieldType.SELECT, CFWParameterFields.VALUE);
 
 		settingsField.setOptions(FeatureCore.getChartTypes());
 

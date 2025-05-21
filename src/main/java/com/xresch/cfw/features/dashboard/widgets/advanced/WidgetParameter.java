@@ -31,7 +31,7 @@ import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.parameter.CFWParameter;
-import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterFields;
 import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.response.JSONResponse;
 
@@ -113,12 +113,12 @@ public class WidgetParameter extends WidgetDefinition {
 								// Return Params not already in use
 								CFWSQL sql = new CFWSQL(new CFWParameter())
 										.select()
-										.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-										.and().like(DashboardParameterFields.NAME, "%"+searchValue+"%");
+										.where(CFWParameterFields.FK_ID_DASHBOARD, dashboardID)
+										.and().like(CFWParameterFields.NAME, "%"+searchValue+"%");
 										if(usedParamIDs.size() > 0) {
-											sql.and().not().in(DashboardParameterFields.PK_ID, usedParamIDs.toArray(new Object[] {}));
+											sql.and().not().in(CFWParameterFields.PK_ID, usedParamIDs.toArray(new Object[] {}));
 										}
-								return sql.getAsAutocompleteResult(DashboardParameterFields.PK_ID, DashboardParameterFields.NAME, DashboardParameterFields.WIDGET_TYPE);
+								return sql.getAsAutocompleteResult(CFWParameterFields.PK_ID, CFWParameterFields.NAME, CFWParameterFields.WIDGET_TYPE);
 							}
 						})	
 					)
@@ -209,8 +209,8 @@ public class WidgetParameter extends WidgetDefinition {
 		if(!paramNames.isEmpty()) {
 			paramsResultArray = new CFWSQL(new CFWParameter())
 				.select()
-				.whereIn(DashboardParameterFields.NAME, paramNames)
-				.and(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
+				.whereIn(CFWParameterFields.NAME, paramNames)
+				.and(CFWParameterFields.FK_ID_DASHBOARD, dashboardID)
 				.getAsObjectListConvert(CFWParameter.class);
 		}
 		
@@ -243,7 +243,7 @@ public class WidgetParameter extends WidgetDefinition {
 		for(CFWObject object : paramsResultArray) {
 			CFWParameter param = (CFWParameter)object;
 			
-			CFWField valueField = param.getField(DashboardParameterFields.VALUE.toString());
+			CFWField valueField = param.getField(CFWParameterFields.VALUE.toString());
 			valueField
 				.addAttribute("data-widgettype", param.widgetType())
 				.addAttribute("data-settingslabel", param.paramSettingsLabel())

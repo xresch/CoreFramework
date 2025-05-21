@@ -18,22 +18,20 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormCustomAutocompleteHandler;
 import com.xresch.cfw.datahandling.CFWMultiForm;
 import com.xresch.cfw.datahandling.CFWMultiFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
-import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
-import com.xresch.cfw.features.dashboard.ServletDashboardViewMethods;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
-import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterFields;
 import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
@@ -47,9 +45,6 @@ public class ServletParameter extends HttpServlet
 {
 
 	private static final Logger logger = CFWLog.getLogger(ServletParameter.class.getName());
-	
-	public static final String SCOPE_DASHBOARD = "dashboard";
-	public static final String SCOPE_QUERY = "query";
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -140,11 +135,13 @@ public class ServletParameter extends HttpServlet
 	 ******************************************************************/
 	private static boolean canEdit(String scope, String ID) {
 		
-		if( (scope.equals(SCOPE_DASHBOARD) && !CFW.DB.Dashboards.checkCanEdit(ID)) ) {
-			CFW.Messages.addErrorMessage("Insufficient rights to load dashboard parameters.");
+		if( (scope.equals(FeatureParameter.SCOPE_DASHBOARD) && !CFW.DB.Dashboards.checkCanEdit(ID)) ) {
+			CFW.Messages.addErrorMessage("Insufficient rights to edit dashboard parameters.");
+			return false;
+		}else if( (scope.equals(FeatureParameter.SCOPE_QUERY) && !CFW.DB.StoredQuery.checkCanEdit(ID)) ) {
+			CFW.Messages.addErrorMessage("Insufficient rights to edit stored query parameters.");
 			return false;
 		}
-		
 		return true;
 		
 	}
@@ -169,7 +166,7 @@ public class ServletParameter extends HttpServlet
 		HashSet<String> uniqueTypeChecker = new HashSet<>();
 		
 		JsonArray widgetParametersArray = new JsonArray();
-		if( scope.equals(SCOPE_DASHBOARD) ) {
+		if( scope.equals(FeatureParameter.SCOPE_DASHBOARD) ) {
 			ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(ID);
 			
 			for(DashboardWidget widget : widgetList) {
@@ -227,7 +224,7 @@ public class ServletParameter extends HttpServlet
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void createParam(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
 		
 		//----------------------------
@@ -247,7 +244,12 @@ public class ServletParameter extends HttpServlet
 		//----------------------------
 		// Create Param
 		CFWParameter param = new CFWParameter();
-		param.foreignKeyDashboard(Integer.parseInt(ID));
+		
+		if(FeatureParameter.SCOPE_DASHBOARD.equals(scope)) {
+			param.foreignKeyDashboard(Integer.parseInt(ID));
+		}else {
+			param.foreignKeyQuery(Integer.parseInt(ID));
+		}
 
 		if(Strings.isNullOrEmpty(widgetSetting)) {
 			param.widgetType(null);
@@ -293,7 +295,7 @@ public class ServletParameter extends HttpServlet
 				param.paramSettingsLabel(widgetSetting);
 				param.name(widgetSetting.replace(" ", "_")+"_"+CFW.Random.stringAlphaNum(6));
 				param.paramType(settingsField.fieldType()); // used to fetch similar field types
-				param.getField(DashboardParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue(), true);
+				param.getField(CFWParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue(), true);
 				param.mode(DashboardParameterMode.MODE_GLOBAL_OVERRIDE);
 				
 				if(settingsField.fieldType() == FormFieldType.BOOLEAN
@@ -334,24 +336,24 @@ public class ServletParameter extends HttpServlet
 		//--------------------------------------------
 		// Delete Param
 		String paramID = request.getParameter("paramid");
-		if(CFW.DB.Parameters.checkIsParameterOfDashboard(ID, paramID)) {
-			boolean success = CFW.DB.Parameters.deleteByID(paramID);
-			json.setSuccess(success);
-			CFW.Messages.deleted();
-			
-			//Remove From Form to avoid errors on save
-			String formID = request.getParameter("formid");
-			CFWMultiForm form = (CFWMultiForm)CFW.Context.Session.getForm(formID);
-			
-			form.getOrigins().remove(Integer.parseInt(paramID));
-		}
+
+		boolean success = CFW.DB.Parameters.deleteByID(paramID);
+		json.setSuccess(success);
+		CFW.Messages.deleted();
+		
+		//Remove From Form to avoid errors on save
+		String formID = request.getParameter("formid");
+		CFWMultiForm form = (CFWMultiForm)CFW.Context.Session.getForm(formID);
+		
+		form.getOrigins().remove(Integer.parseInt(paramID));
+		
 
 	}
 	
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	private static void fetchParameterEditForm(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
 		
 		String scope = request.getParameter("scope");
@@ -367,9 +369,9 @@ public class ServletParameter extends HttpServlet
 		// Get Parameter List
 		ArrayList<CFWParameter> parameterList = null;
 		switch(scope) {
-			case SCOPE_DASHBOARD: 	parameterList = CFW.DB.Parameters.getParametersForDashboard(ID);	break;
-			case SCOPE_QUERY:  	  	/*parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(ID);*/	break;
-			default:				CFW.Messages.itemNotSupported(scope); return;
+			case FeatureParameter.SCOPE_DASHBOARD: 	parameterList = CFW.DB.Parameters.getParametersForDashboard(ID);	break;
+			case FeatureParameter.SCOPE_QUERY:  	parameterList = CFW.DB.Parameters.getParametersForQuery(ID); break;
+			default:								CFW.Messages.itemNotSupported(scope); return;
 		}
 		
 		CFWTimeframe notNeeded = null;
@@ -397,11 +399,11 @@ public class ServletParameter extends HttpServlet
 					for(CFWObject object : originsMap.values()) {
 						CFWParameter param = (CFWParameter)object;
 						
-						if(!CFW.DB.Parameters.checkIsParameterNameUsedOnUpdate(param)) {
+						if(!CFW.DB.Parameters.checkIsParameterNameUsedOnUpdate(scope, param)) {
 							//do not update WidgetType and Setting as the values were overridden with labels.
 							boolean success = new CFWSQL(param).updateWithout(
-									DashboardParameterFields.WIDGET_TYPE.toString(),
-									DashboardParameterFields.LABEL.toString());
+									CFWParameterFields.WIDGET_TYPE.toString(),
+									CFWParameterFields.LABEL.toString());
 							
 							if(!success) {
 								CFW.Messages.addErrorMessage("The data with the ID '"+param.getPrimaryKeyValue()+"' could not be saved to the database.");
@@ -448,7 +450,7 @@ public class ServletParameter extends HttpServlet
 						CFWParameter currentParam = (CFWParameter)object;
 						if(currentParam.widgetType() != null && currentParam.widgetType().equals(widgetType)) {
 							String paramName = currentParam.paramSettingsLabel();
-							String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
+							String valueFieldName = currentParam.id()+"-"+CFWParameterFields.VALUE;
 							String paramValue = request.getParameter(valueFieldName);
 					        extraParams.put(paramName, new String[] { paramValue });
 						}
@@ -465,7 +467,7 @@ public class ServletParameter extends HttpServlet
 							
 							if(def.isAvailable(widgetTypesArray)) {
 								String currentName = currentParam.paramSettingsLabel();
-								String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
+								String valueFieldName = currentParam.id()+"-"+CFWParameterFields.VALUE;
 								String currentParamValue = request.getParameter(valueFieldName);
 						        extraParams.put(currentName, new String[] { currentParamValue });
 							}

@@ -1,6 +1,8 @@
 
 CFW_PARAMETER_URL = "/parameter";
 CFW_PARAMETER_SCOPE = "default";
+CFW_PARAMETER_SCOPE_DASHBOARD = "dashboard";
+CFW_PARAMETER_SCOPE_QUERY = "query";
 CFW_PARAMETER_ITEM_ID = -999;
 
 /*******************************************************************************
@@ -50,7 +52,9 @@ function cfw_parameter_save(){
 	// paramListDiv.find('button').click();
 	cfw_internal_postForm('/cfw/formhandler', '#'+formID, function(data){
 		if(data.success){
-			cfw_dashboard_draw(false, false);
+			if(CFW_PARAMETER_SCOPE == CFW_PARAMETER_SCOPE_DASHBOARD){
+				cfw_dashboard_draw(false, false);
+			}
 		}
 	});
 	
@@ -124,12 +128,15 @@ function cfw_parameter_loadParameterForm(){
 						let columnSpan = $(element).find('span:first');
 						
 						let widgetType = columnSpan.text();
-						let definition = cfw_dashboard_getWidgetDefinition(widgetType);
-						let label = (definition != undefined) ? definition.menulabel : undefined;
-						
-						if(label != undefined){
-							columnSpan.text(label);
+						if(CFW_PARAMETER_SCOPE == CFW_PARAMETER_SCOPE_DASHBOARD){
+							let definition = cfw_dashboard_getWidgetDefinition(widgetType);
+							let label = (definition != undefined) ? definition.menulabel : undefined;
+							if(label != undefined){
+								columnSpan.text(label);
+							}
 						}
+						
+						
 					})
 					
 				}
@@ -145,7 +152,7 @@ function cfw_parameter_add(widgetType, widgetSetting, label){
 	var requestParams = {
 		  action: 'create'
 		, item: 'param'
-		, scope: widgetType
+		, scope: CFW_PARAMETER_SCOPE
 		, id: CFW_PARAMETER_ITEM_ID 
 		, widgetType: widgetType
 		, widgetSetting: widgetSetting

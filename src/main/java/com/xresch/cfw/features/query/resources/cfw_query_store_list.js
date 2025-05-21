@@ -194,6 +194,14 @@ function cfw_storedQuery_editStoredQuery(id, callbackJSOrFunc){
 }
 
 /******************************************************************
+ * Edit Params
+ ******************************************************************/
+function cfw_storedQuerylist_editParams(id){
+	cfw_parameter_setScope("query", id);
+	cfw_parameter_edit();
+}
+
+/******************************************************************
  * Delete
  ******************************************************************/
 function cfw_storedQuerylist_delete(id){
@@ -208,6 +216,7 @@ function cfw_storedQuerylist_delete(id){
 			}
 	});
 }
+	
 
 /******************************************************************
  * Delete
@@ -366,6 +375,24 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 					htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
 						+'onclick="cfw_storedQuerylist_editStoredQuery('+id+')");">'
 						+ '<i class="fa fa-pen"></i>'
+						+ '</button>';
+				}else{
+					htmlString += '&nbsp;';
+				}
+				return htmlString;
+			});
+			
+		//-------------------------
+		// Edit Params Button
+		actionButtons.push(
+			function (record, id){ 
+				var htmlString = '';
+				if(JSDATA.userid == record.FK_ID_OWNER 
+				|| type == 'adminstoredQuery'
+				|| (record.IS_EDITOR) ){
+					htmlString += '<button class="btn btn-primary btn-sm" alt="Edit Params" title="Edit Params" '
+						+'onclick="cfw_storedQuerylist_editParams('+id+')");">'
+						+ '<i class="fa fa-sliders-h"></i>'
 						+ '</button>';
 				}else{
 					htmlString += '&nbsp;';
