@@ -36,7 +36,7 @@ public class APIDashboardExport extends APIDefinition{
 				//----------------------------------
 				// Create Response
 				String id = request.getParameter(DashboardFields.PK_ID.toString());
-				json.getContent().append( CFW.DB.Dashboards.getJsonArrayForExport(id) );
+				json.getContent().append( CFW.DB.Dashboards.getJsonForExport(id) );
 				
 				json.setSuccess(true);
 

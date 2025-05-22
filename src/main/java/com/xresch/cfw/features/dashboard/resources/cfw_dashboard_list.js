@@ -770,7 +770,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 					if(JSDATA.userid == record.FK_ID_USER 
 					|| type == 'admindashboards'){
 						return '<a class="btn btn-warning btn-sm text-white" target="_blank" alt="Export" title="Export" '
-							+' href="'+CFW_DASHBOARDLIST_URL+'?action=fetch&item=export&id='+id+'" download="'+record.NAME.replaceAll(' ', '_')+'_export.json">'
+							+' href="'+CFW_DASHBOARDLIST_URL+'?action=fetch&item=export&id='+id+'" download="'+record.NAME.replaceAll(' ', '_')+'.json">'
 							+'<i class="fa fa-download"></i>'
 							+ '</a>';
 					}else{

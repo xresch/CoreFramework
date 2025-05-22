@@ -153,7 +153,7 @@ public class ServletDashboardList extends HttpServlet
 												jsonResponse.setPayload(CFW.DB.Dashboards.getEAVStats(ID, time.getEarliest(), time.getLatest()));
 												break;	
 					
-					case "export": 				jsonResponse.getContent().append(CFW.DB.Dashboards.getJsonArrayForExport(ID));
+					case "export": 				jsonResponse.getContent().append(CFW.DB.Dashboards.getJsonForExport(ID));
 												break;									
 																										
 					default: 					CFW.Messages.itemNotSupported(item);

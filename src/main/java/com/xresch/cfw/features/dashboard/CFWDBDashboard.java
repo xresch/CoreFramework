@@ -567,7 +567,7 @@ public class CFWDBDashboard {
 	 * 
 	 * @return Returns a JSON array string.
 	 ****************************************************************/
-	public static String getJsonArrayForExport(String dashboardID) {
+	public static String getJsonForExport(String dashboardID) {
 
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
 		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)
@@ -575,12 +575,12 @@ public class CFWDBDashboard {
 			JsonArray dashboardArray = null;
 			if(Strings.isNullOrEmpty(dashboardID)) {
 				dashboardArray = new Dashboard()
-						.queryCache(CFWDBDashboard.class, "getJsonArrayForExportAll")
+						.queryCache(CFWDBDashboard.class, "getJsonForExportAll")
 						.select()
 						.getObjectsAsJSONArray();
 			}else {
 				dashboardArray = new Dashboard()
-						.queryCache(CFWDBDashboard.class, "getJsonArrayForExport")
+						.queryCache(CFWDBDashboard.class, "getJsonForExport")
 						.select()
 						.where(DashboardFields.PK_ID, dashboardID)
 						.getObjectsAsJSONArray();
@@ -611,7 +611,9 @@ public class CFWDBDashboard {
 				}
 			}
 			
-			return CFW.JSON.toJSONPretty(dashboardArray);
+			JsonObject resultObject = new JsonObject();
+			resultObject.add("dashboards", dashboardArray);
+			return CFW.JSON.toJSONPretty(resultObject);
 		}else {
 			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!") );
 			return "[]";
@@ -620,14 +622,18 @@ public class CFWDBDashboard {
 	
 	/***************************************************************
 	 * Import an jsonArray exported with getJsonArrayForExport().
-	 * 
+	 * @param json json object or array string
+	 *   - Array of Dashboards:  [{ ... dashboardFields ...}, { ... dashboardFields ...}]	
+	 *   - Object with dashboards: { dashboards: [ ...] }
+	 *   - Object with Payload(One of above):  { payload: <objectOrArray> }
+	 *     	
 	 * @return Returns a JSON array string.
 	 ****************************************************************/
-	public static boolean importByJson(String jsonArray, boolean keepOwner) {
+	public static boolean importByJson(String json, boolean keepOwner) {
 
 		//-----------------------------
 		// Resolve JSON Array
-		JsonElement element = CFW.JSON.stringToJsonElement(jsonArray);
+		JsonElement element = CFW.JSON.stringToJsonElement(json);
 		JsonArray array = null;
 		
 		if(element.isJsonArray()) {
@@ -635,15 +641,19 @@ public class CFWDBDashboard {
 		}else if(element.isJsonObject()) {
 			JsonObject object = element.getAsJsonObject();
 			if(object.has("payload")) {
-				array = object.get("payload").getAsJsonArray();
+				return importByJson(object.get("payload").toString(), keepOwner);
+				
+			}if(object.has("dashboards")) {
+				return importByJson(object.get("dashboards").toString(), keepOwner);
+				
 			}else {
 				new CFWLog(logger)
-					.severe(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."), new Exception());
+					.warn(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."), new Exception());
 				return false;
 			}
 		}else {
 			new CFWLog(logger)
-				.severe(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."), new Exception());
+				.warn(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."), new Exception());
 			return false;
 		}
 		
