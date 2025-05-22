@@ -26,6 +26,7 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.store.CFWStoredQuery.CFWStoredQueryFields;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
+import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
@@ -151,6 +152,24 @@ public class CFWDBStoredQuery {
 					CFW.DB.transactionRollback();
 					new CFWLog(logger).severe("Error while saving selector fields for duplicate.");
 					return null;
+				}
+				
+				//-----------------------------------------
+				// Duplicate Parameters
+				//-----------------------------------------
+				ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForQuery(storedQueryID);
+				
+				for(CFWParameter paramToCopy : parameterList) {
+					
+					paramToCopy.id(null);
+					paramToCopy.foreignKeyQuery(newID);
+					
+					if(!paramToCopy.insert()) {
+						CFW.DB.transactionRollback();
+						new CFWLog(logger).severe("Error while duplicating query parameter.");
+						return null;
+					}
+
 				}
 
 				CFW.DB.transactionCommit();
