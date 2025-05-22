@@ -27,6 +27,7 @@ import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.query.FeatureQuery.CFWQueryComponentType;
 import com.xresch.cfw.features.query.database.CFWDBQueryHistory;
+import com.xresch.cfw.features.query.store.FeatureStoredQuery;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -85,7 +86,7 @@ public class ServletQuery extends HttpServlet
 			
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureParameter.PACKAGE_RESOURCES, "cfw_parameter.js");
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_query.js");
-				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_query_store_list.js");
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureStoredQuery.PACKAGE_RESOURCES, "cfw_query_store_list.js");
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureManual.PACKAGE_RESOURCES, "cfw_manual_common.js"); // needed to make links work
 				
 				html.addJavascriptCode("cfw_query_initialDraw();");

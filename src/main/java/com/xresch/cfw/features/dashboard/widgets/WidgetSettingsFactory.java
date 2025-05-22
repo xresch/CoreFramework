@@ -38,6 +38,26 @@ public class WidgetSettingsFactory {
 		basicAxisTypes.put("linear", "Linear");
 		basicAxisTypes.put("logarithmic", "Logarithmic");
 	}
+	
+	private static  LinkedHashMap<String, String> displayAsOptions = new LinkedHashMap<>();
+	static {
+		displayAsOptions.put("table", "Table");
+		displayAsOptions.put("panels", "Panels");
+		displayAsOptions.put("properties", "Properties");
+		displayAsOptions.put("cards", "Cards");
+		displayAsOptions.put("tiles", "Tiles");
+		
+		displayAsOptions.put("statustiles", "Status Tiles");
+		displayAsOptions.put("tileandbar", "Tile and Status Bar");
+		displayAsOptions.put("statuslist", "Status List");
+		displayAsOptions.put("statusbar", "Status Bar");
+		displayAsOptions.put("statusbarreverse", "Status Bar Reversed");
+		displayAsOptions.put("statusmap", "Status Map");
+		
+		displayAsOptions.put("csv", "CSV");
+		displayAsOptions.put("json", "JSON");
+		displayAsOptions.put("xml", "XML");
+	}
 		
 	/************************************************************************************
 	 *  
@@ -86,6 +106,7 @@ public class WidgetSettingsFactory {
 			.setDescription("{!cfw_widget_suffix_desc!}");
 	}
 	
+	
 	/************************************************************************************
 	 * Create Display As field to Choose the Renderer.(fieldname=renderer)
 	 * 
@@ -93,28 +114,23 @@ public class WidgetSettingsFactory {
 	 ************************************************************************************/
 	public static CFWField<?> createDefaultDisplayAsField(){
 		
-		LinkedHashMap<String, String> rendererOptions = new LinkedHashMap<>();
-		rendererOptions.put("tiles", "Tiles");
-		rendererOptions.put("statustiles", "Status Tiles");
-		rendererOptions.put("tileandbar", "Tile and Status Bar");
-		rendererOptions.put("table", "Table");
-		rendererOptions.put("panels", "Panels");
-		rendererOptions.put("properties", "Properties");
-		rendererOptions.put("cards", "Cards");
-		rendererOptions.put("statuslist", "Status List");
-		rendererOptions.put("statusbar", "Status Bar");
-		rendererOptions.put("statusbarreverse", "Status Bar Reversed");
-		
-		rendererOptions.put("statusmap", "Status Map");
-		
-		rendererOptions.put("csv", "CSV");
-		rendererOptions.put("json", "JSON");
 		
 		return CFWField.newString(FormFieldType.SELECT, FIELDNAME_DISPLAYAS)
 			.setLabel("{!cfw_widget_displayas!}")
 			.setDescription("{!cfw_widget_displayas_desc!}")
-			.setOptions(rendererOptions)
+			.setOptions(getDisplayAsOptions())
 			.setValue("Tiles");
+	}
+	
+	/************************************************************************************
+	 * Create Display As field to Choose the Renderer.(fieldname=renderer)
+	 * 
+	 * @return
+	 ************************************************************************************/
+	public static LinkedHashMap<String, String> getDisplayAsOptions(){
+		LinkedHashMap<String, String> clone = new LinkedHashMap<>();
+		clone.putAll(displayAsOptions);
+		return clone;
 	}
 	
 	/************************************************************************************

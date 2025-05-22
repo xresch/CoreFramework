@@ -182,6 +182,7 @@ DONE
 - CFWRandom: Added endpoint /cfw/random to get random test data
 - Tables: Fixed Sticky headers setting not working
 - Filters: Filtering now supports wildcards (*) and regex when at least one '*' is present.
+- Parameters: Added parameter type "Display Options"
 - Parameters: Added a field for descriptions.
 - Parameters: Fixed Time Range parameters not keeping value after refresh.
 - Dashboard: Fixed Timeframe picker not displayed if widget is set to manual or parameter load
