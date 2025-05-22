@@ -31,6 +31,7 @@ import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
 import com.xresch.cfw.features.parameter.CFWParameter;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterScope;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
@@ -604,7 +605,7 @@ public class CFWDBDashboard {
 						JsonArray widgets = CFW.DB.DashboardWidgets.getJsonArrayForExport(idElement.getAsString());
 						element.getAsJsonObject().add("widgets", widgets);
 						
-						JsonArray parameters = CFW.DB.Parameters.getJsonArrayForExport(idElement.getAsString());
+						JsonArray parameters = CFW.DB.Parameters.getJsonArrayForExport(CFWParameterScope.dashboard, idElement.getAsString());
 						element.getAsJsonObject().add("parameters", parameters);
 					}
 					
@@ -670,7 +671,7 @@ public class CFWDBDashboard {
 				dashboard.id(null);
 				dashboard.timeCreated( new Timestamp(new Date().getTime()) );
 				
-				String importedName = dashboard.name() +"(Imported)";
+				String importedName = dashboard.name();
 				dashboard.name(importedName);
 				
 				//-----------------------------

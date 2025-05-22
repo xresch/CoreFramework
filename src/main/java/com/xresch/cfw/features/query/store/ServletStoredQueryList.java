@@ -133,7 +133,10 @@ public class ServletStoredQueryList extends HttpServlet
 					case "storedquerytats": 	String timeframeString = request.getParameter("timeframe");
 												CFWTimeframe time = new CFWTimeframe(timeframeString);
 												jsonResponse.setPayload(CFW.DB.StoredQuery.getEAVStats(ID, time.getEarliest(), time.getLatest()));
-												break;									
+												break;	
+					
+					case "export": 				jsonResponse.getContent().append(CFW.DB.StoredQuery.getJsonForExport(ID));
+												break;			
 																										
 					default: 					CFW.Messages.itemNotSupported(item);
 												break;
@@ -174,7 +177,18 @@ public class ServletStoredQueryList extends HttpServlet
 				}
 				break;	
 				
-				
+			case "import": 			
+				switch(item.toLowerCase()) {
+
+					case "storedquery": String jsonString = request.getParameter("jsonString");
+										CFW.DB.StoredQuery.importByJson(jsonString, false);
+										CFW.Messages.addInfoMessage("Import finished!");
+										break;  
+										
+					default: 			CFW.Messages.itemNotSupported(item);
+										break;
+				}
+				break;		
 				
 			case "getform": 			
 				switch(item.toLowerCase()) {
@@ -240,7 +254,7 @@ public class ServletStoredQueryList extends HttpServlet
 			
 		}else {
 			jsonResponse.setSuccess(false);
-			CFW.Messages.addErrorMessage("Insufficient permissions to duplicate the storedQuery.");
+			CFW.Messages.addErrorMessage("Insufficient permissions to duplicate the Stored Query.");
 		}
 	}
 	
@@ -301,7 +315,7 @@ public class ServletStoredQueryList extends HttpServlet
 				
 				storedQuery.updateSelectorFields();
 				
-				CFWForm editStoredQueryForm = storedQuery.toForm("cfwEditStoredQueryForm"+ID, "Update StoredQuery");
+				CFWForm editStoredQueryForm = storedQuery.toForm("cfwEditStoredQueryForm"+ID, "Update Stored Query");
 
 				editStoredQueryForm.setFormHandler(new CFWFormHandler() {
 					
@@ -345,13 +359,13 @@ public class ServletStoredQueryList extends HttpServlet
 			final String NEW_OWNER = "JSON_NEW_OWNER";
 			if(storedQuery != null) {
 				
-				CFWForm changeOwnerForm = new CFWForm("cfwChangeStoredQueryOwnerForm"+ID, "Update StoredQuery");
+				CFWForm changeOwnerForm = new CFWForm("cfwChangeStoredQueryOwnerForm"+ID, "Update Stored Query");
 				
 				changeOwnerForm.addField(
 					CFWField.newTagsSelector(NEW_OWNER)
 						.setLabel("New Owner")
 						.addAttribute("maxTags", "1")
-						.setDescription("Select the new owner of the StoredQuery.")
+						.setDescription("Select the new owner of the Stored Query.")
 						.addValidator(new NotNullOrEmptyValidator())
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
@@ -372,7 +386,7 @@ public class ServletStoredQueryList extends HttpServlet
 	
 							if(!Strings.isNullOrEmpty(newOwner)) {
 								
-								new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWStoredQuery.class, "Change owner ID of storedQuery from "+storedQuery.foreignKeyOwner()+" to "+newOwner);
+								new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWStoredQuery.class, "Change owner ID of Stored Query from "+storedQuery.foreignKeyOwner()+" to "+newOwner);
 								
 								Integer oldOwner = storedQuery.foreignKeyOwner();
 								storedQuery.foreignKeyOwner(Integer.parseInt(newOwner));
@@ -387,8 +401,8 @@ public class ServletStoredQueryList extends HttpServlet
 											new Notification()
 													.foreignKeyUser(Integer.parseInt(newOwner))
 													.messageType(MessageType.INFO)
-													.title("StoredQuery assigned to you: '"+storedQuery.name()+"'")
-													.message("The user '"+currentUser.createUserLabel()+"' has assigned the storedQuery to you. You are now the new owner of the storedQuery.");
+													.title("Stored Query assigned to you: '"+storedQuery.name()+"'")
+													.message("The user '"+currentUser.createUserLabel()+"' has assigned the Stored Query to you. You are now the new owner of the storedQuery.");
 
 									CFW.DB.Notifications.create(newOwnerNotification);
 									
@@ -399,8 +413,8 @@ public class ServletStoredQueryList extends HttpServlet
 											new Notification()
 													.foreignKeyUser(oldOwner)
 													.messageType(MessageType.INFO)
-													.title("Owner of storedQuery '"+storedQuery.name()+"' is now "+user.createUserLabel())
-													.message("The user '"+currentUser.createUserLabel()+"' has changed the owner of your former storedQuery to the user '"+user.createUserLabel()+"'. ");
+													.title("Owner of Stored Query '"+storedQuery.name()+"' is now "+user.createUserLabel())
+													.message("The user '"+currentUser.createUserLabel()+"' has changed the owner of your former Stored Query to the user '"+user.createUserLabel()+"'. ");
 
 									CFW.DB.Notifications.create(oldOwnerNotification);
 								}

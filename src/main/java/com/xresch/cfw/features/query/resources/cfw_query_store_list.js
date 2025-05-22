@@ -85,7 +85,7 @@ function cfw_storedQuerylist_createStoredQuery(){
 function cfw_storedQuerylist_importStoredQuery(){
 	
 	var uploadHTML = 
-		'<p>Select a previously exported storedQuery file. Share settings will be imported as well. If you exported the storedQuery from another application or application instance, the widgets might not be able to load correctly.</p>'
+		'<p>Select a previously exported stored query file. Share settings will be imported as well. If you exported the storedQuery from another application or application instance, the widgets might not be able to load correctly.</p>'
 		+'<div class="form-group">'
 			+'<label for="importFile">Select File to Import:</label>'
 			+'<input type="file" class="form-control" name="importFile" id="importFile" />'
@@ -113,7 +113,7 @@ function cfw_storedQuerylist_importStoredQueryExecute(){
 		  // Obtain the read file data
 		  var fileString = evt.target.result;
 		  
-			var params = {action: "import", item: "storedQuery", jsonString: fileString};
+			var params = {action: "import", item: "storedquery", jsonString: fileString};
 			CFW.http.postJSON(CFW_STOREDQUERYLIST_URL, params, 
 				function(data) {
 					//do nothing
@@ -332,6 +332,12 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 					   + '</button>');
 	
 		parent.append(createButton);
+		
+		var importButton = $('<button id="button-import" class="btn btn-sm btn-success m-1" onclick="cfw_storedQuerylist_importStoredQuery()">'
+				+ '<i class="fas fa-upload"></i> '+ CFWL('cfw_core_import', 'Import')
+		   + '</button>');
+
+		parent.append(importButton);
 				
 	}
 	
@@ -443,6 +449,27 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 					}
 					
 					return htmlString;
+				});
+		}
+		
+		//-------------------------
+		// Export Button
+		if(type == 'mystoredQuery'
+		|| type == 'adminstoredQuery'
+		|| type == 'favedstoredQuery'){
+
+			actionButtons.push(
+				function (record, id){
+					if(JSDATA.userid == record.FK_ID_OWNER 
+					|| type == 'adminstoredQuery'){
+						return '<a class="btn btn-warning btn-sm text-white" target="_blank" alt="Export" title="Export" '
+							+' href="'+CFW_STOREDQUERYLIST_URL+'?action=fetch&item=export&id='+id+'" download="'+record.NAME.replaceAll(' ', '_')+'.json">'
+							+'<i class="fa fa-download"></i>'
+							+ '</a>';
+					}else{
+						return '&nbsp;';
+					}
+					
 				});
 		}
 		

@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -22,12 +23,15 @@ import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.store.CFWStoredQuery.CFWStoredQueryFields;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
 import com.xresch.cfw.features.parameter.CFWParameter;
+import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterScope;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -688,6 +692,285 @@ public class CFWDBStoredQuery {
 		
 	}
 	
+	/***************************************************************
+	 * Return a JSON string for export.
+	 * 
+	 * @return Returns a JSON array string.
+	 ****************************************************************/
+	public static String getJsonForExport(String StoredQueryID) {
+
+		if(CFW.Context.Request.hasPermission(FeatureStoredQuery.PERMISSION_STOREDQUERY_ADMIN)
+		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)
+		|| CFW.DB.StoredQuery.checkCanEdit(StoredQueryID)) {			
+			JsonArray StoredQueryArray = null;
+			if(Strings.isNullOrEmpty(StoredQueryID)) {
+				StoredQueryArray = new CFWStoredQuery()
+						.queryCache(CFWDBStoredQuery.class, "getJsonForExportAll")
+						.select()
+						.getObjectsAsJSONArray();
+			}else {
+				StoredQueryArray = new CFWStoredQuery()
+						.queryCache(CFWDBStoredQuery.class, "getJsonForExport")
+						.select()
+						.where(CFWStoredQueryFields.PK_ID, StoredQueryID)
+						.getObjectsAsJSONArray();
+			}
+			
+			//-------------------------------
+			// For Every StoredQuery
+			for(JsonElement element : StoredQueryArray) {
+				if(element.isJsonObject()) {
+					
+					//-------------------------------
+					// Get Username
+					JsonElement useridElement = element.getAsJsonObject().get(CFWStoredQueryFields.FK_ID_OWNER.toString());
+					if(!useridElement.isJsonNull() && useridElement.isJsonPrimitive()) {
+						String username = CFW.DB.Users.selectUsernameByID(useridElement.getAsInt());
+						element.getAsJsonObject().addProperty("username", username);
+					}
+					
+					//-------------------------------
+					// Get Widgets & Parameters
+					JsonElement idElement = element.getAsJsonObject().get(CFWStoredQueryFields.PK_ID.toString());
+					if(!idElement.isJsonNull() && idElement.isJsonPrimitive()) {
+						
+						JsonArray parameters = CFW.DB.Parameters.getJsonArrayForExport(CFWParameterScope.query, idElement.getAsString());
+						element.getAsJsonObject().add("parameters", parameters);
+					}
+					
+				}
+			}
+			
+			JsonObject resultObject = new JsonObject();
+			resultObject.add("storedquery", StoredQueryArray);
+			return CFW.JSON.toJSONPretty(resultObject);
+		}else {
+			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!") );
+			return "[]";
+		}
+	}
+	
+	/***************************************************************
+	 * Import an jsonArray exported with getJsonArrayForExport().
+	 * @param json json object or array string
+	 *   - Array of StoredQuerys:  [{ ... StoredQueryFields ...}, { ... StoredQueryFields ...}]	
+	 *   - Object with StoredQuerys: { StoredQuerys: [ ...] }
+	 *   - Object with Payload(One of above):  { payload: <objectOrArray> }
+	 *     	
+	 * @return Returns a JSON array string.
+	 ****************************************************************/
+	public static boolean importByJson(String json, boolean keepOwner) {
+
+		//-----------------------------
+		// Resolve JSON Array
+		JsonElement element = CFW.JSON.stringToJsonElement(json);
+		JsonArray array = null;
+		
+		if(element.isJsonArray()) {
+			array = element.getAsJsonArray();
+		}else if(element.isJsonObject()) {
+			JsonObject object = element.getAsJsonObject();
+			if(object.has("payload")) {
+				return importByJson(object.get("payload").toString(), keepOwner);
+				
+			}if(object.has("storedquery")) {
+				return importByJson(object.get("storedquery").toString(), keepOwner);
+				
+			}else {
+				new CFWLog(logger)
+					.warn(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."), new Exception());
+				return false;
+			}
+		}else {
+			new CFWLog(logger)
+				.warn(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."), new Exception());
+			return false;
+		}
+		
+		//-----------------------------
+		// Create StoredQuerys
+		for(JsonElement StoredQueryElement : array) {
+			if(StoredQueryElement.isJsonObject()) {
+				JsonObject storedQueryObject = StoredQueryElement.getAsJsonObject();
+				
+				//-----------------------------
+				// Map values
+				CFWStoredQuery storedQuery = new CFWStoredQuery();
+				storedQuery.mapJsonFields(storedQueryObject, true, true);
+				storedQuery.id(null);
+				storedQuery.timeCreated( new Timestamp(new Date().getTime()) );
+				
+				String importedName = storedQuery.name();
+				if(!checkCanSaveWithName(storedQuery)) {
+					importedName += "-"+CFW.Random.stringAlphaNum(6);
+					storedQuery.name(importedName);
+				}
+				
+				
+				//-----------------------------
+				// Reset StoredQuery ID and Owner
+				storedQuery.id(null);
+				
+				if(keepOwner && storedQueryObject.has("username")) {
+					String username = storedQueryObject.get("username").getAsString();
+					User owner = CFW.DB.Users.selectByUsernameOrMail(username);
+					if(owner != null) {
+						storedQuery.foreignKeyOwner(owner.id());
+					}else {
+						CFW.Messages.addWarningMessage(
+							"The the stored query owner with name '"+username+"' could not be resolved. Set the owner to the importing user."
+						);
+						storedQuery.foreignKeyOwner(CFW.Context.Request.getUser().id());
+					}
+				}else {
+					storedQuery.foreignKeyOwner(CFW.Context.Request.getUser().id());
+				}
+				
+				//-----------------------------
+				// Resolve Shared Users
+				if(storedQuery.sharedWithUsers() != null) {
+					LinkedHashMap<String, String> resolvedViewers = new LinkedHashMap<String, String>();
+					for(String id : storedQuery.sharedWithUsers().keySet()) {
+						User user = CFW.DB.Users.selectByID(Integer.parseInt(id));
+						if(user != null) {
+							
+							resolvedViewers.put(""+user.id(), user.createUserLabel());
+						}else {
+							CFW.Messages.addWarningMessage(
+									CFW.L("cfw_core_error_usernotfound",
+										  "The user '{0}' could not be found.",
+										  storedQuery.sharedWithUsers().get(id))
+							);
+						}
+						
+					}
+					storedQuery.sharedWithUsers(resolvedViewers);
+				}
+				
+				//-----------------------------
+				// Resolve Editors
+				if(storedQuery.editors() != null) {
+					LinkedHashMap<String, String> resolvedEditors = new LinkedHashMap<String, String>();
+					for(String id : storedQuery.editors().keySet()) {
+						User user = CFW.DB.Users.selectByID(Integer.parseInt(id));
+						if(user != null) {
+							resolvedEditors.put(""+user.id(), user.username());
+						}else {
+							CFW.Messages.addWarningMessage(
+									CFW.L("cfw_core_error_usernotfound",
+										  "The  user '{0}' could not be found.",
+										  storedQuery.editors().get(id))
+							);
+						}
+					}
+					storedQuery.editors(resolvedEditors);
+				}
+				
+				//-----------------------------
+				// Resolve Shared Roles
+				if(storedQuery.sharedWithGroups() != null) {
+					LinkedHashMap<String, String> resolvedSharedRoles = new LinkedHashMap<String, String>();
+					for(String id : storedQuery.sharedWithGroups().keySet()) {
+						Role role = CFW.DB.Roles.selectByID(Integer.parseInt(id));
+						if(role != null) {
+							resolvedSharedRoles.put(""+role.id(), role.name());
+						}else {
+							CFW.Messages.addWarningMessage(
+									CFW.L("cfw_core_error_rolenotfound",
+										  "The  role '{0}' could not be found.",
+										  storedQuery.sharedWithGroups().get(id))
+							);
+						}
+					}
+					storedQuery.sharedWithGroups(resolvedSharedRoles);
+				}
+				
+				//-----------------------------
+				// Resolve Editor Roles
+				if(storedQuery.editorGroups() != null) {
+					LinkedHashMap<String, String> resolvedEditorRoles = new LinkedHashMap<String, String>();
+					for(String id : storedQuery.editorGroups().keySet()) {
+						Role role = CFW.DB.Roles.selectByID(Integer.parseInt(id));
+						if(role != null) {
+							resolvedEditorRoles.put(""+role.id(), role.name());
+						}else {
+							CFW.Messages.addWarningMessage(
+									CFW.L("cfw_core_error_rolenotfound",
+										  "The  role '{0}' could not be found.",
+										  storedQuery.editorGroups().get(id))
+							);
+						}
+					}
+					storedQuery.editorGroups(resolvedEditorRoles);
+				}
+				
+				//-----------------------------
+				// Create StoredQuery
+				Integer newStoredQueryID = CFW.DB.StoredQuery.createGetPrimaryKey(storedQuery);
+				if(newStoredQueryID == null) {
+					new CFWLog(logger)
+						.severe("StoredQuery '"+storedQuery.name()+"' could not be imported.");
+					continue;
+				}
+				
+				storedQuery.saveSelectorFields();
+				
+				//-----------------------------
+				// Create Parameters
+				HashMap<Integer, Integer> oldNewParamIDs = new HashMap<>();
+				if(storedQueryObject.has("parameters")) {
+					
+					//-----------------------------
+					// Check format
+					if(!storedQueryObject.get("parameters").isJsonArray()) {
+						CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
+						continue;
+					}
+					
+					//-----------------------------
+					// Create Parameters
+					JsonArray paramsArray = storedQueryObject.get("parameters").getAsJsonArray();
+					for(JsonElement paramsElement : paramsArray) {
+						
+						if(paramsElement.isJsonObject()) {
+							
+							JsonObject paramsObject = paramsElement.getAsJsonObject();
+							//-----------------------------
+							// Map values
+							CFWParameter param = new CFWParameter();
+							param.mapJsonFields(paramsObject, true, true);
+							
+							//-----------------------------
+							// Reset IDs
+							Integer oldID = param.getPrimaryKeyValue();
+							param.id(null);
+							param.foreignKeyQuery(newStoredQueryID);
+							
+							//-----------------------------
+							// Create Parameter
+							
+							Integer newID = CFW.DB.Parameters.createGetPrimaryKey(param);
+							if(newID == null) {
+								CFW.Messages.addErrorMessage("Error creating imported parameter.");
+								continue;
+							}
+							
+							oldNewParamIDs.put(oldID, newID);
+							
+						}
+					}
+				}
+				
+				
+			}else {
+				CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
+				continue;
+			}
+		}
+		
+		return true;
+	}
+	
 	//####################################################################################################
 	// CHECKS
 	//####################################################################################################
@@ -893,9 +1176,11 @@ public class CFWDBStoredQuery {
 		
 		removeWidgetCache(storedQuery.id());
 		
-		int id = storedQuery.id();
+		Integer id = storedQuery.id();
+		
 		if( !storedQuery.isArchived()
 		&&  storedQuery.makeWidget() 
+		&&  id != null
 		){
 			
 			WidgetStoredQuery widget = new WidgetStoredQuery(storedQuery);

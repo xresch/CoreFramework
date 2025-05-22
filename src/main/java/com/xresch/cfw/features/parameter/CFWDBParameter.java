@@ -291,21 +291,29 @@ public class CFWDBParameter {
 	
 	/***************************************************************
 	 * Return a JSON string for export.
+	 * @param scope TODO
 	 * 
 	 * @return Returns a JsonArray or null on error.
 	 ****************************************************************/
-	public static JsonArray getJsonArrayForExport(String dashboardID) {
+	public static JsonArray getJsonArrayForExport(CFWParameterScope scope, String itemID) {
 		
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
 		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)
-		|| CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+		|| CFW.DB.Dashboards.checkCanEdit(itemID)) {
+			
+			CFWParameterFields idField;
+			switch (scope) {
+				case dashboard: idField = CFWParameterFields.FK_ID_DASHBOARD; break;
+				case query:		idField = CFWParameterFields.FK_ID_QUERY; break;
+				default:		return null;
+			}
 			
 			CFWSQL selectForExport = new CFWSQL(new CFWParameter())
-				.queryCache()
+				//.queryCache() cannot cache this query
 				.select();
 			
-			if(!Strings.isNullOrEmpty(dashboardID)) {
-				selectForExport.where(CFWParameterFields.FK_ID_DASHBOARD, dashboardID);
+			if(!Strings.isNullOrEmpty(itemID)) {
+				selectForExport.where(idField, itemID);
 				return  selectForExport.getObjectsAsJSONArray();
 			}
 							
