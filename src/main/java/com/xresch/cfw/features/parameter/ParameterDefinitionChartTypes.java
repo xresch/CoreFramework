@@ -46,9 +46,14 @@ public class ParameterDefinitionChartTypes extends ParameterDefinition {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
-		CFWField settingsField = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, "text")
+		CFWField settingsField = CFWField.newString(FormFieldType.SELECT, "text")
 						.allowHTML(true)
-						.setValue("area");
+						.setOptions(FeatureCore.getChartTypes())
+						;
+		
+		if(fieldValue != null) {
+			settingsField.setValue(fieldValue.toString());
+		}
 
 		return settingsField;
 	}
@@ -60,11 +65,8 @@ public class ParameterDefinitionChartTypes extends ParameterDefinition {
 	@Override
 	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe, JsonObject  userSelectedParamValues) {
 
-		CFWField settingsField = CFWField.newString(FormFieldType.SELECT, CFWParameterFields.VALUE);
+		return getFieldForSettings(request, dashboardid, parameterValue);
 
-		settingsField.setOptions(FeatureCore.getChartTypes());
-
-		return settingsField;
 	}
 	
 	/***************************************************************
