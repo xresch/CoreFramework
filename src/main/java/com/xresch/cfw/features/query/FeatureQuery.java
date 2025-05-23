@@ -323,6 +323,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionType(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionUppercase(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionUserdata(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionValue(null));
 		 
 		//----------------------------------
 		// Register Sources

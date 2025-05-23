@@ -1,0 +1,8 @@
+
+<p>The value function is used in the rare cases where you are unable to retrieve a value for a fieldname.
+The opposite of this function is the literal()-function.</p>
+
+<pre><code class="language-cfwquery">| source random
+| set # one of the rare known cases where you cannot use a fieldname is in array expressions
+	array = []
+	array[value(INDEX)] = FIRSTNAME </code></pre>
