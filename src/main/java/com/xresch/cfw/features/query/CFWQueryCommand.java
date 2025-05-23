@@ -31,11 +31,13 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	private CFWQueryCommandSource previousSource = null;
 	private boolean isPreviousSourceInitialized = false;
 	
+	private ArrayList<QueryPart> queryParts = null;
 	protected CFWQuery parent;
 	
 	public CFWQueryCommand(CFWQuery parent) {
 		this.parent = parent;
 	}
+	
 	
 	/***********************************************************************************************
 	 * Return the unique name and aliases of the command.
@@ -105,6 +107,16 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	 * If you add headers to your description it is recommended to use <h3> or lower headers.
 	 ***********************************************************************************************/
 	public abstract String descriptionHTML();
+	
+	/***********************************************************************************************
+	 * INTERNAL METHOD 
+	 * Will set the query parts and call the abstract method setAndValidateQueryParts().
+	 ***********************************************************************************************/
+	public void setQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
+		queryParts = parts;
+		this.setAndValidateQueryParts(parser, parts);
+	}
+	
 
 	/***********************************************************************************************
 	 * This method receives the query parts associated with this command during parsing.
@@ -223,6 +235,14 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 				
 		}
 		return source;
+	}
+	
+	/***********************************************************************************************
+	 * Returns the query parts of this command.
+	 ***********************************************************************************************/
+	@SuppressWarnings("rawtypes")
+	public ArrayList<QueryPart> getQueryParts() {
+		return queryParts;
 	}
 	
 	/***********************************************************************************************

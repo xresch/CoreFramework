@@ -559,54 +559,62 @@ public class CFWParameter extends CFWObject {
 		//###############################################################################
 	
 		//=============================================
-		// Handle SUBSTITUTE PARAMS
+		// Prechecks
 		//=============================================
-		
-		if(parameters != null 
-		&& !parameters.isJsonNull()
-		&& parameters.isJsonObject()
+		if(parameters == null 
+		|| parameters.isJsonNull()
+		|| ! parameters.isJsonObject()
+		|| ! zeString.contains("$")
 		) {
-			JsonObject paramsObject = parameters.getAsJsonObject();
-			
-			for(Entry<String, JsonElement> current : paramsObject.entrySet()) {
-				String paramName = current.getKey();
-				JsonElement valueElement = current.getValue();
-				
-				String valueString = "";
-				if(valueElement == null || valueElement.isJsonNull()) {
-					valueString="null";
-				}else if(valueElement.isJsonPrimitive() ){
-					JsonPrimitive primitive = valueElement.getAsJsonPrimitive();
-					if(primitive.isString()) {
-						valueString = primitive.getAsString();
-					}else if (primitive.isNumber()) {
-						valueString = ""+primitive.getAsNumber();
-					}else {
-						valueString = (primitive.getAsBoolean()+"").toLowerCase();
-					}
-					
-				}else {
-					valueString = CFW.JSON.toJSON(valueElement);
-				}
-				
-
-				//--------------------------------------
-				// Do Substitute
-				String escaped = valueString;
-				
-				if(doEscape) {
-					escaped = CFW.JSON.escapeString(valueString);
-				}
-				
-				if(escaped == null) {
-					escaped = "";
-				}
-
-				zeString = zeString.replaceAll("\\$"+paramName+"\\$", escaped);
-				
-			}
+			return zeString;
 		}
 		
+		//=============================================
+		// Handle SUBSTITUTE PARAMS
+		//=============================================
+		JsonObject paramsObject = parameters.getAsJsonObject();
+		
+		for(Entry<String, JsonElement> current : paramsObject.entrySet()) {
+			String paramName = current.getKey();
+			JsonElement valueElement = current.getValue();
+			
+			String valueString = "";
+			if(valueElement == null || valueElement.isJsonNull()) {
+				valueString="null";
+			}else if(valueElement.isJsonPrimitive() ){
+				JsonPrimitive primitive = valueElement.getAsJsonPrimitive();
+				if(primitive.isString()) {
+					valueString = primitive.getAsString();
+				}else if (primitive.isNumber()) {
+					valueString = ""+primitive.getAsNumber();
+				}else {
+					valueString = (primitive.getAsBoolean()+"").toLowerCase();
+				}
+				
+			}else {
+				valueString = CFW.JSON.toJSON(valueElement);
+			}
+			
+
+			//--------------------------------------
+			// Do Substitute
+			String escaped = valueString;
+			
+			if(doEscape) {
+				escaped = CFW.JSON.escapeString(valueString);
+			}
+			
+			if(escaped == null) {
+				escaped = "";
+			}
+
+			zeString = zeString.replaceAll("\\$"+paramName+"\\$", escaped);
+			
+		}
+		
+		//=============================================
+		// Return Parameters
+		//=============================================
 		return zeString;
 		
 	}

@@ -2,7 +2,6 @@ package com.xresch.cfw.features.query.parse;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Stack;
 import java.util.logging.Logger;
@@ -586,9 +585,54 @@ public class CFWQueryParser {
 	}
 	
 	/***********************************************************************************************
+	 * Parses all commands with the specified names and returns them as a list.
+	 * 
+	 ***********************************************************************************************/
+	public ArrayList<CFWQueryCommand> parseQuerySpecificCommands(String... commandNames) throws ParseException {
+		
+		ArrayList<CFWQueryCommand> result = new ArrayList<>();
+		
+		//------------------------------------
+		// Make Lowercase Set
+		LinkedHashSet<String> lowercaseCommands = new LinkedHashSet<>();
+		
+		for(String name : commandNames) {
+			lowercaseCommands.add(name.toLowerCase());
+		}
+		
+		//------------------------------------
+		// Parse Specified Commands
+		CFWQuery pseudoQuery = new CFWQuery();
+		while(this.hasMoreTokens()) {			
+			
+			//------------------------------------
+			// Skip preceding command separators '|'
+			while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR) {
+				this.consumeToken();
+			}
+			
+			//------------------------------------
+			// Skip preceding command separators '|'
+			while(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.OPERATOR_OR) {
+				this.consumeToken();
+			}
+			
+			if(this.hasMoreTokens() && this.lookahead().isString()) {
+				String commandName = this.lookahead().value().toLowerCase();
+				if(lowercaseCommands.contains(commandName)) {
+					CFWQueryCommand command = parseQueryCommand(pseudoQuery);
+					result.add(command);
+				}
+			}
+		}
+		
+		return result;
+		
+	}
+	/***********************************************************************************************
 	 * Parses a single command
 	 ***********************************************************************************************/
-	public CFWQueryCommand parseQueryCommand(CFWQuery parentQuery) throws ParseException {
+	private CFWQueryCommand parseQueryCommand(CFWQuery parentQuery) throws ParseException {
 				
 		//------------------------------------
 		// Check Has More Tokens
@@ -686,7 +730,7 @@ public class CFWQueryParser {
 				part.setParentCommand(command);
 			}
 			
-			command.setAndValidateQueryParts(this, parts);
+			command.setQueryParts(this, parts);
 			
 			addTrace("Parse", "Command", "[END]");
 			
@@ -717,26 +761,6 @@ public class CFWQueryParser {
 		}
 		
 		return currentQueryParts;
-	}
-	
-	/***********************************************************************************************
-	 * Set the original query text to the part.
-	 * @return the part that was given as the first argument.
-	 ***********************************************************************************************/
-	public QueryPart setQueryText(QueryPart part, int beginCursor) throws ParseException {
-		
-		StringBuilder builder = new StringBuilder();
-		int smaller = Math.min(cursor, tokenlist.size());
-		for( ; beginCursor < smaller; beginCursor++ ) {
-			builder.append( tokenlist.get(beginCursor).valueQuotedStrings() )
-				.append(" ");
-		}
-		
-		builder.deleteCharAt(builder.length()-1);
-		
-		part.setOriginalQueryText( builder.toString() );
-		
-		return part;
 	}
 	
 	/***********************************************************************************************
@@ -1342,6 +1366,30 @@ public class CFWQueryParser {
 
 	}
 	
+	/***********************************************************************************************
+	 * Set the original query text to the part.
+	 * @return the part that was given as the first argument.
+	 ***********************************************************************************************/
+	public QueryPart setQueryText(QueryPart part, int beginCursor) throws ParseException {
+		
+		if(part == null) { return part; }
+		
+		StringBuilder builder = new StringBuilder();
+		int smaller = Math.min(cursor, tokenlist.size());
+		for( ; beginCursor < smaller; beginCursor++ ) {
+			builder.append( tokenlist.get(beginCursor).valueQuotedStrings() )
+				.append(" ");
+		}
+		
+		if(builder.length() > 0) {
+			builder.deleteCharAt(builder.length()-1);
+		}
+		
+		part.setOriginalQueryText( builder.toString() );
+		
+		return part;
+	}
+
 	/***********************************************************************************************
 	 * Create parse exception for a token.
 	 * 

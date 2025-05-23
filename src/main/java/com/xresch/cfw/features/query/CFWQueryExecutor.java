@@ -15,9 +15,12 @@ import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandParamDefaults;
 import com.xresch.cfw.features.query.database.CFWDBQueryHistory;
 import com.xresch.cfw.features.query.database.CFWQueryHistory;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
+import com.xresch.cfw.features.query.parse.QueryPart;
+import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
@@ -167,13 +170,72 @@ public class CFWQueryExecutor {
 		baseQueryContext.setTimezoneOffsetMinutes(timezoneOffsetMinutes);
 		baseQueryContext.checkPermissions(checkPermissions);
 
-		//----------------------
-		// Apply Parameters
-		String finalQuery = CFWParameter.substituteInString(queryString, parametersObject, false);
-		baseQueryContext.setParameters(parametersObject);
+		String finalQuery = applyParameters(queryString, parametersObject, baseQueryContext);
 				
 		return this.parseAndExecuteAll(baseQueryContext, finalQuery, null, null);
 		
+	}
+
+	/****************************************************************************************
+	 * Applies user and command parameters to parameter placeholders "$paramName$". 
+	 * 
+	 * @params queryString the query to execute
+	 * @param paramObject the parameters for the execution, like:
+	 * 	{
+	 *  	"paramName1": "value1",
+	 *  	"paramName2": "value2",
+	 *  	...
+	 *  }
+	 * 
+	 ****************************************************************************************/
+	private String applyParameters(String queryString, JsonObject parametersObject, CFWQueryContext baseQueryContext) {
+		
+		baseQueryContext.setParameters(parametersObject);
+		
+		//=========================================================
+		// Apply User Parameters to parameter placeholders $...$
+		String finalQuery = CFWParameter.substituteInString(queryString, parametersObject, false);
+
+		//=========================================================
+		// Apply Default Parameters to parameter placeholders $...$
+		CFWQueryParser parser = new CFWQueryParser(finalQuery, false);
+		try {
+			
+			//-----------------------------------
+			// Get Parameter Commands
+			ArrayList<CFWQueryCommand> commands = parser.parseQuerySpecificCommands(
+					  CFWQueryCommandParamDefaults.COMMAND_NAME
+					, CFWQueryCommandParamDefaults.COMMAND_NAME_ALIAS
+				);
+			
+			//-----------------------------------
+			// Create List of Param Values
+			JsonObject defaultParamsObject = new JsonObject();
+			for(CFWQueryCommand command : commands) {
+				ArrayList<QueryPart> parts = command.getQueryParts();
+				for(QueryPart part : parts) {
+					if(part instanceof QueryPartAssignment) {
+						QueryPartAssignment assignment = (QueryPartAssignment)part;
+						
+						String paramName = assignment.getLeftSideAsString(null);
+						String paramValue = assignment.getRightSide().getOriginalQueryText();
+						paramValue = paramValue.replaceAll("^[\"'`]|[\"'`]$", "");
+						defaultParamsObject.addProperty(paramName, paramValue);
+					}
+				}
+			}
+			
+			//-----------------------------------
+			// Substitute Parameters
+			finalQuery = CFWParameter.substituteInString(finalQuery, defaultParamsObject, false);
+			
+		}catch (Exception e) {
+			new CFWLog(logger).severe("Error while parsing parameter commands:"+e.getMessage(), e);
+			parserDebugState(baseQueryContext, parser);
+			return finalQuery;
+		}
+		
+		return finalQuery;
 	}
 	
 	/****************************************************************************************

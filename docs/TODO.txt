@@ -189,9 +189,11 @@ DONE
 - Dashboard: Fixed Timeframe picker not displayed if widget is set to manual or parameter load
 - Query: Fixed some issues where values could not be assigned to arrays in certain constellations
 - Query: Fixed messages not displayed when result is empty.
+- Query: Default parameters can now be used with parameter placeholders $...$
 - Query: Do not auto hide fields starting with "_"
 - Query Command: rename - can now be used with if/else commands
 - Query Command: set - can now be used with if/else commands
+- Query: Debug output for "#PARTS" now contains original query string
 
 - Query: Added Sources:
 	- stored
