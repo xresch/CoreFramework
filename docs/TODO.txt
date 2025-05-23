@@ -207,6 +207,7 @@ DONE
 - Query: Added Functions:
 	- arrayAdd
 	- arrayConcat
+	- arrayReverse
 	- arraySplit
 	- arrayStringify
 	- decodeBase64
