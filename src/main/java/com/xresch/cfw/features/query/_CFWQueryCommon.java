@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
@@ -40,7 +39,7 @@ public class _CFWQueryCommon {
 	public static final String TAG_STRINGS = "strings";
 	public static final String TAG_TIME = "time";
 	
-		
+	
 	/***********************************************************************************************
 	 * Used for sorting fields
 	 ***********************************************************************************************/

@@ -41,7 +41,8 @@ public class CFWQueryFunctionArrayStringify extends CFWQueryFunction {
 	@Override
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
-		tags.add(_CFWQueryCommon.TAG_CODING);
+		tags.add(_CFWQueryCommon.TAG_ARRAYS);
+		tags.add(_CFWQueryCommon.TAG_STRINGS);
 		return tags;
 	}
 	

@@ -16,6 +16,8 @@ public abstract class QueryPart {
 	
 	private int cursorPosition = 0;
 	
+	private String originalQueryText = "";
+	
 	// The command which this query part is part of, will be set by the parser
 	protected CFWQueryCommand parent;
 	
@@ -24,6 +26,20 @@ public abstract class QueryPart {
 	 ***********************************************************************************************/
 	public QueryPart() {
 
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	protected void setOriginalQueryText(String originalQueryText) {
+		this.originalQueryText = originalQueryText;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public String getOriginalQueryText() {
+		return originalQueryText;
 	}
 	
 	/***********************************************************************************************

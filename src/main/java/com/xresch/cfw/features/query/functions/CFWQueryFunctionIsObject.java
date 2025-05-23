@@ -40,6 +40,7 @@ public class CFWQueryFunctionIsObject extends CFWQueryFunction {
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
 		tags.add(_CFWQueryCommon.TAG_CODING);
+		tags.add(_CFWQueryCommon.TAG_OBJECTS);
 		return tags;
 	}
 	

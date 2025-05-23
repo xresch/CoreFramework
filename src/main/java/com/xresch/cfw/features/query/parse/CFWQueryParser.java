@@ -2,6 +2,8 @@ package com.xresch.cfw.features.query.parse;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -14,7 +16,6 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
-import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
@@ -95,7 +96,7 @@ public class CFWQueryParser {
 	// the context of currentQuery
 	private CFWQueryContext currentContext;
 	
-	// the parts of all queries, used for debugging, will contain CFWQueryCommand and CFQQueryPart
+	// the parts of all queries, used for debugging, will contain CFWQueryCommand and CFWQueryPart
 	ArrayList<Object> allqueryParts = new ArrayList<>(); 
 	
 	// the parts of the currentQuery
@@ -359,25 +360,32 @@ public class CFWQueryParser {
 			partRecords.add(partObject);
 			
 			if(part instanceof QueryPart) {
-				JsonObject debugObject = ((QueryPart)part).createDebugObject(null);
+				QueryPart queryPart = ((QueryPart)part);
+				JsonObject debugObject = queryPart.createDebugObject(null);
 				
 				partObject.add(
 						QueryPart.FIELD_PARTTYPE
 					  , debugObject.remove(QueryPart.FIELD_PARTTYPE)
 				);
 				partObject.add("value", debugObject);
+				partObject.addProperty("originalText", queryPart.getOriginalQueryText());
 				
 			}else if(part instanceof CFWQueryCommand) { 
 				CFWQueryCommand command = (CFWQueryCommand)part;
 				partObject.addProperty(QueryPart.FIELD_PARTTYPE, "command");
 				partObject.addProperty("value", command.getUniqueName());
+				partObject.addProperty("originalText", "");
 			}
 		}
 		
 		//-----------------------------
 		// Set Detected Fieldnames
 		if( ! partRecords.isEmpty() ) {
-			partsResult.setDetectedFields(partRecords.get(0).keySet());
+			LinkedHashSet<String> detectedFields = new LinkedHashSet<>();
+			detectedFields.add(QueryPart.FIELD_PARTTYPE);
+			detectedFields.add("value");
+			detectedFields.add("originalText");
+			partsResult.setDetectedFields(detectedFields);
 		}
 					
 		//-----------------------------
@@ -712,10 +720,32 @@ public class CFWQueryParser {
 	}
 	
 	/***********************************************************************************************
+	 * Set the original query text to the part.
+	 * @return the part that was given as the first argument.
+	 ***********************************************************************************************/
+	public QueryPart setQueryText(QueryPart part, int beginCursor) throws ParseException {
+		
+		StringBuilder builder = new StringBuilder();
+		int smaller = Math.min(cursor, tokenlist.size());
+		for( ; beginCursor < smaller; beginCursor++ ) {
+			builder.append( tokenlist.get(beginCursor).valueQuotedStrings() )
+				.append(" ");
+		}
+		
+		builder.deleteCharAt(builder.length()-1);
+		
+		part.setOriginalQueryText( builder.toString() );
+		
+		return part;
+	}
+	
+	/***********************************************************************************************
 	 * Parses a query part.
 	 * @param context TODO
 	 ***********************************************************************************************/
 	public QueryPart parseQueryPart(CFWQueryParserContext context) throws ParseException {
+		
+		int beginCursor = cursor;
 		
 		//------------------------------------------
 		// Prevent endless loops and OutOfMemoryErrors
@@ -905,7 +935,7 @@ public class CFWQueryParser {
 				//------------------------------
 				// Handle Functions
 				if(context == CFWQueryParserContext.FUNCTION) {
-					return firstPart;
+					return setQueryText(firstPart, beginCursor);
 				}
 				
 				//--------------------------------------
@@ -946,7 +976,7 @@ public class CFWQueryParser {
 					this.throwParseException("Expected end of '"+shouldBeArrayContext+"' but found ']'", firstToken.position());
 				}
 				
-			return new QueryPartEnd(null);
+			return setQueryText(new QueryPartEnd(null), beginCursor);
 										
 			//=======================================================
 			// Parse Group Part
@@ -994,7 +1024,7 @@ public class CFWQueryParser {
 				//------------------------------
 				// Handle Functions
 				if(context == CFWQueryParserContext.FUNCTION) {
-					return firstPart;
+					return setQueryText(firstPart, beginCursor);
 				}
 								
 			break;	
@@ -1009,7 +1039,7 @@ public class CFWQueryParser {
 				if(shouldBeGroupContext != CFWQueryParserContext.GROUP) {
 					this.throwParseException("Expected end of '"+shouldBeGroupContext+"' but found ')'", firstToken.position());
 				}
-			return new QueryPartEnd(null);
+			return setQueryText(new QueryPartEnd(null), beginCursor);
 			
 									
 			case KEYWORD:
@@ -1023,10 +1053,10 @@ public class CFWQueryParser {
 				
 				switch(keyword) {
 				
-					case KEYWORD_AND: 	return parseBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_AND, false ); 
-					case KEYWORD_OR: 	return parseBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_OR, false ); 
+					case KEYWORD_AND: 	return setQueryText(parseBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_AND, false ), beginCursor);
+					case KEYWORD_OR: 	return setQueryText(parseBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_OR, false ), beginCursor);
 					
-					case KEYWORD_NOT: 	return parseBinaryExpressionPart(context, null, CFWQueryTokenType.OPERATOR_NOT, false );
+					case KEYWORD_NOT: 	return setQueryText(parseBinaryExpressionPart(context, null, CFWQueryTokenType.OPERATOR_NOT, false ), beginCursor);
 					default:			this.throwParseException("Unknown keyword:"+keyword, firstToken.position());
 				}
 			break;
@@ -1048,7 +1078,7 @@ public class CFWQueryParser {
 		//########################################################################
 		QueryPart resultPart = firstPart;
 
-		if(!this.hasMoreTokens()) { return resultPart; }
+		if(!this.hasMoreTokens()) { return setQueryText(resultPart, beginCursor); }
 		//if(context == CFWQueryParserContext.BINARY) { return resultPart; } 
 		
 		switch(this.lookahead().type()) {
@@ -1058,7 +1088,7 @@ public class CFWQueryParser {
 			case LITERAL_NUMBER:
 			case LITERAL_STRING:
 			case NULL:
-									return resultPart;
+					return setQueryText(resultPart, beginCursor);
 						
 			//------------------------------
 			//End of Array Part
@@ -1068,13 +1098,13 @@ public class CFWQueryParser {
 				
 				contextStack.add(CFWQueryParserContext.ARRAY);
 				
-			return resultPart;
+			return setQueryText(resultPart, beginCursor);
 			
 			//------------------------------
 			//End of Group
 			case SIGN_BRACE_ROUND_CLOSE:	
 				addTrace("End Part", "Close Group", ")");
-			return resultPart;
+			return setQueryText(resultPart, beginCursor);
 			
 	
 			
@@ -1153,7 +1183,7 @@ public class CFWQueryParser {
 			
 		}
 		
-		return resultPart;
+		return setQueryText(resultPart, beginCursor);
 	}
 
 	/***********************************************************************************************

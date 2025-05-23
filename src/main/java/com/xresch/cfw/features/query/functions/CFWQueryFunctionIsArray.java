@@ -41,6 +41,7 @@ public class CFWQueryFunctionIsArray extends CFWQueryFunction {
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
 		tags.add(_CFWQueryCommon.TAG_CODING);
+		tags.add(_CFWQueryCommon.TAG_ARRAYS);
 		return tags;
 	}
 	

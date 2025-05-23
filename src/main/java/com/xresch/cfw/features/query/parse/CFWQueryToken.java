@@ -110,10 +110,23 @@ public class CFWQueryToken{
 	}
 	
 	/***********************************************************************************************
-	 * 
+	 * Returns the value, strings without any quotation.
 	 ***********************************************************************************************/
 	public String value() { 
 		return this.value;
+	}
+	
+	/***********************************************************************************************
+	 * Returns the value, strings with original quotation.
+	 ***********************************************************************************************/
+	public String valueQuotedStrings() { 
+		
+		switch(type) {
+			case TEXT_DOUBLE_QUOTES:	return "\""+value+"\"";
+			case TEXT_SINGLE_QUOTES:	return "'"+value+"'";
+			case TEXT_BACKTICKS:		return "`"+value+"`";
+			default:					return value;
+		}
 	}
 	
 	/***********************************************************************************************
