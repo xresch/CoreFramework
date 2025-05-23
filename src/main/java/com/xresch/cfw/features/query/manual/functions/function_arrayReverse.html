@@ -1,0 +1,7 @@
+
+<p>The following query creates sample records with arrays, and uses the arrayReverse function to do a total U-turn reversal turnaround of order:</p>
+
+<pre><code class="language-cfwquery">| source random type = arrays
+| keep ARRAY_MIXED
+| set  InversionOfOneHundredEightyDegrees = arrayReverse(ARRAY_MIXED)</code></pre>
+

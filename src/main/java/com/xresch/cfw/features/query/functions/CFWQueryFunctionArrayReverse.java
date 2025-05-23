@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.functions;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -13,15 +14,16 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionValue extends CFWQueryFunction {
+public class CFWQueryFunctionArrayReverse extends CFWQueryFunction {
 
 	
-	public static final String FUNCTION_NAME = "value";
+	public static final String FUNCTION_NAME = "arrayReverse";
+	
 
-	public CFWQueryFunctionValue(CFWQueryContext context) {
+	public CFWQueryFunctionArrayReverse(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -39,18 +41,16 @@ public class CFWQueryFunctionValue extends CFWQueryFunction {
 	@Override
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
-		tags.add(_CFWQueryCommon.TAG_GENERAL);
+		tags.add(_CFWQueryCommon.TAG_CODING);
 		return tags;
 	}
-	
-	
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(fieldname)";
+		return FUNCTION_NAME+"(arrayOrFieldname)";
 	}
 	
 	/***********************************************************************************************
@@ -58,7 +58,7 @@ public class CFWQueryFunctionValue extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the value for the specified fieldname. Useful in the rare cases where you cannot use fieldnames.";
+		return "Creates and returns a new array with the order of the elements reversed.";
 	}
 	
 	/***********************************************************************************************
@@ -66,10 +66,9 @@ public class CFWQueryFunctionValue extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return 
-			"<ul>"
-				+"<li><b>fieldname:&nbsp;</b>The name of the field the value should be returned for.</li>"
-			+"</ul>"
+		return "<ul>"
+			  +"<li><b>valueOrFieldname:&nbsp;</b>The array that should be reversed.</li>"
+			  +"</ul>"
 			;
 	}
 
@@ -97,7 +96,6 @@ public class CFWQueryFunctionValue extends CFWQueryFunction {
 	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
 		// not supported
 	}
-	
 
 	/***********************************************************************************************
 	 * 
@@ -105,12 +103,38 @@ public class CFWQueryFunctionValue extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		if(parameters.size() == 0) {
-			return QueryPartValue.newNull();
+		JsonArray result = new JsonArray();
+		
+
+		//----------------------------------
+		// Concat Arrays
+		if(parameters.size() > 0) { 
+			
+			//----------------------------
+			// Get First Param
+			QueryPartValue firstParam = parameters.get(0);
+			
+			if( ! firstParam.isJsonArray()) {
+				return firstParam;
+			} else {
+				
+				
+				//----------------------------
+				// Reverse Array
+				JsonArray original = firstParam.getAsJsonArray();
+
+				for(int i = original.size()-1; i >= 0; i-- ) {
+					result.add(original.get(i));
+				}
+			}
+			
+			
+			
 		}
-
-		return parameters.get(0);
-
+		
+		//----------------------------------
+		// Return result 
+		return QueryPartValue.newFromJsonElement(result);
+		
 	}
-
 }
