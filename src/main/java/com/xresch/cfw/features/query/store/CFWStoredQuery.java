@@ -110,6 +110,7 @@ public class CFWStoredQuery extends CFWObject {
 	
 	private CFWField<String> query = CFWField.newString(FormFieldType.QUERY_EDITOR, CFWStoredQueryFields.QUERY)
 			.setDescription("The stored query.")
+			.disableSanitization()
 			.addValidator(new LengthValidator(1, -1))
 			;
 	

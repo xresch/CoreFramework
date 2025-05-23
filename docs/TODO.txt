@@ -204,6 +204,7 @@ DONE
 	- stored
 	
 - Query: Added Functions:
+	- arrayAdd
 	- arrayConcat
 	- arraySplit
 	- arrayStringify
