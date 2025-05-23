@@ -20,7 +20,7 @@ import com.xresch.cfw.features.parameter.ParameterDefinition;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  **************************************************************************************************************/
-public class DashboardParameterQuerySelect extends ParameterDefinition {
+public class ParameterQuerySelect extends ParameterDefinition {
 
 	public static final String UNIQUE_NAME = "Query Select";
 	

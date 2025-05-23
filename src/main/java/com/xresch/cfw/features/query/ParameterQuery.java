@@ -1,35 +1,41 @@
-package com.xresch.cfw.features.parameter;
+package com.xresch.cfw.features.query;
 
 import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
-import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
 import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterFields;
+import com.xresch.cfw.features.parameter.ParameterDefinition;
 
-public class ParameterDefinitionDisplayOptions extends ParameterDefinition {
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2025
+ * @license MIT-License
+ **************************************************************************************************************/
+public class ParameterQuery extends ParameterDefinition {
 
-	public static final String LABEL = "Display Options";
+	public static final String UNIQUE_NAME = "Query";
 	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
 	@Override
-	public String getParamUniqueName() { return LABEL; }
+	public String getParamUniqueName() { return UNIQUE_NAME; }
 
-	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Allows to select from the list of available display options.";
+		return "A parameter that allows to define a query or part of a query.";
 	}
 	
 	/***************************************************************
@@ -37,25 +43,19 @@ public class ParameterDefinitionDisplayOptions extends ParameterDefinition {
 	 ***************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureParameter.PACKAGE_MANUAL, "parameter_"+LABEL.toLowerCase().replace(" ", "_")+".html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL, "parameter_"+UNIQUE_NAME.toLowerCase().replace(" ", "_")+".html");
 	}
-	
-	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
-		
+		CFWField settingsField = CFWField.newString(FormFieldType.QUERY_EDITOR, "JSON_QUERY")
+										 .disableSanitization();
 
-		CFWField settingsField = CFWField.newString(FormFieldType.SELECT, "displayOptions")
-						.allowHTML(isDynamic())
-						.setOptions( WidgetSettingsFactory.getDisplayAsOptions() )
-						;
-		
 		if(fieldValue != null) {
-			settingsField.setValue(fieldValue.toString());
+			settingsField.setValueConvert(fieldValue, true);
 		}
 
 		return settingsField;
@@ -66,10 +66,15 @@ public class ParameterDefinitionDisplayOptions extends ParameterDefinition {
 	 ***************************************************************/
 	@SuppressWarnings({ "rawtypes" })
 	@Override
-	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe, JsonObject  userSelectedParamValues) {
+	public CFWField getFieldForWidget(
+			  HttpServletRequest request
+			, String dashboardid
+			, Object parameterValue
+			, CFWTimeframe timeframe
+			, JsonObject userSelectedParamValues
+			) {
 
-		return getFieldForSettings(request, dashboardid, parameterValue);
-
+		return getFieldForSettings(request, dashboardid, userSelectedParamValues);
 	}
 	
 	/***************************************************************
@@ -77,7 +82,7 @@ public class ParameterDefinitionDisplayOptions extends ParameterDefinition {
 	 ***************************************************************/
 	@Override
 	public boolean isDynamic() {
-		return false;
+		return true;
 	}
 	
 	/***************************************************************

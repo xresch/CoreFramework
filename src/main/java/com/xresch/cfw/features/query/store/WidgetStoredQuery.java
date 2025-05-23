@@ -62,6 +62,8 @@ public class WidgetStoredQuery extends WidgetDefinition {
 	private static final String FIELDNAME_QUERY = "query";
 	private static Logger logger = CFWLog.getLogger(WidgetStoredQuery.class.getName());
 	
+	private static final String FIELDNAME_QUERY_EXTENSION = "query_extension";
+	
 	private static final String FIELDNAME_DETAILFIELDS = "detailfields";
 	private static final String FIELDNAME_LABELFIELDS = "labelfields";
 	private static final String FIELDNAME_VALUEFIELD = "valuefield";
@@ -143,6 +145,11 @@ public class WidgetStoredQuery extends WidgetDefinition {
 			settingsObject.addField(valueField);
 		}
 		
+		settingsObject.addField(
+				CFWField.newString(FormFieldType.QUERY_EDITOR, FIELDNAME_QUERY_EXTENSION)
+						.setDescription("This will be appended to the query that is executed in the background. Useful for psot production steps like filtering etc...")
+			);
+		
 		return settingsObject;
 		
 	}
@@ -160,11 +167,19 @@ public class WidgetStoredQuery extends WidgetDefinition {
 			return true;
 		}
 				
-		CFWQueryContext baseQueryContext = new CFWQueryContext();
-		baseQueryContext.checkPermissions(true);
+		//----------------------------
+		// Get Query String
+		String queryExtension = ((CFWField<String>)settings.getField(FIELDNAME_QUERY_EXTENSION)).getValue();
+		
+		System.out.println("queryExtension: "+queryExtension);
+		if( ! Strings.isNullOrEmpty(queryExtension) ) {
+			queryString += queryExtension;
+		}
 		
 		//----------------------------
 		// Check is Parsable & Permissions
+		CFWQueryContext baseQueryContext = new CFWQueryContext();
+		baseQueryContext.checkPermissions(true);
 		CFWQueryParser parser = new CFWQueryParser(queryString, true, baseQueryContext, true);
 		boolean canSave = true;
 		try {
@@ -193,6 +208,7 @@ public class WidgetStoredQuery extends WidgetDefinition {
 	 * 
 	 ******************************************************************************/
 	@Override
+	@SuppressWarnings("unchecked")
 	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings
 			, CFWTimeframe timeframe) { 
 		
@@ -204,6 +220,15 @@ public class WidgetStoredQuery extends WidgetDefinition {
 //		}
 		
 		String query = storedQuery.query();
+		
+		//----------------------------
+		// Get Query String
+
+		String queryExtension = ((CFWField<String>)settings.getField(FIELDNAME_QUERY_EXTENSION)).getValue();
+		
+		if( ! Strings.isNullOrEmpty(queryExtension) ) {
+			query += queryExtension;
+		}
 		
 		//---------------------------------
 		// Resolve Parameters
