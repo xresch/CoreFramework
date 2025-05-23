@@ -4,15 +4,12 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-import org.shredzone.acme4j.provider.letsencrypt.LetsEncryptAcmeProvider;
-
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.TaskDatabaseBackup;
 import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.config.ConfigChangeListener;
@@ -30,7 +27,6 @@ import com.xresch.cfw.features.core.auth.saml.SSOProviderSettingsSAML;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2AssertionConsumerService;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2Login;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2Metadata;
-import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWAuditLog;

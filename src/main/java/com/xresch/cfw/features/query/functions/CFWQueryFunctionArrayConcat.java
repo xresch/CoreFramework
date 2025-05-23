@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.functions;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -16,13 +17,13 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionIsArray extends CFWQueryFunction {
+public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
 
 	
-	public static final String FUNCTION_NAME = "isArray";
+	public static final String FUNCTION_NAME = "arrayConcat";
 	
 
-	public CFWQueryFunctionIsArray(CFWQueryContext context) {
+	public CFWQueryFunctionArrayConcat(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -49,7 +50,7 @@ public class CFWQueryFunctionIsArray extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(valueOrFieldname)";
+		return FUNCTION_NAME+"(valueOrFieldname, valueOrFieldname, ...)";
 	}
 	
 	/***********************************************************************************************
@@ -57,7 +58,7 @@ public class CFWQueryFunctionIsArray extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns true if the value is an object, false otherwise.";
+		return "Creates a new array that contains all the values of the given arrays. Non-array values are added too.";
 	}
 	
 	/***********************************************************************************************
@@ -66,7 +67,7 @@ public class CFWQueryFunctionIsArray extends CFWQueryFunction {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return "<ul>"
-			  +"<li><b>valueOrFieldname:&nbsp;</b>The value or field that should be checked.</li>"
+			  +"<li><b>valueOrFieldname:&nbsp;</b>The array, value or fieldname that should be concatenated.</li>"
 			  +"</ul>"
 			;
 	}
@@ -102,17 +103,25 @@ public class CFWQueryFunctionIsArray extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
+		JsonArray result = new JsonArray();
+		
 		//----------------------------------
-		// Return same value if not second param
+		// Concat Arrays
 		if(parameters.size() >= 1) { 
 			
-			QueryPartValue value = parameters.get(0); 
-			return QueryPartValue.newBoolean( value.isJsonArray() );
+			for(QueryPartValue value : parameters) {
+				if(value.isJsonArray()) {
+					result.addAll(value.getAsJsonArray());
+				}else {
+					result.add(value.getAsJsonElement());
+				}
+			}
+			
 		}
 		
 		//----------------------------------
-		// Return null if not enough params
-		return QueryPartValue.newNull();
+		// Return result 
+		return QueryPartValue.newFromJsonElement(result);
 		
 	}
 }

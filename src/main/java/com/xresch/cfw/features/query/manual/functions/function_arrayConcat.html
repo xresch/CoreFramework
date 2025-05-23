@@ -1,0 +1,7 @@
+
+<p>The following query creates sample records with arrays, and uses the arrayConcat function to concatenate arrays and other value types:</p>
+
+<pre><code class="language-cfwquery">| source random type = arrays
+| set
+	CONCAT = arrayConcat(ARRAY_NUMBERS, ["|"], ARRAY_MIXED, "|", null, 1, true, "three")</code></pre>
+

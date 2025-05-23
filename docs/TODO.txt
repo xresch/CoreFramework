@@ -204,6 +204,7 @@ DONE
 	- stored
 	
 - Query: Added Functions:
+	- arrayConcat
 	- decodeBase64
 	- encodeBase64
 	- endsWith
