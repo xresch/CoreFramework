@@ -1,0 +1,7 @@
+
+<p>The following query creates sample records with arrays, and uses the arraySplit function to split the array into smaller chunks:</p>
+
+<pre><code class="language-cfwquery">| source random type = arrays
+| keep ARRAY_NUMBERS
+| set  SPLITTED = arraySplit(ARRAY_NUMBERS, 5)</code></pre>
+
