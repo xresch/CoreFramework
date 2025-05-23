@@ -14,7 +14,7 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT-License
  ************************************************************************************************************/
 public class CFWQueryFunctionArraySplit extends CFWQueryFunction {

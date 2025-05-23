@@ -14,16 +14,16 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2025 
+ * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
+public class CFWQueryFunctionArrayAdd extends CFWQueryFunction {
 
 	
-	public static final String FUNCTION_NAME = "arrayConcat";
+	public static final String FUNCTION_NAME = "arrayAdd";
 	
 
-	public CFWQueryFunctionArrayConcat(CFWQueryContext context) {
+	public CFWQueryFunctionArrayAdd(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -50,7 +50,7 @@ public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(valueOrFieldname, valueOrFieldname, ...)";
+		return FUNCTION_NAME+"(valueOrFieldname, addThis, addThis, ...)";
 	}
 	
 	/***********************************************************************************************
@@ -58,7 +58,7 @@ public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Creates a new array that contains all the values of the given arrays. Non-array values are added too.";
+		return "Adds values to an array(modifies the original) and also returns the array.";
 	}
 	
 	/***********************************************************************************************
@@ -67,7 +67,8 @@ public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return "<ul>"
-			  +"<li><b>valueOrFieldname:&nbsp;</b>The array, value or fieldname that should be concatenated.</li>"
+			  +"<li><b>valueOrFieldname:&nbsp;</b>The array the value should be added to.</li>"
+			  +"<li><b>addThis:&nbsp;</b>The values that should be added.</li>"
 			  +"</ul>"
 			;
 	}
@@ -103,25 +104,32 @@ public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		JsonArray result = new JsonArray();
+		//----------------------------------
+		// Check has parameters
+		if(parameters.size() == 0) { 
+			return  QueryPartValue.newNull();
+		}
+		
+		//----------------------------------
+		// Get Array
+		JsonArray array;
+
+		QueryPartValue arrayValue = parameters.get(0);
+		array = arrayValue.getAsJsonArray();
 		
 		//----------------------------------
 		// Concat Arrays
-		if(parameters.size() >= 1) { 
+		if(parameters.size() > 1) { 
 			
-			for(QueryPartValue value : parameters) {
-				if(value.isJsonArray()) {
-					result.addAll(value.getAsJsonArray());
-				}else {
-					result.add(value.getAsJsonElement());
-				}
+			for(int i = 1; i < parameters.size(); i++ ) {
+				array.add(parameters.get(i).getAsJsonElement());
 			}
 			
 		}
 		
 		//----------------------------------
 		// Return result 
-		return QueryPartValue.newFromJsonElement(result);
+		return QueryPartValue.newFromJsonElement(array);
 		
 	}
 }

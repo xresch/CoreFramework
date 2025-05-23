@@ -14,16 +14,16 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2025 
+ * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
+public class CFWQueryFunctionArrayStringify extends CFWQueryFunction {
 
 	
-	public static final String FUNCTION_NAME = "arrayConcat";
+	public static final String FUNCTION_NAME = "arrayStringify";
 	
 
-	public CFWQueryFunctionArrayConcat(CFWQueryContext context) {
+	public CFWQueryFunctionArrayStringify(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -50,7 +50,7 @@ public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(valueOrFieldname, valueOrFieldname, ...)";
+		return FUNCTION_NAME+"(arrayOrFieldname, separator, quoteCharacter)";
 	}
 	
 	/***********************************************************************************************
@@ -58,7 +58,7 @@ public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Creates a new array that contains all the values of the given arrays. Non-array values are added too.";
+		return "Converts an array into a string by joining the string values together with a separator.";
 	}
 	
 	/***********************************************************************************************
@@ -68,6 +68,8 @@ public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
 	public String descriptionSyntaxDetailsHTML() {
 		return "<ul>"
 			  +"<li><b>valueOrFieldname:&nbsp;</b>The array, value or fieldname that should be concatenated.</li>"
+			  +"<li><b>separator:&nbsp;</b>(Optional)The separator, default comma.</li>"
+			  +"<li><b>quoteCharacter:&nbsp;</b>(Optional)The character used to quote the string, default double quotes.</li>"
 			  +"</ul>"
 			;
 	}
@@ -103,25 +105,65 @@ public class CFWQueryFunctionArrayConcat extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		JsonArray result = new JsonArray();
+		StringBuilder result = new StringBuilder();
+		
+		String separator = ",";
+		String quoteCharacter = "\"";
 		
 		//----------------------------------
 		// Concat Arrays
-		if(parameters.size() >= 1) { 
+		if(parameters.size() > 0) { 
 			
-			for(QueryPartValue value : parameters) {
-				if(value.isJsonArray()) {
-					result.addAll(value.getAsJsonArray());
-				}else {
-					result.add(value.getAsJsonElement());
+			//----------------------------
+			// Get First Param
+			QueryPartValue firstParam = parameters.get(0);
+			
+			if( ! firstParam.isJsonArray()) {
+				return firstParam;
+			} else {
+				
+				//----------------------------
+				// Get Separator
+				if(parameters.size() > 1){
+					QueryPartValue separatorParam = parameters.get(1);
+					separator = separatorParam.getAsString();
+
+					//----------------------------
+					// Get Quote Character
+					if(parameters.size() > 2){
+						QueryPartValue quoteParam = parameters.get(2);
+						quoteCharacter = quoteParam.getAsString();
+					}
+					
 				}
+				
+				//----------------------------
+				// Chunkify
+				JsonArray array = firstParam.getAsJsonArray();
+				
+				for(int i = 0; i < array.size(); i++) {
+					
+					// Using this to get string values without the quotes you would get from JsonElement.toString()
+					QueryPartValue value = QueryPartValue.newFromJsonElement(array.get(i));
+					result
+						.append(quoteCharacter)
+						.append(value.getAsString())
+						.append(quoteCharacter)
+						.append(separator)
+						;
+				}
+				
+				// remove last comma
+				result.deleteCharAt(result.length()-1);
 			}
+			
+			
 			
 		}
 		
 		//----------------------------------
 		// Return result 
-		return QueryPartValue.newFromJsonElement(result);
+		return QueryPartValue.newString(result.toString());
 		
 	}
 }

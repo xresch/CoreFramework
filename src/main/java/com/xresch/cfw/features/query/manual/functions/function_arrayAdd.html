@@ -1,0 +1,7 @@
+
+<p>The following query creates sample records with arrays, and uses the arrayAdd to add a value to ARRAY_NUMBERS:</p>
+
+<pre><code class="language-cfwquery">| source random type = arrays
+| keep ARRAY_NUMBERS
+| set  ADDED = arrayAdd(ARRAY_NUMBERS, "Added")</code></pre>
+

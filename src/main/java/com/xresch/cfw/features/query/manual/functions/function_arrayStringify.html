@@ -1,0 +1,7 @@
+
+<p>The following query creates sample records with arrays, and uses the arrayStringify function to stringify the array into a single string of values separated by a separator:</p>
+
+<pre><code class="language-cfwquery">| source random type = arrays
+| keep ARRAY_MIXED
+| set  STRINGIFICATIONAMENTE = arrayStringify(ARRAY_MIXED, ";", "'")</code></pre>
+
