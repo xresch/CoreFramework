@@ -18,7 +18,6 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -30,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +41,7 @@ import org.apache.hc.client5.http.auth.KerberosCredentials;
 import org.apache.hc.client5.http.auth.NTCredentials;
 import org.apache.hc.client5.http.auth.StandardAuthScheme;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.auth.BasicSchemeFactory;
 import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
@@ -75,6 +74,7 @@ import org.apache.hc.core5.io.CloseMode;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.ssl.TrustStrategy;
+import org.apache.hc.core5.util.Timeout;
 import org.graalvm.polyglot.Value;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSManager;
@@ -89,10 +89,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.CFWState.CFWStateOption;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 import com.xresch.cfw.utils.scriptengine.CFWScriptingContext;
 
 import io.prometheus.client.Counter;
@@ -197,6 +197,77 @@ public class CFWHttp {
 		//remove leading "&"
 		return builder.substring(1);
 	}
+	
+	/**************************************************************
+	 * Check if the given URL can connect to a port and if a
+	 * response is received. This method does not check if the 
+	 * response is an error or not, it only checks if there is a
+	 * response received.
+	 * 
+	 * @param url including port, if port is missing, 80 is used for
+	 * http and 443 for https
+	 * @return status RED or GREEN
+	 **************************************************************/
+	public static CFWStateOption checkURLGetsResponse(String urlToCheck) {
+		
+		//------------------------------
+		// Check can resolve
+		if(checkURLCanResolve(urlToCheck) == CFWStateOption.RED) {
+			return CFWStateOption.RED;
+		}
+		
+		//------------------------------
+		// Check get Response
+		CFWHttpResponse response = CFW.HTTP.sendGETRequest(urlToCheck);
+		
+		if( ! response.errorOccured() ) {
+			return CFWStateOption.GREEN;
+		}else {
+			return CFWStateOption.RED;
+		}
+	}
+	/**************************************************************
+	 * Check if the given URL can connect to a port or if it is 
+	 * unresolved.
+	 * @param url including port, if port is missing, 80 is used for
+	 * http and 443 for https
+	 * @return status RED or GREEN
+	 **************************************************************/
+	public static CFWStateOption checkURLCanResolve(String urlToCheck) {
+		
+		//-----------------------------
+		// Check Is Valid URL
+		URL url;
+		try {
+			url = new URI(urlToCheck).toURL();
+		} catch (Exception e) {
+			return CFWStateOption.RED;
+		}
+		
+		//-----------------------------
+		// Get Port
+		int port = url.getPort();
+		
+		if(port == -1) {
+			if(url.getProtocol().toLowerCase().equals("https")) {
+				port = 443;
+			}else {
+				port = 80;
+			}
+		}
+		
+		//-----------------------------
+		// Check Can Connect
+		InetSocketAddress address = new InetSocketAddress(url.getHost(), port );
+				
+		if( ! address.isUnresolved() ) {
+			return CFWStateOption.GREEN;
+		}else{
+			return CFWStateOption.RED;
+		}
+	}
+		
+	
 	/******************************************************************************************************
 	 * Creates a url with the given parameters;
 	 ******************************************************************************************************/
@@ -798,9 +869,9 @@ public class CFWHttp {
 	    String body = null;
 	    StringBuilder stringBuilder = new StringBuilder();
         
-	    try (
+	    try ( 
 	    	InputStream inputStream = request.getInputStream();
-	    	BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream)) 
+		    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream)) 
 	    ) {
 	    	if (inputStream != null) {
 		    	char[] charBuffer = new char[128];
@@ -891,6 +962,7 @@ public class CFWHttp {
 		String URL = null;
 		String requestBody = null;
 		String requestBodyContentType = "plain/text; charset=UTF-8";
+		long responseTimeoutMillis = CFWTimeUnit.m.toMillis(10); //default timeout of  10 minutes
 
 		private HashMap<String, String> params = new HashMap<>();
 		private HashMap<String, String> headers = new HashMap<>();
@@ -1001,6 +1073,14 @@ public class CFWHttp {
 		}
 		
 		/***********************************************
+		 * Add a response timeout.
+		 ***********************************************/
+		public CFWHttpRequestBuilder timeout(long responseTimeoutMillis) {
+			this.responseTimeoutMillis = responseTimeoutMillis;
+			return this;
+		}
+		
+		/***********************************************
 		 * Add a request Body in JSON format UTF-8 encoding
 		 ***********************************************/
 		public String buildURLwithParams() {
@@ -1055,9 +1135,15 @@ public class CFWHttp {
 					// Create HTTP Client
 					
 					HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+					clientBuilder.setDefaultRequestConfig(
+								 RequestConfig
+										.custom()
+										.setResponseTimeout(Timeout.of(responseTimeoutMillis, TimeUnit.MILLISECONDS) )
+										.build()
+							);
 					httpClientAddProxy(clientBuilder, URL);
 					setSSLContext(clientBuilder);
-					
+
 				    //----------------------------------
 					// Set Auth mechanism
 					if(username != null) {
@@ -1169,7 +1255,7 @@ public class CFWHttp {
 					outgoingHTTPCallsCounter.labels(method).inc();
 
 					CloseableHttpClient httpClient = clientBuilder.build();
-					
+
 					CFWHttpResponse response = instance.new CFWHttpResponse(httpClient, requestBase);
 					return response;
 					

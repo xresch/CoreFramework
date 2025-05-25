@@ -75,13 +75,13 @@ public class MSSQLEnvironment extends AbstractContextSettings {
 	 **************************************************************/
 	public CFWStateOption getStatus() {
 		
-		if(!isDBDefined()) {
-			return CFWStateOption.NONE;
+		if(!isDBDefined() || !this.isActive() ) {
+			return CFWStateOption.DISABLED;
 		}
 		
 		this.getDBInstance();
 		if(dbInstance == null) {
-			return CFWStateOption.NONE;
+			return CFWStateOption.DISABLED;
 		}
 		
 		if (this.dbInstance.checkCanConnect()) {

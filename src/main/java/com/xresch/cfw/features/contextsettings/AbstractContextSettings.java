@@ -37,6 +37,15 @@ public abstract class AbstractContextSettings extends CFWObject {
 	public ContextSettings getDefaultObject() {
 		return wrapper;
 	}
+	
+
+	/**************************************************************
+	 * Set the wrapping object.
+	 **************************************************************/
+	public Boolean isActive() {
+		return this.wrapper.isActive();
+		
+	}
 
 
 	/**************************************************************

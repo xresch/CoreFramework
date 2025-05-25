@@ -177,6 +177,7 @@ DONE
 - NEW FEATURE: Query Store: Queries can now be stored and reused!
 - NEW FEATURE: Custom Widgets based on stored queries!!!
 - Status Monitor: Added monitoring for Database Connections: Postgres, MySQL, MSSQL, Oracle, JDBC
+- Status Monitor: Added monitoring for Prometheus Connections
 - Shutdown: Added shutdown hook for better shutdown handling
 - CFWRandom: Refactoring - removing "random" from methods. 
 - CFWRandom: Added endpoint /cfw/random to get random test data
