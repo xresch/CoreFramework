@@ -1167,7 +1167,7 @@ public class CFWDBStoredQuery {
 	
 	
 	/********************************************************************************************
-	 * Adds the tags to the cache for the specified storedQuery.
+	 * Adds the widget to the cache for the specified storedQuery.
 	 * @param StoredQuery with the tags.
 	 * @return nothing
 	 * 
@@ -1191,7 +1191,7 @@ public class CFWDBStoredQuery {
 	}
 	
 	/********************************************************************************************
-	 * Adds the tags to the cache for the specified storedQuery.
+	 * Removes the widget from the cache for the specified storedQuery.
 	 * @param StoredQuery with the tags.
 	 * @return nothing
 	 * 

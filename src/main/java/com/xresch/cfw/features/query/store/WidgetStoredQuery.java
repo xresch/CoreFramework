@@ -70,6 +70,10 @@ public class WidgetStoredQuery extends WidgetDefinition {
 	private static final String FIELDNAME_URLFIELD = "urlfield";
 	private static final String FIELDNAME_ALERT_THRESHOLD = "ALERT_THRESHOLD";
 	
+	// Cache static strings here, will be refreshed on changes by CFWDBStoredQuery.updateWidgetCache()
+	private String javascriptRegisterCategory;
+	private String javascriptRegisterWidget;
+	
 	private CFWStoredQuery storedQuery;
 	/******************************************************************************
 	 * 
@@ -171,12 +175,11 @@ public class WidgetStoredQuery extends WidgetDefinition {
 		// Get Query String
 		String queryExtension = ((CFWField<String>)settings.getField(FIELDNAME_QUERY_EXTENSION)).getValue();
 		
-		System.out.println("queryExtension: "+queryExtension);
 		if( ! Strings.isNullOrEmpty(queryExtension) ) {
 			queryString += queryExtension;
 		}
 		
-		//----------------------------
+		//---------------------------------
 		// Check is Parsable & Permissions
 		CFWQueryContext baseQueryContext = new CFWQueryContext();
 		baseQueryContext.checkPermissions(true);
@@ -257,7 +260,7 @@ public class WidgetStoredQuery extends WidgetDefinition {
 		array.add(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureStoredQuery.PACKAGE_RESOURCES, "cfw_query_stored_custom_widget.js") );
 		
 		//----------------------------------
-		// Register Widget
+		// Register Category
 		
 		String category = 
 				CFW.Security.escapeHTMLEntities(
@@ -265,17 +268,18 @@ public class WidgetStoredQuery extends WidgetDefinition {
 					);
 		
 		if( Strings.isNullOrEmpty(category) ) {
-			category = "Custom";
+			category = "Custom"; // default category already exists
 		}else {
-			category = "Custom | " + category;
-			String javascriptRegisterCategory =  
-					CFW.Files.readPackageResource( 
-								FeatureStoredQuery.PACKAGE_RESOURCES
-								, "cfw_query_stored_custom_widget_registeringCategory.js"
-							)
-							.replace("$category$", category )
-						;
-			
+			if(javascriptRegisterCategory == null) {
+				category = "Custom | " + category;
+				javascriptRegisterCategory =  
+						CFW.Files.readPackageResource( 
+									FeatureStoredQuery.PACKAGE_RESOURCES
+									, "cfw_query_stored_custom_widget_registeringCategory.js"
+								)
+								.replace("$category$", category )
+							;
+			}
 			
 			array.add(new FileDefinition(javascriptRegisterCategory) );
 		}
@@ -290,7 +294,8 @@ public class WidgetStoredQuery extends WidgetDefinition {
 						MoreObjects.firstNonNull(storedQuery.description(), "")
 					);
 		
-		String javascriptRegisterWidget =  
+		if(javascriptRegisterWidget == null) {
+			javascriptRegisterWidget =  
 				CFW.Files.readPackageResource( 
 							FeatureStoredQuery.PACKAGE_RESOURCES
 							, "cfw_query_stored_custom_widget_registeringTemplate.js"
@@ -300,7 +305,7 @@ public class WidgetStoredQuery extends WidgetDefinition {
 						.replace("$category$", category )
 						.replace("$description$", description )
 					;
-		
+		}
 		
 		array.add(new FileDefinition(javascriptRegisterWidget) );
 

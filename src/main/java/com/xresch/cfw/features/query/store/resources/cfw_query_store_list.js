@@ -356,13 +356,13 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 		var showFields = [];
 		if(type == 'mystoredQuery' 
 		|| type == 'myarchived'){
-			showFields = ['NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'CHECK_PERMISSIONS', 'TIME_CREATED'];
+			showFields = ['NAME', 'DESCRIPTION', 'TAGS', 'MAKE_WIDGET', 'IS_SHARED', 'CHECK_PERMISSIONS', 'TIME_CREATED'];
 		}else if ( type == 'sharedstoredQuery'
 				|| type == 'favedstoredQuery'){
 			showFields = ['OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
 		}else if (type == 'adminstoredQuery'
 				||type == 'adminarchived' ){
-			showFields = ['PK_ID', 'OWNER', 'NAME',  'DESCRIPTION', 'TAGS', 'IS_SHARED', 'CHECK_PERMISSIONS', 'TIME_CREATED'];
+			showFields = ['PK_ID', 'OWNER', 'NAME',  'DESCRIPTION', 'TAGS', 'MAKE_WIDGET', 'IS_SHARED', 'CHECK_PERMISSIONS', 'TIME_CREATED'];
 		}
 		
 		//======================================
@@ -577,11 +577,13 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 			 	titleformat: null,
 			 	visiblefields: showFields,
 			 	labels: {
-			 		PK_ID: "ID",
-			 		IS_SHARED: 'Shared'
+			 		  PK_ID: "ID"
+			 		, IS_SHARED: 'Shared'
+			 		, MAKE_WIDGET: 'Widget'
 			 	},
 			 	customizers: {
 						
+					MAKE_WIDGET: cfw_customizer_booleanFormat,
 					IS_SHARED: cfw_customizer_booleanFormat,
 					CHECK_PERMISSIONS: cfw_customizer_booleanFormat,
 			 		TAGS: badgeCustomizerFunction,
