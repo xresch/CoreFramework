@@ -6,7 +6,9 @@ import java.util.concurrent.ScheduledFuture;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.ConfigChangeListener;
+import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItem;
@@ -39,6 +41,10 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 	private static ScheduledFuture<?> taskStatusMonitorUpdate;
 
 	public static final String PERMISSION_SYSTEM_ANALYTICS = "System Analytics";
+	
+	public static final String CATEGORY_STATUS_MONITOR = "Status Monitor";
+	public static final String CONFIG_INTERVAL_MINUTES = "Interval Minutes";
+	public static final String CONFIG_URL_CHECKS = "URL Checks";
 	@Override
 	public void register() {
 		//----------------------------------
@@ -55,9 +61,13 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		CFW.Registry.Jobs.registerTask(new CFWJobTaskTestAlerting());
 		
 		//----------------------------------
-		// Register Job Tasks
+		// Register Global Javascripts
 		CFW.Registry.Components.addGlobalJavascript(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "cfw_statusmonitor_common.js");
     	
+		//----------------------------------
+		// Register Status Monitors
+		CFW.Registry.StatusMonitor.registerStatusMonitor( new CFWStatusMonitorURLChecks() );
+		
 		//----------------------------------
     	// Register Button Menu
 		CFWHTMLItemMenuItem statusMonitorMenu = (CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Status Monitor", "{!cfw_core_statusmonitor!}") 
@@ -209,6 +219,25 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		CFW.DB.preparedExecute("SET QUERY_STATISTICS_MAX_ENTRIES 500;");
 		CFW.DB.preparedExecute("SET QUERY_STATISTICS TRUE;");
 		
+		//============================================================
+		// CONFIGURATION
+		//============================================================
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration(CATEGORY_STATUS_MONITOR, FeatureSystemAnalytics.CONFIG_INTERVAL_MINUTES)
+				.description("The interval in minutes that defines how often the status monitor checks should be executed.")
+				.type(FormFieldType.NUMBER)
+				.value("15")
+		);
+		
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CATEGORY_STATUS_MONITOR, FeatureSystemAnalytics.CONFIG_URL_CHECKS)
+					.description("List of HTTP URLs that should be checked if they give a response with HTTP status below 400.")
+					.type(FormFieldType.CUSTOM_LIST)
+			);
+		
 	}
 
 	@Override
@@ -243,7 +272,8 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		// Create Change Listener
 		ConfigChangeListener listener = new ConfigChangeListener(
 				FeatureConfig.CONFIG_CPU_SAMPLING_SECONDS,
-				FeatureConfig.CONFIG_CPU_SAMPLING_AGGREGATION
+				FeatureConfig.CONFIG_CPU_SAMPLING_AGGREGATION,
+				FeatureSystemAnalytics.CONFIG_INTERVAL_MINUTES
 			) {
 			
 			@Override
@@ -258,14 +288,15 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 	@Override
 	public void startTasks() {
 		
-		
 		//--------------------------------
 		// Setup Status Monitor Update
 		if(taskStatusMonitorUpdate != null) {
 			taskStatusMonitorUpdate.cancel(false);
 		}
 		
-		int millisOf5min = (int)CFWTimeUnit.m.toMillis(5);
+		int minutes = CFW.DB.Config.getConfigAsInt(CATEGORY_STATUS_MONITOR, CONFIG_INTERVAL_MINUTES);
+		
+		int millisOf5min = (int)CFWTimeUnit.m.toMillis(minutes);
 		taskStatusMonitorUpdate = CFW.Schedule.runPeriodicallyMillis(0, millisOf5min, new TaskStatusMonitorUpdate());
 		
 		//-----------------------------

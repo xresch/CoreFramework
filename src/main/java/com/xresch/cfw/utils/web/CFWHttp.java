@@ -198,17 +198,18 @@ public class CFWHttp {
 		return builder.substring(1);
 	}
 	
+
 	/**************************************************************
 	 * Check if the given URL can connect to a port and if a
-	 * response is received. This method does not check if the 
-	 * response is an error or not, it only checks if there is a
-	 * response received.
+	 * response is received. 
 	 * 
 	 * @param url including port, if port is missing, 80 is used for
 	 * http and 443 for https
+	 * @param checkErrorResponse set to true if the response should
+	 * be checked to be below HTTP Status Code 400
 	 * @return status RED or GREEN
 	 **************************************************************/
-	public static CFWStateOption checkURLGetsResponse(String urlToCheck) {
+	public static CFWStateOption checkURLGetsResponse(String urlToCheck, boolean checkErrorResponse) {
 		
 		//------------------------------
 		// Check can resolve
@@ -217,14 +218,11 @@ public class CFWHttp {
 		}
 		
 		//------------------------------
-		// Check get Response
+		// Get Response
 		CFWHttpResponse response = CFW.HTTP.sendGETRequest(urlToCheck);
+
+		return response.getState(checkErrorResponse);
 		
-		if( ! response.errorOccured() ) {
-			return CFWStateOption.GREEN;
-		}else {
-			return CFWStateOption.RED;
-		}
 	}
 	/**************************************************************
 	 * Check if the given URL can connect to a port or if it is 
@@ -1362,6 +1360,7 @@ public class CFWHttp {
 		private Header[] headers;
 		
 		private boolean errorOccured = false;
+		private String errorMessage = null;
 		
 		/******************************************************************************************************
 		 * 
@@ -1467,6 +1466,7 @@ public class CFWHttp {
 				
 			} catch (IOException e) {
 				errorOccured = true;
+				errorMessage = e.getMessage();
 				new CFWLog(responseLogger).severe("Exception occured during HTTP request:"+e.getMessage(), e);
 				
 			}finally {
@@ -1484,6 +1484,13 @@ public class CFWHttp {
 		 ******************************************************************************************************/
 		public boolean errorOccured() {
 			return errorOccured;
+		}
+		
+		/******************************************************************************************************
+		 * 
+		 ******************************************************************************************************/
+		public String errorMessage() {
+			return errorMessage;
 		}
 		
 		/******************************************************************************************************
@@ -1620,6 +1627,32 @@ public class CFWHttp {
 		 ******************************************************************************************************/
 		public int getStatus() {
 			return status;
+		}
+		
+		/******************************************************************************************************
+		 * Returns a state for this response
+		 * @param checkErrorResponse toggle if HTTP Status should be checked to be below 400.
+		 ******************************************************************************************************/
+		public CFWStateOption getState(boolean checkErrorResponse) {
+			//------------------------------
+			// Check Error Occured
+			if( ! this.errorOccured() ) {
+				
+				//------------------------------
+				// Check Status Code
+				if(checkErrorResponse) {
+					if( this.getStatus() < 400 ) {
+						return CFWStateOption.GREEN;
+					}else {
+						return CFWStateOption.RED;
+					}
+				}
+				
+				return CFWStateOption.GREEN;
+			}else {
+				return CFWStateOption.RED;
+			}
+
 		}
 
 		/******************************************************************************************************

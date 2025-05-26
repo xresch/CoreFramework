@@ -363,7 +363,6 @@ public class ServletDashboardList extends HttpServlet
 						if(origin.mapRequestParameters(request) 
 						&& CFW.DB.Dashboards.update(dashboard)) {
 							
-							
 							CFW.Messages.addSuccessMessage("Updated!");
 							
 							generateSharedMessages(dashboard);

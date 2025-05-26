@@ -32,16 +32,16 @@ public class CFWStatusMonitorRegistry {
 	 * Adds a CFWStatusMonitor class to the registry.
 	 * @param objectClass
 	 ***********************************************************************/
-	public static void registerStatusMonitor(CFWStatusMonitor example)  {
+	public static void registerStatusMonitor(CFWStatusMonitor monitor)  {
 		
-		String lowercaseName = example.uniqueName().trim().toLowerCase();
+		String lowercaseName = monitor.uniqueName().trim().toLowerCase();
 		
 		if( statusMonitorMap.containsKey(lowercaseName) ) {
-			new CFWLog(logger).severe("A example with the name '"+example.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
+			new CFWLog(logger).severe("A example with the name '"+monitor.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
 			return;
 		}
 		
-		statusMonitorMap.put(lowercaseName, example);
+		statusMonitorMap.put(lowercaseName, monitor);
 		
 	}
 	
@@ -143,6 +143,7 @@ public class CFWStatusMonitorRegistry {
 		CFWStateOption worstStatus = CFWStateOption.NONE;
 		for(CFWStatusMonitor monitor : statusMonitorMap.values()) {
 			
+			
 			//------------------------
 			// Get Array for Category
 			String category = monitor.category();
@@ -152,25 +153,41 @@ public class CFWStatusMonitorRegistry {
 			}
 			
 			JsonArray categoryArray = categoryMap.get(category);
-			
-			//------------------------
-			// Get Array for Category
-			HashMap<JsonObject, CFWStateOption> statuses = monitor.getStatuses();
-			if(statuses != null) {
-				for(Entry<JsonObject, CFWStateOption> status : statuses.entrySet()) {
-					
-					JsonObject object = status.getKey();
-					CFWStateOption state = status.getValue();
-					
-					object.addProperty("category", monitor.category() );
-					object.addProperty("monitor", monitor.uniqueName() );
-					object.addProperty("status", state.toString() );
-					
-					categoryArray.add(object);
-					
-					worstStatus = CFWState.compareAndGetMoreDangerous(worstStatus, state);
-				};
+		
+			try {	
+				//------------------------
+				// Get Array for Category
+				HashMap<JsonObject, CFWStateOption> statuses = monitor.getStatuses();
+				if(statuses != null) {
+					for(Entry<JsonObject, CFWStateOption> status : statuses.entrySet()) {
+						
+						JsonObject object = status.getKey();
+						CFWStateOption state = status.getValue();
+						
+						object.addProperty("category", monitor.category() );
+						object.addProperty("monitor", monitor.uniqueName() );
+						object.addProperty("status", state.toString() );
+						
+						categoryArray.add(object);
+						
+						worstStatus = CFWState.compareAndGetMoreDangerous(worstStatus, state);
+					};
+				}
+			}catch(Exception e){
+				JsonObject object = new JsonObject();
+				
+				object.addProperty("category", monitor.category() );
+				object.addProperty("monitor", monitor.uniqueName() );
+				object.addProperty("status", CFWStateOption.RED.toString() );
+				object.addProperty("error", e.getMessage() );
+				
+				categoryArray.add(object);
+				
+				new CFWLog(logger)
+					.silent(true)
+					.warn("Error occured in Status Monitor '"+monitor.uniqueName()+"' with message: "+e.getMessage(), e);
 			}
+
 		}
 		
 		cachedWorstStatus = worstStatus;
