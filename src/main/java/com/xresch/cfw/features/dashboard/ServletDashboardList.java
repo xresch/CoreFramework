@@ -103,30 +103,33 @@ public class ServletDashboardList extends HttpServlet
 	 ******************************************************************/
 	private void handleDataRequest(HttpServletRequest request, HttpServletResponse response) {
 		
-		String action = request.getParameter("action");
-		String item = request.getParameter("item");
+		String action = request.getParameter("action").toLowerCase();
+		String item = request.getParameter("item").toLowerCase();
 		String ID = request.getParameter("id");
-		//int	userID = CFW.Context.Request.getUser().id();
+		int	userID = CFW.Context.Request.getUserID();
 			
 		JSONResponse jsonResponse = new JSONResponse();
 		
 		//--------------------------------------
 		// Check Permissions
-		if(action.toLowerCase().equals("delete")
-		|| action.toLowerCase().equals("copy")
-		|| action.toLowerCase().equals("getform")) {
+		if(action.equals("delete")
+		|| action.equals("copy")
+		|| action.equals("getform")) {
+			
 			if(!CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
-			   && !CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+			&& !CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
+			&& ( action.equals("getform") && !CFW.DB.Dashboards.checkCanEdit(ID) ) 
+			){
 				CFWMessages.noPermission();
 				return;
 			}
 		}
 		
 
-		switch(action.toLowerCase()) {
+		switch(action) {
 		
 			case "fetch": 			
-				switch(item.toLowerCase()) {
+				switch(item) {
 					case "mydashboards": 		jsonResponse.getContent().append(CFW.DB.Dashboards.getUserDashboardListAsJSON());
 	  											break;
 	  											
@@ -162,7 +165,7 @@ public class ServletDashboardList extends HttpServlet
 				break;
 			
 			case "duplicate": 			
-				switch(item.toLowerCase()) {
+				switch(item) {
 
 					case "dashboard": 		duplicateDashboard(jsonResponse, ID, false);
 											break;  
@@ -176,10 +179,9 @@ public class ServletDashboardList extends HttpServlet
 				break;	
 				
 			case "update": 			
-				switch(item.toLowerCase()) {
+				switch(item) {
 
-					case "favorite": 	Integer userID = CFW.Context.Request.getUserID();
-										String dashboardID = request.getParameter("listitemid");
+					case "favorite": 	String dashboardID = request.getParameter("listitemid");
 										jsonResponse.setSuccess(CFW.DB.DashboardFavorites.toogleDashboardInUserFavs(dashboardID, ""+userID));
 										break;
 										
@@ -197,7 +199,7 @@ public class ServletDashboardList extends HttpServlet
 				break;	
 				
 			case "delete": 			
-				switch(item.toLowerCase()) {
+				switch(item) {
 				
 				case "dashboard": 	deleteDashboard(jsonResponse, ID);
 				break;  
@@ -208,7 +210,7 @@ public class ServletDashboardList extends HttpServlet
 				break;	
 				
 			case "import": 			
-				switch(item.toLowerCase()) {
+				switch(item) {
 
 					case "dashboards": 	String jsonString = request.getParameter("jsonString");
 										CFW.DB.Dashboards.importByJson(jsonString, false);
@@ -221,7 +223,7 @@ public class ServletDashboardList extends HttpServlet
 				break;	
 				
 			case "getform": 			
-				switch(item.toLowerCase()) {
+				switch(item) {
 					case "editdashboard": 	createEditDashboardForm(jsonResponse, ID);
 											break;
 					case "changeowner": 	createChangeDashboardOwnerForm(jsonResponse, ID);
@@ -337,7 +339,8 @@ public class ServletDashboardList extends HttpServlet
 	private void createEditDashboardForm(JSONResponse json, String ID) {
 		
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
-		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
+		|| CFW.DB.Dashboards.checkCanEdit(ID)) {
 			Dashboard dashboard = CFW.DB.Dashboards.selectByID(Integer.parseInt(ID));
 			
 			if(dashboard != null) {
