@@ -187,6 +187,7 @@ DONE
 - Parameters: Added a field for descriptions.
 - Parameters: Fixed Time Range parameters not keeping value after refresh.
 - Dashboard: Fixed Timeframe picker not displayed if widget is set to manual or parameter load
+- Dashboard: Bug Fix - User can now Edit Settings even when not having the Permission Dashboard Creator
 - Query: Fixed some issues where values could not be assigned to arrays in certain constellations
 - Query: Fixed messages not displayed when result is empty.
 - Query: Default parameters can now be used with parameter placeholders $...$
