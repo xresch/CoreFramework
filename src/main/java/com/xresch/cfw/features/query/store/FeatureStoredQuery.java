@@ -71,11 +71,7 @@ public class FeatureStoredQuery extends CFWAppFeature {
 		//----------------------------------
     	// Manual
 		createStoredQueryManual();
-		
-		//----------------------------------
-    	// Register Custom Widgets
-    	CFW.DB.StoredQuery.fetchAndCacheWidgets();
-		
+
 	}
 
 	
@@ -133,7 +129,11 @@ public class FeatureStoredQuery extends CFWAppFeature {
     	// Servlets
     	app.addAppServlet(ServletStoredQueryList.class,  URI_STOREDQUERY_LIST);
 		
-
+		
+		//----------------------------------
+    	// Register Custom Widgets
+    	CFW.DB.StoredQuery.fetchAndCacheWidgets();
+		
 	}
 
 	@Override

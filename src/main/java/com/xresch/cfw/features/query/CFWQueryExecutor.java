@@ -6,11 +6,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.parameter.CFWParameter;

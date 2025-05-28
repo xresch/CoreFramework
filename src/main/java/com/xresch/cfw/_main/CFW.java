@@ -564,24 +564,28 @@ public class CFW {
 		// Load Features Register
 		ArrayList<CFWAppFeature> features = CFW.Registry.Features.getFeatureInstances();
 		for(CFWAppFeature feature : features) {
-			if(feature.getNameForFeatureManagement() != null) {
-				//------------------------------------
-				// Handle Managed Features
-				CFW.DB.KeyValuePairs.oneTimeCreate(
-						new KeyValuePair()
-							.key(CFWAppFeature.KEY_VALUE_PREFIX+feature.getNameForFeatureManagement())
-							.value(""+feature.activeByDefault())
-							.description(feature.getDescriptionForFeatureManagement())
-							.category(CFWAppFeature.KEY_VALUE_CATEGORY)
-						);
-				
-				if(feature.isFeatureEnabled()) {
+			try {
+				if(feature.getNameForFeatureManagement() != null) {
+					//------------------------------------
+					// Handle Managed Features
+					CFW.DB.KeyValuePairs.oneTimeCreate(
+							new KeyValuePair()
+								.key(CFWAppFeature.KEY_VALUE_PREFIX+feature.getNameForFeatureManagement())
+								.value(""+feature.activeByDefault())
+								.description(feature.getDescriptionForFeatureManagement())
+								.category(CFWAppFeature.KEY_VALUE_CATEGORY)
+							);
+					
+					if(feature.isFeatureEnabled()) {
+						feature.register();
+					}
+				}else {
+					//------------------------------------
+					// Load Managed features Features
 					feature.register();
 				}
-			}else {
-				//------------------------------------
-				// Load Managed features Features
-				feature.register();
+			}catch(Exception e) {
+				new CFWLog(logger).severe("Error Occured while registering feature: " + e.getMessage(), e);
 			}
 		}
 	}
