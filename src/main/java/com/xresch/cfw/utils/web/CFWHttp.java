@@ -1467,7 +1467,7 @@ public class CFWHttp {
 			} catch (IOException e) {
 				errorOccured = true;
 				errorMessage = e.getMessage();
-				new CFWLog(responseLogger).severe("Exception occured during HTTP request:"+e.getMessage(), e);
+				new CFWLog(responseLogger).warn("Exception occured during HTTP request:"+e.getMessage(), e);
 				
 			}finally {
 				long endMillis = System.currentTimeMillis();
