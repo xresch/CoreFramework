@@ -529,10 +529,11 @@ public class CFW {
 		if(CFW.AppSettings.isDashboardingEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureDashboard.class);	
 		}
-		CFW.Registry.Features.addFeature(FeatureParameter.class);	
 		
 		CFW.Registry.Features.addFeature(FeatureQuery.class);
 		CFW.Registry.Features.addFeature(FeatureStoredQuery.class);
+		
+		CFW.Registry.Features.addFeature(FeatureParameter.class);	// must be after Dashboard and Query
 		
 		CFW.Registry.Features.addFeature(FeatureJobs.class);
 		

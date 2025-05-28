@@ -234,9 +234,12 @@ public class CFWDBStoredQuery {
 							;
 		new CFWLog(logger).audit(CFWAuditLogAction.MOVE, CFWStoredQuery.class, auditMessage);
 		
-		return new CFWSQL(toUpdate)
-			.update(CFWStoredQueryFields.IS_ARCHIVED)
-			;
+		
+		boolean updateSuccess = new CFWSQL(toUpdate).update(CFWStoredQueryFields.IS_ARCHIVED);
+		
+		updateWidgetCache(toUpdate);
+		
+		return updateSuccess;
 	}
 	
 	//####################################################################################################

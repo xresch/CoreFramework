@@ -1506,6 +1506,7 @@ CFW.dashboard = {
 		global: {
 			  categoryDefault: "Default"
 			, categoryAdvanced: "Advanced"
+			, categoryCustom: "Custom"
 		}
 		, registerWidget: 		cfw_dashboard_registerWidget
 		, getWidgetDefinition: 	cfw_dashboard_getWidgetDefinition
@@ -2058,4 +2059,10 @@ CFW.dashboard.registerCategory(
 					  "fas fa-rocket"
 					, CFW.dashboard.global.categoryAdvanced
 					, CFWL('cfw_dashboard_category_advanced', 'Advanced')
+				);
+
+CFW.dashboard.registerCategory(
+					  "fas fa-star"
+					, CFW.dashboard.global.categoryCustom
+					, CFWL('cfw_dashboard_category_custom', 'Custom')
 				);
