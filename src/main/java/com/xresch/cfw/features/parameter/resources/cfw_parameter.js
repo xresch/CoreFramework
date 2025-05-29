@@ -453,7 +453,8 @@ function cfw_parameter_getFinalParams(customParams){
 			//---------------------------------------------
 			// Use and prepare Default Param Values
 			
-			if(currentParam.PARAM_TYPE == 'TAGS_SELECTOR'){
+			if(currentParam.PARAM_TYPE == 'TAGS_SELECTOR'
+			|| currentParam.PARAM_TYPE == "TIMEFRAMEPICKER"){
 					var tagsInputObject = JSON.parse(currentParam.VALUE);
 					currentParam.VALUE = tagsInputObject;
 			}else if( currentParam.PARAM_TYPE == "VALUE_LABEL"

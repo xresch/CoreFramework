@@ -603,6 +603,8 @@ public class CFWQueryParser {
 		//------------------------------------
 		// Parse Specified Commands
 		CFWQuery pseudoQuery = new CFWQuery();
+		currentQuery = pseudoQuery;
+		currentContext = pseudoQuery.getContext();
 		while(this.hasMoreTokens()) {			
 			
 			//------------------------------------

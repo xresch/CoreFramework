@@ -119,16 +119,28 @@ public class ParameterQuerySelect extends ParameterDefinition {
 			for(JsonElement result : results) {
 				
 				JsonObject object = result.getAsJsonObject();
+				
+				//--------------------------------------
+				// First As String
 				JsonElement firstValue = object.get(firstFieldname);
-				if(firstValue.isJsonNull()) { firstValue = new JsonPrimitive("");}
+				String firstString = null;
+				if		(firstValue.isJsonNull()) { firstString = ""; }
+				else if	(firstValue.isJsonPrimitive()) { firstString = firstValue.getAsString(); }
+				else 								   { firstString =  CFW.JSON.toJSON(firstValue); }
 				
 				if(fieldCount == 1) {
 					settingsField.addOption(firstValue.getAsString());
 				}else {
 					
+					//--------------------------------------
+					// Second As String
 					JsonElement secondValue = object.get(secondFieldname);
-					if(secondValue.isJsonNull()) { secondValue = new JsonPrimitive("");}
-					settingsField.addOption(firstValue.getAsString(), secondValue.getAsString());
+					String secondString = null;
+					if		(secondValue.isJsonNull()) { secondString = ""; }
+					else if	(secondValue.isJsonPrimitive()) { secondString = secondValue.getAsString(); }
+					else 								   { secondString =  CFW.JSON.toJSON(secondValue); }
+					
+					settingsField.addOption(firstString, secondString);
 				}
 			}
 
