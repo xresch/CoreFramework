@@ -325,8 +325,8 @@ public class CFWDBStoredQuery {
 		JsonArray userQueries = new CFWSQL(new CFWStoredQuery())
 				.queryCache()
 				.select()
-				.where(CFWStoredQueryFields.FK_ID_OWNER.toString()
-					 , CFW.Context.Request.getUser().id())
+				.where(CFWStoredQueryFields.FK_ID_OWNER, CFW.Context.Request.getUser().id())
+				.and(CFWStoredQueryFields.IS_ARCHIVED, false)
 				.orderby(CFWStoredQueryFields.NAME.toString())
 				.getAsJSONArray();
 		
