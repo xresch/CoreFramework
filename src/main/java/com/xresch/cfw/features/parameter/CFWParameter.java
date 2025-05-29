@@ -689,8 +689,9 @@ public class CFWParameter extends CFWObject {
 		// Get Parameters Selected by User
 		String userSelectedParamsJson = null;
 		if(request != null) {
-			request.getParameter(FeatureParameter.CFW_PARAMS);
+			userSelectedParamsJson = request.getParameter(FeatureParameter.CFW_PARAMS);
 		}
+				
 		
 		JsonObject userSelectedParamsObject = null;
 		if( !Strings.isNullOrEmpty(userSelectedParamsJson) ) {
