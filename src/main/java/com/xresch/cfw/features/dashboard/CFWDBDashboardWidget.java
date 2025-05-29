@@ -95,7 +95,7 @@ public class CFWDBDashboardWidget {
 	public static boolean 	create(DashboardWidget item) 		{ 
 		return CFWDBDefaultOperations.create(prechecksCreate, auditLogFieldnames, item);
 	}
-	public static int createGetPrimaryKey(DashboardWidget item) 	{ 
+	public static Integer createGetPrimaryKey(DashboardWidget item) 	{ 
 		
 		Integer primaryKey = null;
 		

@@ -832,6 +832,7 @@ public class CFWDBDashboard {
 				
 				//-----------------------------
 				// Create Widgets
+				HashMap<Integer, Integer> oldNewWidgetIDs = new HashMap<>();
 				if(dashboardObject.has("widgets")) {
 					
 					//-----------------------------
@@ -844,6 +845,7 @@ public class CFWDBDashboard {
 					//-----------------------------
 					// Create Widgets
 					JsonArray widgetsArray = dashboardObject.get("widgets").getAsJsonArray();
+					ArrayList<DashboardWidget> createdWidgetsArray = new ArrayList<>();
 					for(JsonElement widgetElement : widgetsArray) {
 						
 						if(widgetElement.isJsonObject()) {
@@ -856,6 +858,7 @@ public class CFWDBDashboard {
 							
 							//-----------------------------
 							// Reset Dashboard ID and Owner
+							Integer oldWidgetID = widget.id();
 							widget.id(null);
 							widget.foreignKeyDashboard(newDashboardID);
 							
@@ -866,14 +869,14 @@ public class CFWDBDashboard {
 								JsonObject settings = CFW.JSON.fromJson(widget.settings()).getAsJsonObject();
 								
 								if(!settings.isJsonNull() 
-								&& settings.has("JSON_PARAMETERS")
-								&& settings.get("JSON_PARAMETERS").isJsonObject()) {
-									JsonObject paramsForWidget = settings.get("JSON_PARAMETERS").getAsJsonObject();
+								&& settings.has(WidgetParameter.FIELDNAME_JSON_PARAMETERS)
+								&& settings.get(WidgetParameter.FIELDNAME_JSON_PARAMETERS).isJsonObject()) {
+									JsonObject paramsForWidget = settings.get(WidgetParameter.FIELDNAME_JSON_PARAMETERS).getAsJsonObject();
 									for(Entry<Integer, Integer> entry : oldNewParamIDs.entrySet()) {
-										String oldID = entry.getKey()+"";
-										if(paramsForWidget.has(oldID)) {
-											JsonElement value = paramsForWidget.get(oldID);
-											paramsForWidget.remove(oldID);
+										String oldParamID = entry.getKey()+"";
+										if(paramsForWidget.has(oldParamID)) {
+											JsonElement value = paramsForWidget.get(oldParamID);
+											paramsForWidget.remove(oldParamID);
 											
 											String newID = entry.getValue()+"";
 											paramsForWidget.add(newID, value);
@@ -885,13 +888,56 @@ public class CFWDBDashboard {
 							
 							//-----------------------------
 							// Create Widget
-							if(!CFW.DB.DashboardWidgets.create(widget)) {
+							Integer newWidgetID = CFW.DB.DashboardWidgets.createGetPrimaryKey(widget);
+							widget.id(newWidgetID);
+							if(newWidgetID != null) {
+								createdWidgetsArray.add(widget);
+							}else {
 								CFW.Messages.addErrorMessage("Error creating imported widget.");
+								continue;
 							}
+							
+							oldNewWidgetIDs.put(oldWidgetID, newWidgetID);
 							
 						}
 					}
+					
+					//-----------------------------
+					// ParameterWidget: Set new IDs
+					// of Affected Widgets
+					for(DashboardWidget newWidget : createdWidgetsArray) {
+						if(newWidget.type().equals(WidgetParameter.WIDGET_TYPE)) {
+							JsonObject settings = CFW.JSON.fromJson(newWidget.settings()).getAsJsonObject();
+							
+							if(!settings.isJsonNull() 
+							&& settings.has(WidgetParameter.FIELDNAME_AFFECTED_WIDGETS)
+							&& settings.get(WidgetParameter.FIELDNAME_AFFECTED_WIDGETS).isJsonObject()) {
+								
+								//--------------------------
+								// Set New IDs
+								JsonObject affectedWidgets = settings.get(WidgetParameter.FIELDNAME_AFFECTED_WIDGETS).getAsJsonObject();
+								for(Entry<Integer, Integer> entry : oldNewWidgetIDs.entrySet()) {
+									String oldWidgetID = entry.getKey()+"";
+									if(affectedWidgets.has(oldWidgetID)) {
+										JsonElement value = affectedWidgets.get(oldWidgetID);
+										affectedWidgets.remove(oldWidgetID);
+										
+										String newID = entry.getValue()+"";
+										affectedWidgets.add(newID, value);
+										
+									}
+								}
+								
+								//--------------------------
+								// Update Widget
+								newWidget.settings(CFW.JSON.toJSON(settings));
+								CFW.DB.DashboardWidgets.update(newWidget);
+							}
+						}
+					}
 				}
+				
+				
 				
 			}else {
 				CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));

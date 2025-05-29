@@ -170,7 +170,7 @@ DONE
 ====
 
 ------- current -------
-
+- Widget: Parameters - When importing dashboards, affected Widgets are now resolved properly.
 
 ------- v.11.1.1 -------
 - NEW FEATURE: Status Monitoring of connected systems.
