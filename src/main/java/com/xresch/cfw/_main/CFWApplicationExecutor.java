@@ -632,6 +632,17 @@ public class CFWApplicationExecutor {
 		new CFWLog(logger).info("Shutdown request received");
 
 		//----------------------------------
+		// Shutdown Database
+		// shutdown first to reduce likelihood of DB file corruption
+		try {
+		    new CFWLog(logger).info("Stop Database Server");
+			CFW.DB.stopDBServer();
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Error while stopping database server: "+e.getMessage(), e);
+		}
+		
+		//----------------------------------
 		// Stop Server 
 		try {
 			new CFWLog(logger).info("Stop Web Server");
@@ -662,16 +673,6 @@ public class CFWApplicationExecutor {
 		} catch (Exception e) {
 			new CFWLog(logger)
 				.severe("Error while stopping application: "+e.getMessage(), e);
-		}
-		
-		//----------------------------------
-		// Shutdown Database
-		try {
-		    new CFWLog(logger).info("Stop Database Server");
-			CFW.DB.stopDBServer();
-		} catch (Exception e) {
-			new CFWLog(logger)
-				.severe("Error while stopping database server: "+e.getMessage(), e);
 		}
 			
 		new CFWLog(logger).info("System.exit(0)");
