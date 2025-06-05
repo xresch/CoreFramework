@@ -55,9 +55,7 @@ public class FeatureParameter extends CFWAppFeature {
 		CFW.Registry.Parameters.add(new ParameterDefinitionTimeRange());
 		CFW.Registry.Parameters.add(new ParameterDefinitionDashboardID());
 		
-		//----------------------------------
-    	// Register Manual
-		registerManual();
+
 	}
 	
 	@Override
@@ -72,7 +70,10 @@ public class FeatureParameter extends CFWAppFeature {
     	// Servlets
     	app.addUnsecureServlet(ServletParameter.class,  URI_PARAMETER);
 		
-		
+		//----------------------------------
+    	// Register Manual
+    	// Doing this here to wait for other parameters to be registered
+		registerManual();
 	}
 
 	@Override

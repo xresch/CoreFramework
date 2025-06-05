@@ -173,7 +173,7 @@ DONE
 - Widget: Parameters - When importing dashboards, affected Widgets are now resolved properly.
 - Query: Stored source and command - autocomplete does not show archived queries
 - Parameter: Added parameter Stored Query Select
-
+- Parameter: Fixed not all parameters showing up in manual
 
 ------- v.11.1.1 -------
 - NEW FEATURE: Status Monitoring of connected systems.
