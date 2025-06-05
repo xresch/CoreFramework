@@ -817,6 +817,36 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
+	 * Creates a random arrayList of integers.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static ArrayList<Integer> arrayListOfIntegers(int count, int lowerInclusive, int upperInclusive) { 
+		ArrayList<Integer> array = new ArrayList<Integer>();
+				
+		for(int i = 0; i < count; i++) {
+			array.add(integerInRange(lowerInclusive, upperInclusive));
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
+	 * Creates a random array list of Swedish Lastnames.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static ArrayList<String> arrayListOfSwedishLastnames(int count) { 
+		ArrayList<String> array = new ArrayList<>();
+		
+		for(int i = 0; i < count; i++) {
+			array.add(lastnameSweden());
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
 	 * Creates a random list of records of a specific type of data.
 	 * 
 	 * @param count number of records to generate
@@ -836,7 +866,7 @@ public class CFWRandom {
 
 		switch(type) {
 		
-			case DEFAULT:		return  CFW.Random.jsonArrayOfMightyPeople(count, 5, earliest, latest);
+			case DEFAULT:		return CFW.Random.jsonArrayOfMightyPeople(count, 5, earliest, latest);
 			case NUMBERS:		return CFW.Random.jsonArrayOfNumberData(count, 0, earliest, latest);
 			case ARRAYS:		return CFW.Random.jsonArrayOfArrayData(count, 0, earliest, latest);
 			case SERIES:		return CFW.Random.jsonArrayOfSeriesData(seriesCount, count, earliest, latest);
@@ -850,6 +880,7 @@ public class CFWRandom {
 		}
 
 	}
+	
 	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 
@@ -904,6 +935,7 @@ public class CFWRandom {
 		return array;
 	}
 	
+
 	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 
