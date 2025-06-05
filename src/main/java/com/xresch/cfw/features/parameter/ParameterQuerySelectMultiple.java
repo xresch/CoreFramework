@@ -1,13 +1,10 @@
 package com.xresch.cfw.features.parameter;
 
-import java.util.HashSet;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -16,7 +13,6 @@ import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterFields;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.CFWQueryResultList;
-import com.xresch.cfw.features.query.FeatureQuery;
 
 /**************************************************************************************************************
  * 
@@ -57,10 +53,12 @@ public class ParameterQuerySelectMultiple extends ParameterDefinition {
 		CFWField settingsField = CFWField.newString(FormFieldType.QUERY_EDITOR, "JSON_QUERY_RESULT")
 										 .disableSanitization();
 
-		if(fieldValue != null) {
-			settingsField.setValueConvert(fieldValue, true);
+		if(fieldValue == null || fieldValue.toString().isBlank() ) {
+			fieldValue = ParameterQuerySelect.DEFAULT_QUERY;
 		}
-
+		
+		settingsField.setValueConvert(fieldValue, true);
+		
 		return settingsField;
 	}
 	

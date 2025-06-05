@@ -7,7 +7,8 @@ If the data contains two columns, the first will be used as the value and the se
 
 <p>When using this parameter with a query, the value of the parameter will be a simple string. 
 For example, following is the stored query we define for the values for a parameter 'name_filter': </p>
-<pre><code class="language-cfwquery">| source random
+<pre><code class="language-cfwquery">| execute earliestSet(null, -1, "d") # set timeframe here else default last 30 minutes will be used
+| source random
 | keep FIRSTNAME
 | distinct FIRSTNAME
 | sort FIRSTNAME</code></pre>

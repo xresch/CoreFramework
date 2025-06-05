@@ -1,0 +1,26 @@
+
+<p>
+This parameter allows you to execute a query and use the resulting records as values for a tags selector that allows the selection of multiple values. 
+When the data returned by the query has a single column, the values will be use as the value and the label for the select options.
+If the data contains two columns, the first will be used as the value and the second as the label.
+</p>
+
+<p>When using this parameter with a query, the value of the parameter will be a simple string that represents a JSON Array. 
+For example, following is the query we define for the values for a parameter 'name_filter': </p>
+<pre><code class="language-cfwquery"> | execute earliestSet(null, -7, "d") # set timeframe here else default last 30 minutes will be used
+| source random
+| distinct FIRSTNAME
+| keep FIRSTNAME
+| sort FIRSTNAME</code></pre>
+
+<p>Below query would get a string as the parameter value, so you would have to convert that string into an array using the tojson()-function.
+Multiple values will most likely be used in combination with the source each-Parameter:</p> 
+
+<pre><code class="language-cfwquery">| paramdefaults
+    multiple_names = [ {value: "n/a", label: "nothing selected"} ]
+| source web 
+	each = tojson(p(multiple_names, "[]"))
+	url = "https://my.tiramisu.io/userdetails?username="+encode(sourceEach())</code></pre>
+	
+
+

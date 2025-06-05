@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -25,6 +26,12 @@ import com.xresch.cfw.features.query.FeatureQuery;
  **************************************************************************************************************/
 public class ParameterQuerySelect extends ParameterDefinition {
 
+	public static final String DEFAULT_QUERY = 
+			"| execute earliestSet(null, -1, \"d\") # else default of last 30 minutes will be used"
+			+"\r\n# result should contain either one or two columns:"
+			+"\r\n#   >> One Column: Value will be used for both the value and label"
+			+"\r\n#   >> Two Columns: First column is the value and second will be used as the label";
+	
 	public static final String UNIQUE_NAME = "Query Select";
 	
 	/***************************************************************
@@ -57,9 +64,13 @@ public class ParameterQuerySelect extends ParameterDefinition {
 		CFWField settingsField = CFWField.newString(FormFieldType.QUERY_EDITOR, "JSON_QUERY_RESULT")
 										 .disableSanitization();
 
-		if(fieldValue != null) {
-			settingsField.setValueConvert(fieldValue, true);
+		
+		if(fieldValue == null || fieldValue.toString().isBlank() ) {
+			fieldValue = DEFAULT_QUERY;
 		}
+			
+		settingsField.setValueConvert(fieldValue, true);
+
 
 		return settingsField;
 	}
