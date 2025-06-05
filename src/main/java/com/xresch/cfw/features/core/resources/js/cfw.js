@@ -2842,7 +2842,8 @@ function cfw_autocomplete_addParamEnhancer(functionToEnhanceParams){
  * @param fieldName the name of the field
  * @param minChars the minimum amount of chars for triggering the autocomplete
  * @param maxResults the max number of results listed for the autocomplete
- * @param array (optional) an array of strings used for the autocomplete
+ * @param array (optional) an array of strings ir objects like "{value: value, label: label}" 
+ * 				used for the autocomplete
  * @param triggerWithCtrlSpace (optional)set to true to only trigger autocomplete with Ctrl+Space
  * @param target (optional)set the target of the autocomplete results, either JQuery or selector
  * @return nothing
@@ -2892,7 +2893,10 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 			
 			var filteredArray = [];
 			var searchString = settings.inputField.value;
-		    		    
+		    if ( ! CFW.utils.isNullOrEmpty(searchString) ){
+				searchString = searchString.trim();
+			}
+			
 			//----------------------------
 		    // Filter Array
 		    for (var i = 0; i < array.length && filteredArray.length < maxResults; i++) {

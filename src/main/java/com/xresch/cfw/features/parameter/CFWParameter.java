@@ -652,10 +652,9 @@ public class CFWParameter extends CFWObject {
 										return;
 					}
 						
-					HashMap options = field.getOptions();
 					for(CFWObject object : availableParams) {
 						String param = "$"+((CFWParameter)object).name()+"$";
-						options.put(param, param);
+						field.addOption(param, param);
 					}
 					
 				}

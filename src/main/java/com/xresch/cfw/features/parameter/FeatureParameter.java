@@ -57,6 +57,7 @@ public class FeatureParameter extends CFWAppFeature {
 		CFW.Registry.Parameters.add(new ParameterQuerySelect());
 		CFW.Registry.Parameters.add(new ParameterQuerySelectMultiple());
 		CFW.Registry.Parameters.add(new ParameterStoredQuerySelect());
+		CFW.Registry.Parameters.add(new ParameterStoredQuerySelectMultiple());
 		CFW.Registry.Parameters.add(new ParameterQuery());
 		
 		CFW.Registry.Parameters.add(new ParameterDefinitionDashboardID());

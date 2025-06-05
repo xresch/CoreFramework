@@ -1,12 +1,12 @@
 
 <p>
-This parameter allows you to execute a query and use the resulting records as values for a tags selector that allows the selection of multiple values. 
-When the data returned by the query has a single column, the values will be use as the value and the label for the select options.
+This parameter allows you to execute a stored query and use the resulting records as values for a tags selector that allows the selection of multiple values. 
+When the data returned by the query has a single column, the values will be used as the value and the label for the select options.
 If the data contains two columns, the first will be used as the value and the second as the label.
 </p>
 
 <p>When using this parameter with a query, the value of the parameter will be a simple string that represents a JSON Array. 
-For example, following is the query we define for the values for a parameter 'name_filter': </p>
+For example, following is a stored query we define for the values of a parameter 'name_filter': </p>
 <pre><code class="language-cfwquery"> | execute earliestSet(null, -7, "d") # set timeframe here else default last 30 minutes will be used
 | source random
 | distinct FIRSTNAME
