@@ -346,6 +346,7 @@ public class FeatureQuery extends CFWAppFeature {
 		//----------------------------------
 		// Register Dashboard Parameters
 		CFW.Registry.Parameters.add(new ParameterQuerySelect());
+		CFW.Registry.Parameters.add(new ParameterStoredQuerySelect());
 		CFW.Registry.Parameters.add(new ParameterQuery());
 		
 		//----------------------------------

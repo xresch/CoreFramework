@@ -1,0 +1,34 @@
+<p>This parameter allows you to select a time range.
+The returned value will be a string representing a JSON object.</p>
+
+
+<p>When using this parameter with a query, the value of the parameter will be a simple string. 
+In order to use the value, you will need to convert it into an object using the tojson()-function. 
+Following is an example that uses a parameter compare to 'compare_to': </p>
+<pre><code class="language-cfwquery">###################################################
+# Set Default Params
+###################################################
+| paramdefaults
+	compare_to = object(
+					 'earliest', earliest()
+					,'latest', latest()
+				)
+###################################################
+# Make sure it is an Object
+###################################################
+| meta 
+	compareTime = tojson( p('compare_to') )
+	
+###################################################
+# Using the Parameter
+###################################################
+| source postgres 
+	environment=param(database_id) 
+	query= `
+		SELECT *
+		FROM TIRAMISU_REPOSITORY
+		WHERE time &lt;= `+ m('compareTime').latest +`
+		  AND time >= `+ m('compareTime').earliest +`
+		  AND quality 
+	`</code></pre>
+
