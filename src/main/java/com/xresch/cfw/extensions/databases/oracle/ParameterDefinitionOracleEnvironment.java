@@ -69,20 +69,5 @@ public class ParameterDefinitionOracleEnvironment extends ParameterDefinition {
 	public boolean isDynamic() {
 		return false;
 	}
-	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	@Override
-	public boolean isAvailable(HashSet<String> widgetTypesArray) {
-		
-		for(String type : widgetTypesArray) {
-			if(type.contains("emp_oracle")) {
-				return true;
-			}
-			
-		}
-		return false;
-	}
 
 }

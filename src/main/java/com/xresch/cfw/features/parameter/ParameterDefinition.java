@@ -62,12 +62,6 @@ public abstract class ParameterDefinition {
 	@SuppressWarnings({ "rawtypes"})
 	public abstract CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object parameterValue, CFWTimeframe timeframe, JsonObject userSelectedParamValues);
 
-	/************************************************************
-	 * Return true if the parameter is available based on the
-	 * given widget types.
-	 * @param widgetTypesArray unique list of types.
-	 * @return true if available
-	 ************************************************************/
-	public abstract boolean isAvailable(HashSet<String> widgetTypesArray);
+
 			
 }

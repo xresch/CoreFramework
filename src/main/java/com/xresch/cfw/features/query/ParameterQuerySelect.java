@@ -157,12 +157,4 @@ public class ParameterQuerySelect extends ParameterDefinition {
 		return true;
 	}
 	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	@Override
-	public boolean isAvailable(HashSet<String> widgetTypesArray) {
-		return true;
-	}
-
 }

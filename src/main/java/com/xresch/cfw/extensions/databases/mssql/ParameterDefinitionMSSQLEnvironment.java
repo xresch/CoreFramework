@@ -69,19 +69,4 @@ public class ParameterDefinitionMSSQLEnvironment extends ParameterDefinition {
 		return false;
 	}
 	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	@Override
-	public boolean isAvailable(HashSet<String> widgetTypesArray) {
-		
-		for(String type : widgetTypesArray) {
-			if(type.contains("emp_mssql")) {
-				return true;
-			}
-			
-		}
-		return false;
-	}
-
 }

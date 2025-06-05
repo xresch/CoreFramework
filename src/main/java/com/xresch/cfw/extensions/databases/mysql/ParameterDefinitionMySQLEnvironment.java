@@ -69,19 +69,4 @@ public class ParameterDefinitionMySQLEnvironment extends ParameterDefinition {
 		return false;
 	}
 	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	@Override
-	public boolean isAvailable(HashSet<String> widgetTypesArray) {
-		
-		for(String type : widgetTypesArray) {
-			if(type.contains("emp_mysql")) {
-				return true;
-			}
-			
-		}
-		return false;
-	}
-
 }

@@ -207,15 +207,13 @@ public class ServletParameter extends HttpServlet
 		JsonArray parameterDefArray = new JsonArray();
 		
 		for(ParameterDefinition def : CFW.Registry.Parameters.getParameterDefinitions().values()) {
-			if(def.isAvailable(uniqueTypeChecker)) {
-				JsonObject paramObject = new JsonObject();
-				paramObject.add("widgetType", null);
-				paramObject.add("widgetSetting", null);
-				paramObject.addProperty("label", def.getParamUniqueName());
-				paramObject.addProperty("description", def.descriptionShort());
-				
-				parameterDefArray.add(paramObject);
-			}
+			JsonObject paramObject = new JsonObject();
+			paramObject.add("widgetType", null);
+			paramObject.add("widgetSetting", null);
+			paramObject.addProperty("label", def.getParamUniqueName());
+			paramObject.addProperty("description", def.descriptionShort());
+			
+			parameterDefArray.add(paramObject);
 		}
 		
 		//parameterDefArray.addAll(widgetParametersArray);
@@ -463,23 +461,14 @@ public class ServletParameter extends HttpServlet
 						}
 					}
 				}else {
-					String label = paramToAutocomplete.paramSettingsLabel();
-					ParameterDefinition def = CFW.Registry.Parameters.getDefinition(label);
 					for(CFWObject object : origins.values() ) {
 						CFWParameter currentParam = (CFWParameter)object;
 						
-						if(currentParam.widgetType() != null ) {
-							HashSet<String> widgetTypesArray = new HashSet<>();
-							widgetTypesArray.add(currentParam.widgetType());
+						String currentName = currentParam.paramSettingsLabel();
+						String valueFieldName = currentParam.id()+"-"+CFWParameterFields.VALUE;
+						String currentParamValue = request.getParameter(valueFieldName);
+					    extraParams.put(currentName, new String[] { currentParamValue });
 							
-							if(def.isAvailable(widgetTypesArray)) {
-								String currentName = currentParam.paramSettingsLabel();
-								String valueFieldName = currentParam.id()+"-"+CFWParameterFields.VALUE;
-								String currentParamValue = request.getParameter(valueFieldName);
-						        extraParams.put(currentName, new String[] { currentParamValue });
-							}
-							
-						}
 					}
 				}
 				

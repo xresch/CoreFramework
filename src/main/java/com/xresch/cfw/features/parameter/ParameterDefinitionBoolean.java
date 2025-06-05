@@ -71,12 +71,4 @@ public class ParameterDefinitionBoolean extends ParameterDefinition {
 		return false;
 	}
 	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	@Override
-	public boolean isAvailable(HashSet<String> widgetTypesArray) {
-		return true;
-	}
-
 }

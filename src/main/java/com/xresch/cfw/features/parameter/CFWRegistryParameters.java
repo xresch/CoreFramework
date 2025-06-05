@@ -15,15 +15,15 @@ public class CFWRegistryParameters {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWRegistryParameters.class.getName());
 	
-	private static LinkedHashMap<String, ParameterDefinition> definitionArray = new LinkedHashMap<String, ParameterDefinition>();
+	private static LinkedHashMap<String, ParameterDefinition> definitionsMap = new LinkedHashMap<String, ParameterDefinition>();
 	
 	/***********************************************************************
 	 * Adds a ParameterDefinition class to the registry.
 	 * @param definition
 	 ***********************************************************************/
 	public static void add(ParameterDefinition definition)  {
-		if(!definitionArray.containsKey(definition.getParamUniqueName())) {
-			definitionArray.put(definition.getParamUniqueName(),definition);
+		if(!definitionsMap.containsKey(definition.getParamUniqueName())) {
+			definitionsMap.put(definition.getParamUniqueName(),definition);
 		}else {
 			new CFWLog(logger)
 				.severe("A parameter definition with name'"+definition.getParamUniqueName()+"' was already defined. Could not add the definition to the registry.", new Throwable());
@@ -47,7 +47,7 @@ public class CFWRegistryParameters {
 	 * @param definition
 	 ***********************************************************************/
 	public static void remove(ParameterDefinition definition)  {
-		definitionArray.remove(definition.getParamUniqueName());
+		definitionsMap.remove(definition.getParamUniqueName());
 	}
 	
 	/***********************************************************************
@@ -55,7 +55,7 @@ public class CFWRegistryParameters {
 	 * @param definition
 	 ***********************************************************************/
 	public static ParameterDefinition getDefinition(String parameterLabel)  {
-		return definitionArray.get(parameterLabel);
+		return definitionsMap.get(parameterLabel);
 	}
 	
 	/***********************************************************************
@@ -63,7 +63,8 @@ public class CFWRegistryParameters {
 	 * @param definition
 	 ***********************************************************************/
 	public static LinkedHashMap<String, ParameterDefinition> getParameterDefinitions()  {
-		return definitionArray;
+		
+		return definitionsMap;
 	}
 	
 }

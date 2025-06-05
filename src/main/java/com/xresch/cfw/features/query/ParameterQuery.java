@@ -84,13 +84,5 @@ public class ParameterQuery extends ParameterDefinition {
 	public boolean isDynamic() {
 		return true;
 	}
-	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	@Override
-	public boolean isAvailable(HashSet<String> widgetTypesArray) {
-		return true;
-	}
 
 }

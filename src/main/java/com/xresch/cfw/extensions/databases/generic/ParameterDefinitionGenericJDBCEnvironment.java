@@ -71,19 +71,4 @@ public class ParameterDefinitionGenericJDBCEnvironment extends ParameterDefiniti
 		return false;
 	}
 	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	@Override
-	public boolean isAvailable(HashSet<String> widgetTypesArray) {
-		
-		for(String type : widgetTypesArray) {
-			if(type.contains("emp_genericjdbc")) {
-				return true;
-			}
-			
-		}
-		return false;
-	}
-
 }
