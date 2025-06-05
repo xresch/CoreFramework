@@ -929,8 +929,10 @@ public class ServletDashboardViewMethods
 						cacheID += "_"+timeframe.getOffsetString();
 					}
 					
-					cacheID += "_"+dashboardParams.hashCode()+"_"+jsonSettings.hashCode();
-					
+					// jsonSettings.toString().hashCode(): because JsonElement.hashCode() is not 
+					// implemented and might return same hash for the Object even if settings have changed.
+					cacheID += "_"+dashboardParams.hashCode()+"_"+jsonSettings.toString().hashCode();
+										
 					//----------------------------
 					// Force Cache Refresh
 					if(forceRefresh.trim().equalsIgnoreCase("true")) {

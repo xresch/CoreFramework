@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -369,6 +370,24 @@ public class CFWJson {
 		Type type = new TypeToken<LinkedHashMap<String,String>>(){}.getType();
 		LinkedHashMap<String,String> zeMap = gsonInstance.fromJson(zeObject, type); 
 		return zeMap;
+	}
+	
+	/*************************************************************************************
+	 * Converts a HashMap to a JsonArray like [{ value: "value", label: "label"}, ...].
+	 * 
+	 *************************************************************************************/
+	public static JsonArray fromHashMapToJsonArray(HashMap<String,String> map) {
+
+		JsonArray result = new JsonArray();
+		for(Entry<String, String> entry : map.entrySet()) {
+			JsonObject entryObject = new JsonObject();
+			entryObject.addProperty("value", entry.getKey());
+			entryObject.addProperty("label", entry.getValue());
+			result.add(entryObject);
+		}
+		
+		return result;
+
 	}
 	
 	

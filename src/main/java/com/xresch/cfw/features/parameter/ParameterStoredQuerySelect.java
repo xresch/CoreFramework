@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.query;
+package com.xresch.cfw.features.parameter;
 
 import java.util.HashSet;
 
@@ -14,7 +14,10 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterFields;
-import com.xresch.cfw.features.parameter.ParameterDefinition;
+import com.xresch.cfw.features.query.CFWQueryExecutor;
+import com.xresch.cfw.features.query.CFWQueryResult;
+import com.xresch.cfw.features.query.CFWQueryResultList;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.store.CFWStoredQuery;
 import com.xresch.cfw.features.query.store.CFWStoredQuery.CFWStoredQueryFields;
 
@@ -46,7 +49,7 @@ public class ParameterStoredQuerySelect extends ParameterDefinition {
 	 ***************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL, "parameter_"+UNIQUE_NAME.toLowerCase().replace(" ", "_")+".html");
+		return CFW.Files.readPackageResource(FeatureParameter.PACKAGE_MANUAL, "parameter_"+UNIQUE_NAME.toLowerCase().replace(" ", "_")+".html");
 	}
 	/***************************************************************
 	 * 

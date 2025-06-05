@@ -2891,7 +2891,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 		$input.on('input', function(e) {
 			
 			var filteredArray = [];
-			var searchString = inputField.value;
+			var searchString = settings.inputField.value;
 		    		    
 			//----------------------------
 		    // Filter Array
@@ -2899,13 +2899,24 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 		      
 			   	var currentValue = array[i];
 			    
-			   	if (currentValue.toUpperCase().indexOf(searchString.toUpperCase()) >= 0) {
-			   		filteredArray.push({value: currentValue, label: currentValue});
-			   	}
+			    if(typeof currentValue == "object"){
+					if (currentValue.label.toUpperCase().indexOf(searchString.toUpperCase()) >= 0) {
+				   		filteredArray.push(currentValue);
+				   	}
+				}else{
+				   	if (currentValue.toUpperCase().indexOf(searchString.toUpperCase()) >= 0) {
+				   		filteredArray.push({value: currentValue, label: currentValue});
+				   	}
+				}
 			}
 			//----------------------------
 		    // Show AutoComplete	
-			cfw_autocompleteShow(this, autocompleteTarget, {lists:[filteredArray], description: null});
+			cfw_autocompleteShow(settings.inputField
+						, settings.autocompleteTarget
+						, 0
+						, {lists:[{ items: filteredArray} ]
+						, description: null}
+						);
 		});
 	}
 	
@@ -3105,6 +3116,7 @@ function cfw_autocompleteCloseAll() {
 }
  *************************************************************************************/
 function cfw_autocompleteShow(inputField, autocompleteTarget, cursorPosition, autocompleteResults){
+	
 	//----------------------------
     // Initialize and Cleanup
 	var searchString = inputField.value;

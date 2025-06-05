@@ -11,6 +11,9 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.manual.ManualPage;
+import com.xresch.cfw.features.parameter.ParameterQuery;
+import com.xresch.cfw.features.parameter.ParameterQuerySelect;
+import com.xresch.cfw.features.parameter.ParameterStoredQuerySelect;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandAggregate;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandAwait;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandBollBands;
@@ -343,12 +346,7 @@ public class FeatureQuery extends CFWAppFeature {
 		// Register Widgets
 		CFW.Registry.Widgets.add(new WidgetQueryResults());
 		
-		//----------------------------------
-		// Register Dashboard Parameters
-		CFW.Registry.Parameters.add(new ParameterQuerySelect());
-		CFW.Registry.Parameters.add(new ParameterStoredQuerySelect());
-		CFW.Registry.Parameters.add(new ParameterQuery());
-		
+
 		//----------------------------------
 		// Register Job Tasks
 		CFW.Registry.Jobs.registerTask(new CFWJobTaskAlertingCFWQLQuery());

@@ -582,7 +582,22 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		};
 		
 
-		if(finalFieldType != FormFieldType.HIDDEN && finalFieldType != FormFieldType.NONE) {
+		//---------------------------------------------
+		// Decorators and Autcomplete
+		//---------------------------------------------
+		boolean hasAutocomplete = false;
+		if(finalFieldType != FormFieldType.HIDDEN 
+		&& finalFieldType != FormFieldType.NONE) {
+			
+			hasAutocomplete = ( 
+								   autocompleteHandler != null 
+								&& this.parent instanceof CFWForm 
+							  )
+						   || ( 
+								   finalFieldType.toString().startsWith("TAGS") 
+								&& valueLabelOptions != null
+							  );
+			
 			//---------------------------------------
 			// Create Field Wrapper
 			String autocompleteClass = (autocompleteHandler == null)  ? "" : "cfw-autocomplete";
@@ -594,7 +609,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 
 			//---------------------------------------
 			// Autocomplete Wrapper
-			if (autocompleteHandler != null) {
+			if (hasAutocomplete) {
 				html.append("  <div class=\"cfw-autocomplete\">");
 			}
 		}
@@ -692,16 +707,24 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		//---------------------------------------------
 		// Add Autocomplete Initialization
 		//---------------------------------------------
-		if(autocompleteHandler != null 
-		&& this.parent instanceof CFWForm
+		if( hasAutocomplete
 		&& finalFieldType != FormFieldType.QUERY_EDITOR) { // query editor initializes itself
 			
 			html.append("</div>");
+			CFWForm form = (CFWForm)this.parent;
+			String formID = form.getFormID();
 			
-			String formID = ((CFWForm)this.parent).getFormID();
-			int maxResults = this.getAutocompleteHandler().getMaxResults();
-			int minChars = this.getAutocompleteHandler().getMinChars();
-			((CFWForm)this.parent).javascript.append("cfw_autocompleteInitialize('"+formID+"','"+name+"',"+minChars+","+maxResults+");\r\n");
+			if(this.autocompleteHandler != null) {
+				int maxResults = this.getAutocompleteHandler().getMaxResults();
+				int minChars = this.getAutocompleteHandler().getMinChars();
+				form.javascript.append("cfw_autocompleteInitialize('"+formID+"','"+name+"',"+minChars+","+maxResults+");\r\n");
+			}else {
+				
+				// cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, array, triggerWithCtrlSpace, target);
+				JsonArray array = CFW.JSON.fromHashMapToJsonArray(valueLabelOptions);
+				form.javascript.append("cfw_autocompleteInitialize('"+formID+"', '"+name+"', 1, 30, "+array+");\r\n");
+
+			}
 			
 		}
 		//---------------------------------------------
@@ -1165,13 +1188,19 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"tagsinput\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
+			
+			CFWForm form = (CFWForm)this.parent;
+			//------------------------------------
+			// Initialize Selector
 			if(type.equals(FormFieldType.TAGS_SELECTOR)) {
-				((CFWForm)this.parent).javascript.append("cfw_initializeTagsSelectorField('"+name+"', "+maxTags+", "+CFW.JSON.toJSON(value)+");\r\n");
+				form.javascript.append("cfw_initializeTagsSelectorField('"+name+"', "+maxTags+", "+CFW.JSON.toJSON(value)+");\r\n");
 			}else {
-				((CFWForm)this.parent).javascript.append("cfw_initializeTagsField('"+name+"', "+maxTags+");\r\n");
+				form.javascript.append("cfw_initializeTagsField('"+name+"', "+maxTags+");\r\n");
 			}
+									
 		}
-				
+		
+	
 	}
 	
 	/***********************************************************************************
