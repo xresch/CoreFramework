@@ -21,6 +21,8 @@ import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.dashboard.Dashboard;
+import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
@@ -86,6 +88,10 @@ public class CFWStoredQuery extends CFWObject {
 		, TIME_CREATED
 		, LAST_UPDATED
 		, IS_ARCHIVED
+		// not using primary key for this, as it allows for easier switch between versions
+		, VERSION_GROUP
+		// zero is current, else it counts up 1 for every version, later version are higher 
+		, VERSION
 	}
 
 	private static Logger logger = CFWLog.getLogger(CFWStoredQuery.class.getName());
@@ -192,6 +198,17 @@ public class CFWStoredQuery extends CFWObject {
 			.setValue(false)
 			;
 	
+	private CFWField<String> versionGroup = CFWField.newString(FormFieldType.HIDDEN, CFWStoredQueryFields.VERSION_GROUP)
+			.setDescription("Identifier used for the grouping of the versions.")
+			.setValue(null);
+	
+	private CFWField<Integer> version = CFWField.newInteger(FormFieldType.HIDDEN, CFWStoredQueryFields.VERSION)
+			.setColumnDefinition("INT DEFAULT 0")
+			.setDescription("The version of the query, 0 is the current version.")
+			.apiFieldType(FormFieldType.NUMBER)
+			.setValue(0)
+			;
+	
 	
 	public CFWStoredQuery() {
 		initializeFields();
@@ -224,6 +241,8 @@ public class CFWStoredQuery extends CFWObject {
 				, timeCreated
 				, lastUpdated
 				, isArchived
+				, versionGroup
+				, version
 			);
 	}
 	
@@ -259,6 +278,8 @@ public class CFWStoredQuery extends CFWObject {
 						CFWStoredQueryFields.TIME_CREATED.toString(),
 						CFWStoredQueryFields.LAST_UPDATED.toString(),	
 						CFWStoredQueryFields.IS_ARCHIVED.toString(),
+						CFWStoredQueryFields.VERSION.toString(),		
+						CFWStoredQueryFields.VERSION_GROUP.toString(),	
 				};
 
 		//----------------------------------
@@ -769,5 +790,23 @@ public class CFWStoredQuery extends CFWObject {
 		this.isArchived.setValue(isRenamable);
 		return this;
 	}	
+	
+	public String versionGroup() {
+		return versionGroup.getValue();
+	}
+	
+	public CFWStoredQuery versionGroup(String value) {
+		this.versionGroup.setValue(value);
+		return this;
+	}
+	
+	public Integer version() {
+		return version.getValue();
+	}
+	
+	public CFWStoredQuery version(Integer value) {
+		this.version.setValue(value);
+		return this;
+	}
 	
 }

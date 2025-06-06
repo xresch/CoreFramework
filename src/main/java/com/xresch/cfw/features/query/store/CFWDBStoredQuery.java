@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -26,6 +27,8 @@ import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.dashboard.Dashboard;
+import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.query.store.CFWStoredQuery.CFWStoredQueryFields;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
 import com.xresch.cfw.features.parameter.CFWParameter;
@@ -130,15 +133,31 @@ public class CFWDBStoredQuery {
 		
 		//---------------------------------
 		// Make sure it has a version group 
+		if(Strings.isNullOrEmpty(duplicate.versionGroup()) ) {
+			duplicate.versionGroup(UUID.randomUUID().toString());
+			duplicate.update(DashboardFields.VERSION_GROUP);
+		}
+		
+		int originalID = duplicate.id();
+		
 		duplicate.id(null);
 		duplicate.timeCreated( new Timestamp(new Date().getTime()) );
 		
 		// need to check if null for automatic versioning
 		Integer id =  CFW.Context.Request.getUserID();
-
-		duplicate.foreignKeyOwner(id);
-		duplicate.name(duplicate.name()+"(Copy)");
-		duplicate.isShared(false);
+		
+		if(forVersioning) {
+			
+			int maxVersion = getMaxVersionForQuery(originalID);
+			duplicate.version(maxVersion+1);
+			
+		}else {
+			duplicate.foreignKeyOwner(id);
+			duplicate.name(duplicate.name()+"(Copy)");
+			duplicate.version(0);
+			duplicate.versionGroup(UUID.randomUUID().toString());
+			duplicate.isShared(false);
+		}
 		
 		CFW.DB.transactionStart();
 		
@@ -291,6 +310,8 @@ public class CFWDBStoredQuery {
 				.queryCache()
 				.select()
 				.where(CFWStoredQueryFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
+				.and(CFWStoredQueryFields.VERSION, 0)
+				.and(CFWStoredQueryFields.IS_ARCHIVED, false)
 				.orderby(CFWStoredQueryFields.NAME.toString())
 				.getResultSet();
 		
@@ -308,6 +329,7 @@ public class CFWDBStoredQuery {
 				.queryCache()
 				.select()
 				.where(CFWStoredQueryFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
+				.and(CFWStoredQueryFields.VERSION, 0)
 				.and(CFWStoredQueryFields.IS_ARCHIVED, false)
 				.orderby(CFWStoredQueryFields.NAME.toString())
 				.getAsJSON();
@@ -326,7 +348,8 @@ public class CFWDBStoredQuery {
 				.queryCache()
 				.select()
 				.where(CFWStoredQueryFields.FK_ID_OWNER, CFW.Context.Request.getUser().id())
-				.and(CFWStoredQueryFields.IS_ARCHIVED, false)
+					.and(CFWStoredQueryFields.VERSION, 0)
+					.and(CFWStoredQueryFields.IS_ARCHIVED, false)
 				.orderby(CFWStoredQueryFields.NAME.toString())
 				.getAsJSONArray();
 		
@@ -349,7 +372,8 @@ public class CFWDBStoredQuery {
 				.queryCache()
 				.select()
 				.where(CFWStoredQueryFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
-				.and(CFWStoredQueryFields.IS_ARCHIVED, true)
+					.and(CFWStoredQueryFields.VERSION, 0)
+					.and(CFWStoredQueryFields.IS_ARCHIVED, true)
 				.orderby(CFWStoredQueryFields.NAME.toString())
 				.getAsJSON();
 	}
@@ -368,6 +392,7 @@ public class CFWDBStoredQuery {
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select()
 				.where(CFWStoredQueryFields.IS_ARCHIVED, false)
+					.and(CFWStoredQueryFields.VERSION, 0)
 				.orderby(CFWStoredQueryFields.NAME.toString())
 				.getAsJSON();
 		}else {
@@ -389,6 +414,7 @@ public class CFWDBStoredQuery {
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select()
 				.where(CFWStoredQueryFields.IS_ARCHIVED, true)
+					.and(CFWStoredQueryFields.VERSION, 0)
 				.orderby(CFWStoredQueryFields.NAME.toString())
 				.getAsJSON();
 		}else {
@@ -444,8 +470,9 @@ public class CFWDBStoredQuery {
 				  , CFWStoredQueryFields.TAGS
 				  )
 			.where(CFWStoredQueryFields.IS_SHARED, true)
-			.and(CFWStoredQueryFields.IS_ARCHIVED, false)
-			.and().custom("(");
+				.and(CFWStoredQueryFields.VERSION, 0)
+				.and(CFWStoredQueryFields.IS_ARCHIVED, false)
+				.and().custom("(");
 		
 		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
 		for(int i = 0 ; i < roleArray.length; i++ ) {
@@ -472,7 +499,8 @@ public class CFWDBStoredQuery {
 					, CFWStoredQueryFields.TAGS
 					)
 			.where(CFWStoredQueryFields.IS_ARCHIVED, false)
-			.and().custom("(");
+				.and(CFWStoredQueryFields.VERSION, 0)
+				.and().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {
 			int roleID = roleArray[i];
@@ -668,6 +696,7 @@ public class CFWDBStoredQuery {
 			.select(CFWStoredQueryFields.PK_ID,
 					CFWStoredQueryFields.NAME)
 			.whereLike(CFWStoredQueryFields.NAME, "%"+searchValue+"%")
+				.and(CFWStoredQueryFields.VERSION, 0)
 			.limit(maxResults)
 			.getResultSet();
 		
@@ -1037,6 +1066,23 @@ public class CFWDBStoredQuery {
 		return false;
 	}
 	
+	/********************************************************************************************
+	 * Returns the maximum version for the dashboard
+	 * 
+	 ********************************************************************************************/
+	public static int  getMaxVersionForQuery(int id) {
+		
+		CFWStoredQuery query = selectByID(id);
+		
+		return new CFWSQL(new CFWStoredQuery())
+			.custom("SELECT MAX(VERSION) AS MAXVERSION"
+					+" FROM "+CFWStoredQuery.TABLE_NAME
+					+" WHERE PK_ID = ? OR VERSION_GROUP = ?"
+					, id
+					, query.versionGroup()
+					)
+			.getFirstAsInteger();
+	}
 	
 	/********************************************************************************************
 	 * Creates multiple StoredQuery in the DB.
