@@ -152,7 +152,8 @@ function cfw_storedQuerylist_changeStoredQueryOwner(id){
  ******************************************************************************/
 function cfw_storedQuery_editStoredQuery(id, callbackJSOrFunc){
 	
-
+	cfw_parameter_setScope("query", id);
+	
 	// ##################################################
 	// Create and show Modal
 	// ##################################################
@@ -161,23 +162,23 @@ function cfw_storedQuery_editStoredQuery(id, callbackJSOrFunc){
 	// ----------------------------------
 	// Create Pill Navigation
 	var list = $('<ul class="nav nav-pills mb-3" id="pills-tab-stored-settings" role="tablist">');
-
+	let paramsTabID = 'storedQueryParamsContent';
 	list.append(
 		'<li class="nav-item"><a class="nav-link active" id="storedQuerySettingsTab" data-toggle="pill" href="#storedQuerySettingsContent" role="tab" ><i class="fas fa-tools mr-2"></i>Settings</a></li>'
-	 // + '<li class="nav-item"><a class="nav-link" id="storedQueryStatisticsTab" data-toggle="pill" href="#storedQueryStatisticsContent" role="tab" onclick="cfw_storedQuerycommon_showStatistics('+id+')" ><i class="fas fa-chart-bar"></i>&nbsp;Statistics</a></li>'
+	  + '<li class="nav-item"><a class="nav-link" id="storedQueryParamsTab" data-toggle="pill" href="#'+paramsTabID+'" role="tab" onclick="cfw_parameter_edit(\'#'+paramsTabID+'\')" ><i class="fas fa-sliders"></i>&nbsp;Parameters</a></li>'
 	);
 	
 	compositeDiv.append(list);
 	compositeDiv.append('<div id="settingsTabContent" class="tab-content">'
 			  +'<div class="tab-pane fade show active" id="storedQuerySettingsContent" role="tabpanel" aria-labelledby="storedQuerySettingsTab"></div>'
-			 // +'<div class="tab-pane fade" id="storedQueryStatisticsContent" role="tabpanel" aria-labelledby="storedQueryStatisticsTab"></div>'
+			  +'<div class="tab-pane fade" id="'+paramsTabID+'" role="tabpanel" aria-labelledby="storedQueryParamsTab"></div>'
 		+'</div>' );	
 
 	//-----------------------------------
 	// Role Details
 	//-----------------------------------
 	
-	CFW.ui.showModalMedium(
+	CFW.ui.showModalLarge(
 			CFWL('cfw_core_settings', 'Settings'), 
 			compositeDiv, 
 			callbackJSOrFunc,

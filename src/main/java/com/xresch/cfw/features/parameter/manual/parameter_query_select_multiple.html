@@ -19,8 +19,8 @@ Multiple values will most likely be used in combination with the source each-Par
 <pre><code class="language-cfwquery">| paramdefaults
     multiple_names = [ {value: "n/a", label: "nothing selected"} ]
 | source web 
-	each = tojson(p(multiple_names, []))
-	url = "https://my.tiramisu.io/userdetails?username="+encode(sourceEach())</code></pre>
+	each = tojson( p(multiple_names, []) )
+	url = "https://my.tiramisu.io/userdetails?username="+encode(sourceEach().value)</code></pre>
 	
 
 

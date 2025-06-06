@@ -327,7 +327,7 @@ function cfw_dashboardcommon_editDashboard(id, callbackJSOrFunc){
 		+'</div>' );	
 
 	//-----------------------------------
-	// Role Details
+	// Modal
 	//-----------------------------------
 	
 	CFW.ui.showModalMedium(

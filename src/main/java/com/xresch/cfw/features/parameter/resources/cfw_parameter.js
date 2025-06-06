@@ -30,15 +30,22 @@ function cfw_parameter_getFinalPageParams(){
 }
 
 /*******************************************************************************
- * 
+ 
+ * @param targetID the element or id of the element with hashtag where the form 
+ *                 should be loaded into. If null, this method shows a modal panel
  ******************************************************************************/
-function cfw_parameter_edit(){
+function cfw_parameter_edit(targetElement){
 	
 	// ----------------------------
 	// Create Content Div
-	let contentDiv = $('<div>');
-	contentDiv.append('<p>Parameters will substitute values in dashboard widgets or queries. Do not store confidential data like passwords in parameters, as they will be added to the URL.</p>');
-
+	let contentDiv = $(targetElement);
+	
+	if(targetElement != null){
+		contentDiv.html('');
+	}else{
+		contentDiv = $('<div>');
+		contentDiv.append('<p>Parameters will substitute values in dashboard widgets or queries. Do not store confidential data like passwords in parameters, as they will be added to the URL.</p>');
+	}
 	// ----------------------------
 	// Create Add Params Button
 	let addParametersButton = 
@@ -52,9 +59,12 @@ function cfw_parameter_edit(){
 	let paramListDiv = $('<div id="param-list">');
 	contentDiv.append(paramListDiv);
 	
-	CFW.ui.showModalLarge('Parameters', contentDiv, null, true);
-	
-    cfw_parameter_loadParameterForm();
+	// ----------------------------
+	// If not custom element show Modal
+	if(targetElement == null){
+		CFW.ui.showModalLarge('Parameters', contentDiv, null, true);
+	}
+    cfw_parameter_loadParameterForm(paramListDiv);
 }
 
 /*******************************************************************************
@@ -77,12 +87,14 @@ function cfw_parameter_save(){
 }
 /*******************************************************************************
  * 
+ * @param targetID the element or id of the element with hashtag where the form 
+ *                 should be loaded into
  ******************************************************************************/
 function cfw_parameter_loadParameterForm(){
 	
-	var paramListDiv = $('#param-list');
-	var form = paramListDiv.find('form');
-	var formID = form.attr('id');
+	let paramListDiv = $('#param-list');
+	let form = paramListDiv.find('form');
+	let formID = form.attr('id');
 	// --------------------------------
 	// Trigger Save
 	if(form.length == 0){
@@ -101,7 +113,7 @@ function cfw_parameter_loadParameterForm(){
 	}
 		
 	function loadForm(){
-		var paramListDiv = $('#param-list');
+		//var paramListDiv = $('#param-list');
 		paramListDiv.html('');
 		
 		var requestParams = {
