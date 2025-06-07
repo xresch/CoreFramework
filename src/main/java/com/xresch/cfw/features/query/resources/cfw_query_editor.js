@@ -721,10 +721,6 @@ class CFWQueryEditor{
 				
 				<div id="query-editor-btn-menu-${this.guid}" class="pb-2 pt-2">
 					<div class="col-12 d-flex justify-content-start">
-						<!-- input id="timeframePicker" name="timeframePicker" type="text" class="form-control" -->
-						<!-- a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></a>
-						<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></a>
-						<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></a -->
 						<button id="executeButton-${this.guid}" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_editor_handleButtonExecute(this);"><b>Execute</b></button>
 					</div>
 				</div>

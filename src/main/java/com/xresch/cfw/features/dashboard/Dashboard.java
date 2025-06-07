@@ -767,6 +767,7 @@ public class Dashboard extends CFWObject {
 		this.versionGroup.setValue(value);
 		return this;
 	}
+	
 	public Integer version() {
 		return version.getValue();
 	}

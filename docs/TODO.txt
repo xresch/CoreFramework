@@ -176,6 +176,7 @@ DONE
 - Parameter: Added parameter Stored Query Select Multiple
 - Parameter: Fixed not all parameters showing up in manual
 - Stored Query: Added Parameters Tab to Settings Modal
+- Stored Query: Added Versioning to Stored Queries
 - Query: Stored source and command - autocomplete does not show archived queries
 
 ------- v.11.1.1 -------

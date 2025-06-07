@@ -166,12 +166,14 @@ function cfw_storedQuery_editStoredQuery(id, callbackJSOrFunc){
 	list.append(
 		'<li class="nav-item"><a class="nav-link active" id="storedQuerySettingsTab" data-toggle="pill" href="#storedQuerySettingsContent" role="tab" ><i class="fas fa-tools mr-2"></i>Settings</a></li>'
 	  + '<li class="nav-item"><a class="nav-link" id="storedQueryParamsTab" data-toggle="pill" href="#'+paramsTabID+'" role="tab" onclick="cfw_parameter_edit(\'#'+paramsTabID+'\')" ><i class="fas fa-sliders"></i>&nbsp;Parameters</a></li>'
+	  + '<li class="nav-item"><a class="nav-link" id="queryVersionsTab" data-toggle="pill" href="#queryVersionsContent" role="tab" onclick="cfw_storedQuerylist_showVersions('+id+')" ><i class="fas fa-code-branch"></i>&nbsp;Versions</a></li>'
 	);
 	
 	compositeDiv.append(list);
 	compositeDiv.append('<div id="settingsTabContent" class="tab-content">'
 			  +'<div class="tab-pane fade show active" id="storedQuerySettingsContent" role="tabpanel" aria-labelledby="storedQuerySettingsTab"></div>'
 			  +'<div class="tab-pane fade" id="'+paramsTabID+'" role="tabpanel" aria-labelledby="storedQueryParamsTab"></div>'
+			  +'<div class="tab-pane fade" id="queryVersionsContent" role="tabpanel" aria-labelledby="queryVersionsTab"></div>'
 		+'</div>' );	
 
 	//-----------------------------------
@@ -247,6 +249,220 @@ function cfw_storedQuerylist_duplicate(id){
 				cfw_storedQuerylist_draw(CFW_STOREDQUERYLIST_LAST_OPTIONS);
 			}
 	});
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_storedQuerylist_createVersion(id){
+	
+		var params = {action: "duplicate", item: "createversion", id: id};
+	CFW.http.getJSON(CFW_STOREDQUERYLIST_URL, params, 
+		function(data) {
+			if(data.success){
+				cfw_storedQuerylist_showVersions(id);
+			}
+	});
+}
+
+
+/******************************************************************
+ * Delete
+ ******************************************************************/
+function cfw_storedQuerylist_deleteVersion(originalID, id){
+	
+	var params = {action: "delete", item: "storedquery", id: id};
+	CFW.http.getJSON(CFW_STOREDQUERYLIST_URL, params, 
+		function(data) {
+			if(data.success){
+				cfw_storedQuerylist_showVersions(originalID);
+			}else{
+				CFW.ui.showModalSmall("Error!", '<span>The selected version could <b style="color: red">NOT</b> be deleted.</span>');
+			}
+	});
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_storedQuerylist_switchVersion(id, versionid){
+	
+	if(id == versionid){
+		CFW.ui.addToastWarning('Whoops! The IDs are the same, refresh the table then try to switch again.');
+		return;
+	}
+	
+		var params = {
+			action: "update"
+			, item: "switchversion"
+			, id: id
+			, versionid: versionid
+		};
+		
+	CFW.http.getJSON(CFW_STOREDQUERYLIST_URL, params, 
+		function(data) {
+			if(data.success){
+				cfw_storedQuerylist_showVersions(id);
+				
+				$("#storedQuerySettingsContent").html('<p>Please reopen the modal to load changes after switching versions.</p>')
+			}
+	});
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_storedQuerylist_showVersions(id){
+	var versionsTab = $('#queryVersionsContent');
+	versionsTab.html('');
+	
+	//-----------------------------
+	// Create HTML Structure 
+
+	versionsTab.append(
+		  '<p>This is a list of all manually or automatically created version of this query.</p>'
+		  +'<button class="btn btn-sm btn-success" onclick="cfw_storedQuerylist_createVersion('+id+')">New Version</button>'
+	);
+
+			
+	var versionsDiv =$('<div id="versionsDiv">');
+	versionsTab.append(versionsDiv);
+	
+	//-----------------------------
+	// Fetch Data
+	
+	var requestParams = {
+		action: 'fetch'
+		, item: 'queryversions'
+		, id: id
+	};
+	
+	$.ajaxSetup({async: false});
+		CFW.http.postJSON(CFW_STOREDQUERYLIST_URL, requestParams, function(data){
+				
+				if(data.payload != null){
+					
+					let payload = data.payload;
+
+					//======================================
+					// Find current ID
+					var currentVersionID; //needed to find out manually, else when switching twice you can end up with multiple current versions
+					for(i in payload){
+						if(payload[i].VERSION == 0){
+							currentVersionID = payload[i].PK_ID;
+						}
+					}
+					
+					//======================================
+					// Prepare actions
+					var actionButtons = [ ];
+												
+					//-------------------------
+					// Switch Button
+					actionButtons.push(
+						function (record, recordID){ 
+							if(record.VERSION == 0){
+								return '&nbsp;';
+							}
+							
+							var version = record.VERSION;
+							var versionID = record.PK_ID;
+							return `<button class="btn btn-warning btn-sm" alt="Switch" title="Switch"
+								onclick="
+									CFW.ui.confirmExecute('Do you want to rollback the current version to version <strong>${version}</strong>?'
+										  +'The current versions query and all its settings and parameters will be overridden and replaced.'
+										, 'Do the Undoable Override!'
+										, 'cfw_storedQuerylist_switchVersion(${currentVersionID}, ${versionID});')
+								">
+									<i class="fa fa-exchange-alt"></i>
+								</button>`;
+							
+						}
+					);
+					
+					//-------------------------
+					// Delete Button
+					actionButtons.push(
+						function (record, id){
+							
+							if(record.VERSION == 0){
+								return '&nbsp;';
+							}
+							
+							var versionID = record.PK_ID;
+							var name = record.NAME.replace(/\"/g,'&quot;');
+							return `<button class="btn btn-danger btn-sm" alt="Switch" title="Delete"
+								onclick="
+									CFW.ui.confirmExecute('Do you want to delete the version <strong>${versionID}</strong> with name <strong>${name}</strong>?'
+										, 'Delete'
+										, 'cfw_storedQuerylist_deleteVersion(${currentVersionID}, ${versionID});')
+								">
+									<i class="fa fa-trash"></i>
+								</button>`;
+								
+						});
+
+
+					//---------------------------
+					// Render Settings
+					var dataToRender = {
+						data: payload
+						, titlefields: ["VERSION",  "NAME"]
+						, visiblefields: ["VERSION","NAME", "TIME_CREATED", "LAST_UPDATED", "QUERY"]
+						, actions: actionButtons
+						, customizers: {
+							VERSION: function(record, value) { 
+								
+								if(value == 0){
+									return "current";
+								}
+								
+								return value;
+					 		}
+					 		, TIME_CREATED: function(record, value) { 
+								return cfw_format_epochToTimestamp(value);
+					 		}
+					 		, LAST_UPDATED: function(record, value) { 
+								return cfw_format_epochToTimestamp(value);
+					 		}
+					 		
+					 		, QUERY: function(record, value) { 
+								let queryEditorID = "queryeditor-"+CFW.utils.randomString(12);
+								let queryarea = $('<textarea id="'+queryEditorID+'" name="'+queryEditorID+'">');
+								queryarea.val(record.QUERY);
+								let workspace = CFW.ui.getWorkspace();
+								workspace.append(queryarea);
+								cfw_initializeQueryEditor(queryarea);
+								let wrapper = queryarea.closest(".cfw-query-content-wrapper");
+								wrapper.css("min-width", '50vw');
+								return wrapper;
+					 		}
+					 		
+					 	}
+					 	, postprocess: function(dataviewerDiv) {
+							dataviewerDiv.find('pre code').each(function(index, element){
+								hljs.highlightElement(element);
+							});
+						}
+						, rendererSettings:{
+							  table: { narrow: false }
+							, dataviewer: {
+								  sizes: [10, 25, 50]
+								, defaultsize: 25
+							}
+
+						}
+					};
+													
+					//--------------------------
+					// Render Widget
+					var renderResult = CFW.render.getRenderer('dataviewer').render(dataToRender);	
+					versionsDiv.append(renderResult);
+								
+				}
+			}
+		);
+	$.ajaxSetup({async: true});
 }
 
 /******************************************************************

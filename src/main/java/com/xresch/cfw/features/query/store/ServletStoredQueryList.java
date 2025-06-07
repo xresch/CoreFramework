@@ -129,6 +129,9 @@ public class ServletStoredQueryList extends HttpServlet
 												
 					case "adminarchived": 		jsonResponse.getContent().append(CFW.DB.StoredQuery.getAdminArchivedListAsJSON());
 												break;	
+					
+					case "queryversions": 		jsonResponse.getContent().append(CFW.DB.StoredQuery.getQueryVersionsListAsJSON(ID));
+												break;	
 												
 					case "storedquerytats": 	String timeframeString = request.getParameter("timeframe");
 												CFWTimeframe time = new CFWTimeframe(timeframeString);
@@ -146,9 +149,14 @@ public class ServletStoredQueryList extends HttpServlet
 			case "update": 			
 				switch(item.toLowerCase()) {
 
-					case "isarchived":	String isArchived = request.getParameter("isarchived");
-										jsonResponse.setSuccess(archiveStoredQuery(ID,isArchived));
-					break;
+					case "isarchived":		String isArchived = request.getParameter("isarchived");
+											jsonResponse.setSuccess(archiveStoredQuery(ID,isArchived));
+											break;
+					
+					case "switchversion": 	String queryID = ID;
+											String versionID = request.getParameter("versionid");
+											jsonResponse.setSuccess(CFW.DB.StoredQuery.switchToVersion(queryID, versionID));
+											break;
 					
 					default: 			CFW.Messages.itemNotSupported(item);
 										break;
@@ -170,6 +178,9 @@ public class ServletStoredQueryList extends HttpServlet
 				switch(item.toLowerCase()) {
 
 					case "storedquery": 	duplicateStoredQuery(jsonResponse, ID, false);
+											break;  
+					
+					case "createversion": 	duplicateStoredQuery(jsonResponse, ID, true);
 											break;  
 					
 					default: 				CFW.Messages.itemNotSupported(item);

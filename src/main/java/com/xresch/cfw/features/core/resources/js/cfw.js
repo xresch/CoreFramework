@@ -1007,14 +1007,21 @@ function cfw_initializeSummernote(formID, editorID){
 /**************************************************************************************
  * 
  *************************************************************************************/
-function cfw_initializeQueryEditor(fieldID){
-	var id = '#'+fieldID;
+function cfw_initializeQueryEditor(elementidOrJQuery){
+	
+	let textarea = null;
+	
+	if(typeof elementidOrJQuery == "string"){
+		let id = '#'+elementidOrJQuery;
+		textarea = $(id);
+	}else{
+		textarea = $(elementidOrJQuery);
+	}
 
-	var textarea = $(id);
-
-	new CFWQueryEditor(textarea, {});
+	return new CFWQueryEditor(textarea, {});
 
 }
+
 /*************************************************************************************
  * 
  *************************************************************************************/

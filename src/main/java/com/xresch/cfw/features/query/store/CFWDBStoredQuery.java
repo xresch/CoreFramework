@@ -19,6 +19,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages.MessageType;
+import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -148,8 +149,9 @@ public class CFWDBStoredQuery {
 		
 		if(forVersioning) {
 			
-			int maxVersion = getMaxVersionForQuery(originalID);
-			duplicate.version(maxVersion+1);
+			int newVersion = 1 + getMaxVersionForQuery(originalID);
+			duplicate.version(newVersion);
+			duplicate.name(duplicate.name()+" v"+newVersion);
 			
 		}else {
 			duplicate.foreignKeyOwner(id);
@@ -725,6 +727,24 @@ public class CFWDBStoredQuery {
 	}
 	
 	/***************************************************************
+	 * Return a list of all version of a dashboard as json string.
+	 * 
+	 * @return Returns a result set with all users or null.
+	 ****************************************************************/
+	public static String getQueryVersionsListAsJSON(String queryID) {
+		
+		CFWStoredQuery query = selectByID(queryID);
+		
+		return new CFWSQL(query)
+				.queryCache()
+				.select()
+				.where(CFWStoredQueryFields.PK_ID, queryID)
+				.or(CFWStoredQueryFields.VERSION_GROUP, query.versionGroup())
+				.orderbyDesc(CFWStoredQueryFields.VERSION)
+				.getAsJSON();
+	}
+	
+	/***************************************************************
 	 * Return a JSON string for export.
 	 * 
 	 * @return Returns a JSON array string.
@@ -1064,6 +1084,59 @@ public class CFWDBStoredQuery {
 		}
 		
 		return false;
+	}
+	
+	/********************************************************************************************
+	 * Switch between dashboard versions
+	 * 
+	 ********************************************************************************************/
+	public static boolean switchToVersion(String queryID, String versionID) {
+		
+		boolean success = true;
+		CFW.DB.transactionStart();
+		
+			//----------------------------
+			// Fetch Original Stuff
+			CFWStoredQuery current = selectByID(queryID);
+			int originalID = current.id();
+
+			//----------------------------
+			// Fetch Version Stuff
+			CFWStoredQuery toVersion = selectByID(versionID);
+			int toID = toVersion.id();
+			
+			//----------------------------
+			// Switch current
+			
+			// remove data we do not want to override
+			toVersion.removeField(CFWStoredQueryFields.PK_ID);
+			toVersion.removeField(CFWStoredQueryFields.NAME);
+			toVersion.removeField(CFWStoredQueryFields.VERSION);
+			String toVersionSettings = toVersion.toJSON();
+			
+			current.mapJsonFields(toVersionSettings, false, false);
+
+			success &= update(current);
+			
+			if(success) {
+				current.saveSelectorFields();
+			}
+			//----------------------------
+			// Replace Parameter
+			CFW.DB.Parameters.replaceParameters(CFWParameterScope.query, toID, originalID);
+			
+			//----------------------------
+			// Success Message
+			if(success) {
+				CFW.Messages.addSuccessMessage("Version successfully switched.");
+				
+			}else {
+				CFW.Messages.addErrorMessage("Error occured while switching versions.");
+			}
+			
+		CFW.DB.transactionEnd(success);
+		
+		return success;
 	}
 	
 	/********************************************************************************************

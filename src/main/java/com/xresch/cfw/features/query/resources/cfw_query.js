@@ -10,6 +10,19 @@ var CFW_QUERY_EDITOR = null;
 /******************************************************************
  * Reset the view.
  ******************************************************************/
+function cfw_query_formatAsCode(record, value) { 
+	if(value == null){ return "&nbsp;"; }
+	
+	var pre = $('<pre class="maxvh-20 overflow-auto">');
+	var code = $('<code class="language-cfwquery">');
+	code.text(value);
+	pre.append(code);
+	return pre; 
+}
+
+/******************************************************************
+ * Reset the view.
+ ******************************************************************/
 function cfw_query_createTabs(){
 	var pillsTab = $("#pills-tab");
 	
@@ -186,30 +199,21 @@ function cfw_query_printHistoryView(data){
 		 		TIME: "Exection Time",
 		 	},
 		 	customizers: {
-		 		TIME: function(record, value) { return CFW.format.epochToTimestamp(value); }
+		 		  TIME: function(record, value) { return CFW.format.epochToTimestamp(value); }
 		 		, EARLIEST: function(record, value) { return CFW.format.epochToTimestamp(value); }
 		 		, LATEST: function(record, value) { return CFW.format.epochToTimestamp(value); }
-				, QUERY: function(record, value) { 
-					if(value == null){ return "&nbsp;"; }
-					
-					var pre = $('<pre class="maxvh-20 overflow-auto">');
-					var code = $('<code class="language-cfwquery">');
-					code.text(value);
-					pre.append(code);
-					return pre; 
-					}
-		 		},
+				, QUERY: cfw_query_formatAsCode
+				},
 			actions: actionButtons,
-			
-			rendererSettings: {
-				dataviewer: {
-					storeid: 'queryhistorylist',
-					postprocess: function(dataviewerDiv) {
+			postprocess: function(dataviewerDiv) {
 						dataviewerDiv.find('pre code').each(function(index, element){
-							
 							hljs.highlightElement(element);
 						});
 					},
+			rendererSettings: {
+				dataviewer: {
+					storeid: 'queryhistorylist',
+					
 					datainterface: {
 						//url: CFW_QUERY_URL,
 						//item: 'queryhistorylist',

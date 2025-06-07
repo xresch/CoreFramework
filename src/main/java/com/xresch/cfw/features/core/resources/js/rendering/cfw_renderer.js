@@ -65,6 +65,8 @@ class CFWRenderer{
 			hierarchyIndentation: 20,
 			// icon classes to define the icon(fontawesome)
 			hierarchyIconClasses: "fas fa-level-up-alt fa-rotate-90 mr-2",
+			//a function to call after a rendering has been rendered
+			postprocess: null,
 			// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
 			rendererSettings: {},
 				
@@ -316,7 +318,16 @@ class CFWRenderer{
 		
 		this.prepareDefinition(definition);
 		
-		return this.renderFunction(definition);
+		let result = this.renderFunction(definition);
+		
+		//----------------------------------
+		// Callback
+		if(definition.postprocess != null){
+			definition.postprocess($(result));
+		}
+			
+		return result;
+		
 	 }
 }
 

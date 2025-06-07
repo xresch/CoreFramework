@@ -325,5 +325,55 @@ public class CFWDBParameter {
 		}
 	}
 	
+	/***************************************************************
+	 * Replaces the parameters from one item with the ones of another.
+	 * This can be used when switching from one dashboard or query version to
+	 * another.
+	 ****************************************************************/
+	public static boolean replaceParameters(CFWParameterScope scope, int fromID, int toID) {
+		
+		boolean wasStarted = CFW.DB.transactionIsStarted();
+		boolean success = true;
+		
+		CFWParameterFields idField;
+		switch (scope) {
+			case dashboard: idField = CFWParameterFields.FK_ID_DASHBOARD; break;
+			case query:		idField = CFWParameterFields.FK_ID_QUERY; break;
+			default:		return false;
+		}
+
+
+		if(!wasStarted) { CFW.DB.transactionStart(); }
+			
+			//----------------------------
+			// Delete Existing Parameters
+			success = new CFWSQL(new CFWParameter())
+					.delete()
+					.where(idField, toID)
+					.executeCFWResultSet(false)
+					.isSuccess()
+					;
+			
+			//----------------------------
+			// Select
+			ArrayList<CFWParameter> paramList = new CFWSQL(new CFWParameter())
+					.select()
+					.where(idField, fromID)
+					.getAsObjectListConvert(CFWParameter.class)
+					;
+			//----------------------------
+			// Create Copy of Parameters
+			for(CFWParameter param : paramList) {
+				param.id(null);
+				param.getField(idField).setValue(toID);
+				success &= create(param);
+			}
+			
+		if(!wasStarted) { CFW.DB.transactionEnd(success); }
+			
+
+		return success;
+	}
+	
 
 }
