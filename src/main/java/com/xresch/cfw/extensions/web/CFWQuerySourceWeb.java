@@ -52,6 +52,9 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
 	
+	private static final String PARAM_CSVSEPARATOR = "csvSeparator";
+	
+	
 	private QueryPartValue lastHTTPResponse = null;
 	
 
@@ -233,6 +236,12 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 							.setDescription("(Optional)The format of the time in the time field when using as=json. (Default: 'epoch').")	
 							.setValue("epoch")
 					)
+				
+				.addField(
+						CFWField.newString(FormFieldType.TEXT, PARAM_CSVSEPARATOR)
+						.setDescription("(Optional)The separator used in case the response is parsed as CSV. (Default: ',').")	
+						.setValue(",")
+						)
 			;
 	}
 	
@@ -316,6 +325,11 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		// Get Body
 		String bodyString = (String) parameters.getField(PARAM_BODY).getValue();
 		
+		//------------------------------------
+		// Get Separator
+		String csvSeparator = (String) parameters.getField(PARAM_CSVSEPARATOR).getValue();
+		
+		
 		//----------------------------------------
 		// Build Request
 		CFWHttpRequestBuilder requestBuilder = CFW.HTTP.newRequestBuilder(url);
@@ -355,7 +369,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		//------------------------------------
 		// Parse Data
 		try {
-			ArrayList<EnhancedJsonObject> result = _CFWQueryCommonStringParser.parse(type, response);
+			ArrayList<EnhancedJsonObject> result = _CFWQueryCommonStringParser.parse(type, response, csvSeparator);
 			
 			//------------------------------------
 			// Json Timeframe Checker

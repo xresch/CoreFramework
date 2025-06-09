@@ -23,6 +23,7 @@ import com.xresch.cfw.utils.web.CFWHttp.CFWHttpResponse;
  **************************************************************************************************************/
 public class _CFWQueryCommonStringParser {
 	
+	
 	/*******************************************************************************
 	 * Enum for defining available String Parsers
 	 *******************************************************************************/
@@ -34,6 +35,7 @@ public class _CFWQueryCommonStringParser {
 		, htmltree("Parse the response as HTML and convert it into a json structure.")
 		, xml("Parse the response as XML and convert it into a flat table.")
 		, xmltree("Parse the response as XML and convert it into a json structure.")
+		, csv("Parse the response as comma-separated-values(CSV).")
 		, plain("Parse the response as plain text and convert it to a single record with field 'response'.")
 		, http("Parse the response as HTTP and creates a single record containing either Plain HTML or if a full response is given: HTTP status, headers and body.")
 		, lines("Parse the response as text and return every line as its own record.")
@@ -93,22 +95,24 @@ public class _CFWQueryCommonStringParser {
 	}
 	/****************************************************************************
 	 * Parse the string with the given Type
+	 * @param csvSeparator TODO
 	 ****************************************************************************/
-	public static ArrayList<EnhancedJsonObject> parse(CFWQueryStringParserType type, CFWHttpResponse response) throws Exception{
+	public static ArrayList<EnhancedJsonObject> parse(CFWQueryStringParserType type, CFWHttpResponse response, String csvSeparator) throws Exception{
 		
 		if(response == null) { return new ArrayList<>();}
 		
 		if(type == CFWQueryStringParserType.http) {
 			return parseAsHTTP(response);
 		}else {
-			return parse(type, response.getResponseBody());
+			return parse(type, response.getResponseBody(), csvSeparator);
 		}
 	}
 	
 	/****************************************************************************
 	 * Parse the string with the given Type
+	 * @param csvSeparator TODO
 	 ****************************************************************************/
-	public static ArrayList<EnhancedJsonObject> parse(String type, String data) throws Exception {
+	public static ArrayList<EnhancedJsonObject> parse(String type, String data, String csvSeparator) throws Exception {
 		
 		type = type.trim().toLowerCase();
 		
@@ -118,14 +122,15 @@ public class _CFWQueryCommonStringParser {
 			return new ArrayList<>();
 		}
 		
-		return parse( CFWQueryStringParserType.valueOf(type), data);
+		return parse( CFWQueryStringParserType.valueOf(type), data, csvSeparator);
 		
 	}
 	
 	/******************************************************************
 	 * Parses the string with the 
+	 * @param csvSeparator TODO
 	 ******************************************************************/
-	public static ArrayList<EnhancedJsonObject> parse(CFWQueryStringParserType type, String data) throws Exception {
+	public static ArrayList<EnhancedJsonObject> parse(CFWQueryStringParserType type, String data, String csvSeparator) throws Exception {
 		ArrayList<EnhancedJsonObject> result = new ArrayList<>();
 
 		switch(type) {
@@ -136,6 +141,7 @@ public class _CFWQueryCommonStringParser {
 			case htmltree:		result = parseAsHTMLTree(data); 	break;
 			case xml:			result = parseAsXML(data); 	break;
 			case xmltree:		result = parseAsXMLTree(data); 	break;
+			case csv:			result = parseAsCSV(data, csvSeparator); 	break;
 			case plain:			result = parseAsPlain(data); 	break;
 			case lines:			result = parseAsLines(data); 	break;
 			
@@ -203,6 +209,26 @@ public class _CFWQueryCommonStringParser {
 			result.add( object );
 		}
 			
+		return result;
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public static ArrayList<EnhancedJsonObject> parseAsCSV(String data, String separator) throws Exception {
+		
+		ArrayList<EnhancedJsonObject> result = new ArrayList<>();
+		
+		//------------------------------------
+		// Parse Data
+		JsonArray array = CFW.CSV.toJsonArray(data, separator, false, true);
+		
+		for(JsonElement element : array) {
+			EnhancedJsonObject object = new EnhancedJsonObject(element.getAsJsonObject());
+			result.add( object );
+		}
+		
 		return result;
 		
 	}

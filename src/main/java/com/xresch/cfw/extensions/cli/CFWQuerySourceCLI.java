@@ -1,6 +1,5 @@
 package com.xresch.cfw.extensions.cli;
 
-import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +8,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -21,13 +19,10 @@ import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
-import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query._CFWQueryCommonStringParser;
 import com.xresch.cfw.features.query._CFWQueryCommonStringParser.CFWQueryStringParserType;
-import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.CFWReadableOutputStream;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 	
@@ -51,6 +46,8 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 	
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
+	
+	private static final String PARAM_CSVSEPARATOR = "csvSeparator";
 	
 
 	/******************************************************************
@@ -206,6 +203,12 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 							.setDescription("(Optional)The format of the time in the time column. (Default: 'epoch').")	
 							.setValue("epoch")
 					)
+				
+				.addField(
+						CFWField.newString(FormFieldType.TEXT, PARAM_CSVSEPARATOR)
+						.setDescription("(Optional)The separator used in case the response is parsed as CSV. (Default: ',').")	
+						.setValue(",")
+						)
 			;
 	}
 	
@@ -255,6 +258,11 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		}
 		
 		//------------------------------------
+		// Get Separator
+		String csvSeparator = (String) parameters.getField(PARAM_CSVSEPARATOR).getValue();
+		
+		
+		//------------------------------------
 		// Get Head/Tail/Skipped
 		int head = (Integer) parameters.getField(PARAM_HEAD).getValue();
 		int tail = (Integer) parameters.getField(PARAM_TAIL).getValue();
@@ -286,7 +294,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		//------------------------------------
 		// Parse Data
 		try {
-			ArrayList<EnhancedJsonObject> result = _CFWQueryCommonStringParser.parse(type, dataString);
+			ArrayList<EnhancedJsonObject> result = _CFWQueryCommonStringParser.parse(type, dataString, csvSeparator);
 			
 			//------------------------------------
 			// Json Timeframe Checker
