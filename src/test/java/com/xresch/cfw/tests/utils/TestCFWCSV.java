@@ -115,21 +115,52 @@ public class TestCFWCSV {
 		// Mixed Quotes, Escaped Quotes and Multi-Char Separator
 		//---------------------------------
 		splitted = CFW.CSV.splitCSVQuotesAware("---", """
-				"\\"abc\\""---d---"xyz"---"12\\"34"---@@@
+				"\\"abc\\""---d---"xyz"---"12\\"34"---@@@---"double""escape"---"\\"mixed\\"double""escape"
 				""");
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
 		
 		i=-1;
-		Assertions.assertEquals(5, splitted.size());
+		Assertions.assertEquals(7, splitted.size());
 		Assertions.assertEquals("\"abc\"", splitted.get(++i));
 		Assertions.assertEquals("d", splitted.get(++i));
 		Assertions.assertEquals("xyz", splitted.get(++i));
 		Assertions.assertEquals("12\"34", splitted.get(++i));
 		Assertions.assertEquals("@@@", splitted.get(++i));
+		Assertions.assertEquals("double\"escape", splitted.get(++i));
+		Assertions.assertEquals("\"mixed\"double\"escape", splitted.get(++i));
 		
 		//---------------------------------
-		// Two quotes at beginning
+		// Using two-double quotes at beginning and end for escaping
+		//---------------------------------
+		splitted = CFW.CSV.splitCSVQuotesAware(";", " \"\"\"abc\"\"\";test;\"\"\"xyz\"\"\" ");
+		
+		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
+		
+		i=-1;
+		Assertions.assertEquals(3, splitted.size());
+		Assertions.assertEquals("\"abc\"", splitted.get(++i));
+		Assertions.assertEquals("test", splitted.get(++i));
+		Assertions.assertEquals("\"xyz\"", splitted.get(++i));
+
+		//---------------------------------
+		// Check Endless Loop Prevention
+		// Note: \\"" is mixing different escape formats which is not supported
+		//---------------------------------
+		splitted = CFW.CSV.splitCSVQuotesAware(";", """
+				1 ; 2 ; "\\"escaped\\""escape"
+				""");
+		
+		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
+		
+		i=-1;
+		Assertions.assertEquals(3, splitted.size());
+		Assertions.assertEquals("1", splitted.get(++i));
+		Assertions.assertEquals("2", splitted.get(++i));
+		Assertions.assertEquals("\"escaped\"", splitted.get(++i));
+		
+		//---------------------------------
+		// Two separators at beginning
 		//---------------------------------
 		splitted = CFW.CSV.splitCSVQuotesAware(";", """
 				;;1 ; 2 ; 3

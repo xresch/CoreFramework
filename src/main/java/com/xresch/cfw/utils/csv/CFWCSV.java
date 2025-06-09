@@ -81,19 +81,72 @@ public class CFWCSV {
 			//----------------------------
 			// Grab Quoted Text
 			if(current == '"') {
+				
+				//----------------------------
+				// Prevent Endless Loops
+				if(cursor == LENGTH-1) {
+					break outer;
+				}
+					
+				//----------------------------
+				// Loop Content
 				separatorSkipped = false;
 				startPos = cursor;
-				
+
 				inner:
 				while(cursor < LENGTH-1 ) {
+
 					previous = current;
 					current = line.charAt(++cursor);
-	
-					if(current == '"' 
-					&& previous != '\\'
-					) {
+			
+					if(current == '"') {
+						
+						//----------------------------
+						// Check Might be Escape Character
+						if(cursor < LENGTH-1) {
+							char next = line.charAt(cursor+1);
+							if(next == '"') {
+								continue;
+							}
+						}
+						
+						//----------------------------
+						// Check is Escaped
+						int escapeCount = 0;
+						if(previous == '"') {
+							
+							int i = cursor-1;
+							for(; i > startPos; i--) {
+								if(line.charAt(i) == previous) {
+									escapeCount++;
+								}else {
+									break;
+								}
+							}
+							if(line.charAt(i) == '\\') {
+								escapeCount--;
+							}
+						}else if(previous == '\\') {
+							
+							int i = cursor-1;
+							for(; i > startPos; i--) {
+								if(line.charAt(i) == '\\') {
+									escapeCount++;
+								}else {
+									break;
+								}
+							}
+						}
+						
+						boolean isEscaped = (escapeCount % 2 != 0) ;
+						if(isEscaped) {
+							continue;
+						}
+						
+						//----------------------------
+						// Extract Column Value
 						String potentialEscapedQuotes = line.substring(startPos+1, cursor);
-						String noEscapes = potentialEscapedQuotes.replace("\\\"", "\"");
+						String noEscapes = potentialEscapedQuotes.replace("\\\"", "\"").replace("\"\"", "\"");
 						result.add(noEscapes);
 						cursor++;
 						if(cursor < LENGTH ) {
@@ -147,7 +200,7 @@ public class CFWCSV {
 			
 			//----------------------------
 			// Grab Last
-			if(cursor >= LENGTH ) {
+			if(cursor >= LENGTH) {
 				result.add(line.substring(startPos, cursor).trim());
 				break;
 			}
@@ -162,6 +215,8 @@ public class CFWCSV {
 	
 		return result;
 	}
+	
+	
 
 	/*************************************************************************************
 	 * Creates a JsonArray containing JsonObjects from a CSV string.
