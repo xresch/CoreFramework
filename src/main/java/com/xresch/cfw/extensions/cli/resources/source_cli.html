@@ -80,6 +80,18 @@ you can turn it off by specifying 'countSkipped=false': </p>
 </code></pre>
 
 
+<h2>Examples</h2>
+<h3>CSV</h3>
+
+<p>Following example reads CSV data from a file using powershell: </p>
+<pre><code class="language-cfwquery">| source cli 
+	as = csv 
+	csvSeparator = "," # define the CSV separator, default is ","
+	dir = "C:\Temp"
+	commands = `powershell more excel_data.csv`
+</code></pre>
+
+
 
 
 
