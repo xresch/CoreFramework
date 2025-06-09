@@ -1,7 +1,5 @@
 package com.xresch.cfw._main;
 
-import com.xresch.cfw._main.CFWMessages.MessageType;
-
 public class CFWMessages {
 
 	public enum MessageType {

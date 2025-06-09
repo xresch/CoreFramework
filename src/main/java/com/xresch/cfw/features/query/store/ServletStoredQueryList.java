@@ -29,6 +29,7 @@ import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
@@ -321,7 +322,7 @@ public class ServletStoredQueryList extends HttpServlet
 		|| CFW.Context.Request.hasPermission(FeatureStoredQuery.PERMISSION_STOREDQUERY_ADMIN)
 		|| CFW.DB.StoredQuery.checkCanEdit(ID)) {
 			CFWStoredQuery storedQuery = CFW.DB.StoredQuery.selectByID(Integer.parseInt(ID));
-			
+						
 			if(storedQuery != null) {
 				
 				storedQuery.updateSelectorFields();
@@ -330,19 +331,46 @@ public class ServletStoredQueryList extends HttpServlet
 
 				editStoredQueryForm.setFormHandler(new CFWFormHandler() {
 					
+					// have a copy for creating versions
+					CFWStoredQuery queryForVersion = CFW.DB.StoredQuery.selectByID(Integer.parseInt(ID));
+					
 					@Override
 					public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
 						
 						CFWStoredQuery storedQuery = (CFWStoredQuery)origin;
+						
+						//--------------------------------
+						// Make Version 
+						int age = CFW.DB.Config.getConfigAsInt(
+								FeatureStoredQuery.CONFIG_CATEGORY
+								, FeatureStoredQuery.CONFIG_DEFAULT_AUTOVERSION_AGE
+								);
+						
+						long now = System.currentTimeMillis();
+						long diff = now - queryForVersion.lastUpdated().getTime();
+						
+						boolean newVersionCreated = false;
+						if(CFWTimeUnit.m.convert(diff) >= age) {
+							CFW.DB.StoredQuery.createDuplicate(queryForVersion, true);
+							newVersionCreated = true;
+						}
+						
+						//--------------------------------
+						// Update 
+						// Do not override VERSION_GROUP as it might have been set by the previous code.
 						if(origin.mapRequestParameters(request) 
-						&& CFW.DB.StoredQuery.update(storedQuery)) {
-							
+						&& CFW.DB.StoredQuery.updateWithout(storedQuery, CFWStoredQueryFields.VERSION_GROUP.toString())) {
 							
 							CFW.Messages.addSuccessMessage("Updated!");
 							
 							generateSharedMessages(storedQuery);
 							
 							storedQuery.saveSelectorFields();
+							
+							//Set the next version to be the current save
+							if(newVersionCreated) {
+								queryForVersion = CFW.DB.StoredQuery.selectByID(Integer.parseInt(ID));
+							}
 							
 						}
 						

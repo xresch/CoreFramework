@@ -85,7 +85,7 @@ public class CFWDBStoredQuery {
 			}
 			
 			if(!checkCanSaveWithName(storedQuery)) {
-				CFW.Messages.addWarningMessage("The name '"+storedQuery.name()+"' is already in use.");
+				CFW.Messages.addWarningMessage("The name '"+storedQuery.name()+"' is already in use. (Queries of other users and archived queries count too).");
 				return false;
 			}
 			
@@ -113,6 +113,9 @@ public class CFWDBStoredQuery {
 	//####################################################################################################
 	public static Integer createGetPrimaryKey(CFWStoredQuery item) { 
 		updateTags(item); 
+		
+		item.versionGroup(UUID.randomUUID().toString());
+		
 		Integer primaryKey =  CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item);
 		item.id(primaryKey);
 		updateWidgetCache(item);
@@ -129,20 +132,30 @@ public class CFWDBStoredQuery {
 	 **********************************************************************************/
 	public static Integer createDuplicate(String storedQueryID, boolean forVersioning) { 
 
-		CFWStoredQuery duplicate = CFW.DB.StoredQuery.selectByID(storedQueryID);
-		duplicate.updateSelectorFields();
+		CFWStoredQuery duplicateThis = CFW.DB.StoredQuery.selectByID(storedQueryID);
+		return createDuplicate(duplicateThis, forVersioning);
+	}
+	/**********************************************************************************
+	 * 
+	 * @param storedQueryID¨the id of the storedQuery that should be duplicated.
+	 * @param forVersioning true if this duplicate should be for versioning
+	 * @return
+	 **********************************************************************************/
+	public static Integer createDuplicate(CFWStoredQuery duplicateThis, boolean forVersioning) { 
+
+		duplicateThis.updateSelectorFields();
 		
 		//---------------------------------
 		// Make sure it has a version group 
-		if(Strings.isNullOrEmpty(duplicate.versionGroup()) ) {
-			duplicate.versionGroup(UUID.randomUUID().toString());
-			duplicate.update(DashboardFields.VERSION_GROUP);
+		if(Strings.isNullOrEmpty(duplicateThis.versionGroup()) ) {
+			duplicateThis.versionGroup(UUID.randomUUID().toString());
+			duplicateThis.update(DashboardFields.VERSION_GROUP);
 		}
 		
-		int originalID = duplicate.id();
+		int originalID = duplicateThis.id();
 		
-		duplicate.id(null);
-		duplicate.timeCreated( new Timestamp(new Date().getTime()) );
+		duplicateThis.id(null);
+		duplicateThis.timeCreated( new Timestamp(new Date().getTime()) );
 		
 		// need to check if null for automatic versioning
 		Integer id =  CFW.Context.Request.getUserID();
@@ -150,29 +163,29 @@ public class CFWDBStoredQuery {
 		if(forVersioning) {
 			
 			int newVersion = 1 + getMaxVersionForQuery(originalID);
-			duplicate.version(newVersion);
-			duplicate.name(duplicate.name()+" v"+newVersion);
+			duplicateThis.version(newVersion);
+			duplicateThis.name(duplicateThis.name()+" v"+newVersion);
 			
 		}else {
-			duplicate.foreignKeyOwner(id);
-			duplicate.name(duplicate.name()+"(Copy)");
-			duplicate.version(0);
-			duplicate.versionGroup(UUID.randomUUID().toString());
-			duplicate.isShared(false);
+			duplicateThis.foreignKeyOwner(id);
+			duplicateThis.name(duplicateThis.name()+"(Copy-"+CFW.Random.stringAlphaNum(8)+")");
+			duplicateThis.version(0);
+			duplicateThis.versionGroup(UUID.randomUUID().toString());
+			duplicateThis.isShared(false);
 		}
 		
 		CFW.DB.transactionStart();
 		
-		Integer newID = duplicate.insertGetPrimaryKey();
+		Integer newID = duplicateThis.insertGetPrimaryKey();
 		
 		if(newID != null) {
 			
-				duplicate.id(newID);
+				duplicateThis.id(newID);
 				//-----------------------------------------
 				// Save Selector Fields
 				//-----------------------------------------
 				boolean success = true;
-				success &= duplicate.saveSelectorFields();
+				success &= duplicateThis.saveSelectorFields();
 				if(!success) {
 					CFW.DB.transactionRollback();
 					new CFWLog(logger).severe("Error while saving selector fields for duplicate.");
@@ -182,7 +195,7 @@ public class CFWDBStoredQuery {
 				//-----------------------------------------
 				// Duplicate Parameters
 				//-----------------------------------------
-				ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForQuery(storedQueryID);
+				ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForQuery(originalID);
 				
 				for(CFWParameter paramToCopy : parameterList) {
 					
@@ -199,9 +212,17 @@ public class CFWDBStoredQuery {
 
 				CFW.DB.transactionCommit();
 				
-				updateWidgetCache(duplicate);
+				updateWidgetCache(duplicateThis);
 				
-				CFW.Messages.addSuccessMessage("Stored query duplicated successfully.");
+				if(forVersioning) {
+					int age = CFW.DB.Config.getConfigAsInt(
+							FeatureStoredQuery.CONFIG_CATEGORY
+							, FeatureStoredQuery.CONFIG_DEFAULT_AUTOVERSION_AGE
+							);
+					CFW.Messages.addInfoMessage("New version created. (Auto-Version when last update is older than "+age+" minutes)");
+				}else {
+					CFW.Messages.addSuccessMessage("Stored query duplicated successfully.");
+				}
 		}else {
 			CFW.DB.transactionRollback();
 		}
@@ -217,10 +238,14 @@ public class CFWDBStoredQuery {
 	// UPDATE
 	//####################################################################################################
 	public static boolean update(CFWStoredQuery item) { 
+		return updateWithout(item, new String[] {});
+	}
+	
+	public static boolean updateWithout(CFWStoredQuery item, String... fieldsToIgnore) { 
 		updateTags(item); 
 		updateWidgetCache(item);
 		item.lastUpdated(new Timestamp(System.currentTimeMillis()));
-		return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item); 
+		return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item, fieldsToIgnore); 
 	}
 	
 	public static boolean updateLastUpdated(String storedQueryID){ 

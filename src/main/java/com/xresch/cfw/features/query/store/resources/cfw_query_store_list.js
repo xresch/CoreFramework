@@ -370,8 +370,8 @@ function cfw_storedQuerylist_showVersions(id){
 							return `<button class="btn btn-warning btn-sm" alt="Switch" title="Switch"
 								onclick="
 									CFW.ui.confirmExecute('Do you want to rollback the current version to version <strong>${version}</strong>?'
-										  +'The current versions query and all its settings and parameters will be overridden and replaced.'
-										, 'Do the Undoable Override!'
+										  +'The current versions query and all its settings and parameters will be overridden and replaced. You might want to create a new version as backup before doing this.'
+										, 'Override what shall be overridden!'
 										, 'cfw_storedQuerylist_switchVersion(${currentVersionID}, ${versionID});')
 								">
 									<i class="fa fa-exchange-alt"></i>

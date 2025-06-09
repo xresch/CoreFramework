@@ -25,6 +25,7 @@ public class FeatureStoredQuery extends CFWAppFeature {
 	
 	public static final String CONFIG_CATEGORY = "Query";
 	public static final String CONFIG_DEFAULT_IS_SHARED = "Store Is Shared Default";
+	public static final String CONFIG_DEFAULT_AUTOVERSION_AGE = "Auto Version Age";
 
 	
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.query.store.resources";
@@ -118,6 +119,16 @@ public class FeatureStoredQuery extends CFWAppFeature {
 				.type(FormFieldType.BOOLEAN)
 				.value("false")
 		);
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY, CONFIG_DEFAULT_AUTOVERSION_AGE)
+				.description("The age in minutes the last update of a Stored Query has to reach for a new auto-version to be created.")
+				.type(FormFieldType.NUMBER)
+				.value("15")
+				);
 		
 
 	}
