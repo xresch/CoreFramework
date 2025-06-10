@@ -159,9 +159,9 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 		if(value.isJsonPrimitive()) {
 			JsonPrimitive primitive = value.getAsJsonPrimitive();
 			
-			if(primitive.isBoolean()) {		return newBoolean(value.getAsBoolean()); }
 			if(primitive.isNumber()) {		return newNumber(value.getAsBigDecimal()); }
 			if(primitive.isString()) {		return newString(value.getAsString()); }
+			if(primitive.isBoolean()) {		return newBoolean(value.getAsBoolean()); }
 		}
 		
 		return newJson(value);	

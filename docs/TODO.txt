@@ -179,6 +179,9 @@ DONE
 - Stored Query: Added Versioning to Stored Queries
 - Query: Stored source and command - autocomplete does not show archived queries
 
+- Query: Added Commands:
+	- parsecsv
+	
 ------- v.11.1.1 -------
 - NEW FEATURE: Status Monitoring of connected systems.
 - NEW FEATURE: System Analytics: Added page "Versions" 

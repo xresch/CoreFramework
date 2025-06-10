@@ -1,0 +1,82 @@
+
+<p>The parseCSV command helps to turning strings of comma-separated-values(CSV) into processable values.
+This command can be very useful if you get CSV as part of a response, line in a table cell or in a JSON field.</p>
+
+
+<h2>Basic Example</h2>
+<p>Following is a basic example that takes lines of CSV data. The first row will be used as the header:</p>
+<pre><code class="language-cfwquery">| record
+	[line]
+	["Firstname,Lastname,Value"]
+	["Aurora,Bergusson,42"]
+	["Hera,Lindstroem,88"]
+| parsecsv line
+| unbox line replace=true</code></pre>
+
+<h2>Defining Separator and Header</h2>
+<p>You can define the separator and also a header in case the header is missing:</p>
+<pre><code class="language-cfwquery">| record
+	[line]
+	["Argenta 	|	Aurumia		|	8008"]
+	["Aurora	|	Bergusson	|	42"]
+	["Hera		|	Lindstroem	|	88"]
+| parsecsv line
+	separator="|"
+	header="Firstname	|	Lastname	|	Value"
+| unbox line replace=true</code></pre>
+
+<h2>Parsing Multiple Fields at Once</h2>
+<p>If you have multiple CSV fields you can parse them with a single command if they have the same separator and headers defined:</p>
+<pre><code class="language-cfwquery">| record
+	[line									, moreData ]
+	["Firstname	|	Lastname	|	Value"	, "Gender	|	Age	| Favorite Dessert" ]
+	["Argenta 	|	Aurumia		|	8008"	, "Female 	|	21	| Coffee Tiramisu" ]
+	["Aurora	|	Bergusson	|	42"		, "Female 	|	14	| Strawberry Tiramisu" ]
+	["Hera		|	Lindstroem	|	88"		, "Female 	|	675	| Amaretto Tiramisu" ]
+| parsecsv 
+	line
+	moreData
+	separator="|"
+| unbox 
+	line
+	moreData 
+	replace=true</code></pre>
+	
+<h2>Parsing Fields with Multiple Lines</h2>	
+<p>You can also operate on fields that contain a multiline CSV:</p>
+<pre><code class="language-cfwquery">| record
+	[line]
+	["Firstname	|	Lastname	|	Value
+	  Aurora	|	Bergusson	|	42
+	  Argenta 	|	Aurumia		|	8008
+	"]
+	["
+	  Firstname	|	Lastname	|	Value
+	  Hera		|	Lindstroem	|	88
+	  Fernanda  |   Ramirez		|   22
+	"]
+| parsecsv line
+	separator="|"
+	# header = "Firstname | Lastname | Value" # add a header if your multiline CSV is not containing one
+| unbox line
+| unbox line replace=true</code></pre>
+
+<h2>Pre-Filtering Input</h2>	
+<p>One reason why this command was created is to provide the ability to filter input that contains things we don't want before parsing the CSV.
+Here is an example that uses the skip-command to remove some lines that are in the way:</p>
+<pre><code class="language-cfwquery">| record
+	[line]
+	["======= a useless line ======="]
+	["Firstname	|	Lastname	|	Value"]
+	["Aurora	|	Bergusson	|	42"]
+	["Hera		|	Lindstroem	|	88"]
+	["======= another line that is in the way ======="]
+| skip 1
+| skip 1 first = true
+| parsecsv line
+	separator="|"
+| unbox line replace=true</code></pre>
+
+
+
+

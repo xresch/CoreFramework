@@ -9,9 +9,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.CSV;
-import com.xresch.cfw._main.CFW.Utils;
-import com.xresch.cfw._main.CFW.Utils.Text;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.json.CFWJson;
 
@@ -241,15 +238,14 @@ public class CFWCSV {
 								, boolean parseJsonStrings
 							) {
 	
-		JsonArray result = new JsonArray();
-		
+
 		Scanner scanner = new Scanner(csv.trim());
 	
 		//----------------------------
 		// Skip if Empty
 		if(!scanner.hasNext()) {
 			scanner.close();
-			return result;
+			return new JsonArray();
 		}
 		
 		//----------------------------
@@ -257,10 +253,159 @@ public class CFWCSV {
 		String header = scanner.nextLine();
 		
 		ArrayList<String> headerArray = splitCSVQuotesAware(separator, header);
+		
 		if(makeFieldsLowercase) {
 			headerArray = CFW.Utils.Text.arrayToLowercase(headerArray);
 		}
 		
+		//----------------------------
+		// Get CSV
+		return toJsonArray(separator, headerArray, parseJsonStrings, scanner);
+		
+	}
+	
+	/*************************************************************************************
+	 * Creates a JsonElement from a CSV string.
+	 * This will either:
+	 * 	- Return an empty JsonObject of there is no record
+	 *  - Return the record as JsonObject if there is exactly one record
+	 *  - Return an array if there is an array
+	 *  
+	 * First line has to be a header with column names. Column names will be used as field names.
+	 * This method supports the use of quotes for field values and escaped quotes (\") 
+	 * inside of quotes.
+	 * If a CSV record has more columns than the header row the additional columns will 
+	 * be ignored.
+	 * 
+	 * @param csv the CSV multi-line string including a header
+	 * @param separator the separator, one or multiple characters, does not support regex
+	 * @param makeFieldsLowercase set to true to make fieldnames lowercase, useful to make 
+	 *        user input more save and stable to process.
+	 * @param parseJsonStrings if set to true, attempts to convert values starting with either 
+	 *       "{" or "[" to a JsonObject or JsonArray.
+	 *        
+	 *************************************************************************************/
+	public static JsonElement toJsonElement(
+								  String csv
+								, String separator
+								, boolean makeFieldsLowercase
+								, boolean parseJsonStrings
+							) {
+	
+		JsonArray array = toJsonArray(csv, separator, makeFieldsLowercase, parseJsonStrings);
+		
+		if(array.isEmpty()) {
+			return new JsonObject();
+		}else if(array.size() == 1) {
+			return array.get(0);
+		}
+		
+		return array;
+		
+	}
+	
+	/*************************************************************************************
+	 * Creates a JsonArray containing JsonObjects from a CSV string.
+	 * First line has to be a header with column names. Column names will be used as field names.
+	 * This method supports the use of quotes for field values and escaped quotes (\") 
+	 * inside of quotes.
+	 * If a CSV record has more columns than the header row the additional columns will 
+	 * be ignored.
+	 * 
+	 * @param csv the CSV multi-line string including a header
+	 * @param separator the separator, one or multiple characters, does not support regex
+	 * @param headerArray the headers for the CSV
+	 * @param makeFieldsLowercase set to true to make fieldnames lowercase, useful to make 
+	 *        user input more save and stable to process.
+	 * @param parseJsonStrings if set to true, attempts to convert values starting with either 
+	 *       "{" or "[" to a JsonObject or JsonArray.
+	 *        
+	 *************************************************************************************/
+	public static JsonArray toJsonArray(
+								  String csv
+								, String separator
+								, ArrayList<String> headerArray
+								, boolean parseJsonStrings
+							) {
+
+		Scanner scanner = new Scanner(csv.trim());
+	
+		//----------------------------
+		// Skip if Empty
+		if(!scanner.hasNext()) {
+			scanner.close();
+			return new JsonArray();
+		}
+
+		return toJsonArray(separator, headerArray, parseJsonStrings, scanner);
+		
+	}
+	
+	/*************************************************************************************
+	 * Creates a JsonElement from a CSV string.
+	 * This will either:
+	 * 	- Return an empty JsonObject of there is no record
+	 *  - Return the record as JsonObject if there is exactly one record
+	 *  - Return an array if there is an array
+	 *  
+	 * First line has to be a header with column names. Column names will be used as field names.
+	 * This method supports the use of quotes for field values and escaped quotes (\") 
+	 * inside of quotes.
+	 * If a CSV record has more columns than the header row the additional columns will 
+	 * be ignored.
+	 * 
+	 * @param csv the CSV multi-line string including a header
+	 * @param separator the separator, one or multiple characters, does not support regex
+	 * @param headerArray the headers for the CSV
+	 * @param makeFieldsLowercase set to true to make fieldnames lowercase, useful to make 
+	 *        user input more save and stable to process.
+	 * @param parseJsonStrings if set to true, attempts to convert values starting with either 
+	 *       "{" or "[" to a JsonObject or JsonArray.
+	 *        
+	 *************************************************************************************/
+	public static JsonElement toJsonElement(
+								  String csv
+								, String separator
+								, ArrayList<String> headerArray
+								, boolean parseJsonStrings
+							) {
+
+		JsonArray array = toJsonArray(csv, separator, headerArray, parseJsonStrings);
+		
+		if(array.isEmpty()) {
+			return new JsonObject();
+		}else if(array.size() == 1) {
+			return array.get(0);
+		}
+		
+		return array;
+	}
+
+
+	/*************************************************************************************
+	 * Creates a JsonArray containing JsonObjects from a CSV string.
+	 * First line has to be a header with column names. Column names will be used as field names.
+	 * This method supports the use of quotes for field values and escaped quotes (\") 
+	 * inside of quotes.
+	 * If a CSV record has more columns than the header row the additional columns will 
+	 * be ignored.
+	 * 
+	 * @param csv the CSV multi-line string including a header
+	 * @param separator the separator, one or multiple characters, does not support regex
+	 * @param headerArray the headers for the CSV
+	 * @param scanner that is used to parse through the lines of the CSV
+	 * @param parseJsonStrings if set to true, attempts to convert values starting with either 
+	 *       "{" or "[" to a JsonObject or JsonArray.
+	 *        
+	 *************************************************************************************/
+	private static JsonArray toJsonArray(
+								  String separator
+								, ArrayList<String> headerArray
+								, boolean parseJsonStrings
+								, Scanner scanner
+							) {
+		
+		JsonArray result = new JsonArray();
 		//----------------------------
 		// Process Records
 		while(scanner.hasNext()) {
@@ -302,7 +447,6 @@ public class CFWCSV {
 	
 		scanner.close();
 		return result;
-		
 	}
 
 }
