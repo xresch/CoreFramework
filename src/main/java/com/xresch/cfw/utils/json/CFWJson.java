@@ -350,11 +350,12 @@ public class CFWJson {
 	 * 
 	 *************************************************************************************/
 	public static JsonElement fromJson(String jsonString) {
-		
-		JsonReader reader = gsonInstance.newJsonReader(new StringReader(jsonString));
-		reader.setStrictness(Strictness.LENIENT);
-		
+				
 		if(!Strings.isNullOrEmpty(jsonString)) {
+			
+			JsonReader reader = gsonInstance.newJsonReader(new StringReader(jsonString));
+			reader.setStrictness(Strictness.LENIENT);
+			
 			JsonElement jsonElement = JsonParser.parseReader(reader);
 			
 			return jsonElement;
