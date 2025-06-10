@@ -97,18 +97,9 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	public String descriptionHTML() {
 		
 		//------------------------------------
-		// Create As-Option List
-		StringBuilder asOptionList = new StringBuilder("<ul>");
-		
-		for(String type : CFWQueryStringParserType.getNames()){
-			CFWQueryStringParserType current = CFWQueryStringParserType.valueOf(type);
-			asOptionList.append("<li><b>"+type+":&nbsp;</b>"+current.shortDescription()+"</li>");
-		}
-		asOptionList.append("</ul>");
-		
-		
-		//------------------------------------
 		// Fetch resource and replace
+		String asOptionList = CFWQueryStringParserType.getDescriptionHTMLList();
+		
 		return CFW.Files.readPackageResource(
 					FeatureWebExtensions.PACKAGE_RESOURCES
 					, "source_web.html"

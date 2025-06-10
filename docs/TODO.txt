@@ -178,6 +178,7 @@ DONE
 - Stored Query: Added Parameters Tab to Settings Modal
 - Stored Query: Added Versioning to Stored Queries
 - Query: Stored source and command - autocomplete does not show archived queries
+- Query: source cli/web: Added as-options 'csv' and 'jsonlines'
 
 - Query: Added Commands:
 	- parsecsv

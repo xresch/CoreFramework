@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.TreeSet;
 
 import org.w3c.dom.Document;
@@ -29,7 +30,8 @@ public class _CFWQueryCommonStringParser {
 	 *******************************************************************************/
 	public enum CFWQueryStringParserType {
 
-		  json("Parse the response into a json object or array.")
+		  json("Parse the whole response as a json object or array.")
+		, jsonlines("Parse each line of the response as a json object.")
 		, html("Parse the response as HTML and convert it into a flat table.")
 		, htmltables("Parse the response as HTML and extracts all table data found in the HTML.")
 		, htmltree("Parse the response as HTML and convert it into a json structure.")
@@ -69,11 +71,24 @@ public class _CFWQueryCommonStringParser {
 			}
 			return enumNames;
 		}
-		
+				
 		//==============================
 		// Check if enum exists by name
 		public static boolean has(String enumName) {
 			return getNames().contains(enumName);
+		}
+		
+		//==============================
+		// Create a HTML List 
+		public static String getDescriptionHTMLList() {
+			StringBuilder builder = new StringBuilder();
+			
+			builder.append("<ul>");
+				for(CFWQueryStringParserType type : CFWQueryStringParserType.values()) {
+					builder.append("<li><b>"+type.toString()+":&nbsp;</b>"+type.shortDescription+"</li>");
+				}
+			builder.append("</ul>");
+			return builder.toString();
 		}
 
 	}
@@ -136,6 +151,7 @@ public class _CFWQueryCommonStringParser {
 		switch(type) {
 			
 			case json:			result = parseAsJson(data);	break;	
+			case jsonlines:		result = parseAsJsonLines(data);	break;	
 			case html:			result = parseAsHTML(data); 	break;
 			case htmltables:	result = parseAsHTMLTables(data); 	break;
 			case htmltree:		result = parseAsHTMLTree(data); 	break;
@@ -158,20 +174,38 @@ public class _CFWQueryCommonStringParser {
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	public static ArrayList<EnhancedJsonObject> parseAsJson( String data ) throws Exception {
+	public static ArrayList<EnhancedJsonObject> parseAsJsonLines( String data ) throws Exception {
 		
 		ArrayList<EnhancedJsonObject> result = new ArrayList<>();
 		 
+		Scanner scanner = new Scanner(data.trim());
+
+		while(scanner.hasNextLine()) {
+			
+			String line = scanner.nextLine();
+			result.addAll(parseAsJson(line));
+		}
+		
+		return result;
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public static ArrayList<EnhancedJsonObject> parseAsJson( String data ) throws Exception {
+		
+		ArrayList<EnhancedJsonObject> result = new ArrayList<>();
+		
 		//------------------------------------
 		// Parse Data
 		JsonElement element;
 		
 		element = CFW.JSON.fromJson(data);
-
+		
 		//------------------------------------
 		// Handle Object
 		if(element.isJsonObject()) {
-						
+			
 			result.add( new EnhancedJsonObject(element.getAsJsonObject()) );
 			return result;
 		}
@@ -179,7 +213,7 @@ public class _CFWQueryCommonStringParser {
 		//------------------------------------
 		// Handle Array
 		if(element.isJsonArray()) {
-
+			
 			for(JsonElement current : element.getAsJsonArray() ) {
 				if(current.isJsonObject()) {
 					result.add( new EnhancedJsonObject(current.getAsJsonObject()) );

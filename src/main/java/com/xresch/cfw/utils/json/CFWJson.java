@@ -1,5 +1,6 @@
 package com.xresch.cfw.utils.json;
 
+import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.security.cert.X509Certificate;
@@ -33,7 +34,10 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.Strictness;
+import com.google.gson.internal.Streams;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWChartSettings;
 import com.xresch.cfw.datahandling.CFWField;
@@ -63,21 +67,24 @@ public class CFWJson {
 	
 	static{
 		//Type cfwobjectListType = new TypeToken<LinkedHashMap<CFWObject>>() {}.getType();
-		
+
 		gsonInstance = createGsonBuilderBase()
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
 				.serializeNulls()
+				.setStrictness(Strictness.LENIENT)
 				.create();
 		
 		gsonInstancePretty = createGsonBuilderBase()
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
 				.serializeNulls()
+				.setStrictness(Strictness.LENIENT)
 				.setPrettyPrinting()
 				.create();
 		
 		gsonInstanceEncrypted = createGsonBuilderBase()
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(true))
 				.serializeNulls()
+				.setStrictness(Strictness.LENIENT)
 				.create();
 	}
 			
@@ -86,6 +93,7 @@ public class CFWJson {
 			.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(true))
 			.excludeFieldsWithoutExposeAnnotation()
 			.serializeNulls()
+			.setStrictness(Strictness.LENIENT)
 			.create();
 	
 	/*************************************************************************************
@@ -343,8 +351,11 @@ public class CFWJson {
 	 *************************************************************************************/
 	public static JsonElement fromJson(String jsonString) {
 		
+		JsonReader reader = gsonInstance.newJsonReader(new StringReader(jsonString));
+		reader.setStrictness(Strictness.LENIENT);
+		
 		if(!Strings.isNullOrEmpty(jsonString)) {
-			JsonElement jsonElement = JsonParser.parseString(jsonString);
+			JsonElement jsonElement = JsonParser.parseReader(reader);
 			
 			return jsonElement;
 		}else {
