@@ -673,7 +673,7 @@ public class CFWParameter extends CFWObject {
 		String dashboardID = null;
 		
 		if(request != null) {
-			request.getParameter("id");
+			dashboardID = request.getParameter("id");
 		}
 		
 		//---------------------------------
