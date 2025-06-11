@@ -143,7 +143,7 @@ public class ParameterQuerySelect extends ParameterDefinition {
 				else 								   { firstString =  CFW.JSON.toJSON(firstValue); }
 				
 				if(fieldCount == 1) {
-					settingsField.addOption(firstValue.getAsString());
+					settingsField.addOption(firstString);
 				}else {
 					
 					//--------------------------------------
