@@ -1327,6 +1327,7 @@ public class CFWDBStoredQuery {
 		
 		if( !storedQuery.isArchived()
 		&&  storedQuery.makeWidget() 
+		&&  storedQuery.version() == 0
 		&&  id != null
 		){
 			
@@ -1363,6 +1364,7 @@ public class CFWDBStoredQuery {
 			.select()
 			.where(CFWStoredQueryFields.IS_ARCHIVED, false)
 			.and(CFWStoredQueryFields.MAKE_WIDGET, true)
+			.and(CFWStoredQueryFields.VERSION, 0)
 			.getAsObjectListConvert(CFWStoredQuery.class);
 		
 		for(CFWStoredQuery query : queryArray) {
