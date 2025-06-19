@@ -37,7 +37,7 @@ public class CFWCacheManagement {
 		if(cacheMap.containsKey(cacheName)) {
 			new CFWLog(logger)
 				.warn("The cache with name '"+cacheName+"' already exists, using existing cache.", new Exception());
-			return null;
+			return cacheMap.get(cacheName);
 		}
 		
 		Cache<K1, V1> cache = 
@@ -60,8 +60,8 @@ public class CFWCacheManagement {
 		
 		if(cacheMap.containsKey(cacheName)) {
 			new CFWLog(logger)
-				.severe("Failed to add cache. The cache name '"+cacheName+"' is already used.", new IllegalArgumentException());
-			return null;
+				.warn("Failed to add cache. The cache name '"+cacheName+"' is already used, using existing cache.", new IllegalArgumentException());
+			return (LoadingCache<K1, V1>)cacheMap.get(cacheName);
 		}
 		
 		if(loader == null) {
