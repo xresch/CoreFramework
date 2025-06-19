@@ -101,6 +101,10 @@ public class CFWStatusMonitorRegistry {
 	 * 
 	 ***********************************************************************/
 	public static CFWStateOption getWorstStatus()  {
+		boolean colorize = CFW.DB.Config.getConfigAsBoolean(FeatureSystemAnalytics.CATEGORY_STATUS_MONITOR, FeatureSystemAnalytics.CONFIG_INTERVAL_MINUTES);
+		
+		if(!colorize) { return CFWStateOption.NONE; }
+		
 		return cachedWorstStatus;
 	}
 	/***********************************************************************

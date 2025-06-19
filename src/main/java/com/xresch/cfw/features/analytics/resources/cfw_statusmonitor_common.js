@@ -20,12 +20,9 @@ function cfw_statusmonitor_applyColorOnLoad(){
 		let faicon = menuButton.find(".fas");
 		
 		let style = CFW.colors.getCFWStateStyle(worstStatus);
+
+		CFW.colors.colorizeElement(faicon, style, "text");
 		
-		if(style == CFW.style.none){
-			menuButton.remove();
-		}else{
-			CFW.colors.colorizeElement(faicon, style, "text");
-		}
 		
 		
 	}

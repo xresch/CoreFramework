@@ -43,6 +43,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 	public static final String PERMISSION_SYSTEM_ANALYTICS = "System Analytics";
 	
 	public static final String CATEGORY_STATUS_MONITOR = "Status Monitor";
+	public static final String CONFIG_COLOR_MENU_ICON = "Color Menu Icon";
 	public static final String CONFIG_INTERVAL_MINUTES = "Interval Minutes";
 	public static final String CONFIG_URL_CHECKS = "URL Checks";
 	@Override
@@ -225,6 +226,13 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		//-----------------------------------------
 		// 
 		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CATEGORY_STATUS_MONITOR, FeatureSystemAnalytics.CONFIG_COLOR_MENU_ICON)
+				.description("Toggle if the menu icon of the status monitor should be colored or not.")
+				.type(FormFieldType.BOOLEAN)
+				.value("false")
+				);
+		
 		CFW.DB.Config.oneTimeCreate(
 			new Configuration(CATEGORY_STATUS_MONITOR, FeatureSystemAnalytics.CONFIG_INTERVAL_MINUTES)
 				.description("The interval in minutes that defines how often the status monitor checks should be executed.")
