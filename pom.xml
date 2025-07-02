@@ -28,7 +28,7 @@
 		<releaseName>CFWServer_v${project.version}</releaseName> <!-- making versioned folder for zipping -->
 		<zipFolder>${basedir}/target/${releaseName}</zipFolder>
 		
-		<skipMakeFolder>false</skipMakeFolder>
+		<skipMakeFolder>true</skipMakeFolder>
 		<skipJavadoc>true</skipJavadoc>
 		<skipSigning>true</skipSigning>
 		<skipTests>true</skipTests>
@@ -334,6 +334,12 @@
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc8</artifactId>
 			<version>19.23.0.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.dhatim</groupId>
+		    <artifactId>fastexcel-reader</artifactId>
+		    <version>0.19.0</version>
 		</dependency>
 		
 

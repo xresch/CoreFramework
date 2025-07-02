@@ -108,6 +108,7 @@ import com.xresch.cfw.utils.CFWUtilsArray;
 import com.xresch.cfw.utils.CFWUtilsText;
 import com.xresch.cfw.utils.CFWXML;
 import com.xresch.cfw.utils.csv.CFWCSV;
+import com.xresch.cfw.utils.excel.CFWExcel;
 import com.xresch.cfw.utils.files.CFWFiles;
 import com.xresch.cfw.utils.json.CFWJson;
 import com.xresch.cfw.utils.math.CFWMath;
@@ -198,6 +199,7 @@ public class CFW {
 	
 	public static class CSV extends CFWCSV {}
 	public static class Dump extends CFWDump {}
+	public static class Excel extends CFWExcel {}
 	public static class Files extends CFWFiles {}
 	public static class HTTP extends CFWHttp {}
 	public static class HTML extends CFWHTML {}
