@@ -95,11 +95,11 @@ Typical example would be a web API that limits the amount of data returned. </p>
 
 <p>The following example sets the various pagination parameters and uses the page-value acquired with the sourcepage()-function to execute the random source several times:</p>
 <pre><code class="language-cfwquery">| source random 
-	records = sourcepage() 			# for demonstration, take page value as number of records
+	records = 3 					# for demonstration, make 3 random records per page
 	pagination = true 				# enable pagination
 	pageinitial = 1 				# initial page value, retrievable with sourcepage() 
 	page = sourcepage() + 1 		# adjust the initial value after every page
-	pageend = ( sourcepage() >= 5 ) # checked after page values has been adjusted, return true when last page has been reached
+	pageend = ( sourcepage() > 5 )  # checked after page values has been adjusted, return true when last page has been reached
 	pagemax = 20 					# the max number of pages to fetch, prevents endless loops</code></pre>
 
 
