@@ -137,6 +137,7 @@ public class CFWApplicationExecutor {
 		
 		return alreadyExists;
 	}
+	
 	/**************************************************************************************************
 	 * Adds a servlet to the secure application context that needs authentication to access.
 	 * The resulting path will be CFW.Properties.BASE_URL + "/app" + path.
@@ -158,6 +159,31 @@ public class CFWApplicationExecutor {
 	public void addAppServlet(ServletHolder holder, String path){
 		
 		if(!path.startsWith("/app")) { path = "/app"+path; }
+		
+		this.servletContext.addServlet(holder, path);
+	}
+	
+	/**************************************************************************************************
+	 * Adds a stream servlet to the secure application context that needs authentication to access.
+	 * The resulting path will be CFW.Properties.BASE_URL + "/app/stream" + path.
+	 * @param the relative path of the context,
+	 **************************************************************************************************/
+	public ServletHolder addAppStreamServlet(Class<? extends Servlet> clazz, String path){
+		
+		if(!path.startsWith("/app/stream")) { path = "/app/stream"+path; }
+			
+		return this.servletContext.addServlet(clazz, path);
+	}
+	
+	/**************************************************************************************************
+	 * Adds a stream servlet to the secure application context that needs authentication to access.
+	 * The resulting path will be CFW.Properties.BASE_URL + "/app/stream" + path.
+	 * 
+	 * @param the relative path of the context, CFWConfig.BASE_URL will be prepended.
+	 **************************************************************************************************/
+	public void addAppStreamServlet(ServletHolder holder, String path){
+		
+		if(!path.startsWith("/app/stream")) { path = "/app/stream"+path; }
 		
 		this.servletContext.addServlet(holder, path);
 	}

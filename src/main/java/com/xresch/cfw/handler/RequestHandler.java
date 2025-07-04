@@ -160,7 +160,11 @@ public class RequestHandler extends HandlerWrapper
 	    	//==========================================
 	    	CFWDB.forceCloseRemainingConnections();
 	    	
-	    	CFW.Localization.writeLocalized(request, response);
+	    	if(!request.getRequestURI().startsWith("/stream")
+	    	&& !request.getRequestURI().startsWith("/app/stream")
+	    	){
+	    		CFW.Localization.writeLocalized(request, response);
+	    	}
 	    	log.end();
     	
 	    	baseRequest.setHandled(true);
