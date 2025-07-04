@@ -25,7 +25,7 @@ function cfw_query_editor_initializeEditor(parent, query, useURLParams){
 				</div>
 			</div>
 		</div>
-		<div id="${resultID}" class="monospace">
+		<div id="${resultID}" class="monospace flex-column align-items-stretch minvh-30">
 		</div>
 	`);
 	
