@@ -756,6 +756,16 @@ label {
     height: 100%;
 }
 
+.cfw-filepicker-wrapper{
+    border: 2px dashed rgba(255, 255, 255, 0.33);
+    padding: 11px;
+}
+
+.cfw-filepicker-wrapper.highlight{
+    border: 2px dashed rgba(255, 255, 255, 0.66);
+    padding: 11px;
+}
+
 .cfw-field-wrapper {
 	display: flex;
 	position: relative; /* stops break out of textarea expand button */
@@ -789,6 +799,7 @@ label {
     display: flex;
     flex-direction: column;
 }
+
 .cfw-decorator { }
 
 .cfw-fa-box {

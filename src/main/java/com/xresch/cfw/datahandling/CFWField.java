@@ -136,6 +136,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		DATETIMEPICKER, 
 		TIMEFRAMEPICKER,
 		TIMEZONEPICKER,
+		FILEPICKER,
 		TAGS, 
 		// Input Order of elements messed up by client side when containing numbers in keys (numbers will be sorted and listed first)
 		TAGS_SELECTOR,
@@ -328,6 +329,8 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		
 		return true;
 	}
+	
+	
 	//===========================================
 	// TAGS SELECTOR
 	//===========================================
@@ -384,6 +387,22 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 				.setColumnDefinition("VARCHAR");
 		}
 		return null;
+	}
+	
+	//===========================================
+	// FILEPICKER
+	//===========================================
+	public static CFWField<CFWDatabasedFile> newFilepicker(Enum<?> fieldName){
+		return newFilepicker(fieldName.toString());
+	}
+	
+	public static CFWField<CFWDatabasedFile> newFilepicker(String fieldName){
+		if( fieldnameStartsWithJSON(fieldName) ) {
+			return new CFWField<CFWDatabasedFile>(CFWDatabasedFile.class, FormFieldType.FILEPICKER, fieldName)
+					.setColumnDefinition("BLOB");
+		}
+		return null;
+		
 	}
 	
 	//===========================================
@@ -677,6 +696,9 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 									
 			case TIMEZONEPICKER: 	createTimezoneSelect(html, cssClasses);
 									break;	
+									
+			case FILEPICKER:		createFilePicker(html, cssClasses);
+									break;
 			
 			case SCHEDULE:		  	createSchedule(html, cssClasses);
 									break;
@@ -1035,19 +1057,28 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	 * Create TimeframePicker
 	 ***********************************************************************************/
 	private void createTimeframePicker(StringBuilder html, String cssClasses) {
-		
-//		int maxTags = 128;
-//		
-//		if(attributes.containsKey("maxTags")) {
-//			maxTags = Integer.parseInt(attributes.get("maxTags"));
-//		}
-		
+				
 		//---------------------------------
 		// Create Field
 		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"timeframepicker\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
 			((CFWForm)this.parent).javascript.append("cfw_initializeTimeframePicker('"+name+"', "+CFW.JSON.toJSON(value)+", null);\r\n");
+		}
+				
+	}
+	
+	/***********************************************************************************
+	 * Create FilePicker
+	 ***********************************************************************************/
+	private void createFilePicker(StringBuilder html, String cssClasses) {
+				
+		//---------------------------------
+		// Create Field
+		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"filepicker\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
+		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_initializeFilePicker('"+name+"', "+CFW.JSON.toJSON(value)+", null);\r\n");
 		}
 				
 	}

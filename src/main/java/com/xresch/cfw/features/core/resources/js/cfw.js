@@ -2826,6 +2826,90 @@ function cfw_timeframePicker_shift(origin, direction){
 }
 
 /**************************************************************************************
+ * Takes the ID of a text field which will be the target to store the timeframe picker
+ * value. 
+ * The original field gets hidden and will be replaced by the timeframe picker itself. 
+ * 
+ * @param fieldID the id of the target field(without '#')
+ * @param initialData the json object containing the initial value of the field as epoch time:
+ *        {
+ *			   id: 123
+ *           , name: "filename.txt"
+ * 			 , type: "txt"
+ *        }
+ *************************************************************************************/
+function cfw_initializeFilePicker(fieldID, initialData){
+	
+	var selector = '#'+fieldID;
+
+	var fileStoreField = $(selector);
+	fileStoreField.addClass('d-none');
+	
+	var wrapper = $('<div class="cfw-filepicker-wrapper" data-id="'+fieldID+'">');
+	fileStoreField.before(wrapper);
+	wrapper.append(fileStoreField);
+		
+	//----------------------------------
+	// Set Intial Value
+	var pickerDataString = JSON.stringify(initialData);
+	fileStoreField.val(pickerDataString);
+	
+
+	//----------------------------------
+	// Create HTML
+	wrapper.append( `
+<div id="${fieldID}-filepicker" class="">
+	<p>Upload a file with the file dialog or by dragging and dropping onto the dashed region.</p>
+    <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
+    <label class="button" for="fileElem">Select some files</label>
+</div>
+	`);
+
+	//----------------------------------
+	// Add Highlight Event Handlers
+	
+	let functionHighlight = function(event){
+		event.preventDefault();
+		event.stopPropagation();
+		
+		let  element = event.target || event.srcElement;
+		if(element != null){
+			wrapper.addClass('highlight');  
+		}
+		
+	};
+	
+	['dragenter', 'dragover']
+		.forEach(eventName => {
+			wrapper.on(eventName, functionHighlight);
+			wrapper.children().on(eventName, functionHighlight);
+		});
+	
+	//----------------------------------
+	// Add Unhighlight Event Handlers
+	
+	let functionUnhighlight = function(event){
+		event.preventDefault();
+		event.stopPropagation();
+		
+		let  element = event.target || event.srcElement;
+		if(element != null){
+			wrapper.removeClass('highlight');  
+		}
+		
+	};
+	
+	['dragleave', "drop"]
+		.forEach(eventName => {
+			wrapper.on(eventName, functionUnhighlight);
+			wrapper.children().on(eventName, functionUnhighlight);
+		})
+	
+	
+}
+
+
+/**************************************************************************************
  * Will add a function that will be called before sending the autocomplete request
  * to the server.
  * You can add more parameters to the paramObject provided to the callback function
@@ -2840,6 +2924,7 @@ function cfw_autocomplete_addParamEnhancer(functionToEnhanceParams){
 	
 	CFW.global.autcompleteParamEnhancerFunctions.push(functionToEnhanceParams);
 }
+
 
 /**************************************************************************************
  * Initialize an autocomplete added to a CFWField with setAutocompleteHandler().
