@@ -2903,8 +2903,34 @@ function cfw_initializeFilePicker(fieldID, initialData){
 		.forEach(eventName => {
 			wrapper.on(eventName, functionUnhighlight);
 			wrapper.children().on(eventName, functionUnhighlight);
-		})
+		});
 	
+	
+	//----------------------------------
+	// Handle File Drop
+	let functionDrop =  function (event) {
+		
+		event.preventDefault();
+		event.stopPropagation();
+		
+		console.log(event.originalEvent.dataTransfer);
+		let dt = event.originalEvent.dataTransfer;
+		let files = dt.files;
+		
+		if(files.length > 1){
+			alert('Sorry only a single file can be uploaded.');
+			return;
+		}
+		
+		console.log("data: "+files.length);
+		console.log(files[0]);
+	  
+	  //handleFiles(files);
+	};
+		
+	wrapper.on('drop', functionDrop);
+	wrapper.children().on('drop', functionDrop);	
+
 	
 }
 
