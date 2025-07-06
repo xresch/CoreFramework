@@ -29,6 +29,18 @@ function cfw_utils_chainedOnload(func) {
 
 
 /**************************************************************************************
+ * Sleep by promise, use it like:
+   CFW.utils.sleep(2000).then(() => {
+	  //do something
+   });
+ *
+ *************************************************************************************/
+function cfw_utils_sleep(time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+
+/**************************************************************************************
  * Either executes a function or evaluates a string a s javascript code.
  *
  *************************************************************************************/
@@ -2826,7 +2838,7 @@ function cfw_timeframePicker_shift(origin, direction){
 }
 
 /**************************************************************************************
- * Takes the ID of a text field which will be the target to store the timeframe picker
+ * Takes the ID of a text field which will be the target to store the file picker
  * value. 
  * The original field gets hidden and will be replaced by the timeframe picker itself. 
  * 
@@ -2835,7 +2847,9 @@ function cfw_timeframePicker_shift(origin, direction){
  *        {
  *			   id: 123
  *           , name: "filename.txt"
- * 			 , type: "txt"
+ * 			 , mimetype: "plain/text"
+ * 			 , extension: "txt"
+ * 			 , size: 6789 
  *        }
  *************************************************************************************/
 function cfw_initializeFilePicker(fieldID, initialData){
@@ -2857,8 +2871,10 @@ function cfw_initializeFilePicker(fieldID, initialData){
 
 	//----------------------------------
 	// Create HTML
+	let wrapperID = fieldID+"-filepicker-"+CFW.utils.randomString(12);
+	
 	wrapper.append( `
-<div id="${fieldID}-filepicker" class="">
+<div id="${wrapperID}" class="">
 	<p>Upload a file with the file dialog or by dragging and dropping onto the dashed region.</p>
     <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
     <label class="button" for="fileElem">Select some files</label>
@@ -2921,16 +2937,49 @@ function cfw_initializeFilePicker(fieldID, initialData){
 			alert('Sorry only a single file can be uploaded.');
 			return;
 		}
-		
-		console.log("data: "+files.length);
-		console.log(files[0]);
-	  
-	  //handleFiles(files);
+		console.log(wrapperID)
+		CFW.ui.toggleLoader(true, wrapperID);
+
+			cfw_filepicker_uploadFiles(files);
+		cfw_utils_sleep(2000).then(() => {
+			CFW.ui.toggleLoader(false, wrapperID);
+		});;
+	  	
 	};
 		
 	wrapper.on('drop', functionDrop);
 	wrapper.children().on('drop', functionDrop);	
 
+	
+}
+
+/**************************************************************************************
+ * Uploads one or more files to the server.
+ * 
+ * @param files array of files 
+ *************************************************************************************/
+function cfw_filepicker_uploadFiles(files) {
+	
+	console.log("data: "+files.length);
+	console.log(files[0]);
+
+	for(let i in files){
+
+		let file = files[i];
+		
+		let CFW_URL_FILEUPLOAD = '/app/stream/fileupload';
+		
+		let formData = new FormData()
+  		formData.append('file', file)
+
+		fetch(CFW_URL_FILEUPLOAD, {
+			method: 'POST',
+			body: formData
+		})
+		.then(() => { /* Done. Inform the user */ })
+		.catch(() => { /* Error. Inform the user */ })
+
+	};
 	
 }
 
@@ -6542,6 +6591,7 @@ var CFW = {
 		urlToLink: cfw_utils_urlToLink,
 		replaceAll: cfw_utils_replaceAll,
 		randomInt: cfw_utils_randomInt,
+		sleep: cfw_utils_sleep,
 		clipboardRead: cfw_utils_clipboardRead,
 		clipboardWrite: cfw_utils_clipboardWrite,
 		
