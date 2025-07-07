@@ -6,7 +6,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 
-public class CFWDatabasedFile {
+public class CFWStoredFileReference {
 
 	private static final String MEMBER_ID = "id";
 	private static final String MEMBER_NAME = "name"; // the filename, including file extension
@@ -17,7 +17,7 @@ public class CFWDatabasedFile {
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
-	public CFWDatabasedFile() {
+	public CFWStoredFileReference() {
 		setToDefaults();
 		
 	}
@@ -25,7 +25,7 @@ public class CFWDatabasedFile {
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
-	public CFWDatabasedFile(String jsonString) {
+	public CFWStoredFileReference(String jsonString) {
 		
 		setToDefaults();
 		

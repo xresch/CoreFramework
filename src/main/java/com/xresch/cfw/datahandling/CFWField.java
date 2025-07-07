@@ -392,14 +392,14 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	//===========================================
 	// FILEPICKER
 	//===========================================
-	public static CFWField<CFWDatabasedFile> newFilepicker(Enum<?> fieldName){
+	public static CFWField<CFWStoredFileReference> newFilepicker(Enum<?> fieldName){
 		return newFilepicker(fieldName.toString());
 	}
 	
-	public static CFWField<CFWDatabasedFile> newFilepicker(String fieldName){
+	public static CFWField<CFWStoredFileReference> newFilepicker(String fieldName){
 		if( fieldnameStartsWithJSON(fieldName) ) {
-			return new CFWField<CFWDatabasedFile>(CFWDatabasedFile.class, FormFieldType.FILEPICKER, fieldName)
-					.setColumnDefinition("BLOB");
+			return new CFWField<CFWStoredFileReference>(CFWStoredFileReference.class, FormFieldType.FILEPICKER, fieldName)
+					.setColumnDefinition("VARCHAR");
 		}
 		return null;
 		

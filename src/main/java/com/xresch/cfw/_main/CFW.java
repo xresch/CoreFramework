@@ -57,6 +57,11 @@ import com.xresch.cfw.features.eav.CFWDBEAVEntity;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
 import com.xresch.cfw.features.eav.CFWDBEAVValue;
 import com.xresch.cfw.features.eav.FeatureEAV;
+import com.xresch.cfw.features.filemanager.CFWDBStoredFile;
+import com.xresch.cfw.features.filemanager.CFWDBStoredFileEditorGroupsMap;
+import com.xresch.cfw.features.filemanager.CFWDBStoredFileEditorsMap;
+import com.xresch.cfw.features.filemanager.CFWDBStoredFileSharedGroupsMap;
+import com.xresch.cfw.features.filemanager.CFWDBStoredFileSharedUserMap;
 import com.xresch.cfw.features.jobs.CFWDBJob;
 import com.xresch.cfw.features.jobs.CFWJobsReporting;
 import com.xresch.cfw.features.jobs.CFWRegistryJobs;
@@ -171,6 +176,12 @@ public class CFW {
 		public static class Notifications extends CFWDBNotifications{};
 		public static class Parameters extends CFWDBParameter{};
 		public static class Permissions extends CFWDBPermission{};
+		
+		public static class StoredFile extends CFWDBStoredFile{};
+		public static class StoredFileEditors extends CFWDBStoredFileEditorsMap{};
+		public static class StoredFileEditorGroups extends CFWDBStoredFileEditorGroupsMap{};
+		public static class StoredFileSharedGroups extends CFWDBStoredFileSharedGroupsMap{};
+		public static class StoredFileSharedUsers extends CFWDBStoredFileSharedUserMap{};
 		
 		public static class StoredQuery extends CFWDBStoredQuery{};
 		public static class StoredQueryEditors extends CFWDBStoredQueryEditorsMap{};
