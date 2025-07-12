@@ -2,6 +2,10 @@ package com.xresch.cfw.features.filemanager;
 
 import java.util.Locale;
 
+import javax.servlet.MultipartConfigElement;
+
+import org.eclipse.jetty.servlet.ServletHolder;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
@@ -23,7 +27,8 @@ import com.xresch.cfw.spi.CFWAppFeature;
  **************************************************************************************************************/
 public class FeatureFilemanager extends CFWAppFeature {
 	
-	public static final String URI_STOREDFILE_LIST = "/app/storedfile";
+	public static final String URI_FILEMANAGER = "/app/filemanager";
+	public static final String URI_FILEUPLOAD = "/app/stream/fileupload";
 	
 	public static final String PERMISSION_STOREDFILE_VIEWER = "StoredFile: Viewer";
 	public static final String PERMISSION_STOREDFILE_CREATOR = "StoredFile: Creator";
@@ -78,12 +83,12 @@ public class FeatureFilemanager extends CFWAppFeature {
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(
-				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("StoredFile")
-					.faicon("fas fa-key")
+				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("File Manager")
+					.faicon("fas fa-folder-open")
 					.addPermission(PERMISSION_STOREDFILE_VIEWER)
 					.addPermission(PERMISSION_STOREDFILE_CREATOR)
 					.addPermission(PERMISSION_STOREDFILE_ADMIN)
-					.href(URI_STOREDFILE_LIST)
+					.href(URI_FILEMANAGER)
 					.addAttribute("id", "cfwMenuTools-StoredFile")
 				, null);
 		
@@ -162,8 +167,12 @@ public class FeatureFilemanager extends CFWAppFeature {
 		
 		//----------------------------------
     	// Servlets
-    	app.addAppServlet(ServletFilemanager.class,  URI_STOREDFILE_LIST);
-		
+    	app.addAppServlet(ServletFilemanager.class,  URI_FILEMANAGER);
+
+    	ServletHolder holder = new ServletHolder(new ServletStreamFileUpload());
+	    holder.getRegistration().setMultipartConfig(new MultipartConfigElement(""));
+	    app.addAppStreamServlet(holder, URI_FILEUPLOAD);
+
 	}
 
 	@Override

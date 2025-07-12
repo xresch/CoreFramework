@@ -62,6 +62,7 @@ import com.xresch.cfw.features.filemanager.CFWDBStoredFileEditorGroupsMap;
 import com.xresch.cfw.features.filemanager.CFWDBStoredFileEditorsMap;
 import com.xresch.cfw.features.filemanager.CFWDBStoredFileSharedGroupsMap;
 import com.xresch.cfw.features.filemanager.CFWDBStoredFileSharedUserMap;
+import com.xresch.cfw.features.filemanager.FeatureFilemanager;
 import com.xresch.cfw.features.jobs.CFWDBJob;
 import com.xresch.cfw.features.jobs.CFWJobsReporting;
 import com.xresch.cfw.features.jobs.CFWRegistryJobs;
@@ -547,6 +548,8 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureStoredQuery.class);
 		
 		CFW.Registry.Features.addFeature(FeatureParameter.class);	// must be after Dashboard and Query
+		
+		CFW.Registry.Features.addFeature(FeatureFilemanager.class);
 		
 		CFW.Registry.Features.addFeature(FeatureJobs.class);
 		

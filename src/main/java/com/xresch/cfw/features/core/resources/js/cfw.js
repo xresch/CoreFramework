@@ -2856,17 +2856,17 @@ function cfw_initializeFilePicker(fieldID, initialData){
 	
 	var selector = '#'+fieldID;
 
-	var fileStoreField = $(selector);
-	fileStoreField.addClass('d-none');
+	var originalField = $(selector);
+	originalField.addClass('d-none');
 	
 	var wrapper = $('<div class="cfw-filepicker-wrapper" data-id="'+fieldID+'">');
-	fileStoreField.before(wrapper);
-	wrapper.append(fileStoreField);
+	originalField.before(wrapper);
+	wrapper.append(originalField);
 		
 	//----------------------------------
 	// Set Intial Value
 	var pickerDataString = JSON.stringify(initialData);
-	fileStoreField.val(pickerDataString);
+	originalField.val(pickerDataString);
 	
 
 	//----------------------------------
@@ -2884,11 +2884,11 @@ function cfw_initializeFilePicker(fieldID, initialData){
 	//----------------------------------
 	// Add Highlight Event Handlers
 	
-	let functionHighlight = function(event){
-		event.preventDefault();
-		event.stopPropagation();
+	let functionHighlight = function(e){
+		e.preventDefault();
+		e.stopPropagation();
 		
-		let  element = event.target || event.srcElement;
+		let  element = e.target || e.srcElement;
 		if(element != null){
 			wrapper.addClass('highlight');  
 		}
@@ -2904,11 +2904,11 @@ function cfw_initializeFilePicker(fieldID, initialData){
 	//----------------------------------
 	// Add Unhighlight Event Handlers
 	
-	let functionUnhighlight = function(event){
-		event.preventDefault();
-		event.stopPropagation();
+	let functionUnhighlight = function(e){
+		e.preventDefault();
+		e.stopPropagation();
 		
-		let  element = event.target || event.srcElement;
+		let  element = e.target || e.srcElement;
 		if(element != null){
 			wrapper.removeClass('highlight');  
 		}
@@ -2924,29 +2924,28 @@ function cfw_initializeFilePicker(fieldID, initialData){
 	
 	//----------------------------------
 	// Handle File Drop
-	let functionDrop =  function (event) {
+	let functionDrop =  function (e) {
 		
-		event.preventDefault();
-		event.stopPropagation();
-		
-		console.log(event.originalEvent.dataTransfer);
-		let dt = event.originalEvent.dataTransfer;
+		e.preventDefault();
+		e.stopPropagation();
+		console.log("dropped");
+		console.log(e.originalEvent.dataTransfer);
+		let dt = e.originalEvent.dataTransfer;
 		let files = dt.files;
 		
 		if(files.length > 1){
 			alert('Sorry only a single file can be uploaded.');
 			return;
 		}
-		console.log(wrapperID)
+		
 		CFW.ui.toggleLoader(true, wrapperID);
-
-			cfw_filepicker_uploadFiles(files);
-		cfw_utils_sleep(2000).then(() => {
+			cfw_filepicker_uploadFiles(wrapper, originalField, files);
+		cfw_utils_sleep(1000).then(() => {
 			CFW.ui.toggleLoader(false, wrapperID);
 		});;
 	  	
 	};
-		
+
 	wrapper.on('drop', functionDrop);
 	wrapper.children().on('drop', functionDrop);	
 
@@ -2958,18 +2957,20 @@ function cfw_initializeFilePicker(fieldID, initialData){
  * 
  * @param files array of files 
  *************************************************************************************/
-function cfw_filepicker_uploadFiles(files) {
+function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 	
-	console.log("data: "+files.length);
-	console.log(files[0]);
-
-	for(let i in files){
+	for(i = 0; i < files.length; i++){
 
 		let file = files[i];
 		
 		let CFW_URL_FILEUPLOAD = '/app/stream/fileupload';
 		
 		let formData = new FormData()
+  		formData.append('originalData', originalField.val() )
+  		formData.append('name', file.name)
+  		formData.append('size', file.size)
+  		formData.append('type', file.type)
+  		formData.append('lastModified', file.lastModified)
   		formData.append('file', file)
 
 		fetch(CFW_URL_FILEUPLOAD, {
