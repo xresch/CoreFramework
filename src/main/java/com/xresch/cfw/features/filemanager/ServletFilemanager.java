@@ -171,16 +171,16 @@ public class ServletFilemanager extends HttpServlet
 				}
 				break;	
 				
-			case "duplicate": 			
-				switch(item.toLowerCase()) {
-
-					case "storedfile": 	duplicateStoredFile(jsonResponse, ID, false);
-											break;  
-					
-					default: 				CFW.Messages.itemNotSupported(item);
-											break;
-				}
-				break;	
+//			case "duplicate": 			
+//				switch(item.toLowerCase()) {
+//
+//					case "storedfile": 	duplicateStoredFile(jsonResponse, ID, false);
+//											break;  
+//					
+//					default: 				CFW.Messages.itemNotSupported(item);
+//											break;
+//				}
+//				break;	
 				
 				
 				
@@ -229,28 +229,28 @@ public class ServletFilemanager extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private void duplicateStoredFile(JSONResponse jsonResponse, String storedfileID, boolean newVersion) {
-		// TODO Auto-generated method stub
-		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)
-		|| (
-			   CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_CREATOR)
-			&& CFW.DB.StoredFile.checkCanEdit(storedfileID) 
-			) 
-		) {
-			
-			Integer newID = CFW.DB.StoredFile.createDuplicate(storedfileID, newVersion);
-			
-			if(newID != null) {
-				jsonResponse.setSuccess(true);
-			}else {
-				jsonResponse.setSuccess(false);
-			}
-			
-		}else {
-			jsonResponse.setSuccess(false);
-			CFW.Messages.addErrorMessage("Insufficient permissions to duplicate the Stored File.");
-		}
-	}
+//	private void duplicateStoredFile(JSONResponse jsonResponse, String storedfileID, boolean newVersion) {
+//		// TODO Auto-generated method stub
+//		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)
+//		|| (
+//			   CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_CREATOR)
+//			&& CFW.DB.StoredFile.checkCanEdit(storedfileID) 
+//			) 
+//		) {
+//			
+//			Integer newID = CFW.DB.StoredFile.createDuplicate(storedfileID, newVersion);
+//			
+//			if(newID != null) {
+//				jsonResponse.setSuccess(true);
+//			}else {
+//				jsonResponse.setSuccess(false);
+//			}
+//			
+//		}else {
+//			jsonResponse.setSuccess(false);
+//			CFW.Messages.addErrorMessage("Insufficient permissions to duplicate the Stored File.");
+//		}
+//	}
 	
 
 	/******************************************************************
