@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.filemanager;
 
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -92,7 +93,7 @@ public class CFWStoredFile extends CFWObject {
 			.addValidator(new LengthValidator(1, 255))
 			;
 	
-	private CFWField<String> data = CFWField.newString(FormFieldType.NONE, CFWStoredFileFields.DATA)
+	private CFWField<String> data = CFWField.newBlob(FormFieldType.NONE, CFWStoredFileFields.DATA)
 			.setDescription("The data of the file.")
 			;
 	

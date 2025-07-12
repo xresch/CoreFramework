@@ -94,60 +94,60 @@ public class CFWDBStoredFile {
 	//####################################################################################################
 	public static Integer createGetPrimaryKey(CFWStoredFile item) { 
 		updateTags(item); 
-		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item);
+		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item, CFWStoredFileFields.DATA);
 	}
 	
-	/**********************************************************************************
-	 * 
-	 * @param storedfileID¨the id of the storedfile that should be duplicated.
-	 * @param forVersioning true if this duplicate should be for versioning
-	 * @return
-	 **********************************************************************************/
-	public static Integer createDuplicate(String storedfileID, boolean forVersioning) { 
-
-		CFWStoredFile duplicate = CFW.DB.StoredFile.selectByID(storedfileID);
-		duplicate.updateSelectorFields();
-		
-		//---------------------------------
-		// Make sure it has a version group 
-		duplicate.id(null);
-		duplicate.timeCreated( new Timestamp(new Date().getTime()) );
-		
-		// need to check if null for automatic versioning
-		Integer id =  CFW.Context.Request.getUserID();
-
-		duplicate.foreignKeyOwner(id);
-		duplicate.name(duplicate.name()+"(Copy)");
-		duplicate.isShared(false);
-		
-		CFW.DB.transactionStart();
-		
-		Integer newID = duplicate.insertGetPrimaryKey();
-		
-		if(newID != null) {
-			
-				duplicate.id(newID);
-				//-----------------------------------------
-				// Save Selector Fields
-				//-----------------------------------------
-				boolean success = true;
-				success &= duplicate.saveSelectorFields();
-				if(!success) {
-					CFW.DB.transactionRollback();
-					new CFWLog(logger).severe("Error while saving selector fields for duplicate.");
-					return null;
-				}
-
-			CFW.DB.transactionCommit();
-			
-			CFW.Messages.addSuccessMessage("StoredFile duplicated successfully.");
-		}
-			
-		
-		
-		return newID;
-
-	}
+//	/**********************************************************************************
+//	 * 
+//	 * @param storedfileID¨the id of the storedfile that should be duplicated.
+//	 * @param forVersioning true if this duplicate should be for versioning
+//	 * @return
+//	 **********************************************************************************/
+//	public static Integer createDuplicate(String storedfileID, boolean forVersioning) { 
+//
+//		CFWStoredFile duplicate = CFW.DB.StoredFile.selectByID(storedfileID);
+//		duplicate.updateSelectorFields();
+//		
+//		//---------------------------------
+//		// Make sure it has a version group 
+//		duplicate.id(null);
+//		duplicate.timeCreated( new Timestamp(new Date().getTime()) );
+//		
+//		// need to check if null for automatic versioning
+//		Integer id =  CFW.Context.Request.getUserID();
+//
+//		duplicate.foreignKeyOwner(id);
+//		duplicate.name(duplicate.name()+"(Copy)");
+//		duplicate.isShared(false);
+//		
+//		CFW.DB.transactionStart();
+//		
+//		Integer newID = duplicate.insertGetPrimaryKey();
+//		
+//		if(newID != null) {
+//			
+//				duplicate.id(newID);
+//				//-----------------------------------------
+//				// Save Selector Fields
+//				//-----------------------------------------
+//				boolean success = true;
+//				success &= duplicate.saveSelectorFields();
+//				if(!success) {
+//					CFW.DB.transactionRollback();
+//					new CFWLog(logger).severe("Error while saving selector fields for duplicate.");
+//					return null;
+//				}
+//
+//			CFW.DB.transactionCommit();
+//			
+//			CFW.Messages.addSuccessMessage("StoredFile duplicated successfully.");
+//		}
+//			
+//		
+//		
+//		return newID;
+//
+//	}
 	
 	
 	//####################################################################################################
@@ -156,7 +156,7 @@ public class CFWDBStoredFile {
 	public static boolean update(CFWStoredFile item) { 
 		updateTags(item); 
 		item.lastUpdated(new Timestamp(System.currentTimeMillis()));
-		return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item); 
+		return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item, CFWStoredFileFields.DATA.toString()); 
 	}
 	
 	public static boolean updateLastUpdated(String storedfileID){ 
@@ -205,8 +205,7 @@ public class CFWDBStoredFile {
 
 	}
 
-	
-	
+
 	public static boolean deleteByIDForCurrentUser(String id)	{ 
 		
 		if(isStoredFileOfCurrentUser(id)) {
@@ -243,7 +242,7 @@ public class CFWDBStoredFile {
 		
 		return new CFWStoredFile()
 				.queryCache(CFWDBStoredFile.class, "getUserStoredFileList")
-				.select()
+				.selectWithout(CFWStoredFileFields.DATA.toString())
 				.where(CFWStoredFileFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.orderby(CFWStoredFileFields.NAME.toString())
 				.getResultSet();
@@ -260,7 +259,7 @@ public class CFWDBStoredFile {
 		
 		return new CFWStoredFile()
 				.queryCache(CFWDBStoredFile.class, "getUserStoredFileListAsJSON")
-				.select()
+				.selectWithout(CFWStoredFileFields.DATA.toString())
 				.where(CFWStoredFileFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWStoredFileFields.IS_ARCHIVED, false)
 				.orderby(CFWStoredFileFields.NAME.toString())
@@ -276,7 +275,7 @@ public class CFWDBStoredFile {
 		
 		return new CFWSQL(new CFWStoredFile())
 				.queryCache()
-				.select()
+				.selectWithout(CFWStoredFileFields.DATA.toString())
 				.where(CFWStoredFileFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWStoredFileFields.IS_ARCHIVED, true)
 				.orderby(CFWStoredFileFields.NAME.toString())
@@ -295,7 +294,7 @@ public class CFWDBStoredFile {
 			return new CFWSQL(new CFWStoredFile())
 				.queryCache()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-				.select()
+				.selectWithout(CFWStoredFileFields.DATA.toString())
 				.where(CFWStoredFileFields.IS_ARCHIVED, false)
 				.orderby(CFWStoredFileFields.NAME.toString())
 				.getAsJSON();
@@ -316,7 +315,7 @@ public class CFWDBStoredFile {
 			return new CFWSQL(new CFWStoredFile())
 				.queryCache()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-				.select()
+				.selectWithout(CFWStoredFileFields.DATA.toString())
 				.where(CFWStoredFileFields.IS_ARCHIVED, true)
 				.orderby(CFWStoredFileFields.NAME.toString())
 				.getAsJSON();
@@ -353,7 +352,7 @@ public class CFWDBStoredFile {
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWStoredFileFields.PK_ID
 				  , CFWStoredFileFields.NAME
-				  , CFWStoredFileFields.DATA
+				  , CFWStoredFileFields.SIZE
 				  , CFWStoredFileFields.DESCRIPTION
 				  , CFWStoredFileFields.TAGS
 				  )
@@ -378,7 +377,7 @@ public class CFWDBStoredFile {
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWStoredFileFields.PK_ID
 					, CFWStoredFileFields.NAME
-					, CFWStoredFileFields.DATA
+					, CFWStoredFileFields.SIZE
 					, CFWStoredFileFields.DESCRIPTION
 					, CFWStoredFileFields.TAGS
 					)

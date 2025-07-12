@@ -3,6 +3,7 @@ package com.xresch.cfw.datahandling;
 import java.math.BigDecimal;
 import java.security.Key;
 import java.sql.Array;
+import java.sql.Blob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -222,7 +223,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	}
 	
 	//===========================================
-	// BigDecimal
+	// Float
 	//===========================================
 	public static CFWField<Float> newFloat(FormFieldType type, Enum<?> fieldName){
 		return newFloat(type, fieldName.toString());
@@ -244,6 +245,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 				.setColumnDefinition("NUMERIC(64, 6)")
 				.addValidator(new DoubleValidator());
 	}
+	
 	//===========================================
 	// Boolean
 	//===========================================
@@ -253,6 +255,19 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	public static CFWField<Boolean> newBoolean(FormFieldType type, String fieldName){
 		return new CFWField<Boolean>(Boolean.class, type, fieldName)
 				.setColumnDefinition("BOOLEAN")
+				.addValidator(new BooleanValidator());
+	}
+	
+	//===========================================
+	// BLOB
+	//===========================================
+	public static CFWField<String> newBlob(FormFieldType type, Enum<?> fieldName){
+		return newBlob(type, fieldName.toString());
+	}
+	
+	public static CFWField<String> newBlob(FormFieldType type, String fieldName){
+		return new CFWField<String>(Boolean.class, type, fieldName)
+				.setColumnDefinition("BLOB")
 				.addValidator(new BooleanValidator());
 	}
 	
