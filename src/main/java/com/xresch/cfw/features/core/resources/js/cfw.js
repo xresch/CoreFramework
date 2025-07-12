@@ -2876,8 +2876,8 @@ function cfw_initializeFilePicker(fieldID, initialData){
 	wrapper.append( `
 <div id="${wrapperID}" class="">
 	<p>Upload a file with the file dialog or by dragging and dropping onto the dashed region.</p>
-    <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
-    <label class="button" for="fileElem">Select some files</label>
+    <input type="file" id="fileElem" multiple accept="*/*" onchange="handleFiles(this.files)">
+    <div class="card">No file selected</div>
 </div>
 	`);
 
