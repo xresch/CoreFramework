@@ -2858,6 +2858,7 @@ function cfw_initializeFilePicker(fieldID, initialData){
 
 	var originalField = $(selector);
 	originalField.addClass('d-none');
+
 	
 	var wrapper = $('<div class="cfw-filepicker-wrapper" data-id="'+fieldID+'">');
 	originalField.before(wrapper);
@@ -2876,7 +2877,16 @@ function cfw_initializeFilePicker(fieldID, initialData){
 	wrapper.append( `
 <div id="${wrapperID}" class="">
 	<p>Upload a file with the file dialog or by dragging and dropping onto the dashed region.</p>
-    <input type="file" id="fileElem" multiple accept="*/*" onchange="handleFiles(this.files)">
+	
+	<label class="btn btn-sm btn-primary">
+		<i class="fas fa-upload"></i> Upload
+
+	    <input 	type="file" 
+	    		id="${wrapperID}-filechooser" 
+	    		accept="*/*" 
+	    		style="display: none;"
+	    		onchange="cfw_filepicker_handleSelectedFiles(this)">
+	</label>
     <div class="card">No file selected</div>
 </div>
 	`);
@@ -2928,8 +2938,7 @@ function cfw_initializeFilePicker(fieldID, initialData){
 		
 		e.preventDefault();
 		e.stopPropagation();
-		console.log("dropped");
-		console.log(e.originalEvent.dataTransfer);
+
 		let dt = e.originalEvent.dataTransfer;
 		let files = dt.files;
 		
@@ -2952,6 +2961,20 @@ function cfw_initializeFilePicker(fieldID, initialData){
 	
 }
 
+/**************************************************************************************
+ * Uploads the file selected with the choose file dialog.
+ * 
+ * @param files array of files 
+ *************************************************************************************/
+function cfw_filepicker_handleSelectedFiles(sourceElement) {
+	
+	let files = sourceElement.files;
+	let wrapper = $(sourceElement).closest('.cfw-filepicker-wrapper');
+	let originalField = wrapper.find('input[cfwtype="FILEPICKER"]');
+	
+	cfw_filepicker_uploadFiles(wrapper, originalField, files);
+}
+	
 /**************************************************************************************
  * Uploads one or more files to the server.
  * 
