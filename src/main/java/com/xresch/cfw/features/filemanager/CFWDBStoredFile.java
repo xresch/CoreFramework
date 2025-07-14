@@ -1,10 +1,10 @@
 package com.xresch.cfw.features.filemanager;
 
+import java.io.InputStream;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
@@ -15,7 +15,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -23,8 +22,8 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.filemanager.CFWStoredFile.CFWStoredFileFields;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
+import com.xresch.cfw.features.filemanager.CFWStoredFile.CFWStoredFileFields;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
@@ -94,7 +93,18 @@ public class CFWDBStoredFile {
 	//####################################################################################################
 	public static Integer createGetPrimaryKey(CFWStoredFile item) { 
 		updateTags(item); 
+		
 		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item, CFWStoredFileFields.DATA);
+	
+	}
+	
+	/**********************************************************************************
+	 * 
+	 * @param item the file the data should be stored to.
+	 * @param fileData the inputStream providing the data.
+	 **********************************************************************************/
+	public static boolean storeData(CFWStoredFile item, InputStream fileData) { 
+		return new CFWSQL(item).executeStreamBytes(CFWStoredFileFields.DATA, fileData);
 	}
 	
 //	/**********************************************************************************

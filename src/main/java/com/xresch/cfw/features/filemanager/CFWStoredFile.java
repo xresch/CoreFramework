@@ -1,6 +1,6 @@
 package com.xresch.cfw.features.filemanager;
 
-import java.sql.Blob;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -97,19 +97,19 @@ public class CFWStoredFile extends CFWObject {
 			.setDescription("The data of the file.")
 			;
 	
-	private CFWField<String> size = CFWField.newString(FormFieldType.NUMBER, CFWStoredFileFields.SIZE)
+	private CFWField<BigDecimal> size = CFWField.newBigDecimal(FormFieldType.UNMODIFIABLE_TEXT, CFWStoredFileFields.SIZE)
 			.setDescription("The size of the file in bytes.")
 			;
 	
-	private CFWField<String> mimetype = CFWField.newString(FormFieldType.TEXT, CFWStoredFileFields.MIMETYPE)
+	private CFWField<String> mimetype = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, CFWStoredFileFields.MIMETYPE)
 			.setDescription("The mimetype of the file.")
 			;
 	
-	private CFWField<String> extension = CFWField.newString(FormFieldType.TEXT, CFWStoredFileFields.EXTENSION)
+	private CFWField<String> extension = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, CFWStoredFileFields.EXTENSION)
 			.setDescription("(Optional)The URL of the Stored File.")
 			;
 	
-	private CFWField<Long> lastModified = CFWField.newLong(FormFieldType.NUMBER, CFWStoredFileFields.LAST_MODIFIED)
+	private CFWField<BigDecimal> lastModified = CFWField.newBigDecimal(FormFieldType.UNMODIFIABLE_TEXT, CFWStoredFileFields.LAST_MODIFIED)
 			.setDescription("(Optional)A custom value for the Stored File.")
 			;
 	
@@ -507,6 +507,42 @@ public class CFWStoredFile extends CFWObject {
 	
 	public CFWStoredFile name(String name) {
 		this.name.setValue(name);
+		return this;
+	}
+	
+	public String mimetype() {
+		return mimetype.getValue();
+	}
+	
+	public CFWStoredFile mimetype(String value) {
+		this.mimetype.setValue(value);
+		return this;
+	}
+	
+	public String extension() {
+		return extension.getValue();
+	}
+	
+	public CFWStoredFile extension(String value) {
+		this.extension.setValue(value);
+		return this;
+	}
+	
+	public BigDecimal size() {
+		return size.getValue();
+	}
+	
+	public CFWStoredFile size(BigDecimal value) {
+		this.size.setValue(value);
+		return this;
+	}
+	
+	public BigDecimal lastModified() {
+		return lastModified.getValue();
+	}
+	
+	public CFWStoredFile lastModified(BigDecimal value) {
+		this.lastModified.setValue(value);
 		return this;
 	}
 	

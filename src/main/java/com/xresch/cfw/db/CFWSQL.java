@@ -1,5 +1,8 @@
 package com.xresch.cfw.db;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -1025,6 +1028,7 @@ public class CFWSQL {
 					  +" WHERE "
 					  + object.getPrimaryKeyField().getName()+" = ?");
 		}
+		
 		return this.execute();
 	}
 	
@@ -1818,6 +1822,29 @@ public class CFWSQL {
 		}else {
 			return dbInterface.preparedExecuteCFWResultSet(statement, values.toArray());
 		}
+	}
+	
+	
+	/****************************************************************
+	 * Streams bytes to a blob column with an UPDATE statement.
+	 * Ignores any other statement , creates it's own insert
+	 * statement.
+	 * @param queryOnly true
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public boolean executeStreamBytes(Object columnName, InputStream stream) {
+		
+		String statement = 
+				  "UPDATE "+object.getTableName()
+				+ " SET ("+columnName+") = (?)"
+				  +" WHERE "
+				  + object.getPrimaryKeyField().getName()+" = ?";
+		
+		ArrayList<Object> values = new ArrayList<Object>();
+		values.add(stream);
+		
+		return dbInterface.preparedExecute(statement, values.toArray());
+
 	}
 	
 	/****************************************************************

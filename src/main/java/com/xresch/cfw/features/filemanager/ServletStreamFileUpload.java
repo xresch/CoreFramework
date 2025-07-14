@@ -1,8 +1,7 @@
 package com.xresch.cfw.features.filemanager;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.math.BigDecimal;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -11,26 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
-import com.xresch.cfw._main.CFWMessages.MessageType;
-import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWForm;
-import com.xresch.cfw.datahandling.CFWFormHandler;
-import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.datahandling.CFWTimeframe;
-import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.filemanager.CFWStoredFile.CFWStoredFileFields;
-import com.xresch.cfw.features.notifications.Notification;
-import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
  * 
@@ -65,7 +48,12 @@ public class ServletStreamFileUpload extends HttpServlet
 			// Name
 			Part namePart = request.getPart("name");
 			String name = CFW.Files.readContentsFromInputStream(namePart.getInputStream());
-
+			
+			String extension = "";
+			
+			if(name.contains(".")) {
+				extension = name.substring(name.lastIndexOf(".")+1);
+			}
 			//-------------------------
 			// Size
 			Part sizePart = request.getPart("size");
@@ -84,14 +72,23 @@ public class ServletStreamFileUpload extends HttpServlet
 			//-------------------------
 			// File
 			Part filePart = request.getPart("file");
+			
 			byte[] file = CFW.Files.readBytesFromInputStream(filePart.getInputStream());
 			
 			System.out.println("================================");
 			System.out.println("originalData: "+originalData);
 			System.out.println("name: "+name);
+			System.out.println("extension: "+extension);
 			System.out.println("type: "+type);
 			System.out.println("size: "+size);
 			System.out.println("lastModified: "+lastModified);
+			
+			CFWStoredFile newFile = new CFWStoredFile();
+			newFile.name(name);
+			newFile.mimetype(type);
+			newFile.mimetype(extension);
+			newFile.size(new BigDecimal(size));
+			newFile.lastModified(new BigDecimal(lastModified));
 			
 			jsonResponse.setSuccess(true);
 			
