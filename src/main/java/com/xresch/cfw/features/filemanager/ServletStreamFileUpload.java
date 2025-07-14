@@ -1,7 +1,8 @@
 package com.xresch.cfw.features.filemanager;
 
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.io.InputStream;
+import java.io.InputStream;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.logging.CFWLog;
@@ -73,7 +75,7 @@ public class ServletStreamFileUpload extends HttpServlet
 			// File
 			Part filePart = request.getPart("file");
 			
-			byte[] file = CFW.Files.readBytesFromInputStream(filePart.getInputStream());
+			InputStream dataInputStream = filePart.getInputStream();
 			
 			System.out.println("================================");
 			System.out.println("originalData: "+originalData);
@@ -84,13 +86,22 @@ public class ServletStreamFileUpload extends HttpServlet
 			System.out.println("lastModified: "+lastModified);
 			
 			CFWStoredFile newFile = new CFWStoredFile();
+			newFile.foreignKeyOwner(CFW.Context.Request.getUserID());
 			newFile.name(name);
 			newFile.mimetype(type);
-			newFile.mimetype(extension);
-			newFile.size(new BigDecimal(size));
-			newFile.lastModified(new BigDecimal(lastModified));
+			newFile.extension(extension);
 			
-			jsonResponse.setSuccess(true);
+			if( ! Strings.isNullOrEmpty(size) ){
+				newFile.size(Long.parseLong(size.trim()));
+			}
+			
+			if( ! Strings.isNullOrEmpty(lastModified) ){
+				newFile.lastModified(Long.parseLong(lastModified.trim()));
+			}
+			
+			boolean success = CFW.DB.StoredFile.createAndStoreData(newFile, dataInputStream);
+			
+			jsonResponse.setSuccess(success);
 			
 			
 		}else {

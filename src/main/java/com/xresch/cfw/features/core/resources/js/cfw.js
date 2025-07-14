@@ -2859,8 +2859,9 @@ function cfw_initializeFilePicker(fieldID, initialData){
 	var originalField = $(selector);
 	originalField.addClass('d-none');
 
+	let wrapperID = fieldID+"-filepicker-"+CFW.utils.randomString(12);
 	
-	var wrapper = $('<div class="cfw-filepicker-wrapper" data-id="'+fieldID+'">');
+	var wrapper = $('<div id="'+wrapperID+'" class="cfw-filepicker-wrapper" data-id="'+fieldID+'">');
 	originalField.before(wrapper);
 	wrapper.append(originalField);
 		
@@ -2872,10 +2873,9 @@ function cfw_initializeFilePicker(fieldID, initialData){
 
 	//----------------------------------
 	// Create HTML
-	let wrapperID = fieldID+"-filepicker-"+CFW.utils.randomString(12);
-	
+
 	wrapper.append( `
-<div id="${wrapperID}" class="">
+<div>
 	<p>Upload a file with the file dialog or by dragging and dropping onto the dashed region.</p>
 	
 	<label class="btn btn-sm btn-primary">
@@ -2947,11 +2947,8 @@ function cfw_initializeFilePicker(fieldID, initialData){
 			return;
 		}
 		
-		CFW.ui.toggleLoader(true, wrapperID);
-			cfw_filepicker_uploadFiles(wrapper, originalField, files);
-		cfw_utils_sleep(1000).then(() => {
-			CFW.ui.toggleLoader(false, wrapperID);
-		});;
+		cfw_filepicker_uploadFiles(wrapper, originalField, files);
+		
 	  	
 	};
 
@@ -2982,28 +2979,38 @@ function cfw_filepicker_handleSelectedFiles(sourceElement) {
  *************************************************************************************/
 function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 	
-	for(i = 0; i < files.length; i++){
-
-		let file = files[i];
-		
-		let CFW_URL_FILEUPLOAD = '/app/stream/fileupload';
-		
-		let formData = new FormData()
-  		formData.append('originalData', originalField.val() )
-  		formData.append('name', file.name)
-  		formData.append('size', file.size)
-  		formData.append('type', file.type)
-  		formData.append('lastModified', file.lastModified)
-  		formData.append('file', file)
-
-		fetch(CFW_URL_FILEUPLOAD, {
-			method: 'POST',
-			body: formData
-		})
-		.then(() => { /* Done. Inform the user */ })
-		.catch(() => { /* Error. Inform the user */ })
-
-	};
+	let wrapperID =  wrapper.attr('id');
+	
+	if(files.length <= 0){ return; }
+	
+	CFW.ui.toggleLoader(true, wrapperID);
+	
+		for(i = 0; i < files.length; i++){
+	
+			let file = files[i];
+			
+			let CFW_URL_FILEUPLOAD = '/app/stream/fileupload';
+			
+			let formData = new FormData()
+	  		formData.append('originalData', originalField.val() )
+	  		formData.append('name', file.name)
+	  		formData.append('size', file.size)
+	  		formData.append('type', file.type)
+	  		formData.append('lastModified', file.lastModified)
+	  		formData.append('file', file)
+	
+			fetch(CFW_URL_FILEUPLOAD, {
+				method: 'POST',
+				body: formData
+			})
+			.then(() => { /* Done. Inform the user */ })
+			.catch(() => { /* Error. Inform the user */ })
+	
+		}
+	
+	cfw_utils_sleep(1000).then(() => {
+		CFW.ui.toggleLoader(false, wrapperID);
+	});
 	
 }
 

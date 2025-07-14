@@ -47,6 +47,7 @@ public class CFWDBStoredFile {
 	private static final String[] auditLogFieldnames = new String[] { 
 			CFWStoredFileFields.PK_ID.toString()
 		  , CFWStoredFileFields.NAME.toString()
+		  , CFWStoredFileFields.SIZE.toString()
 		};
 	
 	public static TreeSet<String> cachedTags = null;
@@ -62,11 +63,6 @@ public class CFWDBStoredFile {
 			if(storedfile == null || storedfile.name().isEmpty()) {
 				new CFWLog(logger)
 					.warn("Please specify a name for the Stored File.", new Throwable());
-				return false;
-			}
-			
-			if(!checkCanSaveWithName(storedfile)) {
-				CFW.Messages.addWarningMessage("The name '"+storedfile.name()+"' is already in use.");
 				return false;
 			}
 
@@ -105,6 +101,31 @@ public class CFWDBStoredFile {
 	 **********************************************************************************/
 	public static boolean storeData(CFWStoredFile item, InputStream fileData) { 
 		return new CFWSQL(item).executeStreamBytes(CFWStoredFileFields.DATA, fileData);
+	}
+	
+	/**********************************************************************************
+	 * Creates a new file and stores the data.
+	 * @param item the file the data should be stored to.
+	 * @param fileData the inputStream providing the data.
+	 **********************************************************************************/
+	public static boolean createAndStoreData(CFWStoredFile item, InputStream fileData) { 
+		
+		boolean success = true;
+		
+		CFW.DB.transactionStart();
+			
+			Integer primaryKey = createGetPrimaryKey(item);
+			
+			if(primaryKey != null) {
+				success &= storeData(item, fileData);
+			}else {
+				success = false;
+			}
+			
+		CFW.DB.transactionEnd(success);
+		
+		return success;
+	
 	}
 	
 //	/**********************************************************************************

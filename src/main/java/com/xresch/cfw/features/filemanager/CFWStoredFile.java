@@ -97,7 +97,7 @@ public class CFWStoredFile extends CFWObject {
 			.setDescription("The data of the file.")
 			;
 	
-	private CFWField<BigDecimal> size = CFWField.newBigDecimal(FormFieldType.UNMODIFIABLE_TEXT, CFWStoredFileFields.SIZE)
+	private CFWField<Long> size = CFWField.newLong(FormFieldType.UNMODIFIABLE_TEXT, CFWStoredFileFields.SIZE)
 			.setDescription("The size of the file in bytes.")
 			;
 	
@@ -106,11 +106,11 @@ public class CFWStoredFile extends CFWObject {
 			;
 	
 	private CFWField<String> extension = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, CFWStoredFileFields.EXTENSION)
-			.setDescription("(Optional)The URL of the Stored File.")
+			.setDescription("(Optional)The file-extension of the file.")
 			;
 	
-	private CFWField<BigDecimal> lastModified = CFWField.newBigDecimal(FormFieldType.UNMODIFIABLE_TEXT, CFWStoredFileFields.LAST_MODIFIED)
-			.setDescription("(Optional)A custom value for the Stored File.")
+	private CFWField<Timestamp> lastModified = CFWField.newTimestamp(FormFieldType.UNMODIFIABLE_TEXT, CFWStoredFileFields.LAST_MODIFIED)
+			.setDescription("(Optional)The modification time of the file.")
 			;
 	
 	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, CFWStoredFileFields.DESCRIPTION)
@@ -476,7 +476,7 @@ public class CFWStoredFile extends CFWObject {
 		result.addProperty("domain", size.getValue());
 		result.addProperty("hostname", mimetype.getValue());
 		result.addProperty("url", extension.getValue());
-		result.addProperty("custom", lastModified.getValue());
+		result.addProperty("custom", lastModified.getValue().getTime());
 		
 		return result;
 	}
@@ -528,21 +528,21 @@ public class CFWStoredFile extends CFWObject {
 		return this;
 	}
 	
-	public BigDecimal size() {
+	public Long size() {
 		return size.getValue();
 	}
 	
-	public CFWStoredFile size(BigDecimal value) {
+	public CFWStoredFile size(Long value) {
 		this.size.setValue(value);
 		return this;
 	}
 	
-	public BigDecimal lastModified() {
+	public Timestamp lastModified() {
 		return lastModified.getValue();
 	}
 	
-	public CFWStoredFile lastModified(BigDecimal value) {
-		this.lastModified.setValue(value);
+	public CFWStoredFile lastModified(Long value) {
+		this.lastModified.setValue(new Timestamp(value));
 		return this;
 	}
 	

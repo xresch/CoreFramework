@@ -1842,6 +1842,7 @@ public class CFWSQL {
 		
 		ArrayList<Object> values = new ArrayList<Object>();
 		values.add(stream);
+		values.add(object.getPrimaryKeyValue());
 		
 		return dbInterface.preparedExecute(statement, values.toArray());
 
