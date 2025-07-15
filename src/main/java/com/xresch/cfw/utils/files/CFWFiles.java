@@ -331,6 +331,9 @@ public class CFWFiles {
 				buffer.append(line).append("\n");
 				//line = reader.readLine();
 			}
+			
+			// remove last \n
+			buffer.deleteCharAt( buffer.length()-1 );
 			 
 		} catch (IOException e) {
 			new CFWLog(logger).severe("IOException: ", e);

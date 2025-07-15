@@ -5,12 +5,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.filemanager.CFWStoredFile;
 
 public class CFWStoredFileReference {
 
 	private static final String MEMBER_ID = "id";
 	private static final String MEMBER_NAME = "name"; // the filename, including file extension
 	private static final String MEMBER_TYPE = "type"; // basically the file extension without dot
+	private static final String MEMBER_SIZE = "size"; // basically the file extension without dot
 	
 	private JsonObject dbfileData;
 			
@@ -53,7 +55,27 @@ public class CFWStoredFileReference {
 				dbfileData.add(MEMBER_TYPE, object.get(MEMBER_TYPE));
 			}
 			
+			if(object.has(MEMBER_SIZE)) {
+				dbfileData.add(MEMBER_SIZE, object.get(MEMBER_SIZE));
+			}
+			
 		}
+	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public CFWStoredFileReference(CFWStoredFile file) {
+		
+		setToDefaults();
+		
+		if(file == null) { return; }
+				
+		if(file.name() != null) {		dbfileData.addProperty(MEMBER_NAME, file.name()); }
+		if(file.id() != null) {			dbfileData.addProperty(MEMBER_ID, file.id()); }
+		if(file.size() != null) {	dbfileData.addProperty(MEMBER_SIZE, file.size()); }
+		if(file.mimetype() != null) {	dbfileData.addProperty(MEMBER_TYPE, file.mimetype()); }
+		
 	}
 	
 	/***************************************************************************************
@@ -66,6 +88,7 @@ public class CFWStoredFileReference {
 		dbfileData.add(MEMBER_NAME, JsonNull.INSTANCE);
 		dbfileData.add(MEMBER_ID, JsonNull.INSTANCE);
 		dbfileData.add(MEMBER_TYPE, JsonNull.INSTANCE);
+		dbfileData.add(MEMBER_SIZE, JsonNull.INSTANCE);
 				
 	}
 	

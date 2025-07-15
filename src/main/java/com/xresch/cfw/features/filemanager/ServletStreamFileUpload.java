@@ -14,6 +14,7 @@ import javax.servlet.http.Part;
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw.datahandling.CFWStoredFileReference;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 
@@ -53,9 +54,10 @@ public class ServletStreamFileUpload extends HttpServlet
 			
 			String extension = "";
 			
-			if(name.contains(".")) {
+			if(name!= null && name.contains(".")) {
 				extension = name.substring(name.lastIndexOf(".")+1);
 			}
+			
 			//-------------------------
 			// Size
 			Part sizePart = request.getPart("size");
@@ -101,6 +103,9 @@ public class ServletStreamFileUpload extends HttpServlet
 			
 			boolean success = CFW.DB.StoredFile.createAndStoreData(newFile, dataInputStream);
 			
+			CFWStoredFileReference reference = new CFWStoredFileReference(newFile);
+			
+			jsonResponse.setPayload( reference.getAsJsonObject() );
 			jsonResponse.setSuccess(success);
 			
 		}else {
