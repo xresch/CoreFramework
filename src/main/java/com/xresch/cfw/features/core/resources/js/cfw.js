@@ -2985,30 +2985,30 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 	
 	CFW.ui.toggleLoader(true, wrapperID);
 	
-		for(i = 0; i < files.length; i++){
+	cfw_utils_sleep(500).then(() => {
+		
+		$.ajaxSetup({async: false});
+		
+			for(i = 0; i < files.length; i++){
+		
+				let file = files[i];
+				
+				let CFW_URL_FILEUPLOAD = '/app/stream/fileupload';
+				
+				let formData = new FormData()
+		  		formData.append('originalData', originalField.val() )
+		  		formData.append('name', file.name)
+		  		formData.append('size', file.size)
+		  		formData.append('type', file.type)
+		  		formData.append('lastModified', file.lastModified)
+		  		formData.append('file', file)
+		
+				CFW.http.postFormData(CFW_URL_FILEUPLOAD, formData);
+		
+			}
+		$.ajaxSetup({async: true});
 	
-			let file = files[i];
-			
-			let CFW_URL_FILEUPLOAD = '/app/stream/fileupload';
-			
-			let formData = new FormData()
-	  		formData.append('originalData', originalField.val() )
-	  		formData.append('name', file.name)
-	  		formData.append('size', file.size)
-	  		formData.append('type', file.type)
-	  		formData.append('lastModified', file.lastModified)
-	  		formData.append('file', file)
-	
-			fetch(CFW_URL_FILEUPLOAD, {
-				method: 'POST',
-				body: formData
-			})
-			.then(() => { /* Done. Inform the user */ })
-			.catch(() => { /* Error. Inform the user */ })
-	
-		}
-	
-	cfw_utils_sleep(1000).then(() => {
+
 		CFW.ui.toggleLoader(false, wrapperID);
 	});
 	
@@ -5698,6 +5698,54 @@ function cfw_http_postJSON(url, params, callbackFunc){
 }
 
 /**************************************************************************************
+ * Executes a post request with JQuery and retrieves a standard JSON format of the CFW
+ * framework. Handles alert messages if there are any.
+ * 
+ * The structure of the response has to adhere to the following structure:
+ * {
+ * 		success: true|false,
+ * 		messages: [
+ * 			{
+ * 				type: info | success | warning | danger
+ * 				message: "string",
+ * 				stacktrace: null | "stacketrace string"
+ * 			},
+ * 			{...}
+ * 		],
+ * 		payload: {...}|[...] object or array
+ * }
+ * 
+ * @param uri to decode
+ * @return decoded URI or the same URI in case of errors.
+ *************************************************************************************/
+function cfw_http_postFormData(url, formData, callbackFunc){
+
+	jQuery.ajax({
+	    url: url,
+	    data: formData,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    method: 'POST'
+	    //type: 'POST', // For jQuery < 1.9
+	    //success: function(data){}
+	})
+	  .done(function(response, status, xhr) {
+	    //alert( "done" );
+		  if(callbackFunc != null) callbackFunc(response, status, xhr);
+	  })
+	  .fail(function(xhr, status, errorThrown) {
+		  CFW.ui.addToast("Request failed", "URL: "+url, "danger", CFW.config.toastErrorDelay);
+		  var response = JSON.parse(xhr.responseText);
+		  cfw_internal_handleMessages(response);
+		  //callbackFunc(response);
+	  })
+	  .always(function(response) {
+		  cfw_internal_handleMessages(response);
+	  });
+}
+
+/**************************************************************************************
  * Get a form created with the class BTForm on server side using the formid.
  * 
  * The structure of the response has to adhere to the following structure:
@@ -6584,6 +6632,7 @@ var CFW = {
 		secureDecodeURI: cfw_http_secureDecodeURI,
 		getJSON: cfw_http_getJSON,
 		postJSON: cfw_http_postJSON,
+		postFormData: cfw_http_postFormData,
 		getForm: cfw_http_getForm,
 		createForm: cfw_http_createForm,
 		evaluateFormScript: cfw_http_evaluateFormScript,

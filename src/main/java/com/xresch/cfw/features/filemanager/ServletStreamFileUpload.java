@@ -103,10 +103,14 @@ public class ServletStreamFileUpload extends HttpServlet
 			
 			jsonResponse.setSuccess(success);
 			
-			
 		}else {
 			CFWMessages.accessDenied();
 		}
+		
+		//--------------------------
+		// Write Response
+		CFW.Localization.writeLocalized(request, response);
+
         
     }
 	
