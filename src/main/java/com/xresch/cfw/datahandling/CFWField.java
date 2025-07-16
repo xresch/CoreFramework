@@ -1093,7 +1093,8 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"filepicker\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
-			((CFWForm)this.parent).javascript.append("cfw_initializeFilePicker('"+name+"', "+CFW.JSON.toJSON(value)+", null);\r\n");
+			boolean isMultiple = false; 
+			((CFWForm)this.parent).javascript.append("cfw_initializeFilePicker('"+name+"', "+isMultiple+",   "+CFW.JSON.toJSON(value)+", null);\r\n");
 		}
 				
 	}

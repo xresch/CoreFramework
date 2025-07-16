@@ -2843,6 +2843,7 @@ function cfw_timeframePicker_shift(origin, direction){
  * The original field gets hidden and will be replaced by the timeframe picker itself. 
  * 
  * @param fieldID the id of the target field(without '#')
+ * @param isMultiple define if the picker allows to select multiple files
  * @param initialData the json object containing the initial value of the field as epoch time:
  *        {
  *			   id: 123
@@ -2852,7 +2853,7 @@ function cfw_timeframePicker_shift(origin, direction){
  * 			 , size: 6789 
  *        }
  *************************************************************************************/
-function cfw_initializeFilePicker(fieldID, initialData){
+function cfw_initializeFilePicker(fieldID, isMultiple, initialData){
 	
 	var selector = '#'+fieldID;
 
@@ -2864,13 +2865,19 @@ function cfw_initializeFilePicker(fieldID, initialData){
 	var wrapper = $('<div id="'+wrapperID+'" class="cfw-filepicker-wrapper" data-id="'+fieldID+'">');
 	originalField.before(wrapper);
 	wrapper.append(originalField);
+	wrapper.data("isMultiple", isMultiple)
 		
 	//----------------------------------
 	// Set Intial Value
 	var pickerDataString = JSON.stringify(initialData);
 	originalField.val(pickerDataString);
 	
-
+	//----------------------------------
+	// Set Intial Value
+	let multiple = "";
+	if(isMultiple){
+		multiple = "multiple";
+	}
 	//----------------------------------
 	// Create HTML
 
@@ -2881,13 +2888,14 @@ function cfw_initializeFilePicker(fieldID, initialData){
 	<label class="btn btn-sm btn-primary">
 		<i class="fas fa-upload"></i> Upload
 
-	    <input 	type="file" 
+	    <input 	type="file"
 	    		id="${wrapperID}-filechooser" 
 	    		accept="*/*" 
 	    		style="display: none;"
+	    		 ${multiple} 
 	    		onchange="cfw_filepicker_handleSelectedFiles(this)">
 	</label>
-    <div class="card">No file selected</div>
+    <div class="cfw-filepicker-selected card p-2">No file selected</div>
 </div>
 	`);
 
@@ -2942,7 +2950,7 @@ function cfw_initializeFilePicker(fieldID, initialData){
 		let dt = e.originalEvent.dataTransfer;
 		let files = dt.files;
 		
-		if(files.length > 1){
+		if(!isMultiple && files.length > 1){
 			alert('Sorry only a single file can be uploaded.');
 			return;
 		}
@@ -2980,6 +2988,7 @@ function cfw_filepicker_handleSelectedFiles(sourceElement) {
 function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 	
 	let wrapperID =  wrapper.attr('id');
+	let isMultiple = wrapper.data("isMultiple");
 	
 	if(files.length <= 0){ return; }
 	
@@ -2987,6 +2996,9 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 	
 	cfw_utils_sleep(500).then(() => {
 		
+		//-------------------------------
+		// Upload Files
+		let uploadedArray = [];
 		$.ajaxSetup({async: false});
 		
 			for(i = 0; i < files.length; i++){
@@ -3003,11 +3015,40 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 		  		formData.append('lastModified', file.lastModified)
 		  		formData.append('file', file)
 		
-				CFW.http.postFormData(CFW_URL_FILEUPLOAD, formData);
+				CFW.http.postFormData(CFW_URL_FILEUPLOAD, formData, function(response, status, xhr){
+					console.log(response);
+					if(response.payload != null){
+						
+						
+						uploadedArray.push(response.payload);
+					}
+				});
 		
 			}
 		$.ajaxSetup({async: true});
-	
+		
+		//-------------------------------
+		// Update Selected Files
+		
+		let originalArray = [];
+		if( isMultiple && !CFW.utils.isNullOrEmpty(originalField.val()) ) {
+			originalArray = JSON.parse(originalField.val());
+		}
+		
+		let finalArray = originalArray.concat(uploadedArray);
+		
+		originalField.val( JSON.stringify(finalArray) ) ;
+		
+		//-------------------------------
+		// Update Selection in UI
+		let selectedDiv = wrapper.find('.cfw-filepicker-selected');
+		selectedDiv.html("");
+			
+		for(i = 0; i < finalArray.length; i++){
+			let currentFile = finalArray[i];
+			let size = CFW.format.numbersInThousands(currentFile.size, 1, true, true);
+			selectedDiv.append('<p><b>'+currentFile.name+'</b> ('+size+')</p>');
+		}
 
 		CFW.ui.toggleLoader(false, wrapperID);
 	});

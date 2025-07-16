@@ -333,7 +333,7 @@ public class CFWFiles {
 			}
 			
 			// remove last \n
-			buffer.deleteCharAt( buffer.length()-1 );
+			if(buffer.length() > 0) { buffer.deleteCharAt( buffer.length()-1 ); }
 			 
 		} catch (IOException e) {
 			new CFWLog(logger).severe("IOException: ", e);
