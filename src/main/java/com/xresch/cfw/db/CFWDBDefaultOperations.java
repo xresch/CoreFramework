@@ -331,7 +331,7 @@ public  class CFWDBDefaultOperations {
 	 ****************************************************************/
 	public static boolean deleteFirstBy(PrecheckHandler precheck, String[] auditLogFieldnames, Class<? extends CFWObject> cfwObjectClass, String column, Object value) {
 		
-		CFWObject object = CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, column, value);
+		CFWObject object = CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, column, value, auditLogFieldnames);
 		
 		if(precheck != null && !precheck.doCheck(object)) {
 			return false;
@@ -502,6 +502,34 @@ public  class CFWDBDefaultOperations {
 	}
 	
 	/***************************************************************
+	 * Select first by a certain column and value.
+	 * 
+	 * @param cfwObjectClass the CFWObject class
+	 * @param column the name of the column
+	 * @param value the value to match against
+	 * @param fieldnames names of the fields that should be retrieved from the database
+	 * 
+	 * @return Returns a single object
+	 ****************************************************************/
+	@SuppressWarnings("unchecked")
+	public static <O extends CFWObject> O selectFirstBy(Class<? extends CFWObject> cfwObjectClass, String column, Object value, Object ...fieldnames ) {
+		
+		try {
+			return (O)cfwObjectClass.newInstance()
+					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.selectFirstBy"+column)
+					.select(fieldnames)
+					.where(column, value)
+					.getFirstAsObject();
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.warn("Error while instanciating object.", e);
+		} 
+		
+		return null;
+
+	}
+	
+	/***************************************************************
 	 * Select first by a certain column/value and without fetching 
 	 * the data of the defined columns.
 	 * @param cfwObjectClass the CFWObject class
@@ -551,6 +579,7 @@ public  class CFWDBDefaultOperations {
 		return new ArrayList<>();
 
 	}
+	
 	
 	/***************************************************************
 	 * Select a role by it's name.

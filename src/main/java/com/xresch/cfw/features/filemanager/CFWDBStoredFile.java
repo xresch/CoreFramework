@@ -247,6 +247,40 @@ public class CFWDBStoredFile {
 		}
 	} 
 	
+	public static boolean deleteMultipleByID(String IDs) 	{ 
+
+		if(Strings.isNullOrEmpty(IDs)) { return true; }
+		
+		if(!IDs.matches("(\\d,?)+")) {
+			new CFWLog(logger).severe("The File ID's '"+IDs+"' are not a comma separated list of strings.");
+			return false;
+		}
+
+		boolean success = true;
+		for(String id : IDs.split(",")) {
+			success &= deleteByID(id);
+		}
+
+		return success;
+	}
+	
+	public static boolean deleteMultipleByIDOfCurrentUser(String IDs) 	{ 
+
+		if(Strings.isNullOrEmpty(IDs)) { return true; }
+		
+		if(!IDs.matches("(\\d,?)+")) {
+			new CFWLog(logger).severe("The File ID's '"+IDs+"' are not a comma separated list of strings.");
+			return false;
+		}
+
+		boolean success = true;
+		for(String id : IDs.split(",")) {
+			success &= deleteByIDForCurrentUser(id);
+		}
+
+		return success;
+	}
+	
 		
 	//####################################################################################################
 	// SELECT

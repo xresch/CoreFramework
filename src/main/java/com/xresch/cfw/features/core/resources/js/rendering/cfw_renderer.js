@@ -266,6 +266,13 @@ class CFWRenderer{
 		
 		
 		//---------------------------
+		// Sanitize Bulk Actions
+		if(definition.bulkActions != null
+		&& _.isEmpty(definition.bulkActions)){
+			definition.bulkActions = null;
+		}
+		
+		//---------------------------
 		// Create Labels
 		for(let key in definition.visiblefields){
 			let fieldname = definition.visiblefields[key];

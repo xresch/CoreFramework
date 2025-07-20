@@ -22,6 +22,7 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.filemanager.CFWStoredFile.CFWStoredFileFields;
+import com.xresch.cfw.features.notifications.FeatureNotifications;
 import com.xresch.cfw.features.notifications.Notification;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
@@ -57,9 +58,7 @@ public class ServletFilemanager extends HttpServlet
 		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_VIEWER)
 		|| CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_CREATOR)
 		|| CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)) {
-			
-			createForms();
-			
+						
 			String action = request.getParameter("action");
 			
 			if(action == null) {
@@ -100,8 +99,8 @@ public class ServletFilemanager extends HttpServlet
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
 		String ID = request.getParameter("id");
-		//int	userID = CFW.Context.Request.getUser().id();
-			
+		String IDs = request.getParameter("ids");
+
 		JSONResponse jsonResponse = new JSONResponse();
 		
 		//--------------------------------------
@@ -151,9 +150,15 @@ public class ServletFilemanager extends HttpServlet
 			case "update": 			
 				switch(item.toLowerCase()) {
 
-					case "isarchived":	String isArchived = request.getParameter("isarchived");
-										jsonResponse.setSuccess(archiveStoredFile(ID,isArchived));
-					break;
+					case "isarchived":		String isArchived = request.getParameter("isarchived");
+											jsonResponse.setSuccess(archiveStoredFile(ID,isArchived));
+											break;
+											
+					case "archivemultiple":	archiveStoredFileMultiple(jsonResponse, IDs);
+											break;
+											
+					case "restoremultiple":	restoreStoredFileMultiple(jsonResponse, IDs);
+											break;
 					
 					default: 			CFW.Messages.itemNotSupported(item);
 										break;
@@ -164,7 +169,10 @@ public class ServletFilemanager extends HttpServlet
 				switch(item.toLowerCase()) {
 				
 				case "storedfile": 	deleteStoredFile(jsonResponse, ID);
-				break;  
+									break;  
+				
+				case "multiple": 	deleteStoredFileMultiple(jsonResponse, IDs);
+									break;  
 				
 				default: 			CFW.Messages.itemNotSupported(item);
 				break;
@@ -206,12 +214,55 @@ public class ServletFilemanager extends HttpServlet
 	 ******************************************************************/
 	private boolean archiveStoredFile(String ID, String isArchived) {
 		// TODO Auto-generated method stub
+
 		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)
 		|| CFW.DB.StoredFile.isStoredFileOfCurrentUser(ID)) {
 			return CFW.DB.StoredFile.updateIsArchived(ID, Boolean.parseBoolean(isArchived) );
 		}
 		
 		return false;
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private boolean archiveStoredFileMultiple(JSONResponse jsonResponse, String IDs) {
+		
+		if(Strings.isNullOrEmpty(IDs)) { return true; }
+		
+		if(!IDs.matches("(\\d,?)+")) {
+			new CFWLog(logger).severe("The File ID's '"+IDs+"' are not a comma separated list of strings.");
+			return false;
+		}
+
+		boolean success = true;
+		for(String id : IDs.split(",")) {
+			success &= archiveStoredFile(id, "true");
+		}
+		
+		return success;
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private boolean restoreStoredFileMultiple(JSONResponse jsonResponse, String IDs) {
+		
+		if(Strings.isNullOrEmpty(IDs)) { return true; }
+		
+		if(!IDs.matches("(\\d,?)+")) {
+			new CFWLog(logger).severe("The File ID's '"+IDs+"' are not a comma separated list of strings.");
+			return false;
+		}
+
+		boolean success = true;
+		for(String id : IDs.split(",")) {
+			success &= archiveStoredFile(id, "false");
+		}
+		
+		return success;
+		
 	}
 	
 	/******************************************************************
@@ -225,6 +276,21 @@ public class ServletFilemanager extends HttpServlet
 			jsonResponse.setSuccess(CFW.DB.StoredFile.deleteByIDForCurrentUser(ID));
 		}
 	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void deleteStoredFileMultiple(JSONResponse jsonResponse, String IDs) {
+		
+		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)) {
+			jsonResponse.setSuccess(CFW.DB.StoredFile.deleteMultipleByID(IDs));
+		}else {
+			jsonResponse.setSuccess(CFW.DB.StoredFile.deleteMultipleByIDOfCurrentUser(IDs));
+		}
+		
+	}
+	
+
 	
 	/******************************************************************
 	 *
