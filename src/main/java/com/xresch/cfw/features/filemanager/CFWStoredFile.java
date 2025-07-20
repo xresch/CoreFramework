@@ -109,7 +109,7 @@ public class CFWStoredFile extends CFWObject {
 			.setDescription("(Optional)The file-extension of the file.")
 			;
 	
-	private CFWField<Timestamp> lastModified = CFWField.newTimestamp(FormFieldType.UNMODIFIABLE_TEXT, CFWStoredFileFields.LAST_MODIFIED)
+	private CFWField<Timestamp> lastModified = CFWField.newTimestamp(FormFieldType.NONE, CFWStoredFileFields.LAST_MODIFIED)
 			.setDescription("(Optional)The modification time of the file.")
 			;
 	

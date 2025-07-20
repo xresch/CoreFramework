@@ -252,15 +252,11 @@ public class CFWDBStoredFile {
 	// SELECT
 	//####################################################################################################
 	public static CFWStoredFile selectByID(String id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWStoredFileFields.PK_ID.toString(), id);
+		return CFWDBDefaultOperations.selectFirstByWithout(cfwObjectClass, CFWStoredFileFields.PK_ID.toString(), id, CFWStoredFileFields.DATA.toString());
 	}
 	
 	public static CFWStoredFile selectByID(int id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWStoredFileFields.PK_ID.toString(), id);
-	}
-	
-	public static CFWStoredFile selectFirstByName(String name) { 
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWStoredFileFields.NAME.toString(), name);
+		return CFWDBDefaultOperations.selectFirstByWithout(cfwObjectClass, CFWStoredFileFields.PK_ID.toString(), id, CFWStoredFileFields.DATA.toString());
 	}
 	
 	

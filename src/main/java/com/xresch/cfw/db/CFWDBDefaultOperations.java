@@ -475,9 +475,13 @@ public  class CFWDBDefaultOperations {
 	}
 	
 	/***************************************************************
-	 * Select a role by it's name.
-	 * @param id of the role
-	 * @return Returns a role or null if not found or in case of exception.
+	 * Select first by a certain column and value.
+	 * 
+	 * @param cfwObjectClass the CFWObject class
+	 * @param column the name of the column
+	 * @param value the value to match against
+	 * 
+	 * @return Returns a single object
 	 ****************************************************************/
 	@SuppressWarnings("unchecked")
 	public static <O extends CFWObject> O selectFirstBy(Class<? extends CFWObject> cfwObjectClass, String column, Object value ) {
@@ -486,6 +490,33 @@ public  class CFWDBDefaultOperations {
 			return (O)cfwObjectClass.newInstance()
 					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.selectFirstBy"+column)
 					.select()
+					.where(column, value)
+					.getFirstAsObject();
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.warn("Error while instanciating object.", e);
+		} 
+		
+		return null;
+
+	}
+	
+	/***************************************************************
+	 * Select first by a certain column/value and without fetching 
+	 * the data of the defined columns.
+	 * @param cfwObjectClass the CFWObject class
+	 * @param column the name of the column
+	 * @param value the value to match against
+	 * @param withoutFields list of field to not fetch the data for
+	 * @return Returns a single object
+	 ****************************************************************/
+	@SuppressWarnings("unchecked")
+	public static <O extends CFWObject> O selectFirstByWithout(Class<? extends CFWObject> cfwObjectClass, String column, Object value, String... withoutFields ) {
+		
+		try {
+			return (O)cfwObjectClass.newInstance()
+					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.selectFirstBy"+column)
+					.selectWithout(withoutFields)
 					.where(column, value)
 					.getFirstAsObject();
 		} catch (Exception e) {

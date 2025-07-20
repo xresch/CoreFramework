@@ -5,7 +5,7 @@
  * @license MIT-License
  **************************************************************************************************************/
 
-var CFW_STOREDFILELIST_URL = "/app/storedfile";
+var CFW_STOREDFILELIST_URL = "/app/filemanager";
 var CFW_STOREDFILELIST_LAST_OPTIONS = null;
 
 
@@ -341,13 +341,13 @@ function cfw_storedfilelist_printStoredFile(data, type){
 		var showFields = [];
 		if(type == 'mystoredfile' 
 		|| type == 'myarchived'){
-			showFields = ['NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
+			showFields = ['NAME', 'SIZE', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
 		}else if ( type == 'sharedstoredfile'
 				|| type == 'favedstoredfile'){
-			showFields = ['OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS'];
+			showFields = ['OWNER', 'NAME', 'SIZE', 'DESCRIPTION', 'TAGS'];
 		}else if (type == 'adminstoredfile'
 				||type == 'adminarchived' ){
-			showFields = ['PK_ID', 'OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
+			showFields = ['PK_ID', 'OWNER', 'NAME', 'SIZE', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
 		}
 		
 		//======================================
@@ -482,6 +482,7 @@ function cfw_storedfilelist_printStoredFile(data, type){
 						labels: {
 					 		PK_ID: "ID",
 					 		IS_SHARED: 'Shared',
+					 		TIME_CREATED: 'Time Uploaded',
 					 		JSON_SHARE_WITH_USERS: 'Shared User', 
 						 	JSON_SHARE_WITH_GROUPS: 'Shared Groups', 
 						 	JSON_EDITORS: 'Editors', 
@@ -536,6 +537,18 @@ function cfw_storedfilelist_printStoredFile(data, type){
 							return '<span class="badge badge-danger m-1">false</span>';
 						} 
 			 		},
+					SIZE: function(record, value) { 
+			 			
+			 			if(!CFW.utils.isNullOrEmpty(value)){
+							return 	'<div class="text-right monospace">'
+										+ CFW.format.numbersInThousands(value, 1, true, true)
+									+ '</div>'
+								;
+						}else{
+							return 'unknown size';
+						} 
+			 		},
+
 			 		TAGS: badgeCustomizerFunction,
 			 		TIME_CREATED: function(record, value) { 
 			 			if(value == null) return "&nbsp;";

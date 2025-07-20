@@ -66,7 +66,7 @@ public class ServletFilemanager extends HttpServlet
 
 				//html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureSpaces.RESOURCE_PACKAGE, "cfw_storedfile.css");
 				
-				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureFilemanager.PACKAGE_RESOURCES, "cfw_storedfile_list.js");
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureFilemanager.PACKAGE_RESOURCES, "cfw_filemanager.js");
 				
 				//content.append(CFW.Files.readPackageResource(FeatureSpaces.RESOURCE_PACKAGE, "cfw_storedfile.html"));
 				
@@ -304,6 +304,9 @@ public class ServletFilemanager extends HttpServlet
 		|| CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)
 		|| CFW.DB.StoredFile.checkCanEdit(ID)) {
 			CFWStoredFile storedfile = CFW.DB.StoredFile.selectByID(Integer.parseInt(ID));
+			
+			//Do not fetch or edit data.
+			storedfile.removeFields(CFWStoredFileFields.DATA);
 			
 			if(storedfile != null) {
 				
