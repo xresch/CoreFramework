@@ -69,14 +69,17 @@ function cfw_storedfilelist_editStoredFile(id){
  ******************************************************************/
 function cfw_storedfilelist_createStoredFile(){
 	
-	var html = $('<div id="cfw-storedfile-createStoredFile">');	
+	let fieldID ='cfw-upload-file';
+	let html = $(`<div id="cfw-storedfile-createStoredFile">
+		<input id="${fieldID}" type="hidden" data-role="filepicker" >
+	</div>
+	`);	
 
-	CFW.http.getForm('cfwCreateStoredFileForm', html);
-	
 	CFW.ui.showModalMedium(CFWL('cfw_storedfilelist_createStoredFile', 
-			CFWL("cfw_storedfilelist_createStoredFile", "Create StoredFile")), 
+			CFWL("cfw_storedfilelist_createStoredFile", "Upload Files")), 
 			html, "cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS)");
 	
+	cfw_initializeFilePicker(fieldID, true, null);
 }
 
 /******************************************************************

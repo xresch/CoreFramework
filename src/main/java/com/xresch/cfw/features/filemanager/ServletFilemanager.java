@@ -253,47 +253,47 @@ public class ServletFilemanager extends HttpServlet
 //	}
 	
 
-	/******************************************************************
-	 *
-	 ******************************************************************/
-	private void createForms() {
-				
-		//--------------------------------------
-		// Create StoredFile Form
-		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_CREATOR)
-		|| CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)) {
-			
-			CFWStoredFile newBoard = new CFWStoredFile();
-			newBoard.updateSelectorFields();
-			
-			CFWForm createStoredFileForm = newBoard.toForm("cfwCreateStoredFileForm", "{!cfw_core_create!}");
-			
-			createStoredFileForm.setFormHandler(new CFWFormHandler() {
-				
-				@Override
-				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
-									
-					if(origin != null) {
-						
-						origin.mapRequestParameters(request);
-						CFWStoredFile storedfile = (CFWStoredFile)origin;
-						storedfile.foreignKeyOwner(CFW.Context.Request.getUser().id());
-						
-						Integer newID = CFW.DB.StoredFile.createGetPrimaryKey(storedfile);
-						
-						if( newID != null ) {
-							storedfile.id(newID);
-							CFW.Messages.addSuccessMessage("StoredFile created successfully!");
-							generateSharedMessages(storedfile);
-							
-							storedfile.saveSelectorFields();
-						}
-					}
-					
-				}
-			});
-		}
-	}
+//	/******************************************************************
+//	 *
+//	 ******************************************************************/
+//	private void createForms() {
+//		
+//		
+//		//--------------------------------------
+//		// Create StoredFile Form
+//		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_CREATOR)
+//		|| CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)) {
+//			
+//			CFWObject newBoard = new CFWStoredFile();
+//			newBoard.updateSelectorFields();
+//			
+//			CFWForm createStoredFileForm = newBoard.toForm("cfwCreateStoredFileForm", "{!cfw_core_create!}");
+//			
+//			createStoredFileForm.setFormHandler(new CFWFormHandler() {
+//				
+//				@Override
+//				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+//									
+//					if(origin != null) {
+//						
+//						origin.mapRequestParameters(request);
+//						CFWStoredFile storedfile = (CFWStoredFile)origin;
+//						storedfile.foreignKeyOwner(CFW.Context.Request.getUser().id());
+//						
+//						Integer newID = CFW.DB.StoredFile.createGetPrimaryKey(storedfile);
+//						
+//						if( newID != null ) {
+//							storedfile.id(newID);
+//							CFW.Messages.addSuccessMessage("StoredFile created successfully!");
+//							generateSharedMessages(storedfile);
+//							
+//							storedfile.saveSelectorFields();
+//						}
+//					}
+//				}
+//			});
+//		}
+//	}
 	
 	/******************************************************************
 	 *
