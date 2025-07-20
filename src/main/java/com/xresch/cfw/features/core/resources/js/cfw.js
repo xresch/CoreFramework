@@ -2869,8 +2869,10 @@ function cfw_initializeFilePicker(fieldID, isMultiple, initialData){
 		
 	//----------------------------------
 	// Set Intial Value
-	var pickerDataString = JSON.stringify(initialData);
-	originalField.val(pickerDataString);
+	if(! CFW.utils.isNullOrEmpty(initialData) ){
+		var pickerDataString = JSON.stringify(initialData);
+		originalField.val(pickerDataString);
+	}
 	
 	//----------------------------------
 	// Set Intial Value
@@ -3018,8 +3020,6 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 				CFW.http.postFormData(CFW_URL_FILEUPLOAD, formData, function(response, status, xhr){
 					console.log(response);
 					if(response.payload != null){
-						
-						
 						uploadedArray.push(response.payload);
 					}
 				});
