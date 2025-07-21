@@ -169,7 +169,11 @@ public class FeatureFilemanager extends CFWAppFeature {
     	// Servlets
     	app.addAppServlet(ServletFilemanager.class,  URI_FILEMANAGER);
 
-    	MultipartConfigElement config = new MultipartConfigElement("");
+    	final String tempLocation = System.getProperty("java.io.tmpdir");
+        final long maxFileSize = -1L; //128*1024;
+        final long maxRequestSize = -1L ; //128*1024;
+        final int diskThreshold = 128*1024*1024 ; //128 MB;
+    	MultipartConfigElement config = new MultipartConfigElement(tempLocation, maxFileSize, maxRequestSize, diskThreshold);
     	
     	ServletHolder uploadHolder = new ServletHolder(new ServletStreamFileUpload());
 	    uploadHolder.getRegistration().setMultipartConfig(config);
