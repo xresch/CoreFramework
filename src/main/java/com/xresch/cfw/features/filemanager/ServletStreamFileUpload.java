@@ -20,7 +20,7 @@ import com.xresch.cfw.response.JSONResponse;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2024 
+ * @author Reto Scheiwiller, (c) Copyright 2025 
  * @license MIT-License
  **************************************************************************************************************/
 public class ServletStreamFileUpload extends HttpServlet

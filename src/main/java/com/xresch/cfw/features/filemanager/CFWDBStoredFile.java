@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.filemanager;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -95,12 +96,22 @@ public class CFWDBStoredFile {
 	}
 	
 	/**********************************************************************************
+	 * Store file data to the DATA column
 	 * 
 	 * @param item the file the data should be stored to.
 	 * @param fileData the inputStream providing the data.
 	 **********************************************************************************/
 	public static boolean storeData(CFWStoredFile item, InputStream fileData) { 
 		return new CFWSQL(item).executeStreamBytes(CFWStoredFileFields.DATA, fileData);
+	}
+	
+	/**********************************************************************************
+	 * Retrieve Data from the DATA column.
+	 * @param item the file the data should be stored to.
+	 * @param fileData the inputStream providing the data.
+	 **********************************************************************************/
+	public static boolean retrieveData(CFWStoredFile item, OutputStream out) { 
+		return new CFWSQL(item).executeRetrieveBytes(CFWStoredFileFields.DATA, out);
 	}
 	
 	/**********************************************************************************

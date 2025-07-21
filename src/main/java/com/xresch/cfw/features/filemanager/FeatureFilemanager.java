@@ -29,6 +29,7 @@ public class FeatureFilemanager extends CFWAppFeature {
 	
 	public static final String URI_FILEMANAGER = "/app/filemanager";
 	public static final String URI_FILEUPLOAD = "/app/stream/fileupload";
+	public static final String URI_FILEDOWNLOAD = "/app/stream/filedownload";
 	
 	public static final String PERMISSION_STOREDFILE_VIEWER = "StoredFile: Viewer";
 	public static final String PERMISSION_STOREDFILE_CREATOR = "StoredFile: Creator";
@@ -159,7 +160,6 @@ public class FeatureFilemanager extends CFWAppFeature {
 				.value("false")
 		);
 		
-
 	}
 
 	@Override
@@ -169,9 +169,15 @@ public class FeatureFilemanager extends CFWAppFeature {
     	// Servlets
     	app.addAppServlet(ServletFilemanager.class,  URI_FILEMANAGER);
 
-    	ServletHolder holder = new ServletHolder(new ServletStreamFileUpload());
-	    holder.getRegistration().setMultipartConfig(new MultipartConfigElement(""));
-	    app.addAppStreamServlet(holder, URI_FILEUPLOAD);
+    	MultipartConfigElement config = new MultipartConfigElement("");
+    	
+    	ServletHolder uploadHolder = new ServletHolder(new ServletStreamFileUpload());
+	    uploadHolder.getRegistration().setMultipartConfig(config);
+	    app.addAppStreamServlet(uploadHolder, URI_FILEUPLOAD);
+	    
+	    ServletHolder downloadHolder = new ServletHolder(new ServletStreamFileDownload());
+	    uploadHolder.getRegistration().setMultipartConfig(config);
+	    app.addAppStreamServlet(downloadHolder, URI_FILEDOWNLOAD);
 
 	}
 

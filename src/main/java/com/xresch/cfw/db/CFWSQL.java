@@ -1,8 +1,7 @@
 package com.xresch.cfw.db;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.sql.PreparedStatement;
+import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -1846,6 +1845,30 @@ public class CFWSQL {
 		
 		return dbInterface.preparedExecute(statement, values.toArray());
 
+	}
+	
+	/****************************************************************
+	 * Streams bytes from a blob column to an output stream.
+	 * @param queryOnly true
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public boolean executeRetrieveBytes(Object columnName, OutputStream stream) {
+		
+		String statement = 
+				  "SELECT "+columnName
+				  + " FROM "+object.getTableName()
+				  + " WHERE "
+				  + object.getPrimaryKeyField().getName()+" = ?";
+		
+		ArrayList<Object> values = new ArrayList<Object>();
+		values.add(object.getPrimaryKeyValue());
+		
+		CFWResultSet cfwResult = dbInterface.preparedExecuteCFWResultSet(statement, values.toArray());
+
+		boolean success = cfwResult.streamBytes(columnName, stream);
+		cfwResult.close();
+		
+		return success;
 	}
 	
 	/****************************************************************

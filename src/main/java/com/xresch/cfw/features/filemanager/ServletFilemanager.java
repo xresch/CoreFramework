@@ -69,7 +69,7 @@ public class ServletFilemanager extends HttpServlet
 				
 				//content.append(CFW.Files.readPackageResource(FeatureSpaces.RESOURCE_PACKAGE, "cfw_storedfile.html"));
 				
-				html.addJavascriptCode("cfw_storedfilelist_initialDraw();");
+				html.addJavascriptCode("cfw_filemanager_initialDraw();");
 				
 		        response.setContentType("text/html");
 		        response.setStatus(HttpServletResponse.SC_OK);

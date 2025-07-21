@@ -5,14 +5,15 @@
  * @license MIT-License
  **************************************************************************************************************/
 
-var CFW_STOREDFILELIST_URL = "/app/filemanager";
-var CFW_STOREDFILELIST_LAST_OPTIONS = null;
+var CFW_FILEMANAGER_URL = "/app/filemanager";
+var CFW_FILEDOWNLOAD_URL = "/app/stream/filedownload";
+var CFW_FILEMANAGER_LAST_OPTIONS = null;
 
 
 /******************************************************************
  * Reset the view.
  ******************************************************************/
-function cfw_storedfilelist_createTabs(){
+function cfw_filemanager_createTabs(){
 	var pillsTab = $("#pills-tab");
 	
 	if(pillsTab.length == 0){
@@ -24,27 +25,27 @@ function cfw_storedfilelist_createTabs(){
 		if(CFW.hasPermission('StoredFile: Creator') 
 		|| CFW.hasPermission('StoredFile: Admin')){
 			list.append(
-				'<li class="nav-item"><a class="nav-link" id="tab-mystoredfile" data-toggle="pill" href="#" role="tab" onclick="cfw_storedfilelist_draw({tab: \'mystoredfile\'})"><i class="fas fa-file mr-2"></i>My Files</a></li>'
+				'<li class="nav-item"><a class="nav-link" id="tab-mystoredfile" data-toggle="pill" href="#" role="tab" onclick="cfw_filemanager_draw({tab: \'mystoredfile\'})"><i class="fas fa-file mr-2"></i>My Files</a></li>'
 			);
 		}
 		
 		//--------------------------------
 		// Shared StoredFile Tab	
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-sharedstoredfile" data-toggle="pill" href="#" role="tab" onclick="cfw_storedfilelist_draw({tab: \'sharedstoredfile\'})"><i class="fas fa-share-alt mr-2"></i>Shared</a></li>');
+		list.append('<li class="nav-item"><a class="nav-link" id="tab-sharedstoredfile" data-toggle="pill" href="#" role="tab" onclick="cfw_filemanager_draw({tab: \'sharedstoredfile\'})"><i class="fas fa-share-alt mr-2"></i>Shared</a></li>');
 		
 		
 		//--------------------------------
 		// Archived StoredFile Tab	
 		if( CFW.hasPermission('StoredFile: Creator') ){
-			list.append('<li class="nav-item"><a class="nav-link" id="tab-myarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_storedfilelist_draw({tab: \'myarchived\'})"><i class="fas fa-folder-open mr-2"></i>Archive</a></li>');
+			list.append('<li class="nav-item"><a class="nav-link" id="tab-myarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_filemanager_draw({tab: \'myarchived\'})"><i class="fas fa-folder-open mr-2"></i>Archive</a></li>');
 		}
 		
 		//--------------------------------
 		// Admin StoredFile Tab	
 		if(CFW.hasPermission('StoredFile: Admin')){
 			list.append(
-				'<li class="nav-item"><a class="nav-link" id="tab-adminarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_storedfilelist_draw({tab: \'adminarchived\'})"><i class="fas fa-folder-open mr-2"></i>Admin Archive</a></li>'
-				+'<li class="nav-item"><a class="nav-link" id="tab-adminstoredfile" data-toggle="pill" href="#" role="tab" onclick="cfw_storedfilelist_draw({tab: \'adminstoredfile\'})"><i class="fas fa-tools mr-2"></i>Admin</a></li>'
+				'<li class="nav-item"><a class="nav-link" id="tab-adminarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_filemanager_draw({tab: \'adminarchived\'})"><i class="fas fa-folder-open mr-2"></i>Admin Archive</a></li>'
+				+'<li class="nav-item"><a class="nav-link" id="tab-adminstoredfile" data-toggle="pill" href="#" role="tab" onclick="cfw_filemanager_draw({tab: \'adminstoredfile\'})"><i class="fas fa-tools mr-2"></i>Admin</a></li>'
 				);
 		}
 		
@@ -58,16 +59,16 @@ function cfw_storedfilelist_createTabs(){
 /******************************************************************
  * Edit
  ******************************************************************/
-function cfw_storedfilelist_editStoredFile(id){
+function cfw_filemanager_editStoredFile(id){
 	
-	cfw_storedfile_editStoredFile(id, "cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS)");
+	cfw_storedfile_editStoredFile(id, "cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS)");
 	 
 }
 
 /******************************************************************
  * Create
  ******************************************************************/
-function cfw_storedfilelist_createStoredFile(){
+function cfw_filemanager_createStoredFile(){
 	
 	let fieldID ='cfw-upload-file';
 	let html = $(`<div id="cfw-storedfile-createStoredFile">
@@ -75,9 +76,9 @@ function cfw_storedfilelist_createStoredFile(){
 	</div>
 	`);	
 
-	CFW.ui.showModalMedium(CFWL('cfw_storedfilelist_createStoredFile', 
-			CFWL("cfw_storedfilelist_createStoredFile", "Upload Files")), 
-			html, "cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS)");
+	CFW.ui.showModalMedium(CFWL('cfw_filemanager_createStoredFile', 
+			CFWL("cfw_filemanager_createStoredFile", "Upload Files")), 
+			html, "cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS)");
 	
 	cfw_initializeFilePicker(fieldID, true, null);
 }
@@ -85,7 +86,7 @@ function cfw_storedfilelist_createStoredFile(){
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_importStoredFile(){
+function cfw_filemanager_importStoredFile(){
 	
 	var uploadHTML = 
 		'<p>Select a previously exported storedfile file. Share settings will be imported as well. If you exported the storedfile from another application or application instance, the widgets might not be able to load correctly.</p>'
@@ -93,18 +94,18 @@ function cfw_storedfilelist_importStoredFile(){
 			+'<label for="importFile">Select File to Import:</label>'
 			+'<input type="file" class="form-control" name="importFile" id="importFile" />'
 		+'</div>'
-		+'<button class="form-control btn btn-primary" onclick="cfw_storedfilelist_importStoredFileExecute()">'+CFWL('cfw_core_import', 'Import')+'</button>';
+		+'<button class="form-control btn btn-primary" onclick="cfw_filemanager_importStoredFileExecute()">'+CFWL('cfw_core_import', 'Import')+'</button>';
 	
 	CFW.ui.showModalMedium(
 			"Import StoredFile", 
 			uploadHTML,
-			"cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS)");
+			"cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS)");
 }
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_importStoredFileExecute(){
+function cfw_filemanager_importStoredFileExecute(){
 	
 	var file = document.getElementById('importFile').files[0];
 	var reader = new FileReader();
@@ -117,7 +118,7 @@ function cfw_storedfilelist_importStoredFileExecute(){
 		  var fileString = evt.target.result;
 		  
 			var params = {action: "import", item: "storedfile", jsonString: fileString};
-			CFW.http.postJSON(CFW_STOREDFILELIST_URL, params, 
+			CFW.http.postJSON(CFW_FILEMANAGER_URL, params, 
 				function(data) {
 					//do nothing
 				}
@@ -129,7 +130,7 @@ function cfw_storedfilelist_importStoredFileExecute(){
 /******************************************************************
  * Edit StoredFile
  ******************************************************************/
-function cfw_storedfilelist_changeStoredFileOwner(id){
+function cfw_filemanager_changeStoredFileOwner(id){
 	
 	//-----------------------------------
 	// Role Details
@@ -140,13 +141,13 @@ function cfw_storedfilelist_changeStoredFileOwner(id){
 	CFW.ui.showModalMedium(
 			CFWL("cfw_storedfile_editStoredFile","Edit StoredFile"), 
 			formDiv, 
-			"cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS)"
+			"cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS)"
 	);
 	
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	CFW.http.createForm(CFW_STOREDFILELIST_URL, {action: "getform", item: "changeowner", id: id}, formDiv);
+	CFW.http.createForm(CFW_FILEMANAGER_URL, {action: "getform", item: "changeowner", id: id}, formDiv);
 	
 }
 
@@ -191,7 +192,7 @@ function cfw_storedfile_editStoredFile(id, callbackJSOrFunc){
 	// Load Form
 	//-----------------------------------
 	var elTargeto = compositeDiv.find('#storedfileSettingsContent');
-	CFW.http.createForm(CFW_STOREDFILELIST_URL, {action: "getform", item: "editstoredfile", id: id}, elTargeto );
+	CFW.http.createForm(CFW_FILEMANAGER_URL, {action: "getform", item: "editstoredfile", id: id}, elTargeto );
 
 	$('#editStoredFileSettingsComposite [data-toggle="tooltip"]').tooltip();		
 }
@@ -199,13 +200,13 @@ function cfw_storedfile_editStoredFile(id, callbackJSOrFunc){
 /******************************************************************
  * Delete
  ******************************************************************/
-function cfw_storedfilelist_delete(id){
+function cfw_filemanager_delete(id){
 	
 	var params = {action: "delete", item: "storedfile", id: id};
-	CFW.http.getJSON(CFW_STOREDFILELIST_URL, params, 
+	CFW.http.getJSON(CFW_FILEMANAGER_URL, params, 
 		function(data) {
 			if(data.success){
-				cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS);
+				cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS);
 			}else{
 				CFW.ui.showModalSmall("Error!", '<span>The file could <b style="color: red">NOT</b> be deleted.</span>');
 			}
@@ -215,13 +216,13 @@ function cfw_storedfilelist_delete(id){
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_deleteMultiple(elements, records, values){
+function cfw_filemanager_deleteMultiple(elements, records, values){
 	
 	params = {action: "delete", item: "multiple", ids: values.join()};
-	CFW.http.getJSON(CFW_STOREDFILELIST_URL, params, 
+	CFW.http.getJSON(CFW_FILEMANAGER_URL, params, 
 		function(data) {
 			if(data.success){
-				cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS);
+				cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS);
 			}else{
 				CFW.ui.showModalSmall("Error!", '<span>The selected file(s) could <b style="color: red">NOT</strong> be deleted.</span>');
 			}
@@ -231,29 +232,31 @@ function cfw_storedfilelist_deleteMultiple(elements, records, values){
 /******************************************************************
  * Delete
  ******************************************************************/
-function cfw_storedfilelist_archive(id, isarchived){
+function cfw_filemanager_archive(id, isarchived){
 	
 	var params = {action: "update", item: "isarchived", id: id, isarchived: isarchived};
-	CFW.http.getJSON(CFW_STOREDFILELIST_URL, params, 
+	CFW.http.getJSON(CFW_FILEMANAGER_URL, params, 
 		function(data) {
 			if(data.success){
-				cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS);
+				cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS);
 			}else{
 				CFW.ui.showModalSmall("Error!", '<span>The selected storedfile could <b style="color: red">NOT</b> be deleted.</span>');
 			}
 	});
 }
 
+
+
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_archiveMultiple(elements, records, values){
+function cfw_filemanager_archiveMultiple(elements, records, values){
 	
 	params = {action: "update", item: "archivemultiple", ids: values.join()};
-	CFW.http.getJSON(CFW_STOREDFILELIST_URL, params, 
+	CFW.http.getJSON(CFW_FILEMANAGER_URL, params, 
 		function(data) {
 			if(data.success){
-				cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS);
+				cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS);
 			}else{
 				CFW.ui.showModalSmall("Error!", '<span>The selected file(s) could <b style="color: red">NOT</strong> be archived.</span>');
 			}
@@ -263,13 +266,13 @@ function cfw_storedfilelist_archiveMultiple(elements, records, values){
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_restoreMultiple(elements, records, values){
+function cfw_filemanager_restoreMultiple(elements, records, values){
 	
 	params = {action: "update", item: "restoremultiple", ids: values.join()};
-	CFW.http.getJSON(CFW_STOREDFILELIST_URL, params, 
+	CFW.http.getJSON(CFW_FILEMANAGER_URL, params, 
 		function(data) {
 			if(data.success){
-				cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS);
+				cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS);
 			}else{
 				CFW.ui.showModalSmall("Error!", '<span>The selected file(s) could <b style="color: red">NOT</strong> be restored.</span>');
 			}
@@ -277,15 +280,17 @@ function cfw_storedfilelist_restoreMultiple(elements, records, values){
 }
 
 /******************************************************************
- * Delete
+ * Download
  ******************************************************************/
-function cfw_storedfilelist_duplicate(id){
+function cfw_filemanager_download(id){
 	
-	var params = {action: "duplicate", item: "storedfile", id: id};
-	CFW.http.getJSON(CFW_STOREDFILELIST_URL, params, 
+	var params = {id: id};
+	CFW.http.getJSON(CFW_FILEDOWNLOAD_URL, params, 
 		function(data) {
-			if(data.success){
-				cfw_storedfilelist_draw(CFW_STOREDFILELIST_LAST_OPTIONS);
+			if(data != null
+			&& data.success != null
+			&& !data.success ){
+				CFW.ui.showModalSmall("Error!", '<span>The selected file could <b style="color: red">NOT</b> be downloaded.</span>');
 			}
 	});
 }
@@ -293,44 +298,44 @@ function cfw_storedfilelist_duplicate(id){
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_printMyStoredFile(data){
-	cfw_storedfilelist_printStoredFile(data, 'mystoredfile');
+function cfw_filemanager_printMyStoredFile(data){
+	cfw_filemanager_printStoredFile(data, 'mystoredfile');
 }
 
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_printFavedStoredFile(data){
-	cfw_storedfilelist_printStoredFile(data, 'favedstoredfile');
+function cfw_filemanager_printFavedStoredFile(data){
+	cfw_filemanager_printStoredFile(data, 'favedstoredfile');
 }
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_printSharedStoredFile(data){
-	cfw_storedfilelist_printStoredFile(data, 'sharedstoredfile');
+function cfw_filemanager_printSharedStoredFile(data){
+	cfw_filemanager_printStoredFile(data, 'sharedstoredfile');
 }
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_printMyArchived(data){
-	cfw_storedfilelist_printStoredFile(data, 'myarchived');
+function cfw_filemanager_printMyArchived(data){
+	cfw_filemanager_printStoredFile(data, 'myarchived');
 }
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_printAdminArchived(data){
-	cfw_storedfilelist_printStoredFile(data, 'adminarchived');
+function cfw_filemanager_printAdminArchived(data){
+	cfw_filemanager_printStoredFile(data, 'adminarchived');
 }
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_storedfilelist_printAdminStoredFile(data){
-	cfw_storedfilelist_printStoredFile(data, 'adminstoredfile');
+function cfw_filemanager_printAdminStoredFile(data){
+	cfw_filemanager_printStoredFile(data, 'adminstoredfile');
 }
 
 
@@ -340,7 +345,7 @@ function cfw_storedfilelist_printAdminStoredFile(data){
  * @param data as returned by CFW.http.getJSON()
  * @return 
  ******************************************************************/
-function cfw_storedfilelist_printStoredFile(data, type){
+function cfw_filemanager_printStoredFile(data, type){
 	
 	var parent = $("#tab-content");
 	
@@ -369,7 +374,7 @@ function cfw_storedfilelist_printStoredFile(data, type){
 	//--------------------------------
 	//  Create Button
 	if(type == 'mystoredfile'){
-		var createButton = $('<button id="button-add-storedfile" class="btn btn-sm btn-success m-1" onclick="cfw_storedfilelist_createStoredFile()">'
+		var createButton = $('<button id="button-add-storedfile" class="btn btn-sm btn-success m-1" onclick="cfw_filemanager_createStoredFile()">'
 							+ '<i class="fas fa-plus-circle"></i> '+ CFWL('cfw_core_add')
 					   + '</button>');
 	
@@ -416,7 +421,7 @@ function cfw_storedfilelist_printStoredFile(data, type){
 				|| type == 'adminstoredfile'
 				|| (record.IS_EDITOR) ){
 					htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
-						+'onclick="cfw_storedfilelist_editStoredFile('+id+')");">'
+						+'onclick="cfw_filemanager_editStoredFile('+id+')");">'
 						+ '<i class="fa fa-pen"></i>'
 						+ '</button>';
 				}else{
@@ -434,7 +439,7 @@ function cfw_storedfilelist_printStoredFile(data, type){
 			actionButtons.push(
 				function (record, id){
 					var htmlString = '<button class="btn btn-primary btn-sm" alt="Change Owner" title="Change Owner" '
-							+'onclick="cfw_storedfilelist_changeStoredFileOwner('+id+');">'
+							+'onclick="cfw_filemanager_changeStoredFileOwner('+id+');">'
 							+ '<i class="fas fa-user-edit"></i>'
 							+ '</button>';
 					
@@ -444,39 +449,34 @@ function cfw_storedfilelist_printStoredFile(data, type){
 			bulkActions["Archive Selected"] = 
 				function(elements, records, values){
 						cfw_ui_confirmExecute("Are you sure you want to archive the selected file(s)?", "Do it!", function(){
-							cfw_storedfilelist_archiveMultiple(elements, records, values);
+							cfw_filemanager_archiveMultiple(elements, records, values);
 						});
 					};
 		}
 		
 		//-------------------------
-		// Duplicate Button
-/*		if( (type != 'myarchived' && type != 'adminarchived' )
-			&& (
-			   CFW.hasPermission('StoredFile: Creator')
-			|| CFW.hasPermission('StoredFile: Admin')
-			)
-		){
-			actionButtons.push(
-				function (record, id){
-					
-					// IMPORTANT: Do only allow duplicate if the user can edit the storedfile,
-					// else this would create a security issue.
-					var htmlString = '';
-					if(JSDATA.userid == record.FK_ID_OWNER 
-					|| CFW.hasPermission('StoredFile: Admin')
-					|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
-						htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
-							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong> and add it to your storedfile.\', \'Do it!\', \'cfw_storedfilelist_duplicate('+id+');\')">'
-							+ '<i class="fas fa-clone"></i>'
-							+ '</button>';
-					}else{
-						htmlString += '&nbsp;';
-					}
-					
-					return htmlString;
-				});
-		}*/
+		// Download Button
+		actionButtons.push(
+			function (record, id){
+				
+				// IMPORTANT: Do only allow duplicate if the user can edit the storedfile,
+				// else this would create a security issue.
+				var htmlString = '';
+				if(JSDATA.userid == record.FK_ID_OWNER 
+				|| CFW.hasPermission('StoredFile: Admin')
+				|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
+					htmlString = '<a class="btn btn-primary btn-sm text-white" alt="Download" title="Download" '
+						+'target="_blank" '
+						+'href="'+CFW.http.getHostURL()+CFW_FILEDOWNLOAD_URL+"?id="+id+'">'
+						+ '<i class="fas fa-download"></i>'
+						+ '</a>';
+				}else{
+					htmlString += '&nbsp;';
+				}
+				
+				return htmlString;
+			});
+		
 		
 		//-------------------------
 		// Archive / Restore Button
@@ -501,7 +501,7 @@ function cfw_storedfilelist_printStoredFile(data, type){
 					}
 					
 					htmlString += '<button class="btn '+color+' btn-sm" alt="'+title+'" title="'+title+'" '
-						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Do it!\', \'cfw_storedfilelist_archive('+id+', '+!isArchived+');\')">'
+						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Do it!\', \'cfw_filemanager_archive('+id+', '+!isArchived+');\')">'
 						+ '<i class="fa '+icon+'"></i>'
 						+ '</button>';
 				}else{
@@ -518,7 +518,7 @@ function cfw_storedfilelist_printStoredFile(data, type){
 			actionButtons.push(
 				function (record, id){
 					return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the storedfile <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Delete\', \'cfw_storedfilelist_delete('+id+');\')">'
+							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the storedfile <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Delete\', \'cfw_filemanager_delete('+id+');\')">'
 							+ '<i class="fa fa-trash"></i>'
 							+ '</button>';
 
@@ -527,14 +527,14 @@ function cfw_storedfilelist_printStoredFile(data, type){
 			bulkActions["Restore Selected"] = 
 				function(elements, records, values){
 						cfw_ui_confirmExecute('Are you sure you want to <b style="color: green">restore</b> the selected file(s)?', "Oh Yeah!", function(){
-							cfw_storedfilelist_restoreMultiple(elements, records, values);
+							cfw_filemanager_restoreMultiple(elements, records, values);
 						});
 					};
 						
 			bulkActions["Delete Selected"] = 
 				function(elements, records, values){
 						cfw_ui_confirmExecute('Are you sure you want to <b style="color: red">delete</b> the selected file(s)?', "Eradicate them for Eternity!", function(){
-							cfw_storedfilelist_deleteMultiple(elements, records, values);
+							cfw_filemanager_deleteMultiple(elements, records, values);
 						});
 					};
 					
@@ -739,7 +739,7 @@ function cfw_storedfilelist_printStoredFile(data, type){
  * @return 
  ******************************************************************/
 
-function cfw_storedfilelist_initialDraw(){
+function cfw_filemanager_initialDraw(){
 	
 	//-------------------------------------------
 	// Increase Width
@@ -747,7 +747,7 @@ function cfw_storedfilelist_initialDraw(){
 	
 	//-------------------------------------------
 	// Create Tabs
-	cfw_storedfilelist_createTabs();
+	cfw_filemanager_createTabs();
 	
 	
 	var tabToDisplay = CFW.cache.retrieveValueForPage("storedfilelist-lasttab", "mystoredfile");
@@ -762,12 +762,12 @@ function cfw_storedfilelist_initialDraw(){
 	
 	//-------------------------------------------
 	// Draw Tab
-	cfw_storedfilelist_draw({tab: tabToDisplay});
+	cfw_filemanager_draw({tab: tabToDisplay});
 	
 }
 
-function cfw_storedfilelist_draw(options){
-	CFW_STOREDFILELIST_LAST_OPTIONS = options;
+function cfw_filemanager_draw(options){
+	CFW_FILEMANAGER_LAST_OPTIONS = options;
 	
 	CFW.cache.storeValueForPage("storedfilelist-lasttab", options.tab);
 	$("#tab-content").html("");
@@ -778,15 +778,15 @@ function cfw_storedfilelist_draw(options){
 	function(){
 		
 		switch(options.tab){
-			case "mystoredfile":		CFW.http.getJSON(CFW_STOREDFILELIST_URL, {action: "fetch", item: "mystoredfile"}, cfw_storedfilelist_printMyStoredFile);
+			case "mystoredfile":		CFW.http.getJSON(CFW_FILEMANAGER_URL, {action: "fetch", item: "mystoredfile"}, cfw_filemanager_printMyStoredFile);
 										break;	
-			case "sharedstoredfile":	CFW.http.getJSON(CFW_STOREDFILELIST_URL, {action: "fetch", item: "sharedstoredfile"}, cfw_storedfilelist_printSharedStoredFile);
+			case "sharedstoredfile":	CFW.http.getJSON(CFW_FILEMANAGER_URL, {action: "fetch", item: "sharedstoredfile"}, cfw_filemanager_printSharedStoredFile);
 										break;
-			case "myarchived":			CFW.http.getJSON(CFW_STOREDFILELIST_URL, {action: "fetch", item: "myarchived"}, cfw_storedfilelist_printMyArchived);
+			case "myarchived":			CFW.http.getJSON(CFW_FILEMANAGER_URL, {action: "fetch", item: "myarchived"}, cfw_filemanager_printMyArchived);
 										break;	
-			case "adminarchived":		CFW.http.getJSON(CFW_STOREDFILELIST_URL, {action: "fetch", item: "adminarchived"}, cfw_storedfilelist_printAdminArchived);
+			case "adminarchived":		CFW.http.getJSON(CFW_FILEMANAGER_URL, {action: "fetch", item: "adminarchived"}, cfw_filemanager_printAdminArchived);
 										break;	
-			case "adminstoredfile":		CFW.http.getJSON(CFW_STOREDFILELIST_URL, {action: "fetch", item: "adminstoredfile"}, cfw_storedfilelist_printAdminStoredFile);
+			case "adminstoredfile":		CFW.http.getJSON(CFW_FILEMANAGER_URL, {action: "fetch", item: "adminstoredfile"}, cfw_filemanager_printAdminStoredFile);
 										break;						
 			default:					CFW.ui.addToastDanger('This tab is unknown: '+options.tab);
 		}
