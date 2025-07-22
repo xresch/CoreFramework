@@ -53,7 +53,7 @@ public class ServletFilemanager extends HttpServlet
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-		HTMLResponse html = new HTMLResponse("StoredFile List");
+		HTMLResponse html = new HTMLResponse("File Manager");
 		
 		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_VIEWER)
 		|| CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_CREATOR)

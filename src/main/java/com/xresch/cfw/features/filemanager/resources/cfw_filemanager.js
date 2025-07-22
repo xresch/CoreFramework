@@ -22,8 +22,8 @@ function cfw_filemanager_createTabs(){
 		
 		//--------------------------------
 		// My StoredFile Tab
-		if(CFW.hasPermission('StoredFile: Creator') 
-		|| CFW.hasPermission('StoredFile: Admin')){
+		if(CFW.hasPermission('File Manager: Creator') 
+		|| CFW.hasPermission('File Manager: Admin')){
 			list.append(
 				'<li class="nav-item"><a class="nav-link" id="tab-mystoredfile" data-toggle="pill" href="#" role="tab" onclick="cfw_filemanager_draw({tab: \'mystoredfile\'})"><i class="fas fa-file mr-2"></i>My Files</a></li>'
 			);
@@ -36,13 +36,13 @@ function cfw_filemanager_createTabs(){
 		
 		//--------------------------------
 		// Archived StoredFile Tab	
-		if( CFW.hasPermission('StoredFile: Creator') ){
+		if( CFW.hasPermission('File Manager: Creator') ){
 			list.append('<li class="nav-item"><a class="nav-link" id="tab-myarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_filemanager_draw({tab: \'myarchived\'})"><i class="fas fa-folder-open mr-2"></i>Archive</a></li>');
 		}
 		
 		//--------------------------------
 		// Admin StoredFile Tab	
-		if(CFW.hasPermission('StoredFile: Admin')){
+		if(CFW.hasPermission('File Manager: Admin')){
 			list.append(
 				'<li class="nav-item"><a class="nav-link" id="tab-adminarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_filemanager_draw({tab: \'adminarchived\'})"><i class="fas fa-folder-open mr-2"></i>Admin Archive</a></li>'
 				+'<li class="nav-item"><a class="nav-link" id="tab-adminstoredfile" data-toggle="pill" href="#" role="tab" onclick="cfw_filemanager_draw({tab: \'adminstoredfile\'})"><i class="fas fa-tools mr-2"></i>Admin</a></li>'
@@ -463,7 +463,7 @@ function cfw_filemanager_printStoredFile(data, type){
 				// else this would create a security issue.
 				var htmlString = '';
 				if(JSDATA.userid == record.FK_ID_OWNER 
-				|| CFW.hasPermission('StoredFile: Admin')
+				|| CFW.hasPermission('File Manager: Admin')
 				|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
 					htmlString = '<a class="btn btn-primary btn-sm text-white" alt="Download" title="Download" '
 						+'target="_blank" '
@@ -752,9 +752,9 @@ function cfw_filemanager_initialDraw(){
 	
 	var tabToDisplay = CFW.cache.retrieveValueForPage("storedfilelist-lasttab", "mystoredfile");
 	
-	if(CFW.hasPermission('StoredFile: Viewer') 
-	&& !CFW.hasPermission('StoredFile: Creator') 
-	&& !CFW.hasPermission('StoredFile: Admin')){
+	if(CFW.hasPermission('File Manager: Viewer') 
+	&& !CFW.hasPermission('File Manager: Creator') 
+	&& !CFW.hasPermission('File Manager: Admin')){
 		tabToDisplay = "sharedstoredfile";
 	}
 	

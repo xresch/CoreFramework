@@ -196,8 +196,20 @@ public class CFWProperties {
 	
 	/** The eMail used as the from-address for no-reply mails.  (Property=cfw_mail_smtp_frommail_noreply, Default="") */
 	public static String MAIL_SMTP_FROMMAIL_NOREPLY = "";
-	
+			
 
+	//##########################################################################################
+	// MAILING
+	//##########################################################################################	
+	
+	/** Maximum upload size in megabytes.  (Property=cfw_filemanager_max_upload_size, Default="4000") */
+	public static int CFW_FILEMANAGER_MAX_UPLOAD_SIZE = 4000;
+	
+	/** Temp folder to be used, by default the value will be taken from java.io.tmpdir.  (Property=cfw_filemanager_temp_folder, Default="") */
+	public static String CFW_FILEMANAGER_TEMP_FOLDER = null;
+	
+	/** File size in megabytes, files bigger than this will be temorarily written to the disk to prevent out of memory issues. (Property=cfw_filemanager_temp_threshold=, Default="587") */
+	public static int CFW_FILEMANAGER_TEMP_THRESHOLD = 50;
 	
 	//##########################################################################################
 	// DATABASE
@@ -312,6 +324,11 @@ public class CFWProperties {
 		MAIL_SMTP_LOGIN_PASSWORD		= CFWProperties.configAsString("cfw_mail_smtp_login_password", MAIL_SMTP_LOGIN_PASSWORD);
 		MAIL_SMTP_FROMMAIL_REPLY		= CFWProperties.configAsString("cfw_mail_smtp_frommail_reply", MAIL_SMTP_FROMMAIL_REPLY);
 		MAIL_SMTP_FROMMAIL_NOREPLY		= CFWProperties.configAsString("cfw_mail_smtp_frommail_noreply", MAIL_SMTP_FROMMAIL_NOREPLY);
+
+		
+		CFW_FILEMANAGER_MAX_UPLOAD_SIZE	= CFWProperties.configAsInt("cfw_filemanager_max_upload_size", CFW_FILEMANAGER_MAX_UPLOAD_SIZE);
+		CFW_FILEMANAGER_TEMP_FOLDER		= CFWProperties.configAsString("cfw_filemanager_temp_folder", CFW_FILEMANAGER_TEMP_FOLDER);
+		CFW_FILEMANAGER_TEMP_THRESHOLD	= CFWProperties.configAsInt("cfw_filemanager_temp_threshold", CFW_FILEMANAGER_TEMP_THRESHOLD);
 
 	}
 	

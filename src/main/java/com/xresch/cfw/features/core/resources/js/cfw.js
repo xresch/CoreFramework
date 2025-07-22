@@ -2843,7 +2843,9 @@ function cfw_timeframePicker_shift(origin, direction){
  * The original field gets hidden and will be replaced by the timeframe picker itself. 
  * 
  * @param fieldID the id of the target field(without '#')
- * @param isMultiple define if the picker allows to select multiple files
+ * @param isMultiple boolean, define if the picker allows to select multiple files
+ * @param replaceExisting boolean define if existing file ID should be kept and only the data should be replaced.
+ * 						  Only works when isMultiple = false
  * @param initialData the json object containing the initial value of the field as epoch time:
  *        {
  *			   id: 123
@@ -2853,7 +2855,7 @@ function cfw_timeframePicker_shift(origin, direction){
  * 			 , size: 6789 
  *        }
  *************************************************************************************/
-function cfw_initializeFilePicker(fieldID, isMultiple, initialData){
+function cfw_initializeFilePicker(fieldID, isMultiple, initialData, replaceExisting){
 	
 	var selector = '#'+fieldID;
 
@@ -2866,6 +2868,7 @@ function cfw_initializeFilePicker(fieldID, isMultiple, initialData){
 	originalField.before(wrapper);
 	wrapper.append(originalField);
 	wrapper.data("isMultiple", isMultiple)
+	wrapper.data("replaceExisting", replaceExisting)
 		
 	//----------------------------------
 	// Set Intial Value
@@ -2977,7 +2980,7 @@ function cfw_filepicker_handleSelectedFiles(sourceElement) {
 	
 	let files = sourceElement.files;
 	let wrapper = $(sourceElement).closest('.cfw-filepicker-wrapper');
-	let originalField = wrapper.find('input[cfwtype="FILEPICKER"]');
+	let originalField = wrapper.find("input[data-role='filepicker']");
 	
 	cfw_filepicker_uploadFiles(wrapper, originalField, files);
 }
@@ -2991,6 +2994,7 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 	
 	let wrapperID =  wrapper.attr('id');
 	let isMultiple = wrapper.data("isMultiple");
+	let replaceExisting = wrapper.data("replaceExisting");
 	
 	if(files.length <= 0){ return; }
 	
@@ -3010,7 +3014,14 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 				let CFW_URL_FILEUPLOAD = '/app/stream/fileupload';
 				
 				let formData = new FormData()
-		  		formData.append('originalData', originalField.val() )
+				
+				let originalValue = originalField.val();
+				if(originalValue != null
+				&& originalValue != undefined){
+		  			formData.append('originalData', originalValue )
+		  		}
+		  		
+		  		formData.append('replaceExisting', replaceExisting)
 		  		formData.append('name', file.name)
 		  		formData.append('size', file.size)
 		  		formData.append('type', file.type)
@@ -3018,9 +3029,8 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 		  		formData.append('file', file)
 		
 				CFW.http.postFormData(CFW_URL_FILEUPLOAD, formData, function(response, status, xhr){
-					console.log(response);
 					if(response.payload != null){
-						uploadedArray.push(response.payload);
+						uploadedArray = _.concat(uploadedArray, response.payload);
 					}
 				});
 		
@@ -3035,10 +3045,13 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 			originalArray = JSON.parse(originalField.val());
 		}
 		
-		let finalArray = originalArray.concat(uploadedArray);
+		let finalArray = _.concat(originalArray, uploadedArray);
 		
 		originalField.val( JSON.stringify(finalArray) ) ;
 		
+		console.log(originalField);
+		console.log(originalField.val());
+		console.log(finalArray);
 		//-------------------------------
 		// Update Selection in UI
 		let selectedDiv = wrapper.find('.cfw-filepicker-selected');

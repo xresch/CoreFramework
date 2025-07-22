@@ -28,7 +28,7 @@ import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2024
+ * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWStoredFile extends CFWObject {
@@ -140,8 +140,8 @@ public class CFWStoredFile extends CFWObject {
 	
 	private CFWField<Boolean> isShared = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWStoredFileFields.IS_SHARED)
 			.apiFieldType(FormFieldType.TEXT)
-			.setDescription("Make the Stored File shared with other people or keep it private. If no shared users or shared groups are specified(defined editors have no impact), the Stored File is shared with all users having access to the Stored File features.")
-			.setValue(CFW.DB.Config.getConfigAsBoolean(FeatureFilemanager.CONFIG_CATEGORY, FeatureFilemanager.CONFIG_DEFAULT_IS_SHARED));
+			.setDescription("Make the file shared with other people or keep it private. If no shared users or shared groups are specified(defined editors have no impact), the Stored File is shared with all users having access to the Stored File features.")
+			.setValue(false);
 	
 	private CFWField<LinkedHashMap<String,String>> shareWithUsers = this.createSelectorFieldSharedUser(null);
 	
@@ -152,17 +152,17 @@ public class CFWStoredFile extends CFWObject {
 	private CFWField<LinkedHashMap<String,String>> editorGroups = this.createSelectorFieldEditorGroups(null);
 	
 	private CFWField<Timestamp> timeCreated = CFWField.newTimestamp(FormFieldType.NONE, CFWStoredFileFields.TIME_CREATED)
-			.setDescription("The date and time the Stored File was created.")
+			.setDescription("The date and time the file was created.")
 			.setValue(new Timestamp(new Date().getTime()));
 	
 	private CFWField<Timestamp> lastUpdated = CFWField.newTimestamp(FormFieldType.NONE, CFWStoredFileFields.LAST_UPDATED)
-			.setDescription("The date and time the Stored File was last updated. Will be null if automatic version was created.")
+			.setDescription("The date and time the file was last updated.")
 			.setValue(new Timestamp(new Date().getTime()));
 	
 
 	private CFWField<Boolean> isArchived = CFWField.newBoolean(FormFieldType.NONE, CFWStoredFileFields.IS_ARCHIVED)
 			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
-			.setDescription("Flag to define if the Stored File is archived.")
+			.setDescription("Flag to define if the file is archived.")
 			.setValue(false)
 			;
 	

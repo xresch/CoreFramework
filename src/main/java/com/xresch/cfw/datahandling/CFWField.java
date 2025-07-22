@@ -407,13 +407,13 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	//===========================================
 	// FILEPICKER
 	//===========================================
-	public static CFWField<CFWStoredFileReference> newFilepicker(Enum<?> fieldName){
+	public static CFWField<CFWStoredFileReferences> newFilepicker(Enum<?> fieldName){
 		return newFilepicker(fieldName.toString());
 	}
 	
-	public static CFWField<CFWStoredFileReference> newFilepicker(String fieldName){
+	public static CFWField<CFWStoredFileReferences> newFilepicker(String fieldName){
 		if( fieldnameStartsWithJSON(fieldName) ) {
-			return new CFWField<CFWStoredFileReference>(CFWStoredFileReference.class, FormFieldType.FILEPICKER, fieldName)
+			return new CFWField<CFWStoredFileReferences>(CFWStoredFileReferences.class, FormFieldType.FILEPICKER, fieldName)
 					.setColumnDefinition("VARCHAR");
 		}
 		return null;

@@ -6,6 +6,7 @@ import javax.servlet.MultipartConfigElement;
 
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
@@ -31,14 +32,13 @@ public class FeatureFilemanager extends CFWAppFeature {
 	public static final String URI_FILEUPLOAD = "/app/stream/fileupload";
 	public static final String URI_FILEDOWNLOAD = "/app/stream/filedownload";
 	
-	public static final String PERMISSION_STOREDFILE_VIEWER = "StoredFile: Viewer";
-	public static final String PERMISSION_STOREDFILE_CREATOR = "StoredFile: Creator";
-	public static final String PERMISSION_STOREDFILE_ADMIN = "StoredFile: Admin";
+	public static final String PERMISSION_STOREDFILE_VIEWER = "File Manager: Viewer";
+	public static final String PERMISSION_STOREDFILE_CREATOR = "File Manager: Creator";
+	public static final String PERMISSION_STOREDFILE_ADMIN = "File Manager: Admin";
 	
-	public static final String CONFIG_CATEGORY = "StoredFile";
-	public static final String CONFIG_DEFAULT_IS_SHARED = "Is Shared Default";
+//	public static final String CONFIG_CATEGORY = "File Manager";
+//	public static final String CONFIG_MAX_FILE_SIZE = "Max File Size";
 
-	
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.filemanager.resources";
 
 	public static final String EAV_STATS_CATEGORY = "StoredFileStats";
@@ -60,11 +60,11 @@ public class FeatureFilemanager extends CFWAppFeature {
 		//----------------------------------
 		// Register Languages
 		
-		FileDefinition english = new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_en_storedfile.properties");
-		registerLocale(Locale.ENGLISH, english);
-		
-		FileDefinition german = new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_de_storedfile.properties");
-		registerLocale(Locale.GERMAN, german);
+//		FileDefinition english = new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_en_storedfile.properties");
+//		registerLocale(Locale.ENGLISH, english);
+//		
+//		FileDefinition german = new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_de_storedfile.properties");
+//		registerLocale(Locale.GERMAN, german);
 		
 		
     	//----------------------------------
@@ -151,14 +151,17 @@ public class FeatureFilemanager extends CFWAppFeature {
 		//============================================================
 		
 		//-----------------------------------------
-		// 
+		// Note: Not doing this here as application restart is required.
 		//-----------------------------------------
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration(CONFIG_CATEGORY, CONFIG_DEFAULT_IS_SHARED)
-				.description("The default value for the Stored File setting 'Is Shared'.")
-				.type(FormFieldType.BOOLEAN)
-				.value("false")
-		);
+		
+//		CFW.DB.Config.oneTimeCreate(
+//			new Configuration(CONFIG_CATEGORY, CONFIG_MAX_FILE_SIZE)
+//				.description("The maximum allowed file size for uploads in megabytes.")
+//				.type(FormFieldType.NUMBER)
+//				.value("4000")
+//		);
+		
+
 		
 	}
 
@@ -169,18 +172,46 @@ public class FeatureFilemanager extends CFWAppFeature {
     	// Servlets
     	app.addAppServlet(ServletFilemanager.class,  URI_FILEMANAGER);
 
-    	final String tempLocation = System.getProperty("java.io.tmpdir");
-        final long maxFileSize = -1L; //128*1024;
-        final long maxRequestSize = -1L ; //128*1024;
-        final int diskThreshold = 128*1024*1024 ; //128 MB;
-    	MultipartConfigElement config = new MultipartConfigElement(tempLocation, maxFileSize, maxRequestSize, diskThreshold);
+    	//----------------------------------
+    	// Get Filemanaget Config 
+    	int configMaxUploadSize = CFW.Properties.CFW_FILEMANAGER_MAX_UPLOAD_SIZE;
+    	String configTempFolder = CFW.Properties.CFW_FILEMANAGER_TEMP_FOLDER;
+    	int configTempThreshold = CFW.Properties.CFW_FILEMANAGER_TEMP_THRESHOLD;
+    	
+    	if( Strings.isNullOrEmpty(configTempFolder) ) {
+    		configTempFolder = System.getProperty("java.io.tmpdir");
+    	}
+    	
+    	//----------------------------------
+    	// Calculate Sizes
+    	int MB = 1024*1024;
+        final long maxFileSize = configMaxUploadSize * MB;
+        final long maxRequestSize = maxFileSize + MB; // plus 1 MB buffer 
+        final int diskThreshold = configTempThreshold * MB ;
+        
+    	//----------------------------------
+    	// Upload Servlet
+    	MultipartConfigElement uploadConfig = new MultipartConfigElement(
+    											  configTempFolder
+    											, maxFileSize
+    											, maxRequestSize
+    											, diskThreshold
+    										);
     	
     	ServletHolder uploadHolder = new ServletHolder(new ServletStreamFileUpload());
-	    uploadHolder.getRegistration().setMultipartConfig(config);
+	    uploadHolder.getRegistration().setMultipartConfig(uploadConfig);
 	    app.addAppStreamServlet(uploadHolder, URI_FILEUPLOAD);
 	    
+    	//----------------------------------
+    	// Download Servlet
+    	MultipartConfigElement downloadConfig = new MultipartConfigElement(
+    											  configTempFolder
+    											, -1L
+    											, -1L
+    											, diskThreshold
+    										);
 	    ServletHolder downloadHolder = new ServletHolder(new ServletStreamFileDownload());
-	    uploadHolder.getRegistration().setMultipartConfig(config);
+	    uploadHolder.getRegistration().setMultipartConfig(downloadConfig);
 	    app.addAppStreamServlet(downloadHolder, URI_FILEDOWNLOAD);
 
 	}
@@ -206,7 +237,7 @@ public class FeatureFilemanager extends CFWAppFeature {
 					.addPermission(PERMISSION_STOREDFILE_VIEWER)
 					.addPermission(PERMISSION_STOREDFILE_CREATOR)
 					.addPermission(PERMISSION_STOREDFILE_ADMIN)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "manual_storedfile.html")
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "manual_filemanager.html")
 			);	
 
 		

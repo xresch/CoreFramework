@@ -20,6 +20,7 @@ function cfw_config_changeToPanels(){
 					textstyle: null,
 					textstyleheader: 'white',
 					title: category,
+					narrow: true,
 					body: $('<div>'),
 			};
 		 
