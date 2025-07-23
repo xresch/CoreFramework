@@ -89,14 +89,14 @@ public class ServletStreamFileUpload extends HttpServlet
 			
 			InputStream dataInputStream = filePart.getInputStream();
 			
-			System.out.println("================================");
-			System.out.println("originalData: "+originalData);
-			System.out.println("replaceExisting: "+replaceExisting);
-			System.out.println("name: "+name);
-			System.out.println("extension: "+extension);
-			System.out.println("type: "+type);
-			System.out.println("size: "+size);
-			System.out.println("lastModified: "+lastModified);
+//			System.out.println("================================");
+//			System.out.println("originalData: "+originalData);
+//			System.out.println("replaceExisting: "+replaceExisting);
+//			System.out.println("name: "+name);
+//			System.out.println("extension: "+extension);
+//			System.out.println("type: "+type);
+//			System.out.println("size: "+size);
+//			System.out.println("lastModified: "+lastModified);
 			
 
 			if(replaceExisting.equals("true")
@@ -109,10 +109,6 @@ public class ServletStreamFileUpload extends HttpServlet
 				// Replace Existing Data
 				CFWStoredFileReferences reference = new CFWStoredFileReferences(originalData);
 				boolean success = false;
-				
-				System.out.println("===========================");
-				System.out.println("reference.size():"+reference.size());
-				System.out.println("reference.getID(0):"+reference.getID(0));
 				
 				if(reference.size() == 1) {
 					Integer id = reference.getID(0);

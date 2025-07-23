@@ -2998,11 +2998,11 @@ function cfw_filepicker_setSelectedFiles(wrapper, originalField, filesArray) {
 
 	originalField.val( JSON.stringify(filesArray) ) ;
 
-	console.log("=====================");
+/*	console.log("=====================");
 	console.log(filesArray);
 	console.log(wrapper);
 	console.log(originalField);
-	console.log(originalField.val());
+	console.log(originalField.val());*/
 	
 	let selectedDiv = wrapper.find('.cfw-filepicker-selected');
 	selectedDiv.html("");
