@@ -47,12 +47,14 @@ public class CFWStoredFileReferences {
 			return;
 		}
 		
+		if(element.isJsonArray()) {
+			dbfileData = element.getAsJsonArray();
+			return;
+		}
+		
 		if(element.isJsonObject()) {
 			JsonObject object = element.getAsJsonObject();
-			
 			dbfileData.add(object);
-
-			
 		}
 	}
 	

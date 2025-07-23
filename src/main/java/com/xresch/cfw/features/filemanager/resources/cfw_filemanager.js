@@ -11,6 +11,22 @@ var CFW_FILEMANAGER_LAST_OPTIONS = null;
 
 
 /******************************************************************
+ * creates a CFWStoredFilesReference from a record
+ ******************************************************************/
+function cfw_filemanager_referenceFromRecord(record){
+	
+	if(record == null){ return []; }
+	
+	return [
+		{
+			  id: record.PK_ID
+			, name: record.NAME
+			, size: record.SIZE
+			, type: record.TYPE
+		}
+	];
+}
+/******************************************************************
  * Reset the view.
  ******************************************************************/
 function cfw_filemanager_createTabs(){
@@ -68,7 +84,7 @@ function cfw_filemanager_editStoredFile(id){
 /******************************************************************
  * Create
  ******************************************************************/
-function cfw_filemanager_createStoredFile(){
+function cfw_filemanager_uploadFiles(){
 	
 	let fieldID ='cfw-upload-file';
 	let html = $(`<div id="cfw-storedfile-createStoredFile">
@@ -76,11 +92,41 @@ function cfw_filemanager_createStoredFile(){
 	</div>
 	`);	
 
-	CFW.ui.showModalMedium(CFWL('cfw_filemanager_createStoredFile', 
-			CFWL("cfw_filemanager_createStoredFile", "Upload Files")), 
-			html, "cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS)");
+	CFW.ui.showModalMedium(
+			  CFWL("cfw_filemanager_uploadFiles", "Upload Files")
+			, html
+			, "cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS)"
+		);
 	
 	cfw_initializeFilePicker(fieldID, true, null);
+}
+
+/******************************************************************
+ * Replace a file but keep the same id.
+ * @param element the element calling the method.
+ * 
+ ******************************************************************/
+function cfw_filemanager_replaceFile(element){
+	
+	let button = $(element);
+	let initialData = button.data("reference");
+	console.log(initialData);
+	
+	let fieldID ='cfw-upload-file';
+	let html = $(`<div id="cfw-storedfile-createStoredFile">
+		<input id="${fieldID}" type="hidden" data-role="filepicker" >
+	</div>
+	`);	
+
+	CFW.ui.showModalMedium( 
+			  CFWL("cfw_filemanager_replaceFile", "Replace File")
+			, html
+			, "cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS)"
+			);
+			
+	
+	
+	cfw_initializeFilePicker(fieldID, false, initialData, true);
 }
 
 /******************************************************************
@@ -374,7 +420,7 @@ function cfw_filemanager_printStoredFile(data, type){
 	//--------------------------------
 	//  Create Button
 	if(type == 'mystoredfile'){
-		var createButton = $('<button id="button-add-storedfile" class="btn btn-sm btn-success m-1" onclick="cfw_filemanager_createStoredFile()">'
+		var createButton = $('<button id="button-add-storedfile" class="btn btn-sm btn-success m-1" onclick="cfw_filemanager_uploadFiles()">'
 							+ '<i class="fas fa-plus-circle"></i> '+ CFWL('cfw_core_add')
 					   + '</button>');
 	
@@ -459,23 +505,48 @@ function cfw_filemanager_printStoredFile(data, type){
 		actionButtons.push(
 			function (record, id){
 				
-				// IMPORTANT: Do only allow duplicate if the user can edit the storedfile,
+				// IMPORTANT: Do only allow download if the user can edit the storedfile,
 				// else this would create a security issue.
-				var htmlString = '';
-				if(JSDATA.userid == record.FK_ID_OWNER 
-				|| CFW.hasPermission('File Manager: Admin')
-				|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
-					htmlString = '<a class="btn btn-primary btn-sm text-white" alt="Download" title="Download" '
+				var htmlString = '<a class="btn btn-warning btn-sm text-white" alt="Download" title="Download" '
 						+'target="_blank" '
 						+'href="'+CFW.http.getHostURL()+CFW_FILEDOWNLOAD_URL+"?id="+id+'">'
 						+ '<i class="fas fa-download"></i>'
 						+ '</a>';
-				}else{
-					htmlString += '&nbsp;';
-				}
-				
+
 				return htmlString;
-			});
+			}
+		);
+		
+		//-------------------------
+		// Replace Button
+		if(type == 'mystoredfile'
+		|| type == 'adminstoredfile'){
+			actionButtons.push(
+				function (record, id){
+				
+					
+					// IMPORTANT: Do only allow replace if the user can edit the storedfile,
+					// else this would create a security issue.
+
+					if(JSDATA.userid == record.FK_ID_OWNER 
+					|| CFW.hasPermission('File Manager: Admin') ){
+						
+						let reference = cfw_filemanager_referenceFromRecord(record);
+						let button = $('<button class="btn btn-warning btn-sm text-white" alt="Replace Data" title="Replace Data" '
+							+'onclick="cfw_filemanager_replaceFile(this)">'
+							+ '<i class="fas fa-upload"></i>'
+							+ '</button>');
+							
+						button.data("reference", reference);	
+						
+						return button;
+					}else{
+						return '&nbsp;';
+					}
+
+				}
+			);
+		}
 		
 		
 		//-------------------------

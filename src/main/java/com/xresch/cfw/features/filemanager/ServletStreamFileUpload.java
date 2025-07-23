@@ -16,6 +16,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.datahandling.CFWStoredFileReferences;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.SysoutInterceptor;
 import com.xresch.cfw.response.JSONResponse;
 
 /**************************************************************************************************************
@@ -108,6 +109,11 @@ public class ServletStreamFileUpload extends HttpServlet
 				// Replace Existing Data
 				CFWStoredFileReferences reference = new CFWStoredFileReferences(originalData);
 				boolean success = false;
+				
+				System.out.println("===========================");
+				System.out.println("reference.size():"+reference.size());
+				System.out.println("reference.getID(0):"+reference.getID(0));
+				
 				if(reference.size() == 1) {
 					Integer id = reference.getID(0);
 					if(id != null) {
@@ -115,11 +121,22 @@ public class ServletStreamFileUpload extends HttpServlet
 						CFWStoredFile existingFile = CFW.DB.StoredFile.selectByID(id);
 						setStoredFileData(existingFile, name, extension, size, type, lastModified);
 
+						//--------------------------
+						// Store New Data
 						success = CFW.DB.StoredFile.storeData(existingFile, dataInputStream);
 						
-						CFWStoredFileReferences newReference = new CFWStoredFileReferences(existingFile);
+						//--------------------------
+						// Update File Details
+						if(success) {
+							CFW.DB.StoredFile.update(existingFile);
+						}
 						
-						jsonResponse.setPayload( newReference.getAsJsonArray() );
+						//--------------------------
+						// Return Reference
+						if(success) {
+							CFWStoredFileReferences newReference = new CFWStoredFileReferences(existingFile);
+							jsonResponse.setPayload( newReference.getAsJsonArray() );
+						}
 						
 					}
 				}

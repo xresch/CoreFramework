@@ -2869,14 +2869,7 @@ function cfw_initializeFilePicker(fieldID, isMultiple, initialData, replaceExist
 	wrapper.append(originalField);
 	wrapper.data("isMultiple", isMultiple)
 	wrapper.data("replaceExisting", replaceExisting)
-		
-	//----------------------------------
-	// Set Intial Value
-	if(! CFW.utils.isNullOrEmpty(initialData) ){
-		var pickerDataString = JSON.stringify(initialData);
-		originalField.val(pickerDataString);
-	}
-	
+			
 	//----------------------------------
 	// Set Intial Value
 	let multiple = "";
@@ -2904,6 +2897,16 @@ function cfw_initializeFilePicker(fieldID, isMultiple, initialData, replaceExist
 </div>
 	`);
 
+	//----------------------------------
+	// Set Intial Value
+	if(! CFW.utils.isNullOrEmpty(initialData) ){
+		cfw_filepicker_setSelectedFiles(wrapper, originalField, initialData);
+
+	}
+	//----------------------------------
+	// Add Highlight Event Handlers
+	
+	
 	//----------------------------------
 	// Add Highlight Event Handlers
 	
@@ -2983,8 +2986,34 @@ function cfw_filepicker_handleSelectedFiles(sourceElement) {
 	let originalField = wrapper.find("input[data-role='filepicker']");
 	
 	cfw_filepicker_uploadFiles(wrapper, originalField, files);
-}
 	
+}
+
+/**************************************************************************************
+ * Sets the selected files in the UI
+ * 
+ * @param files array of files 
+ *************************************************************************************/
+function cfw_filepicker_setSelectedFiles(wrapper, originalField, filesArray) {
+
+	originalField.val( JSON.stringify(filesArray) ) ;
+
+	console.log("=====================");
+	console.log(filesArray);
+	console.log(wrapper);
+	console.log(originalField);
+	console.log(originalField.val());
+	
+	let selectedDiv = wrapper.find('.cfw-filepicker-selected');
+	selectedDiv.html("");
+		
+	for(i = 0; i < filesArray.length; i++){
+		let currentFile = filesArray[i];
+		let size = CFW.format.numbersInThousands(currentFile.size, 1, true, true);
+		selectedDiv.append('<p><b>'+currentFile.name+'</b> ('+size+')</p>');
+	}
+}
+
 /**************************************************************************************
  * Uploads one or more files to the server.
  * 
@@ -3047,22 +3076,10 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 		
 		let finalArray = _.concat(originalArray, uploadedArray);
 		
-		originalField.val( JSON.stringify(finalArray) ) ;
-		
-		console.log(originalField);
-		console.log(originalField.val());
-		console.log(finalArray);
 		//-------------------------------
 		// Update Selection in UI
-		let selectedDiv = wrapper.find('.cfw-filepicker-selected');
-		selectedDiv.html("");
-			
-		for(i = 0; i < finalArray.length; i++){
-			let currentFile = finalArray[i];
-			let size = CFW.format.numbersInThousands(currentFile.size, 1, true, true);
-			selectedDiv.append('<p><b>'+currentFile.name+'</b> ('+size+')</p>');
-		}
-
+		cfw_filepicker_setSelectedFiles(wrapper, originalField, finalArray);
+		
 		CFW.ui.toggleLoader(false, wrapperID);
 	});
 	
