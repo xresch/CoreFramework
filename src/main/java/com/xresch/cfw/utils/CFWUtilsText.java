@@ -1,5 +1,6 @@
 package com.xresch.cfw.utils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -119,6 +120,34 @@ public class CFWUtilsText {
 		}
 		
 		return result.toString();
+	}
+	
+	
+	
+	/*******************************************************************
+	 * Converts a size of bytes into a bytes String with a suffix like
+	 * KB, MB, GB etc... that can be read by a human being.
+	 * 
+	 * @param size the size in bytes
+	 * @param decimals the number of decimals
+	 * 
+	 *******************************************************************/
+	public static String toHumanReadableBytes(Long size, int decimals){
+
+			if(size == null) { return "0 B"; }
+			
+		    String readable = null;
+
+		    DecimalFormat dec = new DecimalFormat("0."+ "0".repeat(decimals) );
+
+		    if ( 		size >= 1_099_511_627_776L ){	readable = dec.format( size / 1_099_511_627_776.0 ).concat(" TB");
+		    } else if ( size >= 1_073_741_824L ){ 		readable = dec.format( size / 1_073_741_824.0 ).concat(" GB");
+		    } else if ( size >= 1_048_576L ){			readable = dec.format( size / 1_048_576.0 ).concat(" MB");
+		    } else if ( size >= 1024L ){ 				readable = dec.format( size / 1024.0 ).concat(" KB");
+		    } else { 									readable = size+" B";	}
+
+		    return readable;
+
 	}
 	
 	/*******************************************************************

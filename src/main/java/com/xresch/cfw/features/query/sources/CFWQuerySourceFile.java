@@ -1,4 +1,4 @@
-package com.xresch.cfw.extensions.cli;
+package com.xresch.cfw.features.query.sources;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -14,13 +14,17 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.extensions.cli.CFWCLIExecutor;
+import com.xresch.cfw.extensions.cli.FeatureCLIExtensions;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommonStringParser;
 import com.xresch.cfw.features.query._CFWQueryCommonStringParser.CFWQueryStringParserType;
+import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
@@ -31,13 +35,16 @@ import com.xresch.cfw.validation.NotNullOrEmptyValidator;
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWQuerySourceCLI extends CFWQuerySource {
+public class CFWQuerySourceFile extends CFWQuerySource {
 
-	private static Logger logger = CFWLog.getLogger(CFWQuerySourceCLI.class.getName());
+	private static final String SOURCE_NAME = "file";
+
+	private static Logger logger = CFWLog.getLogger(CFWQuerySourceFile.class.getName());
 	
 	private static final String PARAM_AS		= "as";
-	private static final String PARAM_DIR 		= "dir";
-	private static final String PARAM_COMMANDS 	= "commands";
+	private static final String PARAM_FILE 		= SOURCE_NAME;
+	private static final String PARAM_SHEET 	= "sheet";
+	
 	private static final String PARAM_ENV		= "env";
 	private static final String PARAM_HEAD		= "head";
 	private static final String PARAM_TAIL		= "tail";
@@ -53,7 +60,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	public CFWQuerySourceCLI(CFWQuery parent) {
+	public CFWQuerySourceFile(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -63,7 +70,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String uniqueName() {
-		return "cli";
+		return SOURCE_NAME;
 	}
 
 	/******************************************************************
@@ -87,16 +94,14 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionHTML() {
-		
-		
-		
+				
 		//------------------------------------
 		// Fetch resource and replace
 		String asOptionList = CFWQueryStringParserType.getDescriptionHTMLList();
 		
 		return CFW.Files.readPackageResource(
-					FeatureCLIExtensions.PACKAGE_RESOURCES
-					, "source_cli.html"
+					  FeatureQuery.PACKAGE_MANUAL+".sources"
+					, "source_"+SOURCE_NAME+".html"
 				).replace("{asOptionPlaceholder}", asOptionList)
 				;
 	}
@@ -121,7 +126,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// do nothing
+		CFW.DB.StoredFile.autocompleteFileForQuery(result, helper);
 	}
 	
 	/******************************************************************
@@ -133,22 +138,22 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_AS)
-						.setDescription("(Optional)Define how the response should be parsed, default is 'lines'. Options: "
+						.setDescription("(Optional)Define how the response should be parsed, default is 'auto'. Options: "
 								 					+CFW.JSON.toJSON( CFWQueryStringParserType.getNames()))
 						.addValidator(new NotNullOrEmptyValidator())
 						.disableSanitization()
 						)
 				
 				.addField(
-						CFWField.newString(FormFieldType.TEXT, PARAM_DIR)
-							.setDescription("(Optional)The working directory where the commands should be executed. (Default: \""+FeatureCLIExtensions.getDefaultFolderDescription()+"\")")
+						CFWField.newString(FormFieldType.TEXT, PARAM_FILE)
+							.setDescription("The file stored in the file manager that should be used as a data source. (use Ctrl + Space to select a file)")
 							.addValidator(new NotNullOrEmptyValidator())
 							.disableSanitization()
 					)
 
 				.addField(
-						CFWField.newString(FormFieldType.TEXTAREA, PARAM_COMMANDS)
-								.setDescription("The body contents of the request. Setting the header 'Content-Type' might be needed(e.g. 'application/json; charset=UTF-8').")
+						CFWField.newString(FormFieldType.TEXTAREA, PARAM_SHEET)
+								.setDescription("(Optional)The name of the sheet that should be read from an excel file(Default: First sheet).")
 								.disableSanitization()
 						)
 				
@@ -221,13 +226,44 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
 		//------------------------------------
+		// Get FILE
+		String fileString = (String) parameters.getField(PARAM_FILE).getValue();
+		
+		Integer fileID = null; 
+		
+		if(Strings.isNullOrEmpty(fileString)) {
+			CFW.Messages.addWarningMessage("source "+SOURCE_NAME+": Please specify the parameter 'file' (use Ctrl+Space for list of suggestions).");
+			return;
+		}
+		
+		if(fileString.startsWith("{")) {
+			JsonObject settingsObject = CFW.JSON.fromJson(fileString).getAsJsonObject();
+			
+			if(settingsObject.get("id") != null) {
+				fileID = settingsObject.get("id").getAsInt();
+				 
+			}
+		}else {
+			QueryPartValue value = QueryPartValue.newString(fileString);
+			
+			if(value.isNumberOrNumberString()) {
+				fileID = value.getAsInteger();
+			}
+		}
+		
+		//------------------------------------
 		// Get As
 		String parseAs = (String) parameters.getField(PARAM_AS).getValue();	
-		if(Strings.isNullOrEmpty(parseAs)) { parseAs = "lines"; };
+		if(Strings.isNullOrEmpty(parseAs)) { parseAs = "auto"; };
+		
 		parseAs = parseAs.trim().toLowerCase();
 		
+		if(parseAs.equals("auto")) {
+			
+		}
+		
 		if( !CFWQueryStringParserType.has(parseAs) ){
-			this.getParent().getContext().addMessageError("source cli: value as='"+parseAs+"' is not supported."
+			this.getParent().getContext().addMessageError("source "+SOURCE_NAME+": value as='"+parseAs+"' is not supported."
 														 +" Available options: "
 														 +CFW.JSON.toJSON( CFWQueryStringParserType.getNames()) );
 			return;
@@ -235,13 +271,10 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		
 		CFWQueryStringParserType type = CFWQueryStringParserType.valueOf(parseAs);
 		
-		//------------------------------------
-		// Get DIR
-		String dir = (String) parameters.getField(PARAM_DIR).getValue();
 
 		//------------------------------------
 		// Get Commands
-		String commands = (String) parameters.getField(PARAM_COMMANDS).getValue();
+		String commands = (String) parameters.getField(PARAM_SHEET).getValue();
 		
 		//------------------------------------
 		// Get timeout
@@ -277,7 +310,7 @@ public class CFWQuerySourceCLI extends CFWQuerySource {
 		
 		//----------------------------------------
 		// Execute Command
-		CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands, envMap); 
+		CFWCLIExecutor executor = new CFWCLIExecutor("bla bla", commands, envMap); 
 		executor.execute();
 
 		//----------------------------------------

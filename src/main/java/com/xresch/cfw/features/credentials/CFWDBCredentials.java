@@ -579,6 +579,7 @@ public class CFWDBCredentials {
 			.select(CFWCredentialsFields.PK_ID,
 					CFWCredentialsFields.NAME)
 			.whereLike(CFWCredentialsFields.NAME, "%"+searchValue+"%")
+				.and(CFWCredentialsFields.IS_ARCHIVED, false)
 			.limit(maxResults)
 			.getResultSet();
 		

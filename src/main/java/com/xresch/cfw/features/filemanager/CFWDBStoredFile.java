@@ -21,10 +21,13 @@ import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.core.AutocompleteItem;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
 import com.xresch.cfw.features.filemanager.CFWStoredFile.CFWStoredFileFields;
+import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
+import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
@@ -638,42 +641,95 @@ public class CFWDBStoredFile {
 	/***************************************************************
 	 * 
 	 ***************************************************************/
-	public static AutocompleteResult autocompleteStoredFile(String searchValue, int maxResults) {
+	public static void autocompleteFileForQuery(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
 		
-		if(Strings.isNullOrEmpty(searchValue)) {
-			return new AutocompleteResult();
+		if( helper.getCommandTokenCount() < 2 ) {
+			return;
+		}
+		
+		//-----------------------------
+		// Get Search
+		String searchValue = "";
+		
+		if(helper.getCommandTokenCount() > 2) {
+			CFWQueryToken token = helper.getTokenBeforeCursor(0);
+			
+			if(token.isStringOrText()) {
+				searchValue = token.value();
+			};
 		}
 		
 		ResultSet resultSet = new CFWStoredFile()
 			.queryCache(CFWDBStoredFile.class, "autocompleteStoredFile")
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-			.select(CFWStoredFileFields.PK_ID,
-					CFWStoredFileFields.NAME)
+			.select( CFWStoredFileFields.PK_ID
+					, CFWStoredFileFields.NAME
+					, CFWStoredFileFields.SIZE
+					)
 			.whereLike(CFWStoredFileFields.NAME, "%"+searchValue+"%")
-			.limit(maxResults)
+				.and(CFWStoredFileFields.IS_ARCHIVED, false)
+			.limit(50)
 			.getResultSet();
+		
 		
 		//------------------------------------
 		// Filter by Access
 		AutocompleteList list = new AutocompleteList();
+		result.addList(list);
+		int i = 0;
 		try {
 			while(resultSet != null && resultSet.next()) {
+
 				int id = resultSet.getInt("PK_ID");
 				if(hasUserAccessToStoredFile(id)) {
+
 					String name = resultSet.getString("NAME");
 					String owner = resultSet.getString("OWNER");
-					list.addItem(id, name, "Owner: "+owner);
+					Long size = resultSet.getLong("SIZE");
+					
+					JsonObject json = new JsonObject();
+					json.addProperty("id", id);
+					json.addProperty("name", name);
+					
+					String fileJsonString = "file = "+CFW.JSON.toJSON(json)+" ";
+					
+					
+					//---------------------
+					// Make Item
+					AutocompleteItem item = new AutocompleteItem();
+					item.value(fileJsonString);
+					item.label(name);
+					item.description(
+							  "<span>"
+								+ "<b>ID:&nbsp;</b>" + id 
+								+ "&emsp;<b>Owner:&nbsp;</b>" + owner 
+								+ "&emsp;<b>Size:&nbsp;</b>" + CFW.Utils.Text.toHumanReadableBytes(size, 1) 
+							+ "<span>"
+							);
+					
+					item.setMethodReplaceBeforeCursor(searchValue);
+					
+					
+					list.addItem(item);
+					
+					
+					//---------------------
+					// Make Columns
+					i++;
+					
+					if((i % 10) == 0) {
+						list = new AutocompleteList();
+						result.addList(list);
+					}
+					if(i == 50) { break; }
 				}
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)
 				.severe("Error while autocomplete storedfile.", new Throwable());
 		} finally {
-			CFWDB.close(resultSet);
+			CFW.DB.close(resultSet);
 		}
-
-		
-		return new AutocompleteResult(list);
 		
 	}
 	
