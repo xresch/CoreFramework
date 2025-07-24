@@ -158,6 +158,44 @@ public class CFWResultSet {
 		return false;
 	}
 	
+	/***********************************************************************************
+	 * Streams bytes from a column to the defined output stream.
+	 * @param columnName name of the column
+	 * @param out the output stream
+	 * @return InputStream for the first result, or null if there was no result or on error
+	 ***********************************************************************************/
+	public InputStream getBytesStream(String columnName) {
+		
+		if(prepared == null || !isResultSet) {
+			return null;
+		}
+		
+		try {
+			
+			ResultSet resultSet = prepared.getResultSet();
+			
+			if (resultSet.next()) {
+                return resultSet.getBinaryStream(columnName.toString());
+            }
+			
+		} catch (Exception e) {
+
+			new CFWLog(logger).silent(isSilent).severe("Issue creating InputStream: "+e.getLocalizedMessage(), e);
+			try {
+				if(connection != null && dbInterface.transactionConnection.get() == null ) { 
+					dbInterface.removeOpenConnection(connection);
+					connection.close(); 
+				}
+				if(prepared != null) { prepared.close(); }
+			} catch (SQLException e2) {
+				new CFWLog(logger).silent(isSilent)
+					.severe("Issue closing resources.", e2);
+			}
+		} 
+		
+		return null;
+	}
+	
 	
 	/***********************************************************************************
 	 *

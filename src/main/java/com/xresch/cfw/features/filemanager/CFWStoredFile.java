@@ -524,6 +524,11 @@ public class CFWStoredFile extends CFWObject {
 	}
 	
 	public CFWStoredFile extension(String value) {
+		
+		if(value != null) {
+			value = value.trim().toLowerCase();
+		}
+		
 		this.extension.setValue(value);
 		return this;
 	}

@@ -1,7 +1,9 @@
 package com.xresch.cfw.features.filemanager;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,6 +21,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
+import com.xresch.cfw.db.CFWResultSet;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteItem;
@@ -115,6 +118,27 @@ public class CFWDBStoredFile {
 	 **********************************************************************************/
 	public static boolean retrieveData(CFWStoredFile item, OutputStream out) { 
 		return new CFWSQL(item).executeRetrieveBytes(CFWStoredFileFields.DATA, out);
+	}
+	
+	/**********************************************************************************
+	 * Retrieve Data from the DATA column as a String.
+	 * @param item the file the data should be stored to.
+	 * @param fileData the inputStream providing the data.
+	 **********************************************************************************/
+	public static String retrieveDataAsString(CFWStoredFile item) { 
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		
+		new CFWSQL(item).executeRetrieveBytes(CFWStoredFileFields.DATA, out);
+		
+		return out.toString(Charset.forName("UTF-8"));
+	}
+	
+	/**********************************************************************************
+	 * Retrieve a data stream object for the DATA column as a string.
+	 * @param item the file the data should be stored to.
+	 **********************************************************************************/
+	public static CFWResultSet retrieveDataStreamObject(CFWStoredFile item) { 
+		return new CFWSQL(item).executeRetrieveBytesCFWResultSet(CFWStoredFileFields.DATA);
 	}
 	
 	/**********************************************************************************

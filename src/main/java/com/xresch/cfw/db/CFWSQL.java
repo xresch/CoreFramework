@@ -1849,10 +1849,27 @@ public class CFWSQL {
 	
 	/****************************************************************
 	 * Streams bytes from a blob column to an output stream.
-	 * @param queryOnly true
-	 * @return CFWSQL for method chaining
+	 * @param columnName
+	 * @return boolean true if successful, false otherwise
 	 ****************************************************************/
 	public boolean executeRetrieveBytes(Object columnName, OutputStream stream) {
+				
+		CFWResultSet cfwResult = executeRetrieveBytesCFWResultSet(columnName);
+
+		boolean success = cfwResult.streamBytes(columnName, stream);
+		cfwResult.close();
+		
+		return success;
+	}
+	
+	/****************************************************************
+	 * Prepares a bytes stream for the selected column.
+	 * Returns a CFWResultSet object that can be used to stream the bytes.
+	 * 
+	 * @param columnName
+	 * @return CFWResultSet for method chaining
+	 ****************************************************************/
+	public CFWResultSet executeRetrieveBytesCFWResultSet(Object columnName) {
 		
 		String statement = 
 				  "SELECT "+columnName
@@ -1864,11 +1881,8 @@ public class CFWSQL {
 		values.add(object.getPrimaryKeyValue());
 		
 		CFWResultSet cfwResult = dbInterface.preparedExecuteCFWResultSet(statement, values.toArray());
-
-		boolean success = cfwResult.streamBytes(columnName, stream);
-		cfwResult.close();
 		
-		return success;
+		return cfwResult;
 	}
 	
 	/****************************************************************

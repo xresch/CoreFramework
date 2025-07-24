@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query.sources;
 
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,15 +9,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.extensions.cli.CFWCLIExecutor;
+import com.xresch.cfw.db.CFWResultSet;
 import com.xresch.cfw.extensions.cli.FeatureCLIExtensions;
 import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.filemanager.CFWStoredFile;
+import com.xresch.cfw.features.filemanager.CFWStoredFile.CFWStoredFileFields;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQuerySource;
@@ -49,7 +53,6 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 	private static final String PARAM_HEAD		= "head";
 	private static final String PARAM_TAIL		= "tail";
 	private static final String PARAM_COUNT_SKIPPED	= "countSkipped";
-	private static final String PARAM_TIMEOUT 	= "timeout";
 	
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
@@ -185,11 +188,6 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 						.setValue(true)
 						)
 				
-				.addField(
-						CFWField.newInteger(FormFieldType.TEXTAREA, PARAM_TIMEOUT)
-						.setDescription("(Optional)The timeout in seconds (default: 120).")
-						.setValue(124)
-						)
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_TIMEFIELD)
@@ -226,7 +224,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
 		//------------------------------------
-		// Get FILE
+		// Get File ID
 		String fileString = (String) parameters.getField(PARAM_FILE).getValue();
 		
 		Integer fileID = null; 
@@ -251,6 +249,21 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 			}
 		}
 		
+		if(fileID == null) {
+			CFW.Messages.addWarningMessage("source "+SOURCE_NAME+": The file ID could not be retrieved, something seems wrong with the file-parameter.");
+			return;
+		}
+		
+		//------------------------------------
+		// Get File
+		
+		CFWStoredFile file = CFW.DB.StoredFile.selectByID(fileID);
+		
+		if(file == null) {
+			CFW.Messages.addWarningMessage("source "+SOURCE_NAME+": The file with ID "+fileID+" could not be found.");
+			return;
+		}
+		
 		//------------------------------------
 		// Get As
 		String parseAs = (String) parameters.getField(PARAM_AS).getValue();	
@@ -260,33 +273,37 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 		
 		if(parseAs.equals("auto")) {
 			
+			String extension = file.extension();
+			
+			if(Strings.isNullOrEmpty(extension)) {		parseAs = CFWQueryStringParserType.lines.toString(); }
+			else if(extension.startsWith("json")) {		parseAs = CFWQueryStringParserType.json.toString(); }
+			else if(extension.startsWith("csv")) {		parseAs = CFWQueryStringParserType.csv.toString(); }
+			else if(extension.startsWith("xml")) {		parseAs = CFWQueryStringParserType.xml.toString(); }
+			else if(extension.startsWith("html")) {		parseAs = CFWQueryStringParserType.html.toString(); }
+			else if(extension.startsWith("xls")) {		parseAs = "excel"; }
+			else { /*parse as lines by default*/		parseAs = CFWQueryStringParserType.lines.toString(); }
+			
 		}
 		
-		if( !CFWQueryStringParserType.has(parseAs) ){
-			this.getParent().getContext().addMessageError("source "+SOURCE_NAME+": value as='"+parseAs+"' is not supported."
-														 +" Available options: "
-														 +CFW.JSON.toJSON( CFWQueryStringParserType.getNames()) );
+		if( ! parseAs.equals("excel") 
+		&&  ! CFWQueryStringParserType.has(parseAs) ){
+			this.getParent()
+				.getContext()
+				.addMessageError("source "+SOURCE_NAME+": value as='"+parseAs+"' is not supported."
+								 +" Available options: "
+								 +CFW.JSON.toJSON( CFWQueryStringParserType.getNames()) );
 			return;
 		}
 		
-		CFWQueryStringParserType type = CFWQueryStringParserType.valueOf(parseAs);
-		
-
-		//------------------------------------
-		// Get Commands
-		String commands = (String) parameters.getField(PARAM_SHEET).getValue();
 		
 		//------------------------------------
-		// Get timeout
-		Integer timeout = (Integer) parameters.getField(PARAM_TIMEOUT).getValue();
-		if(timeout == null) {
-			timeout = 120;
-		}
+		// Get Sheet
+		String sheet = (String) parameters.getField(PARAM_SHEET).getValue();
+		
 		
 		//------------------------------------
 		// Get Separator
 		String csvSeparator = (String) parameters.getField(PARAM_CSVSEPARATOR).getValue();
-		
 		
 		//------------------------------------
 		// Get Head/Tail/Skipped
@@ -309,19 +326,36 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 		}
 		
 		//----------------------------------------
-		// Execute Command
-		CFWCLIExecutor executor = new CFWCLIExecutor("bla bla", commands, envMap); 
-		executor.execute();
-
-		//----------------------------------------
 		// Get Data
-		String dataString = executor.readOutputOrTimeout(timeout, head, tail, countSkipped);
-
+		ArrayList<EnhancedJsonObject> result;
+		if(parseAs.equals("excel")) {
+			//----------------------------
+			// Excel
+			CFWResultSet cfwResult =CFW.DB.StoredFile.retrieveDataStreamObject(file);
+			InputStream dataSream = cfwResult.getBytesStream(CFWStoredFileFields.DATA.toString());
+			JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(dataSream, sheet);
+			cfwResult.close();
+			
+			result = new ArrayList<>();
+			for(JsonElement element : array) {
+				if(element != null && element.isJsonObject()) {
+					result.add(new EnhancedJsonObject( element.getAsJsonObject() ) ); 
+				}
+			}
+			
+		}else {
+			//----------------------------
+			// Other Types
+			CFWQueryStringParserType type = CFWQueryStringParserType.valueOf(parseAs);
+			String dataString = CFW.DB.StoredFile.retrieveDataAsString(file);
+			result = _CFWQueryCommonStringParser.parse(type, dataString, csvSeparator);
+			
+		}
+		
 		//------------------------------------
 		// Parse Data
 		try {
-			ArrayList<EnhancedJsonObject> result = _CFWQueryCommonStringParser.parse(type, dataString, csvSeparator);
-			
+
 			//------------------------------------
 			// Json Timeframe Checker
 			String timefield = (String)parameters.getField(PARAM_TIMEFIELD).getValue();
