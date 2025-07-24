@@ -48,12 +48,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 	private static final String PARAM_AS		= "as";
 	private static final String PARAM_FILE 		= SOURCE_NAME;
 	private static final String PARAM_SHEET 	= "sheet";
-	
-	private static final String PARAM_ENV		= "env";
-	private static final String PARAM_HEAD		= "head";
-	private static final String PARAM_TAIL		= "tail";
-	private static final String PARAM_COUNT_SKIPPED	= "countSkipped";
-	
+		
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
 	
@@ -158,34 +153,6 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 						CFWField.newString(FormFieldType.TEXTAREA, PARAM_SHEET)
 								.setDescription("(Optional)The name of the sheet that should be read from an excel file(Default: First sheet).")
 								.disableSanitization()
-						)
-				
-				.addField(
-						CFWField.newString(FormFieldType.TEXT, PARAM_ENV)
-							.setDescription("(Optional)Additional environment variables which should be passed to the command line.")
-							.addValidator(new NotNullOrEmptyValidator())
-							.disableSanitization()
-					)
-				
-				.addField(
-						CFWField.newInteger(FormFieldType.TEXT, PARAM_HEAD)
-							.setDescription("(Optional)Number of lines that should be read from the head(start) of the output.")
-							.disableSanitization()
-							.setValue(0)
-					)
-				
-				.addField(
-						CFWField.newInteger(FormFieldType.TEXT, PARAM_TAIL)
-							.setDescription("(Optional)Number of lines that should be read from the tail(end) of the output.")
-							.disableSanitization()
-							.setValue(0)
-					)
-				
-				.addField(
-						CFWField.newBoolean(FormFieldType.TEXT, PARAM_COUNT_SKIPPED)
-						.setDescription("(Optional)If parameter head or tail is set, this parameter decides if skipped line count should be added in the output.(Default:true)")
-						.disableSanitization()
-						.setValue(true)
 						)
 				
 				
@@ -304,27 +271,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 		//------------------------------------
 		// Get Separator
 		String csvSeparator = (String) parameters.getField(PARAM_CSVSEPARATOR).getValue();
-		
-		//------------------------------------
-		// Get Head/Tail/Skipped
-		int head = (Integer) parameters.getField(PARAM_HEAD).getValue();
-		int tail = (Integer) parameters.getField(PARAM_TAIL).getValue();
-		boolean countSkipped = (Boolean) parameters.getField(PARAM_COUNT_SKIPPED).getValue();
-		
-		//------------------------------------
-		// Get Environment Variables
-		String envString = (String) parameters.getField(PARAM_ENV).getValue();
-		
-		HashMap<String, String> envMap = new HashMap<>();
-		
-		if(envString != null && envString.startsWith("{")) {
-			JsonObject headersObject = CFW.JSON.fromJson(envString).getAsJsonObject();
-			
-			for(Entry<String, JsonElement> entry : headersObject.entrySet()) {
-				envMap.put(entry.getKey(), entry.getValue().getAsString());
-			}
-		}
-		
+				
 		//----------------------------------------
 		// Get Data
 		ArrayList<EnhancedJsonObject> result;

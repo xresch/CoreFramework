@@ -21,7 +21,7 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
  **************************************************************************************************************/
 public final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 	
-	// Cached for Autocomplete
+	// Cached for Autocomplete, the keys are all lowercase
 	private static TreeMap<String, CFWQueryCommand> commandMapCached;
 
 	/********************************************************
@@ -147,6 +147,10 @@ public final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 			
 			if(commandNameToken.type() == CFWQueryTokenType.LITERAL_STRING) {
 				String partialOrFullCommandName = commandNameToken.value();
+				
+				if(partialOrFullCommandName != null) {
+					partialOrFullCommandName = partialOrFullCommandName.toLowerCase();
+				}
 				
 				if(commandMap.containsKey(partialOrFullCommandName)) {
 					//--------------------------------

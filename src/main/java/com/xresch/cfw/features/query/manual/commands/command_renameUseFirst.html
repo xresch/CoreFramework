@@ -1,0 +1,12 @@
+
+<p>Renames all fields by using the values of the first row as the new names.
+If new names are identical, they will have a number as a suffix.
+This command was introduced to handle reading data from excel files with headers.</p>
+
+<p>Following code will read data from an excel file and use the first row as new field names. </p>
+<pre><code class="language-cfwquery">| source file 
+	file = {"id":123, "name": "data.xlsx"}
+	sheet = "sameNames"
+| renameUseFirst </code></pre>
+
+

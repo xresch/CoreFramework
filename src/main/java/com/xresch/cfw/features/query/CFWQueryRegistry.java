@@ -213,7 +213,8 @@ public class CFWQueryRegistry {
 	}
 	
 	/***********************************************************************
-	 * Get a list of Environment instances.
+	 * Get a Map with lower case command names as keys and the instances
+	 * as values.
 	 * 
 	 ***********************************************************************/
 	public static TreeMap<String, CFWQueryCommand> createCommandInstances(CFWQuery parent)  {
@@ -224,7 +225,7 @@ public class CFWQueryRegistry {
 				String commandName = entry.getKey();
 				Class<? extends CFWQueryCommand> clazz = entry.getValue();
 				CFWQueryCommand instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
-				instanceMap.put(commandName, instance);
+				instanceMap.put(commandName.toLowerCase(), instance);
 			} catch (Exception e) {
 				new CFWLog(logger).severe("Issue creating instance for Command: "+e.getMessage(), e);
 			}
