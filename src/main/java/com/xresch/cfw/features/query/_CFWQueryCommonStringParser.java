@@ -69,7 +69,9 @@ public class _CFWQueryCommonStringParser {
 					enumNames.add(unit.name());
 				}
 			}
-			return enumNames;
+			
+			// return a clone
+			return new TreeSet<String>(enumNames);
 		}
 				
 		//==============================

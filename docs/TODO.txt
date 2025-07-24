@@ -170,6 +170,8 @@ DONE
 ====
 
 ------- current -------
+- NEW FEATURE: File Manager, upload/download files
+- NEW FEATURE: Query can now read data from files stored in the File Manager, including excel files. 
 - Widget: Parameters - When importing dashboards, affected Widgets are now resolved properly.
 - Parameter: Added parameter Query Select Multiple
 - Parameter: Added parameter Stored Query Select
@@ -180,6 +182,9 @@ DONE
 - Query: Stored source and command - autocomplete does not show archived queries
 - Query: source cli/web: Added as-options 'csv' and 'jsonlines'
 
+- Query: Added Sources:
+	- file
+	
 - Query: Added Commands:
 	- parsecsv
 	- renameUseFirst

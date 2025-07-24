@@ -67,3 +67,56 @@ Following creates a matrix based on alphabet and value ranges:
 	visiblefields=[FIRSTNAME,LASTNAME]
 	height="100px"
 	#width="100px"</code></pre>	
+	
+
+	
+<h2>Making Tables from Flat Record/Fieldname/Value Structures</h2>
+<p>This command can help you creating actual tables from flat data structures.
+You get such structures for example when you have multiple lines per record, each containing a record ID, the fieldname and the value assigned to the fieldname.
+Here an example of such data:</p>
+<pre class="card monospace p-3 mb-3">key				|	fieldname	|	text
+
+data.record[0]	|	ID			|	c8e454aa-2cf2-40a4-bb3
+data.record[0]	|	FIRSTNAME	|	Hermes
+data.record[0]	|	LASTNAME	|	Viklund
+data.record[0]	|	LOCATION	|	Quivira
+
+data.record[1]	|	ID			|	2d0c6180-3852-4e8b-961
+data.record[1]	|	FIRSTNAME	|	Artemis
+data.record[1]	|	LASTNAME	|	Fransson
+data.record[1]	|	LOCATION	|	Zerzura	
+
+data.record[2]	|	ID			|	6a07f433-d835-4de4-88c
+data.record[2]	|	FIRSTNAME	|	Nike
+data.record[2]	|	LASTNAME	|	Lindberg
+data.record[2]	|	LOCATION	|	Finias</pre>
+
+<p>Following example extracts records from an XML-Export and uses the unbox &amp; statsmatrix command to turn it into a regular table:</p>
+<pre><code class="language-cfwquery">| source file 
+	as = 'xmltree'
+	file = {"id": 134, "name": "data.xml"}
+	/* Above data contained records like the following at some point in human history:
+	&lt;data>
+		&lt;record>
+	   		&lt;firstname>Aurora&lt;/firstname>
+	   		&lt;lastname>Testonia&lt;/lastname>
+	   		&lt;country>Ireland&lt;/country>
+	   		&lt;dessert withcream="true" creamWipped="yes please">Tiramisu&lt;/dessert>
+		&lt;/record>
+		  ... many more records ... 
+	&lt;/data> 
+	*/
+| unbox replace = true children
+| unbox replace = true children
+| unbox replace = false children
+| unbox replace = true 
+		key # keep key
+		children.tag
+		children.text
+		children.attributes
+| statsmatrix 
+	column = 'tag'
+	row = 'key'
+	value = first(text) # as there is anyway only one value
+| sort key
+| remove key</code></pre>

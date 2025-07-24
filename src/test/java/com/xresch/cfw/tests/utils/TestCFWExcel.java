@@ -23,7 +23,7 @@ public class TestCFWExcel {
 		String resourcePath = packageName + "/excel_read_test.xlsx";
 		InputStream is = CFWFiles.class.getClassLoader().getResourceAsStream(resourcePath);
 		
-		JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(is, null);
+		JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(is, null, false);
 		
 		Assertions.assertEquals(array.size(), 4, "4 rows read from excel");
 		
@@ -71,19 +71,62 @@ public class TestCFWExcel {
     "J": "#DIV/0!"
   }
 ]""");
-				
-//		//---------------------------------
-//		// 
-//		//---------------------------------
-//		object = array.get(0).getAsJsonObject(); 
-//		
-//		Assertions.assertEquals("gatling", object.get("category").getAsString());
-//		Assertions.assertEquals("callAPI", object.get("entity").getAsString());
-//		Assertions.assertEquals(true, object.get("attributes").isJsonObject());
-//		Assertions.assertEquals("123", object.get("value").getAsString());
 		
 	}
-	
+
+	/*****************************************************
+	 * 
+	 *****************************************************/
+	@Test
+	public void testJsonFromExcel_FirstRowAsHeader() {
+		
+		boolean firstRowAsHeader = true;
+		
+		String packageName = "com.xresch.cfw.tests.utils.testdata".replaceAll("\\.", "/");
+		String resourcePath = packageName + "/excel_read_test.xlsx";
+		InputStream is = CFWFiles.class.getClassLoader().getResourceAsStream(resourcePath);
+		
+		JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(is, null, firstRowAsHeader);
+		
+		Assertions.assertEquals(array.size(), 3, "3 rows read from excel");
+		
+		System.out.println(CFW.JSON.toJSONPretty(array));
+		Assertions.assertEquals(CFW.JSON.toJSONPretty(array), 
+				"""
+[
+  {
+    "FIRSTNAME": "Aurora",
+    "LASTNAME": "Björnsson",
+    "LIKES_TIRAMISU": true,
+    "AGE": 24,
+    "INDEX": 0,
+    "NULL": null,
+    "FORMULA": "0",
+    "ERROR": "#DIV/0!"
+  },
+  {
+    "FIRSTNAME": "Hera",
+    "LASTNAME": "Viklund",
+    "LIKES_TIRAMISU": false,
+    "AGE": 33,
+    "INDEX": 1,
+    "NULL": null,
+    "FORMULA": "33",
+    "ERROR": "#DIV/0!"
+  },
+  {
+    "FIRSTNAME": "Freya",
+    "LASTNAME": "Scheiwillera",
+    "LIKES_TIRAMISU": true,
+    "AGE": 42,
+    "INDEX": 2,
+    "NULL": null,
+    "FORMULA": "84",
+    "ERROR": "#DIV/0!"
+  }
+]""");
+		
+	}	
 	
 	
 }

@@ -3,8 +3,7 @@ package com.xresch.cfw.features.query.sources;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
@@ -13,6 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.JSON;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -48,18 +48,34 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 	private static final String PARAM_AS		= "as";
 	private static final String PARAM_FILE 		= SOURCE_NAME;
 	private static final String PARAM_SHEET 	= "sheet";
+	private static final String PARAM_HEADER	= "header";
 		
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
 	
-	private static final String PARAM_CSVSEPARATOR = "csvSeparator";
+	private static final String PARAM_SEPARATOR = "separator";
 	
-
+	private TreeSet<String> parserNames;
+	private String asOptionList;
 	/******************************************************************
 	 *
 	 ******************************************************************/
 	public CFWQuerySourceFile(CFWQuery parent) {
 		super(parent);
+		
+		//-------------------------
+		// List of Parser Names
+		parserNames = CFWQueryStringParserType.getNames();
+		parserNames.add("auto");
+		parserNames.add("excel");
+		
+		//-------------------------
+		// Parser Description
+		asOptionList = CFWQueryStringParserType.getDescriptionHTMLList();
+		asOptionList = asOptionList.replace("<ul>", "<ul>"
+				+"<li><b>auto:&nbsp;</b>The source will try to use the best option available based on the file extension.</li>"
+				+"<li><b>excel:&nbsp;</b>Read data from an excel sheet.</li>"
+			);
 	}
 
 	
@@ -95,8 +111,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 				
 		//------------------------------------
 		// Fetch resource and replace
-		String asOptionList = CFWQueryStringParserType.getDescriptionHTMLList();
-		
+
 		return CFW.Files.readPackageResource(
 					  FeatureQuery.PACKAGE_MANUAL+".sources"
 					, "source_"+SOURCE_NAME+".html"
@@ -137,7 +152,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_AS)
 						.setDescription("(Optional)Define how the response should be parsed, default is 'auto'. Options: "
-								 					+CFW.JSON.toJSON( CFWQueryStringParserType.getNames()))
+								 					+CFW.JSON.toJSON(parserNames) )
 						.addValidator(new NotNullOrEmptyValidator())
 						.disableSanitization()
 						)
@@ -151,8 +166,15 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 
 				.addField(
 						CFWField.newString(FormFieldType.TEXTAREA, PARAM_SHEET)
-								.setDescription("(Optional)The name of the sheet that should be read from an excel file(Default: First sheet).")
+								.setDescription("(Optional & Excel Only) The name of the sheet that should be read from an excel file(Default: First sheet).")
 								.disableSanitization()
+						)
+				
+				.addField(
+						CFWField.newBoolean(FormFieldType.TEXTAREA, PARAM_HEADER)
+						.setDescription("(Optional & Excel Only) Set if the data read from an excel sheet has a header as the first row. (Default: true)")
+						.disableSanitization()
+						.setValue(true)
 						)
 				
 				
@@ -168,7 +190,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 					)
 				
 				.addField(
-						CFWField.newString(FormFieldType.TEXT, PARAM_CSVSEPARATOR)
+						CFWField.newString(FormFieldType.TEXT, PARAM_SEPARATOR)
 						.setDescription("(Optional)The separator used in case the response is parsed as CSV. (Default: ',').")	
 						.setValue(",")
 						)
@@ -182,7 +204,6 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 	public void parametersPermissionCheck(CFWObject parameters) throws ParseException {
 		//do nothing
 	}
-	
 	
 	/******************************************************************
 	 *
@@ -258,7 +279,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 				.getContext()
 				.addMessageError("source "+SOURCE_NAME+": value as='"+parseAs+"' is not supported."
 								 +" Available options: "
-								 +CFW.JSON.toJSON( CFWQueryStringParserType.getNames()) );
+								 +CFW.JSON.toJSON(parserNames) );
 			return;
 		}
 		
@@ -269,18 +290,23 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 		
 		
 		//------------------------------------
+		// Get hasheader
+		Boolean header = (Boolean) parameters.getField(PARAM_HEADER).getValue();
+		
+		//------------------------------------
 		// Get Separator
-		String csvSeparator = (String) parameters.getField(PARAM_CSVSEPARATOR).getValue();
+		String csvSeparator = (String) parameters.getField(PARAM_SEPARATOR).getValue();
 				
 		//----------------------------------------
 		// Get Data
 		ArrayList<EnhancedJsonObject> result;
-		if(parseAs.equals("excel")) {
+		if( parseAs.equals("excel") ) {
+			
 			//----------------------------
 			// Excel
 			CFWResultSet cfwResult =CFW.DB.StoredFile.retrieveDataStreamObject(file);
 			InputStream dataSream = cfwResult.getBytesStream(CFWStoredFileFields.DATA.toString());
-			JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(dataSream, sheet);
+			JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(dataSream, sheet, header);
 			cfwResult.close();
 			
 			result = new ArrayList<>();
@@ -291,6 +317,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 			}
 			
 		}else {
+			
 			//----------------------------
 			// Other Types
 			CFWQueryStringParserType type = CFWQueryStringParserType.valueOf(parseAs);

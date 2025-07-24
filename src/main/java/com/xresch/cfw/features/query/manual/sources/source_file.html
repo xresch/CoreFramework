@@ -1,0 +1,154 @@
+
+<div id="manual-toc"></div>
+
+<p>The file source is used to read data from files stored in the File Manager of this application. 
+This can be useful to either analyze file content, or to manage certain data in a central place that you want to join or merge with other data. </p>
+
+<h2>Autocomplete to Select Files</h2>
+<p>This command supports autocomplete to assist you to select the files you have stored in the File Manager.
+While your cursor is in the Query editor after "source file ", press Ctrl + Space to get a list of up to 50 files in the autocomplete. 
+You can also filter by the filename and extension by doing the same after a word, for example searching for the file 'myHumongousFile.json' could look like this:</p>
+<pre><code class="language-cfwquery">########## List all JSON Files #################
+| source file 
+	json # your cursor here #
+;
+########## List all Files containing 'Humon' #################
+| source file 
+	Humon # your cursor here #
+;
+########## List all Files containing 'myHumongousFile.json' #################
+# this needs to be put into quotes, as '.' is an operator in the query language 
+| source file 
+	"myHumongousFile.json" # your cursor here #
+	  </code></pre>
+	  
+	
+	
+<h2>List of As-Options</h2>
+<p>This source allows to parse the response of request in various ways, following a list of the available as-options(Default: json):</p>
+{asOptionPlaceholder}
+
+
+
+<h2>Parse As: Auto</h2>
+<p>If the as-option is not specified, the query will try to use the best option available based on the file extension.
+You can always set this manually if it doesn't work or if you want a different output format.
+Here is a very simple example on how to read an xml-file:</p>
+<pre><code class="language-cfwquery">| source file 
+	file = {"id": 134, "name": "data.xml"}  </code></pre>
+
+
+
+<h2>Parse As: CSV</h2>
+<p>Here is a simple example on how to parse a CSV-file with a custom separator:</p>
+<pre><code class="language-cfwquery">| source file 
+	as = 'csv'
+	file = {"id":66 , "name": "data.csv"} 
+	separator=";"  </code></pre>
+
+
+
+<h2>Parse As: JSON</h2>
+<p>Following an example how to parse a JSON-file. 
+It parses an exported EMP Dashboard file and uses the unbox-command to get the vidget data:</p>
+<pre><code class="language-cfwquery">| source file 
+	as = 'json'
+	file = {"id": 20, "name":"EMP_Exported_Dashboard.json" } 
+| unbox replace=true payload.dashboards[0].widgets
+| unbox replace=true widgets</code></pre>	
+
+
+
+<h2>Parse As: Excel</h2>
+<p>Here an example how to parse data from an excel sheet. Blank rows and columns in the excel will be ignored:</p>
+<pre><code class="language-cfwquery">| source file 
+	as = excel
+	file = {"id":257,"name":"data.xlsx"}
+	sheet = "data" # optional, default is first sheet 
+	header = true # default, set to false if there is no header, or if you want to use the excel column names (A, B, C ...)</code></pre>	
+
+	
+<h2>Parse As: HTML</h2>
+<p>Here is a simple example on how to parse a HTML-file with a custom separator:</p>
+<pre><code class="language-cfwquery">| source file 
+	as = 'html'
+	file = {"id": 88, "name": "data.html"}</code></pre>	
+
+
+
+<h2>Parse As: HTML and Extract Tables</h2>
+<p>Using 'as=htmltables' will parse as HTML and extract all the tables from the response:</p>
+<pre><code class="language-cfwquery">| source file 
+	as = "htmltables"
+	file = {"id": 999999999, "name": "website.html"}
+| filter 
+	tableindex > 0
+	length(data) > 0
+| unbox data replace = true</code></pre>	
+
+
+
+<h2>Parse As: XML</h2>
+<p>Following is an example how to fetch data and parse the response as XML. The response will be a flat table containing all elements from the XML tree:</p>
+<pre><code class="language-cfwquery">| source file 
+	as = 'xml'
+	file = {"id": 134, "name": "data.xml"}</code></pre>	
+
+
+
+<h2>Parse As: XML with Structure</h2>
+<p>Using 'as=xmltree' will also parse as XML, but retains the tree structure of the elements.
+Following example extracts records from an XML-Export and uses the unbox &amp; statsmatrix command to turn it into a table regular:</p>
+<pre><code class="language-cfwquery">| source file 
+	as = 'xmltree'
+	file = {"id": 134, "name": "data.xml"}
+	/* Above data contained records like the following at some point in human history:
+	&lt;data>
+		&lt;record>
+	   		&lt;firstname>Aurora&lt;/firstname>
+	   		&lt;lastname>Testonia&lt;/lastname>
+	   		&lt;country>Ireland&lt;/country>
+	   		&lt;dessert withcream="true" creamWipped="yes please">Tiramisu&lt;/dessert>
+		&lt;/record>
+		  ... many more records ... 
+	&lt;/data> 
+	*/
+| unbox replace = true children
+| unbox replace = true children
+| unbox replace = false children
+| unbox replace = true 
+		key # keep key
+		children.tag
+		children.text
+		children.attributes
+| statsmatrix 
+	column = 'tag'
+	row = 'key'
+	value = first(text) # as there is anyway only one value for each key/tag combination
+| sort key
+| remove key</code></pre>	
+
+
+
+<h2>Parse As: Lines</h2>
+<p>Following is an example how to fetch data and parse each line of the file into a record.
+This can be useful for plain text data and filtering for specific lines:</p>
+<pre><code class="language-cfwquery">| source file 
+	as = 'lines'
+	file = {"id":321,"name":"data.txt"}</code></pre>	
+
+
+
+<h2>Parse As: Plain</h2>
+<p>the plain parser will just take the whole content of the file and dump it into a single field.
+The option has been exorcised to get rid of curses and evil spirits. It also has been blessed by supernatural existences.
+This can be useful for displaying plain text file content:</p>
+<pre><code class="language-cfwquery">| source file 
+	as = 'plain'
+	file = {"id": 666, "name": "haunted_houses.txt"}</code></pre>	
+
+
+
+
+
+
