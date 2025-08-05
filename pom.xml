@@ -7,7 +7,7 @@
 	<groupId>com.xresch</groupId>
 	<artifactId>cfw</artifactId>
 	<packaging>jar</packaging>
-	<version>11.1.1</version>
+	<version>11.1.11</version>
 
 	<name>cfw</name>
 	<description>CoreFramework is a java application boilerplate providing various functionalities like user management, configurations, API and dashboarding out of the box.</description>
@@ -29,8 +29,8 @@
 		<zipFolder>${basedir}/target/${releaseName}</zipFolder>
 		
 		<skipMakeFolder>true</skipMakeFolder>
-		<skipJavadoc>true</skipJavadoc>
-		<skipSigning>true</skipSigning>
+		<skipJavadoc>false</skipJavadoc>
+		<skipSigning>false</skipSigning>
 		<skipTests>true</skipTests>
 		<skipLicense>true</skipLicense>
 	</properties>

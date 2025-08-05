@@ -327,6 +327,7 @@ public class CFWTime {
 		TimeZone timeZone = TimeZone.getTimeZone(offset);
 		return timeZone;
 	}
+	
 	/********************************************************************************************
 	 * Returns ZoneOffset for offset minutes.
 	 * 

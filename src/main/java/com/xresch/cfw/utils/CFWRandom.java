@@ -2,9 +2,17 @@ package com.xresch.cfw.utils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -216,11 +224,14 @@ public class CFWRandom {
 	
 	};
 	
-	/*4 Random integer between 0 and 9999 generated at startup. Useful to make sure content is reloaded after startup.*/
-	public static final int STARTUP_RANDOM_INT = fromZeroToInteger(9999);
+	/** 4 Random integer between 0 and 99999 generated at startup. Useful to make sure content is reloaded after startup.*/
+	public static final int STARTUP_RANDOM_INT = fromZeroToInteger(99999);
 	
-	/*4 Random alphanumerical characters generated at startup. Useful to make sure content is reloaded after startup.*/
+	/** 4 Random alphanumerical characters generated at startup. Useful to make sure content is reloaded after startup.*/
 	public static final String STARTUP_RANDOM_ALPHANUM = stringAlphaNum(4);
+	
+	/** Cache of formatters so we don't create a bazillion of them. */
+	private static final HashMap<String, SimpleDateFormat> formatterCache = new HashMap<>();
 	
 	/******************************************************************************
 	 * Returns an instance of Random.
@@ -255,7 +266,7 @@ public class CFWRandom {
 
 	
 	/******************************************************************************
-	 * Returns a random item from Set.
+	 * Returns a random item from a Set.
 	 * 
 	 * @param nullRatioPercent number from 0 to 100 to determine if a null value
 	 * should be returned.
@@ -271,8 +282,7 @@ public class CFWRandom {
 		}
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
-		
-		
+
 		int index = random.nextInt(set.size());
 
 		int counter = 0;
@@ -280,14 +290,60 @@ public class CFWRandom {
 		T result = null ;
 		for(T element : set) {
 			if(counter >= index) {
-				result = element;
-				break;
+				return element;
 			}
 			counter++;
 		}
 		
 		return result;
 		
+	}
+	
+	/******************************************************************************
+	 * Returns a random item from a Set.
+	 * 
+	 * @param nullRatioPercent number from 0 to 100 to determine if a null value
+	 * should be returned.
+	 * @param map to choose from
+	 * 
+	 * @return random value, null if Set is empty or null
+	 * 
+	 ******************************************************************************/
+	public static <T,K> Entry<T,K> fromMap(int nullRatioPercent, Map<T,K> map) {
+		
+		if(map == null || map.isEmpty()) {
+			return null;
+		}
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		
+		int index = random.nextInt(map.size());
+
+		int counter = 0;
+		
+		Entry<T,K> result = null;
+		
+		for(Entry<T, K> entry : map.entrySet()) {
+			if(counter >= index) {
+				return entry;
+			}
+			counter++;
+		}
+		
+		return result;
+		
+	}
+	
+	/******************************************************************************
+	 * Returns a random Item from an list of items.
+	 * 
+	 * @param strings to choose from
+	 * 
+	 ******************************************************************************/
+	@SafeVarargs
+	public static <T> T from(T... values) {
+	    return values[random.nextInt(values.length)];
 	}
 	
 	/******************************************************************************
@@ -299,6 +355,113 @@ public class CFWRandom {
 	public static String fromStrings(String... strings) {
 	    int index = random.nextInt(strings.length);
 	    return strings[index];
+	}
+	
+	
+	/******************************************************************************
+	 * Returns a random Integer from an list of integers.
+	 * 
+	 * @param values to choose from
+	 * 
+	 ******************************************************************************/
+	public static Integer fromInts(Integer... values) {
+	    int index = random.nextInt(values.length);
+	    return values[index];
+	}
+	
+	/******************************************************************************
+	 * Returns a random Long from an list of longs.
+	 * 
+	 * @param values to choose from
+	 * 
+	 ******************************************************************************/
+	public static Long fromLongs(Long... values) {
+	    int index = random.nextInt(values.length);
+	    return values[index];
+	}
+	
+	/******************************************************************************
+	 * Returns a random Float from an list of floats.
+	 * 
+	 * @param values to choose from
+	 * 
+	 ******************************************************************************/
+	public static Float fromFloats(Float... values) {
+	    int index = random.nextInt(values.length);
+	    return values[index];
+	}
+	
+	/******************************************************************************
+	 * Returns a random Double from an list of doubles.
+	 * 
+	 * @param values to choose from
+	 * 
+	 ******************************************************************************/
+	public static Double fromDoubles(Double... values) {
+	    int index = random.nextInt(values.length);
+	    return values[index];
+	}
+	
+	/******************************************************************************
+	 * Returns a random Character from an list of characters.
+	 * 
+	 * @param values to choose from
+	 * 
+	 ******************************************************************************/
+	public static Character fromChars(Character... values) {
+	    int index = random.nextInt(values.length);
+	    return values[index];
+	}
+	
+	/******************************************************************************
+	 * Returns a random Date from an list of dates. The dates passed to this method
+	 * should not have anything to do with a palm tree fruit. Any effort to force
+	 * an edible date into this method might cause the mechanism of this method to
+	 * get extremely sticky and arduous to get cleaned.
+	 * Therefore, for your own well being, do not put dates into this method that 
+	 * by its very properties and existence belong into your stomach.
+	 * 
+	 * @param values to choose from
+	 * 
+	 * @return date non-edible, but might indicate temporal measurements 
+	 ******************************************************************************/
+	public static Date fromDates(Date... values) {
+	    int index = random.nextInt(values.length);
+	    return values[index];
+	}
+	
+	/******************************************************************************
+	 * Returns a random Timestamp from an list of timestamps.
+	 * 
+	 * @param values to choose from
+	 * 
+	 * @return date non-edible, but might indicate temporal measurements 
+	 ******************************************************************************/
+	public static Timestamp fromTimestamps(Timestamp... values) {
+	    int index = random.nextInt(values.length);
+	    return values[index];
+	}
+	
+	/******************************************************************************
+	 * Returns a random Instant from an list of instants.
+	 * 
+	 * @param values to choose from
+	 * 
+	 ******************************************************************************/
+	public static Instant fromInstants(Instant... values) {
+		int index = random.nextInt(values.length);
+		return values[index];
+	}
+	
+	/******************************************************************************
+	 * Returns a random BigDecimal from an list of BigDecimals.
+	 * 
+	 * @param values to choose from
+	 * 
+	 ******************************************************************************/
+	public static BigDecimal fromBigDecimals(BigDecimal... values) {
+	    int index = random.nextInt(values.length);
+	    return values[index];
 	}
 	
 	/******************************************************************************
@@ -625,6 +788,71 @@ public class CFWRandom {
 		return decimal ;
 	}
 	
+	/********************************************************************************************
+	 * Get a formatted date string between given milliseconds(inclusive).
+	 * 
+	 * @param earliestInclusive as epoch milliseconds
+	 * @param latestInclusive as epoch milliseconds
+	 * @param format the format for the java.text.SimpleDateFormat instance
+	 ********************************************************************************************/
+	public static String dateString(long earliestInclusive, long latestInclusive, String format){
+		
+		if(!formatterCache.containsKey(format)) {
+			formatterCache.put( format, new SimpleDateFormat(format) );
+		}
+		SimpleDateFormat formatter = formatterCache.get(format);
+		return formatter.format( date(earliestInclusive, latestInclusive) );
+	}
+	
+
+	/********************************************************************************************
+	 * Creates a random Instant between given milliseconds(inclusive).
+	 * 
+	 * @param earliestInclusive as epoch milliseconds
+	 * @param latestInclusive as epoch milliseconds
+	 ********************************************************************************************/
+	public static ZonedDateTime zonedDateTime(long earliestInclusive, long latestInclusive, ZoneId zoneID) {
+		
+		return instant(earliestInclusive, latestInclusive).atZone(zoneID);
+	}
+	
+	/********************************************************************************************
+	 * Creates a random Instant between given milliseconds(inclusive).
+	 * 
+	 * @param earliestInclusive as epoch milliseconds
+	 * @param latestInclusive as epoch milliseconds
+	 ********************************************************************************************/
+	public static Instant instant(long earliestInclusive, long latestInclusive) {
+		
+		return Instant.ofEpochMilli(
+				epoch(earliestInclusive, latestInclusive)
+			);
+				
+	}
+	/******************************************************************************
+	 * Creates a random Date between given milliseconds(inclusive).
+	 * 
+	 ******************************************************************************/
+	public static Date date(Date earliestInclusive, Date latestInclusive) {
+		
+		return new Date(
+			epoch(earliestInclusive.getTime(), latestInclusive.getTime())
+		);
+	}
+	
+	/******************************************************************************
+	 * Creates a random Date between given milliseconds(inclusive).
+	 * 
+	 * @param earliestInclusive as epoch milliseconds
+	 * @param latestInclusive as epoch milliseconds
+	 * 
+	 ******************************************************************************/
+	public static Date date(long earliestInclusive, long latestInclusive) {
+		
+		return new Date(
+			epoch(earliestInclusive, latestInclusive)
+		);
+	}
 	
 	/******************************************************************************
 	 * Creates a random Timestamp between given milliseconds(inclusive).
@@ -635,21 +863,43 @@ public class CFWRandom {
 		return timestamp(earliestInclusive.getTime(), latestInclusive.getTime());
 	}
 	
+	
 	/******************************************************************************
 	 * Creates a random Timestamp between given milliseconds(inclusive).
 	 * Example Usage:
 	 * <pre><code>
-	   CFW.Random.randomTimestampInRange(
+	   CFW.Random.timestamp(
 			CFWTimeUnit.d.offset(null, -30), 
 			CFWTimeUnit.m.offset(null, -30)
 		);
 		</code></pre>
 	 * 
+	 * @param earliestInclusive as epoch milliseconds
+	 * @param latestInclusive as epoch milliseconds
 	 ******************************************************************************/
 	public static Timestamp timestamp(long earliestInclusive, long latestInclusive) {
 		
-		long timeMillis = longInRange(earliestInclusive, latestInclusive);
-		return new Timestamp(timeMillis);
+		return new Timestamp( 
+				epoch(earliestInclusive, latestInclusive) 
+			);
+	}
+	
+	/******************************************************************************
+	 * Creates a random time in epoch milliseconds between given milliseconds(inclusive).
+	 * Example Usage:
+	 * <pre><code>
+	   CFW.Random.epoch(
+			CFWTimeUnit.d.offset(null, -30), 
+			CFWTimeUnit.m.offset(null, -30)
+		);
+		</code></pre>
+	 *
+	 * @param earliestInclusive as epoch milliseconds
+	 * @param latestInclusive as epoch milliseconds
+	 * 
+	 ******************************************************************************/
+	public static long epoch(long earliestInclusive, long latestInclusive) {
+		return longInRange(earliestInclusive, latestInclusive);
 	}
 		
 	
