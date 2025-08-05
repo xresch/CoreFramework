@@ -188,9 +188,9 @@ public class CFWQueryFunctionRandomColorGroup extends CFWQueryFunction {
 		// make sure there is enough difference
 		if( Math.abs(lastHueValue - hueValue) < 50) {
 			if(lastHueValue < hueValue) {
-				hueValue += 50 - Math.abs(lastHueValue - hueValue) + CFW.Random.integerInRange(-10, +10);
+				hueValue += 50 - Math.abs(lastHueValue - hueValue) + CFW.Random.integer(-10, +10);
 			}else {
-				hueValue -= 50 - Math.abs(lastHueValue - hueValue) + CFW.Random.integerInRange(-10, +10);;
+				hueValue -= 50 - Math.abs(lastHueValue - hueValue) + CFW.Random.integer(-10, +10);;
 			}
 		}
 		

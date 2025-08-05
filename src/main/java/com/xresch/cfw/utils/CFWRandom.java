@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -44,7 +45,6 @@ public class CFWRandom {
 	private static final String[] jobTitleTopic = new String[] { "Performance", "Infrastructure", "Facility", "Communication", "Executive", "Establishment", "Machine", "Cooperation", "Quality", "Tiramisu", "Technology", "Nutrition", "Treasury", "Dissemination", "Promotion", "Research", "Discovery", "Management", "Area", "Underground", "Heaven", "Hell", "Paradise", "Underworld", "Cleaning", "Screaming", "Information", "Marketing", "Business", "Sales", "Inspiration", "Operations", "Happiness", "Production", "Organization", "Computer", "Unicorn", "Food", "Health", "Workaround", "Coping", "Translation", "Catastrophe", "Security", "Software", "Conversation", "Media", "Internet", "Amazement", "Cheerleader", "Happiness", "Revenue", "Money", "Cream", "Dream", "Steam", "Realm", "Arts", "Crafts", "Army", "Troop"};
 	private static final String[] jobTitleRole = new String[] { "Secretary", "Director", "Officer", "Deputy", "In-Charge", "Manager", "Expert", "Engineer", "Executive", "Architect", "Communicator", "Observer", "Neglector", "Slave", "Expeditor", "Locator", "Searcher", "Researcher", "Enabler", "Administrator", "Commander", "Leader", "Minister", "Ambassador", "Magician", "Accelerator", "Soldier", "Wizard", "Cleaner", "Creator", "Maker", "Slacker", "Idler", "Loafer", "Cruncher", "God", "Demi-God", "Editor", "Destroyer", "Collector", "Educator", "Representative", "Handshaker", "Hero", "Generalist", "Genius", "Organizator", "Whisperer", "Emperor", "Registrar", "Supervisor", "Ninja", "Inventor", "Listener", "Troublemaker", "Maestro", "Virtuoso", "Alchemist", "Designer", "Technician", "Commander", "Practitioner" };
 
-	
 	private static final String[] statisticsTitleAdjective = new String[] { "Heavy", "Low", "Lovely", "Tasty", "Strong", "Weak", "Enslaved", "Holy", "Spiritual", "Technical", "Digital", "Online", "Virtual", "Real", "Invented", "Shocked", "Cute", "Perfect", "Arduous", "Magical", "Annoying", "Beautiful", "Enraged", "Fallen", "Married", "Dissappointed", "Lost", "Fierce", "Idle", "Heavenly", "Hellish", "Horrifying" };
 	private static final String[] statisticsTitleObject = new String[] { "Letters", "People", "Apples", "Tiramisus", "Pillows", "Pens", "Contracts", "Customers", "Patients", "Chairs", "Castles", "Dragons", "Fairies", "Gnomes", "Chemicals", "Elves", "Horses", "Magicians", "Spirits", "Trees", "Books", "Backpacks", "Angels", "Gods", "Devils", "Demons", "Heros", "Soldiers", "Papers", "Games", "Rooms", "Liquids", "Materials" };
 	private static final String[] statisticsTitleVerb = new String[] { "Sent", "Written", "Glued", "Woreshipped", "Banned", "Cuddled", "Destroyed", "Hidden", "Stolen", "Horrified", "Made", "Created", "Impressed", "Fortified", "Mixed", "Hunted", "Befriended", "Educated", "Bewitched", "Cursed", "Enchanted", "Backed", "Sold", "Combusted", "Briefed", "Registered", "Educated", "Eradicated", "Engaged", "Divorced", "Played", "Tested", "Documented" };
@@ -53,177 +53,36 @@ public class CFWRandom {
 	private static final String[] methodNameItem = new String[] {"Customer", "Account", "Table", "Method", "Statistics", "Cell", "Maximum", "Message", "Record", "Category", "Tiramisu", "Source", "Box", "Package", "Graph", "Angel", "Demon", "Perfect", "Digital", "Virtual", "Artificial", "Actual", "First", "Last", "Literal", "Parameter", "Clock", "Berserk", "Magic", "Comment", "Page", "Test", "Money", "Cash", "Energy", "Wave", "Billing", "Cart", "Shop", "Image", "Game", "Taste", "Interest", "Gravity", "Heaven", "Scrumptious", "Royal", "Noble", "Crossbow", "Gunpowder", "Marvelous", "Extraordinary", "Fantastabulous", "Spiffy", "Stealth", "Corroded", "Corrupted", "Deteriorated", "Immoral", "Sabotaged", "Liquified"};
 	private static final String[] methodNameSuffix = new String[] {"Count", "Value", "Time", "Role", "Permissions", "Average", "Globals", "Metadata", "Defaults", "Height", "Width", "Dimensions", "Length", "Size", "Activity", "Copy", "Chart", "Extremes", "Overlaps", "Caches", "Rights", "Interval", "Set", "Map", "List", "Collection", "Array", "Object", "Results", "Number", "Status", "Percentage", "Consumption", "Balance", "Time", "Entry", "Row", "Column", "Performance", "Load", "Rate", "Allowance", "Beast", "Angel", "Smithereens", "Priestess", "Sorceress", "Kingdom", "Fishes", "Stars", "Furnance", "Sword", "Spear", "Assassin", "Mage", "Huntress", "Fisherman", "Duchess", "Lord", "King", "Prince", "Waitress", "Enemies", "Sirens", "Overlords", "Overlady", "Empire", "Carpenter", "Phoenix", "Blacksmith", "Zombies", "Ghouls", "Kobolds", "Endeavours" };
 
-	private static final String[] companyTitleFirst = new String[] { 
-			  "Rockford"
-			, "Battlefield" 
-			, "First" 
-			, "Second" 
-			, "Ultimate" 
-			, "Omega" 
-			, "Best" 
-			, "Expensive" 
-			, "Luxus" 
-			, "Traders" 
-			, "More" 
-			, "Over" 
-			, "Super" 
-			, "Allyn" 
-			, "O'Sullivan" 
-			, "O'Brian" 
-			, "O'Connor" 
-			, "O'Deorian" 
-			, "McGregor" 
-			, "Sister's" 
-			, "Brother's" 
-			, "Mother's" 
-			, "Father's" 
-			, "My" 
-			, "Expert" 
-			, "Cheap" 
-			, "Heavy" 
-			, "Virtual" 
-			, "Internet" 
-			, "War" 
-			, "Real" 
-			, "Unreal" 
-			, "Fairy" 
-			, "Dragon" 
-			, "Dungeon" 
-			, "Slave" 
-			, "Master" 
-			, "Elves" 
-			, "Goblin" 
-			, "Wyvern" 
-			, "Centaur" 
-			, "Minotaur" 
-			, "Dwarven" 
-			, "Custom" 
-			, "Lamia" 
-			, "Pixie" 
-			, "Demon" 
-			, "Angel" 
-			, "Rocker" 
-			, "Magician" 
-			, "Knight" 
-			, "Sorceress" 
-			, "Lizardman" 
-			, "Mermaid" 
-			, "Zeus" 
-			, "Goddess" 
-			, "Mythical" 
-			, "Magical" 
-			, "Fantastic" 
-			};
+	private static final String[] companyTitleFirst = new String[] { "Rockford", "Battlefield", "First", "Second", "Ultimate", "Omega", "Best", "Expensive", "Luxus", "Traders", "More", "Over", "Super", "Allyn", "O'Sullivan", "O'Brian", "O'Connor", "O'Deorian", "McGregor", "Sister's", "Brother's", "Mother's", "Father's", "My", "Expert", "Cheap", "Heavy", "Virtual", "Internet", "War", "Real", "Unreal", "Fairy", "Dragon", "Dungeon", "Slave", "Master", "Elves", "Goblin", "Wyvern", "Centaur", "Minotaur", "Dwarven", "Custom", "Lamia", "Pixie", "Demon", "Angel", "Rocker", "Magician", "Knight", "Sorceress", "Lizardman", "Mermaid", "Zeus", "Goddess", "Mythical", "Magical", "Fantastic" };
+	private static final String[] companyTitleSecond = new String[] { "Wood", "Plastics", "Metals", "Silver", "Gold", "Platinum", "Ceramics", "Fun", "Brothers", "Sisters", "and Family", "and Daughters", "and Sons", "and Mothers", "and Father's", "IT", "Digital", "Backery", "Industry", "Supermarket", "Trading", "Finance", "Army", "Weapons", "Games", "Gaming", "Packaging", "Technology", "Care", "Health", "Computer", "Specialist", "Printing", "3D", "Stealth", "Helicopter", "Aircraft", "Archeology", "Astronomy", "Geology", "Mathematics", "Language", "Housing", "Fabrics", "Clothing", "Underwear", "Toys", "Insanity", "Estate", "Lumber", "Meat", "Fruit", "Shepherd", "Dogs", "Cats", "Parrots", "Animals", "Lamas", "Elefants", "Restaurant", "Take-Away", "Food", "Marriage", "Stories", "City", "Tools", "Crafting", "Dirt", "Cleaning", "Dust", "Soil", "Fertilizer", "Litterbox", "Security", "Guard", "Floor", "Cooking", "Extermination", "Book"};
+	private static final String[] companyTitleThird = new String[] { "AG", "GmbH", "Inc.", "Ltd.", "LCC", "PLCC", "Corp.", "Co-Op", "S.A.", "S.L.", "Business", "Company", "Group", "Corporation", "Services", "Shop", "Store", "School", "University", "Counselor", "Solicitors", "Trader", "Industry", "Industries", "Agency"};
 	
-	private static final String[] companyTitleSecond = new String[] { 
-			  "Wood"
-			, "Plastics"
-			, "Metals"
-			, "Silver"
-			, "Gold"
-			, "Platinum"
-			, "Ceramics"
-			, "Fun"
-			, "Brothers"
-			, "Sisters"
-			, "and Family"
-			, "and Daughters" 
-			, "and Sons" 
-			, "and Mothers" 
-			, "and Father's" 
-			, "IT"
-			, "Digital" 
-			, "Backery" 
-			, "Industry" 
-			, "Supermarket" 
-			, "Trading" 
-			, "Finance" 
-			, "Army" 
-			, "Weapons" 
-			, "Games" 
-			, "Gaming" 
-			, "Packaging" 
-			, "Technology" 
-			, "Care" 
-			, "Health" 
-			, "Computer" 
-			, "Specialist" 
-			, "Printing" 
-			, "3D" 
-			, "Stealth" 
-			, "Helicopter" 
-			, "Aircraft" 
-			, "Archeology" 
-			, "Astronomy" 
-			, "Geology" 
-			, "Mathematics" 
-			, "Language" 
-			, "Housing" 
-			, "Fabrics" 
-			, "Clothing" 
-			, "Underwear" 
-			, "Toys" 
-			, "Insanity" 
-			, "Estate" 
-			, "Lumber" 
-			, "Meat" 
-			, "Fruit" 
-			, "Shepherd" 
-			, "Dogs" 
-			, "Cats" 
-			, "Parrots" 
-			, "Animals" 
-			, "Lamas" 
-			, "Elefants" 
-			, "Restaurant" 
-			, "Take-Away" 
-			, "Food" 
-			, "Marriage" 
-			, "Stories" 
-			, "City" 
-			, "Tools" 
-			, "Crafting" 
-			, "Dirt" 
-			, "Cleaning" 
-			, "Dust" 
-			, "Soil" 
-			, "Fertilizer" 
-			, "Litterbox" 
-			, "Security"
-			, "Guard"
-			, "Floor"
-			, "Cooking"
-			, "Extermination"
-			, "Book"
-			};
+	private static final JsonArray countryData = (JsonArray)CFW.JSON.fromJson("[{Country:'South Georgia and South Sandwich Islands',Capital:'King Edward Point',CapitalLatitude:-54.283333,CapitalLongitude:-36.5,CountryCode:'GS',Continent:'Antarctica'},{Country:'French Southern and Antarctic Lands',Capital:'Port-aux-Francais',CapitalLatitude:-49.35,CapitalLongitude:70.216667,CountryCode:'TF',Continent:'Antarctica'},{Country:'Palestine',Capital:'Jerusalem',CapitalLatitude:31.766666666666666,CapitalLongitude:35.233333,CountryCode:'PS',Continent:'Asia'},{Country:'Aland Islands',Capital:'Mariehamn',CapitalLatitude:60.116667,CapitalLongitude:19.9,CountryCode:'AX',Continent:'Europe'},{Country:'Nauru',Capital:'Yaren',CapitalLatitude:-0.5477,CapitalLongitude:166.920867,CountryCode:'NR',Continent:'Australia'},{Country:'Saint Martin',Capital:'Marigot',CapitalLatitude:18.0731,CapitalLongitude:-63.0822,CountryCode:'MF',Continent:'North America'},{Country:'Tokelau',Capital:'Atafu',CapitalLatitude:-9.166667,CapitalLongitude:-171.833333,CountryCode:'TK',Continent:'Australia'},{Country:'Western Sahara',Capital:'El-AaiÃºn',CapitalLatitude:27.153611,CapitalLongitude:-13.203333,CountryCode:'EH',Continent:'Africa'},{Country:'Afghanistan',Capital:'Kabul',CapitalLatitude:34.516666666666666,CapitalLongitude:69.183333,CountryCode:'AF',Continent:'Asia'},{Country:'Albania',Capital:'Tirana',CapitalLatitude:41.31666666666667,CapitalLongitude:19.816667,CountryCode:'AL',Continent:'Europe'},{Country:'Algeria',Capital:'Algiers',CapitalLatitude:36.75,CapitalLongitude:3.05,CountryCode:'DZ',Continent:'Africa'},{Country:'American Samoa',Capital:'Pago Pago',CapitalLatitude:-14.266666666666667,CapitalLongitude:-170.7,CountryCode:'AS',Continent:'Australia'},{Country:'Andorra',Capital:'Andorra la Vella',CapitalLatitude:42.5,CapitalLongitude:1.516667,CountryCode:'AD',Continent:'Europe'},{Country:'Angola',Capital:'Luanda',CapitalLatitude:-8.833333333333334,CapitalLongitude:13.216667,CountryCode:'AO',Continent:'Africa'},{Country:'Anguilla',Capital:'The Valley',CapitalLatitude:18.216666666666665,CapitalLongitude:-63.05,CountryCode:'AI',Continent:'North America'},{Country:'Antigua and Barbuda',Capital:\"Saint John's\",CapitalLatitude:17.116666666666667,CapitalLongitude:-61.85,CountryCode:'AG',Continent:'North America'},{Country:'Argentina',Capital:'Buenos Aires',CapitalLatitude:-34.583333333333336,CapitalLongitude:-58.666667,CountryCode:'AR',Continent:'South America'},{Country:'Armenia',Capital:'Yerevan',CapitalLatitude:40.166666666666664,CapitalLongitude:44.5,CountryCode:'AM',Continent:'Europe'},{Country:'Aruba',Capital:'Oranjestad',CapitalLatitude:12.516666666666667,CapitalLongitude:-70.033333,CountryCode:'AW',Continent:'North America'},{Country:'Australia',Capital:'Canberra',CapitalLatitude:-35.266666666666666,CapitalLongitude:149.133333,CountryCode:'AU',Continent:'Australia'},{Country:'Austria',Capital:'Vienna',CapitalLatitude:48.2,CapitalLongitude:16.366667,CountryCode:'AT',Continent:'Europe'},{Country:'Azerbaijan',Capital:'Baku',CapitalLatitude:40.38333333333333,CapitalLongitude:49.866667,CountryCode:'AZ',Continent:'Europe'},{Country:'Bahamas',Capital:'Nassau',CapitalLatitude:25.083333333333332,CapitalLongitude:-77.35,CountryCode:'BS',Continent:'North America'},{Country:'Bahrain',Capital:'Manama',CapitalLatitude:26.233333333333334,CapitalLongitude:50.566667,CountryCode:'BH',Continent:'Asia'},{Country:'Bangladesh',Capital:'Dhaka',CapitalLatitude:23.716666666666665,CapitalLongitude:90.4,CountryCode:'BD',Continent:'Asia'},{Country:'Barbados',Capital:'Bridgetown',CapitalLatitude:13.1,CapitalLongitude:-59.616667,CountryCode:'BB',Continent:'North America'},{Country:'Belarus',Capital:'Minsk',CapitalLatitude:53.9,CapitalLongitude:27.566667,CountryCode:'BY',Continent:'Europe'},{Country:'Belgium',Capital:'Brussels',CapitalLatitude:50.833333333333336,CapitalLongitude:4.333333,CountryCode:'BE',Continent:'Europe'},{Country:'Belize',Capital:'Belmopan',CapitalLatitude:17.25,CapitalLongitude:-88.766667,CountryCode:'BZ',Continent:'Central America'},{Country:'Somaliland',Capital:'Hargeisa',CapitalLatitude:9.55,CapitalLongitude:44.05,CountryCode:'NULL',Continent:'Africa'},{Country:'Benin',Capital:'Porto-Novo',CapitalLatitude:6.483333333333333,CapitalLongitude:2.616667,CountryCode:'BJ',Continent:'Africa'},{Country:'Bermuda',Capital:'Hamilton',CapitalLatitude:32.28333333333333,CapitalLongitude:-64.783333,CountryCode:'BM',Continent:'North America'},{Country:'Bhutan',Capital:'Thimphu',CapitalLatitude:27.466666666666665,CapitalLongitude:89.633333,CountryCode:'BT',Continent:'Asia'},{Country:'Bolivia',Capital:'La Paz',CapitalLatitude:-16.5,CapitalLongitude:-68.15,CountryCode:'BO',Continent:'South America'},{Country:'Bosnia and Herzegovina',Capital:'Sarajevo',CapitalLatitude:43.86666666666667,CapitalLongitude:18.416667,CountryCode:'BA',Continent:'Europe'},{Country:'Botswana',Capital:'Gaborone',CapitalLatitude:-24.633333333333333,CapitalLongitude:25.9,CountryCode:'BW',Continent:'Africa'},{Country:'Brazil',Capital:'Brasilia',CapitalLatitude:-15.783333333333333,CapitalLongitude:-47.916667,CountryCode:'BR',Continent:'South America'},{Country:'British Virgin Islands',Capital:'Road Town',CapitalLatitude:18.416666666666668,CapitalLongitude:-64.616667,CountryCode:'VG',Continent:'North America'},{Country:'Brunei Darussalam',Capital:'Bandar Seri Begawan',CapitalLatitude:4.883333333333333,CapitalLongitude:114.933333,CountryCode:'BN',Continent:'Asia'},{Country:'Bulgaria',Capital:'Sofia',CapitalLatitude:42.68333333333333,CapitalLongitude:23.316667,CountryCode:'BG',Continent:'Europe'},{Country:'Burkina Faso',Capital:'Ouagadougou',CapitalLatitude:12.366666666666667,CapitalLongitude:-1.516667,CountryCode:'BF',Continent:'Africa'},{Country:'Myanmar',Capital:'Rangoon',CapitalLatitude:16.8,CapitalLongitude:96.15,CountryCode:'MM',Continent:'Asia'},{Country:'Burundi',Capital:'Bujumbura',CapitalLatitude:-3.3666666666666667,CapitalLongitude:29.35,CountryCode:'BI',Continent:'Africa'},{Country:'Cambodia',Capital:'Phnom Penh',CapitalLatitude:11.55,CapitalLongitude:104.916667,CountryCode:'KH',Continent:'Asia'},{Country:'Cameroon',Capital:'Yaounde',CapitalLatitude:3.8666666666666667,CapitalLongitude:11.516667,CountryCode:'CM',Continent:'Africa'},{Country:'Canada',Capital:'Ottawa',CapitalLatitude:45.416666666666664,CapitalLongitude:-75.7,CountryCode:'CA',Continent:'Central America'},{Country:'Cape Verde',Capital:'Praia',CapitalLatitude:14.916666666666666,CapitalLongitude:-23.516667,CountryCode:'CV',Continent:'Africa'},{Country:'Cayman Islands',Capital:'George Town',CapitalLatitude:19.3,CapitalLongitude:-81.383333,CountryCode:'KY',Continent:'North America'},{Country:'Central African Republic',Capital:'Bangui',CapitalLatitude:4.366666666666666,CapitalLongitude:18.583333,CountryCode:'CF',Continent:'Africa'},{Country:'Chad',Capital:\"N'Djamena\",CapitalLatitude:12.1,CapitalLongitude:15.033333,CountryCode:'TD',Continent:'Africa'},{Country:'Chile',Capital:'Santiago',CapitalLatitude:-33.45,CapitalLongitude:-70.666667,CountryCode:'CL',Continent:'South America'},{Country:'China',Capital:'Beijing',CapitalLatitude:39.916666666666664,CapitalLongitude:116.383333,CountryCode:'CN',Continent:'Asia'},{Country:'Christmas Island',Capital:'The Settlement',CapitalLatitude:-10.416666666666666,CapitalLongitude:105.716667,CountryCode:'CX',Continent:'Australia'},{Country:'Cocos Islands',Capital:'West Island',CapitalLatitude:-12.166666666666666,CapitalLongitude:96.833333,CountryCode:'CC',Continent:'Australia'},{Country:'Colombia',Capital:'Bogota',CapitalLatitude:4.6,CapitalLongitude:-74.083333,CountryCode:'CO',Continent:'South America'},{Country:'Comoros',Capital:'Moroni',CapitalLatitude:-11.7,CapitalLongitude:43.233333,CountryCode:'KM',Continent:'Africa'},{Country:'Democratic Republic of the Congo',Capital:'Kinshasa',CapitalLatitude:-4.316666666666666,CapitalLongitude:15.3,CountryCode:'CD',Continent:'Africa'},{Country:'Republic of Congo',Capital:'Brazzaville',CapitalLatitude:-4.25,CapitalLongitude:15.283333,CountryCode:'CG',Continent:'Africa'},{Country:'Cook Islands',Capital:'Avarua',CapitalLatitude:-21.2,CapitalLongitude:-159.766667,CountryCode:'CK',Continent:'Australia'},{Country:'Costa Rica',Capital:'San Jose',CapitalLatitude:9.933333333333334,CapitalLongitude:-84.083333,CountryCode:'CR',Continent:'Central America'},{Country:\"Cote d'Ivoire\",Capital:'Yamoussoukro',CapitalLatitude:6.816666666666666,CapitalLongitude:-5.266667,CountryCode:'CI',Continent:'Africa'},{Country:'Croatia',Capital:'Zagreb',CapitalLatitude:45.8,CapitalLongitude:16.0,CountryCode:'HR',Continent:'Europe'},{Country:'Cuba',Capital:'Havana',CapitalLatitude:23.116666666666667,CapitalLongitude:-82.35,CountryCode:'CU',Continent:'North America'},{Country:'CuraÃ§ao',Capital:'Willemstad',CapitalLatitude:12.1,CapitalLongitude:-68.916667,CountryCode:'CW',Continent:'North America'},{Country:'Cyprus',Capital:'Nicosia',CapitalLatitude:35.166666666666664,CapitalLongitude:33.366667,CountryCode:'CY',Continent:'Europe'},{Country:'Czech Republic',Capital:'Prague',CapitalLatitude:50.083333333333336,CapitalLongitude:14.466667,CountryCode:'CZ',Continent:'Europe'},{Country:'Denmark',Capital:'Copenhagen',CapitalLatitude:55.666666666666664,CapitalLongitude:12.583333,CountryCode:'DK',Continent:'Europe'},{Country:'Djibouti',Capital:'Djibouti',CapitalLatitude:11.583333333333334,CapitalLongitude:43.15,CountryCode:'DJ',Continent:'Africa'},{Country:'Dominica',Capital:'Roseau',CapitalLatitude:15.3,CapitalLongitude:-61.4,CountryCode:'DM',Continent:'North America'},{Country:'Dominican Republic',Capital:'Santo Domingo',CapitalLatitude:18.466666666666665,CapitalLongitude:-69.9,CountryCode:'DO',Continent:'North America'},{Country:'Ecuador',Capital:'Quito',CapitalLatitude:-0.21666666666666667,CapitalLongitude:-78.5,CountryCode:'EC',Continent:'South America'},{Country:'Egypt',Capital:'Cairo',CapitalLatitude:30.05,CapitalLongitude:31.25,CountryCode:'EG',Continent:'Africa'},{Country:'El Salvador',Capital:'San Salvador',CapitalLatitude:13.7,CapitalLongitude:-89.2,CountryCode:'SV',Continent:'Central America'},{Country:'Equatorial Guinea',Capital:'Malabo',CapitalLatitude:3.75,CapitalLongitude:8.783333,CountryCode:'GQ',Continent:'Africa'},{Country:'Eritrea',Capital:'Asmara',CapitalLatitude:15.333333333333334,CapitalLongitude:38.933333,CountryCode:'ER',Continent:'Africa'},{Country:'Estonia',Capital:'Tallinn',CapitalLatitude:59.43333333333333,CapitalLongitude:24.716667,CountryCode:'EE',Continent:'Europe'},{Country:'Ethiopia',Capital:'Addis Ababa',CapitalLatitude:9.033333333333333,CapitalLongitude:38.7,CountryCode:'ET',Continent:'Africa'},{Country:'Falkland Islands',Capital:'Stanley',CapitalLatitude:-51.7,CapitalLongitude:-57.85,CountryCode:'FK',Continent:'South America'},{Country:'Faroe Islands',Capital:'Torshavn',CapitalLatitude:62,CapitalLongitude:-6.766667,CountryCode:'FO',Continent:'Europe'},{Country:'Fiji',Capital:'Suva',CapitalLatitude:-18.133333333333333,CapitalLongitude:178.416667,CountryCode:'FJ',Continent:'Australia'},{Country:'Finland',Capital:'Helsinki',CapitalLatitude:60.166666666666664,CapitalLongitude:24.933333,CountryCode:'FI',Continent:'Europe'},{Country:'France',Capital:'Paris',CapitalLatitude:48.86666666666667,CapitalLongitude:2.333333,CountryCode:'FR',Continent:'Europe'},{Country:'French Polynesia',Capital:'Papeete',CapitalLatitude:-17.533333333333335,CapitalLongitude:-149.566667,CountryCode:'PF',Continent:'Australia'},{Country:'Gabon',Capital:'Libreville',CapitalLatitude:0.38333333333333336,CapitalLongitude:9.45,CountryCode:'GA',Continent:'Africa'},{Country:'The Gambia',Capital:'Banjul',CapitalLatitude:13.45,CapitalLongitude:-16.566667,CountryCode:'GM',Continent:'Africa'},{Country:'Georgia',Capital:'Tbilisi',CapitalLatitude:41.68333333333333,CapitalLongitude:44.833333,CountryCode:'GE',Continent:'Europe'},{Country:'Germany',Capital:'Berlin',CapitalLatitude:52.516666666666666,CapitalLongitude:13.4,CountryCode:'DE',Continent:'Europe'},{Country:'Ghana',Capital:'Accra',CapitalLatitude:5.55,CapitalLongitude:-0.216667,CountryCode:'GH',Continent:'Africa'},{Country:'Gibraltar',Capital:'Gibraltar',CapitalLatitude:36.13333333333333,CapitalLongitude:-5.35,CountryCode:'GI',Continent:'Europe'},{Country:'Greece',Capital:'Athens',CapitalLatitude:37.983333333333334,CapitalLongitude:23.733333,CountryCode:'GR',Continent:'Europe'},{Country:'Greenland',Capital:'Nuuk',CapitalLatitude:64.18333333333334,CapitalLongitude:-51.75,CountryCode:'GL',Continent:'Central America'},{Country:'Grenada',Capital:\"Saint George's\",CapitalLatitude:12.05,CapitalLongitude:-61.75,CountryCode:'GD',Continent:'North America'},{Country:'Guam',Capital:'Hagatna',CapitalLatitude:13.466666666666667,CapitalLongitude:144.733333,CountryCode:'GU',Continent:'Australia'},{Country:'Guatemala',Capital:'Guatemala City',CapitalLatitude:14.616666666666667,CapitalLongitude:-90.516667,CountryCode:'GT',Continent:'Central America'},{Country:'Guernsey',Capital:'Saint Peter Port',CapitalLatitude:49.45,CapitalLongitude:-2.533333,CountryCode:'GG',Continent:'Europe'},{Country:'Guinea',Capital:'Conakry',CapitalLatitude:9.5,CapitalLongitude:-13.7,CountryCode:'GN',Continent:'Africa'},{Country:'Guinea-Bissau',Capital:'Bissau',CapitalLatitude:11.85,CapitalLongitude:-15.583333,CountryCode:'GW',Continent:'Africa'},{Country:'Guyana',Capital:'Georgetown',CapitalLatitude:6.8,CapitalLongitude:-58.15,CountryCode:'GY',Continent:'South America'},{Country:'Haiti',Capital:'Port-au-Prince',CapitalLatitude:18.533333333333335,CapitalLongitude:-72.333333,CountryCode:'HT',Continent:'North America'},{Country:'Vatican City',Capital:'Vatican City',CapitalLatitude:41.9,CapitalLongitude:12.45,CountryCode:'VA',Continent:'Europe'},{Country:'Honduras',Capital:'Tegucigalpa',CapitalLatitude:14.1,CapitalLongitude:-87.216667,CountryCode:'HN',Continent:'Central America'},{Country:'Hungary',Capital:'Budapest',CapitalLatitude:47.5,CapitalLongitude:19.083333,CountryCode:'HU',Continent:'Europe'},{Country:'Iceland',Capital:'Reykjavik',CapitalLatitude:64.15,CapitalLongitude:-21.95,CountryCode:'IS',Continent:'Europe'},{Country:'India',Capital:'New Delhi',CapitalLatitude:28.6,CapitalLongitude:77.2,CountryCode:'IN',Continent:'Asia'},{Country:'Indonesia',Capital:'Jakarta',CapitalLatitude:-6.166666666666667,CapitalLongitude:106.816667,CountryCode:'ID',Continent:'Asia'},{Country:'Iran',Capital:'Tehran',CapitalLatitude:35.7,CapitalLongitude:51.416667,CountryCode:'IR',Continent:'Asia'},{Country:'Iraq',Capital:'Baghdad',CapitalLatitude:33.333333333333336,CapitalLongitude:44.4,CountryCode:'IQ',Continent:'Asia'},{Country:'Ireland',Capital:'Dublin',CapitalLatitude:53.31666666666667,CapitalLongitude:-6.233333,CountryCode:'IE',Continent:'Europe'},{Country:'Isle of Man',Capital:'Douglas',CapitalLatitude:54.15,CapitalLongitude:-4.483333,CountryCode:'IM',Continent:'Europe'},{Country:'Israel',Capital:'Jerusalem',CapitalLatitude:31.766666666666666,CapitalLongitude:35.233333,CountryCode:'IL',Continent:'Asia'},{Country:'Italy',Capital:'Rome',CapitalLatitude:41.9,CapitalLongitude:12.483333,CountryCode:'IT',Continent:'Europe'},{Country:'Jamaica',Capital:'Kingston',CapitalLatitude:18,CapitalLongitude:-76.8,CountryCode:'JM',Continent:'North America'},{Country:'Japan',Capital:'Tokyo',CapitalLatitude:35.68333333333333,CapitalLongitude:139.75,CountryCode:'JP',Continent:'Asia'},{Country:'Jersey',Capital:'Saint Helier',CapitalLatitude:49.18333333333333,CapitalLongitude:-2.1,CountryCode:'JE',Continent:'Europe'},{Country:'Jordan',Capital:'Amman',CapitalLatitude:31.95,CapitalLongitude:35.933333,CountryCode:'JO',Continent:'Asia'},{Country:'Kazakhstan',Capital:'Astana',CapitalLatitude:51.166666666666664,CapitalLongitude:71.416667,CountryCode:'KZ',Continent:'Asia'},{Country:'Kenya',Capital:'Nairobi',CapitalLatitude:-1.2833333333333332,CapitalLongitude:36.816667,CountryCode:'KE',Continent:'Africa'},{Country:'Kiribati',Capital:'Tarawa',CapitalLatitude:-0.8833333333333333,CapitalLongitude:169.533333,CountryCode:'KI',Continent:'Australia'},{Country:'North Korea',Capital:'Pyongyang',CapitalLatitude:39.016666666666666,CapitalLongitude:125.75,CountryCode:'KP',Continent:'Asia'},{Country:'South Korea',Capital:'Seoul',CapitalLatitude:37.55,CapitalLongitude:126.983333,CountryCode:'KR',Continent:'Asia'},{Country:'Kosovo',Capital:'Pristina',CapitalLatitude:42.666666666666664,CapitalLongitude:21.166667,CountryCode:'KO',Continent:'Europe'},{Country:'Kuwait',Capital:'Kuwait City',CapitalLatitude:29.366666666666667,CapitalLongitude:47.966667,CountryCode:'KW',Continent:'Asia'},{Country:'Kyrgyzstan',Capital:'Bishkek',CapitalLatitude:42.86666666666667,CapitalLongitude:74.6,CountryCode:'KG',Continent:'Asia'},{Country:'Laos',Capital:'Vientiane',CapitalLatitude:17.966666666666665,CapitalLongitude:102.6,CountryCode:'LA',Continent:'Asia'},{Country:'Latvia',Capital:'Riga',CapitalLatitude:56.95,CapitalLongitude:24.1,CountryCode:'LV',Continent:'Europe'},{Country:'Lebanon',Capital:'Beirut',CapitalLatitude:33.86666666666667,CapitalLongitude:35.5,CountryCode:'LB',Continent:'Asia'},{Country:'Lesotho',Capital:'Maseru',CapitalLatitude:-29.316666666666666,CapitalLongitude:27.483333,CountryCode:'LS',Continent:'Africa'},{Country:'Liberia',Capital:'Monrovia',CapitalLatitude:6.3,CapitalLongitude:-10.8,CountryCode:'LR',Continent:'Africa'},{Country:'Libya',Capital:'Tripoli',CapitalLatitude:32.88333333333333,CapitalLongitude:13.166667,CountryCode:'LY',Continent:'Africa'},{Country:'Liechtenstein',Capital:'Vaduz',CapitalLatitude:47.13333333333333,CapitalLongitude:9.516667,CountryCode:'LI',Continent:'Europe'},{Country:'Lithuania',Capital:'Vilnius',CapitalLatitude:54.68333333333333,CapitalLongitude:25.316667,CountryCode:'LT',Continent:'Europe'},{Country:'Luxembourg',Capital:'Luxembourg',CapitalLatitude:49.6,CapitalLongitude:6.116667,CountryCode:'LU',Continent:'Europe'},{Country:'Macedonia',Capital:'Skopje',CapitalLatitude:42,CapitalLongitude:21.433333,CountryCode:'MK',Continent:'Europe'},{Country:'Madagascar',Capital:'Antananarivo',CapitalLatitude:-18.916666666666668,CapitalLongitude:47.516667,CountryCode:'MG',Continent:'Africa'},{Country:'Malawi',Capital:'Lilongwe',CapitalLatitude:-13.966666666666667,CapitalLongitude:33.783333,CountryCode:'MW',Continent:'Africa'},{Country:'Malaysia',Capital:'Kuala Lumpur',CapitalLatitude:3.1666666666666665,CapitalLongitude:101.7,CountryCode:'MY',Continent:'Asia'},{Country:'Maldives',Capital:'Male',CapitalLatitude:4.166666666666667,CapitalLongitude:73.5,CountryCode:'MV',Continent:'Asia'},{Country:'Mali',Capital:'Bamako',CapitalLatitude:12.65,CapitalLongitude:-8.0,CountryCode:'ML',Continent:'Africa'},{Country:'Malta',Capital:'Valletta',CapitalLatitude:35.88333333333333,CapitalLongitude:14.5,CountryCode:'MT',Continent:'Europe'},{Country:'Marshall Islands',Capital:'Majuro',CapitalLatitude:7.1,CapitalLongitude:171.383333,CountryCode:'MH',Continent:'Australia'},{Country:'Mauritania',Capital:'Nouakchott',CapitalLatitude:18.066666666666666,CapitalLongitude:-15.966667,CountryCode:'MR',Continent:'Africa'},{Country:'Mauritius',Capital:'Port Louis',CapitalLatitude:-20.15,CapitalLongitude:57.483333,CountryCode:'MU',Continent:'Africa'},{Country:'Mexico',Capital:'Mexico City',CapitalLatitude:19.433333333333334,CapitalLongitude:-99.133333,CountryCode:'MX',Continent:'Central America'},{Country:'Federated States of Micronesia',Capital:'Palikir',CapitalLatitude:6.916666666666667,CapitalLongitude:158.15,CountryCode:'FM',Continent:'Australia'},{Country:'Moldova',Capital:'Chisinau',CapitalLatitude:47,CapitalLongitude:28.85,CountryCode:'MD',Continent:'Europe'},{Country:'Monaco',Capital:'Monaco',CapitalLatitude:43.733333333333334,CapitalLongitude:7.416667,CountryCode:'MC',Continent:'Europe'},{Country:'Mongolia',Capital:'Ulaanbaatar',CapitalLatitude:47.916666666666664,CapitalLongitude:106.916667,CountryCode:'MN',Continent:'Asia'},{Country:'Montenegro',Capital:'Podgorica',CapitalLatitude:42.43333333333333,CapitalLongitude:19.266667,CountryCode:'ME',Continent:'Europe'},{Country:'Montserrat',Capital:'Plymouth',CapitalLatitude:16.7,CapitalLongitude:-62.216667,CountryCode:'MS',Continent:'North America'},{Country:'Morocco',Capital:'Rabat',CapitalLatitude:34.016666666666666,CapitalLongitude:-6.816667,CountryCode:'MA',Continent:'Africa'},{Country:'Mozambique',Capital:'Maputo',CapitalLatitude:-25.95,CapitalLongitude:32.583333,CountryCode:'MZ',Continent:'Africa'},{Country:'Namibia',Capital:'Windhoek',CapitalLatitude:-22.566666666666666,CapitalLongitude:17.083333,CountryCode:'NA',Continent:'Africa'},{Country:'Nepal',Capital:'Kathmandu',CapitalLatitude:27.716666666666665,CapitalLongitude:85.316667,CountryCode:'NP',Continent:'Asia'},{Country:'Netherlands',Capital:'Amsterdam',CapitalLatitude:52.35,CapitalLongitude:4.916667,CountryCode:'NL',Continent:'Europe'},{Country:'New Caledonia',Capital:'Noumea',CapitalLatitude:-22.266666666666666,CapitalLongitude:166.45,CountryCode:'NC',Continent:'Australia'},{Country:'New Zealand',Capital:'Wellington',CapitalLatitude:-41.3,CapitalLongitude:174.783333,CountryCode:'NZ',Continent:'Australia'},{Country:'Nicaragua',Capital:'Managua',CapitalLatitude:12.133333333333333,CapitalLongitude:-86.25,CountryCode:'NI',Continent:'Central America'},{Country:'Niger',Capital:'Niamey',CapitalLatitude:13.516666666666667,CapitalLongitude:2.116667,CountryCode:'NE',Continent:'Africa'},{Country:'Nigeria',Capital:'Abuja',CapitalLatitude:9.083333333333334,CapitalLongitude:7.533333,CountryCode:'NG',Continent:'Africa'},{Country:'Niue',Capital:'Alofi',CapitalLatitude:-19.016666666666666,CapitalLongitude:-169.916667,CountryCode:'NU',Continent:'Australia'},{Country:'Norfolk Island',Capital:'Kingston',CapitalLatitude:-29.05,CapitalLongitude:167.966667,CountryCode:'NF',Continent:'Australia'},{Country:'Northern Mariana Islands',Capital:'Saipan',CapitalLatitude:15.2,CapitalLongitude:145.75,CountryCode:'MP',Continent:'Australia'},{Country:'Norway',Capital:'Oslo',CapitalLatitude:59.916666666666664,CapitalLongitude:10.75,CountryCode:'NO',Continent:'Europe'},{Country:'Oman',Capital:'Muscat',CapitalLatitude:23.616666666666667,CapitalLongitude:58.583333,CountryCode:'OM',Continent:'Asia'},{Country:'Pakistan',Capital:'Islamabad',CapitalLatitude:33.68333333333333,CapitalLongitude:73.05,CountryCode:'PK',Continent:'Asia'},{Country:'Palau',Capital:'Melekeok',CapitalLatitude:7.483333333333333,CapitalLongitude:134.633333,CountryCode:'PW',Continent:'Australia'},{Country:'Panama',Capital:'Panama City',CapitalLatitude:8.966666666666667,CapitalLongitude:-79.533333,CountryCode:'PA',Continent:'Central America'},{Country:'Papua New Guinea',Capital:'Port Moresby',CapitalLatitude:-9.45,CapitalLongitude:147.183333,CountryCode:'PG',Continent:'Australia'},{Country:'Paraguay',Capital:'Asuncion',CapitalLatitude:-25.266666666666666,CapitalLongitude:-57.666667,CountryCode:'PY',Continent:'South America'},{Country:'Peru',Capital:'Lima',CapitalLatitude:-12.05,CapitalLongitude:-77.05,CountryCode:'PE',Continent:'South America'},{Country:'Philippines',Capital:'Manila',CapitalLatitude:14.6,CapitalLongitude:120.966667,CountryCode:'PH',Continent:'Asia'},{Country:'Pitcairn Islands',Capital:'Adamstown',CapitalLatitude:-25.066666666666666,CapitalLongitude:-130.083333,CountryCode:'PN',Continent:'Australia'},{Country:'Poland',Capital:'Warsaw',CapitalLatitude:52.25,CapitalLongitude:21.0,CountryCode:'PL',Continent:'Europe'},{Country:'Portugal',Capital:'Lisbon',CapitalLatitude:38.71666666666667,CapitalLongitude:-9.133333,CountryCode:'PT',Continent:'Europe'},{Country:'Puerto Rico',Capital:'San Juan',CapitalLatitude:18.466666666666665,CapitalLongitude:-66.116667,CountryCode:'PR',Continent:'North America'},{Country:'Qatar',Capital:'Doha',CapitalLatitude:25.283333333333335,CapitalLongitude:51.533333,CountryCode:'QA',Continent:'Asia'},{Country:'Romania',Capital:'Bucharest',CapitalLatitude:44.43333333333333,CapitalLongitude:26.1,CountryCode:'RO',Continent:'Europe'},{Country:'Russia',Capital:'Moscow',CapitalLatitude:55.75,CapitalLongitude:37.6,CountryCode:'RU',Continent:'Europe'},{Country:'Rwanda',Capital:'Kigali',CapitalLatitude:-1.95,CapitalLongitude:30.05,CountryCode:'RW',Continent:'Africa'},{Country:'Saint Barthelemy',Capital:'Gustavia',CapitalLatitude:17.883333333333333,CapitalLongitude:-62.85,CountryCode:'BL',Continent:'North America'},{Country:'Saint Helena',Capital:'Jamestown',CapitalLatitude:-15.933333333333334,CapitalLongitude:-5.716667,CountryCode:'SH',Continent:'Africa'},{Country:'Saint Kitts and Nevis',Capital:'Basseterre',CapitalLatitude:17.3,CapitalLongitude:-62.716667,CountryCode:'KN',Continent:'North America'},{Country:'Saint Lucia',Capital:'Castries',CapitalLatitude:14,CapitalLongitude:-61.0,CountryCode:'LC',Continent:'North America'},{Country:'Saint Pierre and Miquelon',Capital:'Saint-Pierre',CapitalLatitude:46.766666666666666,CapitalLongitude:-56.183333,CountryCode:'PM',Continent:'Central America'},{Country:'Saint Vincent and the Grenadines',Capital:'Kingstown',CapitalLatitude:13.133333333333333,CapitalLongitude:-61.216667,CountryCode:'VC',Continent:'Central America'},{Country:'Samoa',Capital:'Apia',CapitalLatitude:-13.816666666666666,CapitalLongitude:-171.766667,CountryCode:'WS',Continent:'Australia'},{Country:'San Marino',Capital:'San Marino',CapitalLatitude:43.93333333333333,CapitalLongitude:12.416667,CountryCode:'SM',Continent:'Europe'},{Country:'Sao Tome and Principe',Capital:'Sao Tome',CapitalLatitude:0.3333333333333333,CapitalLongitude:6.733333,CountryCode:'ST',Continent:'Africa'},{Country:'Saudi Arabia',Capital:'Riyadh',CapitalLatitude:24.65,CapitalLongitude:46.7,CountryCode:'SA',Continent:'Asia'},{Country:'Senegal',Capital:'Dakar',CapitalLatitude:14.733333333333333,CapitalLongitude:-17.633333,CountryCode:'SN',Continent:'Africa'},{Country:'Serbia',Capital:'Belgrade',CapitalLatitude:44.833333333333336,CapitalLongitude:20.5,CountryCode:'RS',Continent:'Europe'},{Country:'Seychelles',Capital:'Victoria',CapitalLatitude:-4.616666666666667,CapitalLongitude:55.45,CountryCode:'SC',Continent:'Africa'},{Country:'Sierra Leone',Capital:'Freetown',CapitalLatitude:8.483333333333333,CapitalLongitude:-13.233333,CountryCode:'SL',Continent:'Africa'},{Country:'Singapore',Capital:'Singapore',CapitalLatitude:1.2833333333333332,CapitalLongitude:103.85,CountryCode:'SG',Continent:'Asia'},{Country:'Sint Maarten',Capital:'Philipsburg',CapitalLatitude:18.016666666666666,CapitalLongitude:-63.033333,CountryCode:'SX',Continent:'North America'},{Country:'Slovakia',Capital:'Bratislava',CapitalLatitude:48.15,CapitalLongitude:17.116667,CountryCode:'SK',Continent:'Europe'},{Country:'Slovenia',Capital:'Ljubljana',CapitalLatitude:46.05,CapitalLongitude:14.516667,CountryCode:'SI',Continent:'Europe'},{Country:'Solomon Islands',Capital:'Honiara',CapitalLatitude:-9.433333333333334,CapitalLongitude:159.95,CountryCode:'SB',Continent:'Australia'},{Country:'Somalia',Capital:'Mogadishu',CapitalLatitude:2.066666666666667,CapitalLongitude:45.333333,CountryCode:'SO',Continent:'Africa'},{Country:'South Africa',Capital:'Pretoria',CapitalLatitude:-25.7,CapitalLongitude:28.216667,CountryCode:'ZA',Continent:'Africa'},{Country:'South Sudan',Capital:'Juba',CapitalLatitude:4.85,CapitalLongitude:31.616667,CountryCode:'SS',Continent:'Africa'},{Country:'Spain',Capital:'Madrid',CapitalLatitude:40.4,CapitalLongitude:-3.683333,CountryCode:'ES',Continent:'Europe'},{Country:'Sri Lanka',Capital:'Colombo',CapitalLatitude:6.916666666666667,CapitalLongitude:79.833333,CountryCode:'LK',Continent:'Asia'},{Country:'Sudan',Capital:'Khartoum',CapitalLatitude:15.6,CapitalLongitude:32.533333,CountryCode:'SD',Continent:'Africa'},{Country:'Suriname',Capital:'Paramaribo',CapitalLatitude:5.833333333333333,CapitalLongitude:-55.166667,CountryCode:'SR',Continent:'South America'},{Country:'Svalbard',Capital:'Longyearbyen',CapitalLatitude:78.21666666666667,CapitalLongitude:15.633333,CountryCode:'SJ',Continent:'Europe'},{Country:'Swaziland',Capital:'Mbabane',CapitalLatitude:-26.316666666666666,CapitalLongitude:31.133333,CountryCode:'SZ',Continent:'Africa'},{Country:'Sweden',Capital:'Stockholm',CapitalLatitude:59.333333333333336,CapitalLongitude:18.05,CountryCode:'SE',Continent:'Europe'},{Country:'Switzerland',Capital:'Bern',CapitalLatitude:46.916666666666664,CapitalLongitude:7.466667,CountryCode:'CH',Continent:'Europe'},{Country:'Syria',Capital:'Damascus',CapitalLatitude:33.5,CapitalLongitude:36.3,CountryCode:'SY',Continent:'Asia'},{Country:'Taiwan',Capital:'Taipei',CapitalLatitude:25.033333333333335,CapitalLongitude:121.516667,CountryCode:'TW',Continent:'Asia'},{Country:'Tajikistan',Capital:'Dushanbe',CapitalLatitude:38.55,CapitalLongitude:68.766667,CountryCode:'TJ',Continent:'Asia'},{Country:'Tanzania',Capital:'Dar es Salaam',CapitalLatitude:-6.8,CapitalLongitude:39.283333,CountryCode:'TZ',Continent:'Africa'},{Country:'Thailand',Capital:'Bangkok',CapitalLatitude:13.75,CapitalLongitude:100.516667,CountryCode:'TH',Continent:'Asia'},{Country:'Timor-Leste',Capital:'Dili',CapitalLatitude:-8.583333333333334,CapitalLongitude:125.6,CountryCode:'TL',Continent:'Asia'},{Country:'Togo',Capital:'Lome',CapitalLatitude:6.116666666666666,CapitalLongitude:1.216667,CountryCode:'TG',Continent:'Africa'},{Country:'Tonga',Capital:\"Nuku'alofa\",CapitalLatitude:-21.133333333333333,CapitalLongitude:-175.2,CountryCode:'TO',Continent:'Australia'},{Country:'Trinidad and Tobago',Capital:'Port of Spain',CapitalLatitude:10.65,CapitalLongitude:-61.516667,CountryCode:'TT',Continent:'North America'},{Country:'Tunisia',Capital:'Tunis',CapitalLatitude:36.8,CapitalLongitude:10.183333,CountryCode:'TN',Continent:'Africa'},{Country:'Turkey',Capital:'Ankara',CapitalLatitude:39.93333333333333,CapitalLongitude:32.866667,CountryCode:'TR',Continent:'Europe'},{Country:'Turkmenistan',Capital:'Ashgabat',CapitalLatitude:37.95,CapitalLongitude:58.383333,CountryCode:'TM',Continent:'Asia'},{Country:'Turks and Caicos Islands',Capital:'Grand Turk',CapitalLatitude:21.466666666666665,CapitalLongitude:-71.133333,CountryCode:'TC',Continent:'North America'},{Country:'Tuvalu',Capital:'Funafuti',CapitalLatitude:-8.516666666666667,CapitalLongitude:179.216667,CountryCode:'TV',Continent:'Australia'},{Country:'Uganda',Capital:'Kampala',CapitalLatitude:0.31666666666666665,CapitalLongitude:32.55,CountryCode:'UG',Continent:'Africa'},{Country:'Ukraine',Capital:'Kyiv',CapitalLatitude:50.43333333333333,CapitalLongitude:30.516667,CountryCode:'UA',Continent:'Europe'},{Country:'United Arab Emirates',Capital:'Abu Dhabi',CapitalLatitude:24.466666666666665,CapitalLongitude:54.366667,CountryCode:'AE',Continent:'Asia'},{Country:'United Kingdom',Capital:'London',CapitalLatitude:51.5,CapitalLongitude:-0.083333,CountryCode:'GB',Continent:'Europe'},{Country:'US',Capital:'Washington DC',Capital:'Washington DC',CapitalLatitude:9.9,CapitalLongitude:77.0,CountryCode:'US',Continent:'US'},{Country:'Uruguay',Capital:'Montevideo',CapitalLatitude:-34.85,CapitalLongitude:-56.166667,CountryCode:'UY',Continent:'South America'},{Country:'Uzbekistan',Capital:'Tashkent',CapitalLatitude:41.31666666666667,CapitalLongitude:69.25,CountryCode:'UZ',Continent:'Asia'},{Country:'Vanuatu',Capital:'Port-Vila',CapitalLatitude:-17.733333333333334,CapitalLongitude:168.316667,CountryCode:'VU',Continent:'Australia'},{Country:'Venezuela',Capital:'Caracas',CapitalLatitude:10.483333333333333,CapitalLongitude:-66.866667,CountryCode:'VE',Continent:'South America'},{Country:'Vietnam',Capital:'Hanoi',CapitalLatitude:21.033333333333335,CapitalLongitude:105.85,CountryCode:'VN',Continent:'Asia'},{Country:'US Virgin Islands',Capital:'Charlotte Amalie',CapitalLatitude:18.35,CapitalLongitude:-64.933333,CountryCode:'VI',Continent:'North America'},{Country:'Wallis and Futuna',Capital:'Mata-Utu',CapitalLatitude:-13.95,CapitalLongitude:-171.933333,CountryCode:'WF',Continent:'Australia'},{Country:'Yemen',Capital:'Sanaa',CapitalLatitude:15.35,CapitalLongitude:44.2,CountryCode:'YE',Continent:'Asia'},{Country:'Zambia',Capital:'Lusaka',CapitalLatitude:-15.416666666666666,CapitalLongitude:28.283333,CountryCode:'ZM',Continent:'Africa'},{Country:'Zimbabwe',Capital:'Harare',CapitalLatitude:-17.816666666666666,CapitalLongitude:31.033333,CountryCode:'ZW',Continent:'Africa'},{Country:'Antarctica',Capital:'N/A',CapitalLatitude:0,CapitalLongitude:0.0,CountryCode:'AQ',Continent:'Antarctica'},{Country:'Northern Cyprus',Capital:'North Nicosia',CapitalLatitude:35.183333,CapitalLongitude:33.366667,CountryCode:'NULL',Continent:'Europe'},{Country:'Hong Kong',Capital:'N/A',CapitalLatitude:0,CapitalLongitude:0.0,CountryCode:'HK',Continent:'Asia'},{Country:'Heard Island and McDonald Islands',Capital:'N/A',CapitalLatitude:0,CapitalLongitude:0.0,CountryCode:'HM',Continent:'Antarctica'},{Country:'British Indian Ocean Territory',Capital:'Diego Garcia',CapitalLatitude:-7.3,CapitalLongitude:72.4,CountryCode:'IO',Continent:'Africa'},{Country:'Macau',Capital:'N/A',CapitalLatitude:0,CapitalLongitude:0.0,CountryCode:'MO',Continent:'Asia'}]");
+	private static final String[] continents = {"Africa", "Antarctica", "Asia", "Australia", "Europe", "North America", "South America"};
+	private static final String[] countries = {"Afghanistan", "Aland Islands", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "British Indian Ocean Territory", "British Virgin Islands", "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Cocos Islands", "Colombia", "Comoros", "Cook Islands", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "CuraÃ§ao", "Cyprus", "Czech Republic", "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Falkland Islands", "Faroe Islands", "Federated States of Micronesia", "Fiji", "Finland", "France", "French Polynesia", "French Southern and Antarctic Lands", "Gabon", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Heard Island and McDonald Islands", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Moldova", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "North Korea", "Northern Cyprus", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcairn Islands", "Poland", "Portugal", "Puerto Rico", "Qatar", "Republic of Congo", "Romania", "Russia", "Rwanda", "Saint Barthelemy", "Saint Helena", "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "Somaliland", "South Africa", "South Georgia and South Sandwich Islands", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Svalbard", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "The Gambia", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "US", "US Virgin Islands", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe"};
+	private static final String[] countryCodes = {"AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS", "AT", "AU", "AW", "AX", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BL", "BM", "BN", "BO", "BR", "BS", "BT", "BW", "BY", "BZ", "CA", "CC", "CD", "CF", "CG", "CH", "CI", "CK", "CL", "CM", "CN", "CO", "CR", "CU", "CV", "CW", "CX", "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "DZ", "EC", "EE", "EG", "EH", "ER", "ES", "ET", "FI", "FJ", "FK", "FM", "FO", "FR", "GA", "GB", "GD", "GE", "GG", "GH", "GI", "GL", "GM", "GN", "GQ", "GR", "GS", "GT", "GU", "GW", "GY", "HK", "HM", "HN", "HR", "HT", "HU", "ID", "IE", "IL", "IM", "IN", "IO", "IQ", "IR", "IS", "IT", "JE", "JM", "JO", "JP", "KE", "KG", "KH", "KI", "KM", "KN", "KO", "KP", "KR", "KW", "KY", "KZ", "LA", "LB", "LC", "LI", "LK", "LR", "LS", "LT", "LU", "LV", "LY", "MA", "MC", "MD", "ME", "MF", "MG", "MH", "MK", "ML", "MM", "MN", "MO", "MP", "MR", "MS", "MT", "MU", "MV", "MW", "MX", "MY", "MZ", "NA", "NC", "NE", "NF", "NG", "NI", "NL", "NO", "NP", "NR", "NU", "NULL", "NZ", "OM", "PA", "PE", "PF", "PG", "PH", "PK", "PL", "PM", "PN", "PR", "PS", "PT", "PW", "PY", "QA", "RO", "RS", "RU", "RW", "SA", "SB", "SC", "SD", "SE", "SG", "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SR", "SS", "ST", "SV", "SX", "SY", "SZ", "TC", "TD", "TF", "TG", "TH", "TJ", "TK", "TL", "TM", "TN", "TO", "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "US", "UY", "UZ", "VA", "VC", "VE", "VG", "VI", "VN", "VU", "WF", "WS", "YE", "ZA", "ZM", "ZW"};
+	private static final String[] capitals = {"Abu Dhabi", "Abuja", "Accra", "Adamstown", "Addis Ababa", "Algiers", "Alofi", "Amman", "Amsterdam", "Andorra la Vella", "Ankara", "Antananarivo", "Apia", "Ashgabat", "Asmara", "Astana", "Asuncion", "Atafu", "Athens", "Avarua", "Baghdad", "Baku", "Bamako", "Bandar Seri Begawan", "Bangkok", "Bangui", "Banjul", "Basseterre", "Beijing", "Beirut", "Belgrade", "Belmopan", "Berlin", "Bern", "Bishkek", "Bissau", "Bogota", "Brasilia", "Bratislava", "Brazzaville", "Bridgetown", "Brussels", "Bucharest", "Budapest", "Buenos Aires", "Bujumbura", "Cairo", "Canberra", "Caracas", "Castries", "Charlotte Amalie", "Chisinau", "Colombo", "Conakry", "Copenhagen", "Dakar", "Damascus", "Dar es Salaam", "Dhaka", "Diego Garcia", "Dili", "Djibouti", "Doha", "Douglas", "Dublin", "Dushanbe", "El-AaiÃºn", "Freetown", "Funafuti", "Gaborone", "George Town", "Georgetown", "Gibraltar", "Grand Turk", "Guatemala City", "Gustavia", "Hagatna", "Hamilton", "Hanoi", "Harare", "Hargeisa", "Havana", "Helsinki", "Honiara", "Islamabad", "Jakarta", "Jamestown", "Jerusalem", "Juba", "Kabul", "Kampala", "Kathmandu", "Khartoum", "Kigali", "King Edward Point", "Kingston", "Kingstown", "Kinshasa", "Kuala Lumpur", "Kuwait City", "Kyiv", "La Paz", "Libreville", "Lilongwe", "Lima", "Lisbon", "Ljubljana", "Lome", "London", "Longyearbyen", "Luanda", "Lusaka", "Luxembourg", "Madrid", "Majuro", "Malabo", "Male", "Managua", "Manama", "Manila", "Maputo", "Mariehamn", "Marigot", "Maseru", "Mata-Utu", "Mbabane", "Melekeok", "Mexico City", "Minsk", "Mogadishu", "Monaco", "Monrovia", "Montevideo", "Moroni", "Moscow", "Muscat", "N'Djamena", "N/A", "Nairobi", "Nassau", "New Delhi", "Niamey", "Nicosia", "North Nicosia", "Nouakchott", "Noumea", "Nuku'alofa", "Nuuk", "Oranjestad", "Oslo", "Ottawa", "Ouagadougou", "Pago Pago", "Palikir", "Panama City", "Papeete", "Paramaribo", "Paris", "Philipsburg", "Phnom Penh", "Plymouth", "Podgorica", "Port Louis", "Port Moresby", "Port of Spain", "Port-au-Prince", "Port-aux-Francais", "Port-Vila", "Porto-Novo", "Prague", "Praia", "Pretoria", "Pristina", "Pyongyang", "Quito", "Rabat", "Rangoon", "Reykjavik", "Riga", "Riyadh", "Road Town", "Rome", "Roseau", "Saint George's", "Saint Helier", "Saint John's", "Saint Peter Port", "Saint-Pierre", "Saipan", "San Jose", "San Juan", "San Marino", "San Salvador", "Sanaa", "Santiago", "Santo Domingo", "Sao Tome", "Sarajevo", "Seoul", "Singapore", "Skopje", "Sofia", "Stanley", "Stockholm", "Suva", "Taipei", "Tallinn", "Tarawa", "Tashkent", "Tbilisi", "Tegucigalpa", "Tehran", "The Settlement", "The Valley", "Thimphu", "Tirana", "Tokyo", "Torshavn", "Tripoli", "Tunis", "Ulaanbaatar", "Vaduz", "Valletta", "Vatican City", "Victoria", "Vienna", "Vientiane", "Vilnius", "Warsaw", "Washington DC", "Wellington", "West Island", "Willemstad", "Windhoek", "Yamoussoukro", "Yaounde", "Yaren", "Yerevan", "Zagreb" };
 	
-	private static final String[] companyTitleThird = new String[] { 
-			  "AG"
-			, "GmbH"
-			, "Inc."
-			, "Ltd."
-			, "LCC"
-			, "PLCC"
-			, "Corp."
-			, "Co-Op"
-			, "S.A."
-			, "S.L."
-			, "Business"
-			, "Company"
-			, "Group"
-			, "Corporation"
-			, "Services"
-			, "Shop"
-			, "Store"
-			, "School"
-			, "University"
-			, "Counselor"
-			, "Solicitors"
-			, "Trader"
-			, "Industry"
-			, "Industries"
-			, "Agency"
-			};
+	private static final String[] streetNames = { "Main", "Oak", "Pine", "Maple", "Cedar", "Washington", "Lake", "Hill", "Sunset", "Park", "Cherry", "Walnut", "Willow", "North", "South", "East", "West", "Center", "River", "Forest", "Highland", "Paradise", "Spring", "Broadway", "Chestnut", "Birch", "Sycamore", "College", "Union", "Jackson", "Lincoln", "Angel", "Jefferson", "Dragon", "Madison", "Magic", "Knight", "Sorceress", "Kennedy", "Taylor", "Centaur", "Johnson", "Martin", "King", "Queen", "Victoria", "George", "Princess", "Mill", "Depot", "Railroad", "Station", "Market", "Commerce", "Industrial", "Factory", "Canal", "Harbor", "Ocean", "Beach", "Valley", "Stream", "Stone", "Rock", "Cliff", "Mountain", "Plateau", "Plain", "Field", "Farm", "Garden", "Orchard", "Vine", "Vineyard", "Landing", "Hollow", "Bridge", "Tower", "Gate", "Wall", "Fort", "Castle", "Chapel", "Church", "Temple", "Monastery", "Moonshade", "Silvergrove", "Dragonspire", "Whisperwind", "Starfall", "Emberhollow", "Frostglen", "Shadowmere", "Crystalbrook", "Thornveil", "Mystvale", "Ravenreach", "Glimmerfen", "Ashenwood", "Twilight", "Phoenixrest", "Wyrmwatch", "Ebonridge", "Sylvanlight", "Stormhollow"};
+	private static final String[] streetSuffixes = {
+		    /* Common US/International */ "Street", "St", "Avenue", "Ave", "Boulevard", "Blvd", "Road", "Rd", "Lane", "Drive", "Court", "Place", "Terrace", "Way", "Circle", "Trail", "Parkway", "Highway", "Crescent", "Alley", "Walk", "Square", "Sq", "Loop", "Row", "Bypass", "Turnpike", "Expressway",
+		    /* UK-specific */ "Close", "Gardens", "Grove", "Hill", "Mews", "Parade", "Rise", "Vale", "View", "Wharf", "Green", "End",
+		    /* Canada/Australia */ "Concession", "Line", "Ramp", "Esplanade", "Promenade", "Quay", "Crossing", "Chase", "Glade", "Heights", "Meadow", "Ridge", "Vista", "Way", "Track"
+		};
+
+	//  From sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero
+	private static final String[] loremIpsumSentences = new String[] { 
+			  "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga."
+			, "Et harum quidem rerum facilis est et expedita distinctio."
+			, "Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat."
+			, "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus."
+			, "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
+			, "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."
+			, "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+			, "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae."
+			, "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?"
+			, "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+	};
 	
 	private static final String[] firstWorldProblemTitles = 
 			new String[] {
@@ -373,7 +232,7 @@ public class CFWRandom {
 	 ******************************************************************************/
 	public static boolean checkReturnNull(int nullRatioPercent) {
 		
-		if(nullRatioPercent >= integerInRange(1, 100) ) {
+		if(nullRatioPercent >= integer(1, 100) ) {
 			return true;
 		}
 		
@@ -432,6 +291,17 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
+	 * Returns a random String from an list of strings.
+	 * 
+	 * @param strings to choose from
+	 * 
+	 ******************************************************************************/
+	public static String fromStrings(String... strings) {
+	    int index = random.nextInt(strings.length);
+	    return strings[index];
+	}
+	
+	/******************************************************************************
 	 * Returns a random String from an array.
 	 * 
 	 * @param array to choose from
@@ -440,6 +310,17 @@ public class CFWRandom {
 	public static String fromArray(String[] array) {
 	    int index = random.nextInt(array.length);
 	    return array[index];
+	}
+	
+	/******************************************************************************
+	 * Returns a random String from an array.
+	 * 
+	 * @param array to choose from
+	 * 
+	 ******************************************************************************/
+	public static JsonElement fromArray(JsonArray array) {
+	    int index = random.nextInt(array.size());
+	    return array.get(index);
 	}
 	
 	/******************************************************************************
@@ -482,6 +363,13 @@ public class CFWRandom {
 	public static String issueResolvedMessage(int nullRatioPercent) { return fromArray(nullRatioPercent, issueResolvedMessages); }
 	public static String messageOfObedience(int nullRatioPercent) { return fromArray(nullRatioPercent, messagesOfObedience); }
 	
+	/** Returns a JsonObject with the fields: Country, Capital, CapitalLatitude, CapitalLongitude, CountryCode, Continent */ 
+	public static JsonObject countryData() { return fromArray(countryData).getAsJsonObject(); }
+	public static String continent(int nullRatioPercent) { return fromArray(nullRatioPercent, continents); }
+	public static String country(int nullRatioPercent) { return fromArray(nullRatioPercent, countries); }
+	public static String countryCode(int nullRatioPercent) { return fromArray(nullRatioPercent, countryCodes); }
+	public static String capitalCity(int nullRatioPercent) { return fromArray(nullRatioPercent, capitals); }
+	
 	public static String jobTitle(int nullRatioPercent) { 
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
@@ -502,6 +390,39 @@ public class CFWRandom {
 			; 
 	}
 	
+	public static String street(int nullRatioPercent) { 
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		return fromArray(streetNames)
+		     + ( integer(0, 100) < 50 ? "" : (" " + fromArray(streetNames)) )
+		     + " " 
+		     + fromArray(streetSuffixes)
+		; 
+	}
+	
+	public static String companyTitle(int nullRatioPercent) { 
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		return fromArray(companyTitleFirst)
+		+ " " +fromArray(companyTitleSecond)
+		+ " " +fromArray(companyTitleThird)
+			; 
+	}
+	
+	public static String phoneNumber(int nullRatioPercent) { 
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		return "+"
+			  + fromStrings("1", "7", "27", "34", "353", "41", "44", "45", "55", "81", "86", "91")
+		+ " " + integer(10, 999)
+		+ " " + integer(10, 999)
+		+ " " + integer(100, 9999)
+			; 
+	}
+	
 	public static String methodName(int nullRatioPercent) { 
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
@@ -513,14 +434,39 @@ public class CFWRandom {
 			; 
 	}
 	
-	public static String companyTitle(int nullRatioPercent) { 
+	public static String loremIpsum(int nullRatioPercent, int maxLength) { 
 		
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
 		
-		return fromArray(companyTitleFirst)
-		+ " " +fromArray(companyTitleSecond)
-		+ " " +fromArray(companyTitleThird)
-			; 
+		StringBuilder builder = new StringBuilder();
+		
+		while(builder.length() < maxLength) {
+			builder.append( fromArray(loremIpsumSentences) )
+				   .append(" ");
+		}
+		
+		// remove last blank
+		builder.deleteCharAt(builder.length()-1);
+		
+		String loremIpsum = builder.toString();
+		
+		if(loremIpsum.length() > maxLength) {
+			
+			if(loremIpsum.endsWith(",")
+			|| loremIpsum.endsWith("?")
+			|| loremIpsum.endsWith(".")
+			){
+				loremIpsum.substring(0, loremIpsum.length()-1);
+			}
+			
+			int endIndex = loremIpsum.lastIndexOf(" ", maxLength-2);
+			loremIpsum = loremIpsum.substring(0, endIndex);
+			loremIpsum += ".";
+		}
+		
+		return loremIpsum;
+		
+		
 	}
 	
 	
@@ -537,10 +483,19 @@ public class CFWRandom {
 	public static String exaggaratingAdjective() { return exaggaratingAdjective(0); }
 	public static String issueResolvedMessage() { return issueResolvedMessage(0); }
 	public static String messageOfObedience() { return messageOfObedience(0); }
+	
+	public static String continent() { return continent(0); }
+	public static String country() { return country(0); }
+	public static String countryCode() { return countryCode(0); }
+	public static String capitalCity() { return capitalCity(0); }
+	
 	public static String jobTitle() { return jobTitle(0); }
+	public static String street() { return street(0); }
+	public static String companyTitle() { return companyTitle(0); }
+	public static String phoneNumber() { return phoneNumber(0); }
+	public static String loremIpsum(int maxLength) { return loremIpsum(0, maxLength); }
 	public static String statisticsTitle() { return statisticsTitle(0); }
 	public static String methodName() { return methodName(0); }
-	public static String companyTitle() { return companyTitle(0); }
 
 	/******************************************************************************
 	 * Creates a random Message Type.
@@ -578,16 +533,16 @@ public class CFWRandom {
 	 * Returns nulls for a certain percentage
 	 * 
 	 ******************************************************************************/
-	public static Integer integerInRange(int lowerInclusive, int upperInclusive, int nullRatioPercent) {
+	public static Integer integer(int lowerInclusive, int upperInclusive, int nullRatioPercent) {
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
 		
-		return integerInRange(lowerInclusive, upperInclusive);
+		return integer(lowerInclusive, upperInclusive);
 	}
 	/******************************************************************************
 	 * Creates a random integer between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
-	public static Integer integerInRange(int lowerInclusive, int upperInclusive) {
+	public static Integer integer(int lowerInclusive, int upperInclusive) {
 		
 		return ThreadLocalRandom.current().nextInt(lowerInclusive, upperInclusive+1);
 	}
@@ -763,9 +718,9 @@ public class CFWRandom {
 	 ************************************************************************************************/
 	public static String colorHSL(int minS, int maxS, int minL, int maxL) { 
 		
-		int h = integerInRange(0,256);
-		int s = integerInRange(minS, maxS);
-		int l = integerInRange(minL, maxL);
+		int h = integer(0,256);
+		int s = integer(minS, maxS);
+		int l = integer(minL, maxL);
 		
 		return "hsla("+h+","+s+"%,"+l+"%, 1.0)";
 		
@@ -781,41 +736,13 @@ public class CFWRandom {
 	 ************************************************************************************************/
 	public static String colorSL(int hue, int minS, int maxS, int minL, int maxL) { 
 		
-		int s = integerInRange(minS, maxS);
-		int l = integerInRange(minL, maxL);
+		int s = integer(minS, maxS);
+		int l = integer(minL, maxL);
 		
 		return "hsla("+Math.abs(hue % 360)+","+s+"%,"+l+"%, 1.0)";
 		
 	}
-	
-	/******************************************************************************
-	 * Enum of data types used in the next method.
-	 * 
-	 ******************************************************************************/
-	public enum RandomDataType {
-		  DEFAULT 
-		, NUMBERS
-		, ARRAYS
-		, SERIES
-		, STATS
-		, TRADING
-		, TICKETS
-		, BATCHJOBS
-		, VARIOUS
-		;
 		
-		private static HashSet<String> names = new HashSet<>();
-		static {
-			for(RandomDataType type : RandomDataType.values()) {
-				names.add(type.name());
-			}
-		}
-
-		public static boolean has(String value) {
-			return names.contains(value);
-		}
-	}
-	
 	/******************************************************************************
 	 * Creates a random arrayList of integers.
 	 * 
@@ -825,7 +752,7 @@ public class CFWRandom {
 		ArrayList<Integer> array = new ArrayList<Integer>();
 				
 		for(int i = 0; i < count; i++) {
-			array.add(integerInRange(lowerInclusive, upperInclusive));
+			array.add(integer(lowerInclusive, upperInclusive));
 		}
 		
 		return array;
@@ -844,6 +771,35 @@ public class CFWRandom {
 		}
 		
 		return array;
+	}
+	
+	/******************************************************************************
+	 * Enum of data types used in the next method.
+	 * 
+	 ******************************************************************************/
+	public enum RandomDataType {
+		  DEFAULT 
+		, NUMBERS
+		, ARRAYS
+		, SERIES
+		, STATS
+		, TRADING
+		, TICKETS
+		, COUNTRIES
+		, BATCHJOBS
+		, VARIOUS
+		;
+		
+		private static HashSet<String> names = new HashSet<>();
+		static {
+			for(RandomDataType type : RandomDataType.values()) {
+				names.add(type.name());
+			}
+		}
+
+		public static boolean has(String value) {
+			return names.contains(value);
+		}
 	}
 	
 	/******************************************************************************
@@ -873,6 +829,7 @@ public class CFWRandom {
 			case STATS:			return CFW.Random.jsonArrayOfStatisticalSeriesData(seriesCount, count, earliest, latest);
 			case TRADING:		return CFW.Random.jsonArrayOfTradingData(seriesCount, count, earliest, latest);
 			case TICKETS: 		return CFW.Random.jsonArrayOfSupportTickets(count);
+			case COUNTRIES: 	return CFW.Random.jsonArrayOfCountryData();
 			case BATCHJOBS:		return CFW.Random.jsonArrayOfBatchCalls(seriesCount, count, earliest, latest, 7);
 			case VARIOUS:		return CFW.Random.jsonArrayOfVariousData(count, 0, earliest, latest);
 			
@@ -904,13 +861,13 @@ public class CFWRandom {
 	public static JsonArray jsonArrayOfMixedTypes(int minElements, int maxElements) { 
 		JsonArray array = new JsonArray();
 		
-		int count = integerInRange(minElements, maxElements);
+		int count = integer(minElements, maxElements);
 		for(int i = 0; i < count; i++) {
 			
 			switch(i % 4) {
 				case 0: array.add(mythicalLocation(15));  break;
 				case 1: array.add(bool(15));  break;
-				case 2: array.add(integerInRange(0, 100));  break;
+				case 2: array.add(integer(0, 100));  break;
 				case 3: array.add(floatInRange(0, 10000));  break;
 				default: array.add(stringAlphaNumSpecial(6));  break;
 			}
@@ -945,12 +902,21 @@ public class CFWRandom {
 		JsonArray array = new JsonArray();
 				
 		for(int i = 0; i < count; i++) {
-			array.add(integerInRange(lowerInclusive, upperInclusive));
+			array.add(integer(lowerInclusive, upperInclusive));
 		}
 		
 		return array;
 	}
 	
+	/******************************************************************************
+	 * Okay fine it is not random, but it returns a full list of country data.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonArray jsonArrayOfCountryData() { 
+		
+		return countryData.deepCopy();
+	}
 	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 
@@ -1112,10 +1078,10 @@ public class CFWRandom {
 		currentItem.addProperty("END", latest);
 		currentItem.addProperty("DURATION", latest - earliest);
 		currentItem.addProperty("REPORTED", latest + longInRange( 0 , (span / 3) ) );
-		currentItem.addProperty("RESULTS", integerInRange(0,10000) );
-		currentItem.addProperty("ERRORS", (integerInRange(0, 100) > 20) 
+		currentItem.addProperty("RESULTS", integer(0,10000) );
+		currentItem.addProperty("ERRORS", (integer(0, 100) > 20) 
 											? 0 
-											: integerInRange(5,1000) 
+											: integer(5,1000) 
 											);
 
 		if(maxDepth == 0 || array.size() >= valuesCount) {
@@ -1130,7 +1096,7 @@ public class CFWRandom {
 		// Create Values for Series
 		int directCalls = 0;
 		if(maxDepth > 0) {
-			directCalls = integerInRange(0, (maxDepth / 2)+1);
+			directCalls = integer(0, (maxDepth / 2)+1);
 		}
 		
 		// tighten the timeframe
@@ -1190,15 +1156,15 @@ public class CFWRandom {
 				
 				JsonObject currentItem = new JsonObject();
 				
-				int count = integerInRange(5,100);
+				int count = integer(5,100);
 				
 				ArrayList<BigDecimal> values = new ArrayList<>();
-				int lowerBound = integerInRange(0, 20);
-				int upperBound = integerInRange(40, 100);
+				int lowerBound = integer(0, 20);
+				int upperBound = integer(40, 100);
 				
-				int outlierPercentage = integerInRange(0,100);
-				if     (outlierPercentage > 95) { upperBound = integerInRange(200,500); }
-				else if(outlierPercentage > 90) { upperBound = integerInRange(100,200); }
+				int outlierPercentage = integer(0,100);
+				if     (outlierPercentage > 95) { upperBound = integer(200,500); }
+				else if(outlierPercentage > 90) { upperBound = integer(100,200); }
 					
 				for(int k = 0; k < count; k++) {
 					values.add( bigDecimal(lowerBound, upperBound, fromArray(decimals) ) );
@@ -1294,7 +1260,7 @@ public class CFWRandom {
 		//--------------------------------------
 		// Create Series 
 		for(int i = 0; i < seriesCount; i++) {
-			String warehouse = colorName()+" "+stringAlphaNum(1).toUpperCase()+integerInRange(1, 9);
+			String warehouse = colorName()+" "+stringAlphaNum(1).toUpperCase()+integer(1, 9);
 			String item = fruitName();
 			float priceMultiplier = floatInRange(0.5f, 5.6f);
 						
@@ -1317,7 +1283,7 @@ public class CFWRandom {
 				
 				currentItem.addProperty("PRICE", price);
 				currentItem.addProperty("BOX_SIZE", boxSize);
-				currentItem.addProperty("PERCENT", integerInRange(1, 100));
+				currentItem.addProperty("PERCENT", integer(1, 100));
 				
 				currentItem.addProperty("TOTAL", price * boxSize );
 				
@@ -1340,8 +1306,8 @@ public class CFWRandom {
 	 ******************************************************************************/
 	public class RandomSeriesGenerator{
 		
-		private int seriesType = integerInRange(0, 9);
-		private int base = integerInRange(0, 100);
+		private int seriesType = integer(0, 9);
+		private int base = integer(0, 100);
 		private float jumpPosition1 = floatInRange(0.3f, 5f);
 		private float jumpPosition2 = floatInRange(0.3f, 5f);
 		private float smallerJump = Math.min(jumpPosition1, jumpPosition2);
@@ -1359,45 +1325,45 @@ public class CFWRandom {
 			
 			switch(seriesType) {
 				case 0: // random
-					return integerInRange(0, 100);
+					return integer(0, 100);
 				
 				case 1: // increase
-					return (int) ((Math.abs(Math.sin(index)) * 30) + integerInRange(5, 15) * (index / 10.0) );
+					return (int) ((Math.abs(Math.sin(index)) * 30) + integer(5, 15) * (index / 10.0) );
 				
 				case 2: // decrease
 					float divisor = totalValuesCount / ((totalValuesCount - index) / 1.1f);
-					return (int) Math.round( ((Math.abs(Math.sin(index)) * 30) + integerInRange(5, 15)) / divisor) ;
+					return (int) Math.round( ((Math.abs(Math.sin(index)) * 30) + integer(5, 15)) / divisor) ;
 				
 				case 3: //jump up
 					if((totalValuesCount / (float)(index+1)) > jumpPosition1) {
-						return integerInRange(10, 30);
+						return integer(10, 30);
 					}else {
-						return 70 + integerInRange(0, 30);
+						return 70 + integer(0, 30);
 					}
 				
 				case 4: //jump down
 					if((totalValuesCount / (float)(index+1)) > jumpPosition2) {
-						return integerInRange(60, 100);
+						return integer(60, 100);
 					}else {
-						return integerInRange(5, 30);
+						return integer(5, 30);
 					}
 				
 				case 5: //jump up & down
 					if((totalValuesCount / (float)(index+1)) > biggerJump) {
-						return integerInRange(15, 25);
+						return integer(15, 25);
 					}else if ( (totalValuesCount / (float)(index+1)) > smallerJump) {
-						return 70 + integerInRange(0, 30);
+						return 70 + integer(0, 30);
 					}else {
-						return integerInRange(15, 25);
+						return integer(15, 25);
 					}	
 	
 				case 6: //jump down & up
 					if((totalValuesCount / (float)(index+1)) > biggerJump) {
-						return integerInRange(70, 90);
+						return integer(70, 90);
 					}else if ( (totalValuesCount / (float)(index+1)) > smallerJump) {
-						return integerInRange(10, 25);
+						return integer(10, 25);
 					}else {
-						return integerInRange(70, 90);
+						return integer(70, 90);
 					}
 				
 				case 7: // Sine Wave Increasing
@@ -1405,23 +1371,23 @@ public class CFWRandom {
 				
 				case 8: // Sine Wave Decreasing
 					float divisorSine = totalValuesCount / ((totalValuesCount - index) / 1.1f);
-					return (int) Math.round( (base + (Math.sin(index/4.0) * 10) + integerInRange(0, 3)) / divisorSine );
+					return (int) Math.round( (base + (Math.sin(index/4.0) * 10) + integer(0, 3)) / divisorSine );
 				
 				case 9: // Sine Random
-					return (int) Math.round( base + (Math.abs(Math.sin(index/4.0)) * 10) + integerInRange(0, 5) );
+					return (int) Math.round( base + (Math.abs(Math.sin(index/4.0)) * 10) + integer(0, 5) );
 
 				case 10: // Sinus + Cos Increasing
 					return (int) Math.round( (
 								(Math.abs(Math.cos((index)/6)) * 10) 
 								+ (Math.abs(Math.sin(index/4)) * 20) 
-								+ integerInRange(0, 5)
+								+ integer(0, 5)
 								* (index / 10.0)
 							) 
 						);
 			}
 			
 			// default to random
-			return integerInRange(0, 100);
+			return integer(0, 100);
 		}
 		
 
@@ -1458,7 +1424,7 @@ public class CFWRandom {
 		object.addProperty("LIKES_TIRAMISU", CFW.Random.bool(nullRatioPercent));
 		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.longInRange(100, 10000)*1000000) );
 		object.addProperty("URL", "http://www.example.url/mightyperson?id="+id);
-		object.addProperty("VALUE", CFW.Random.integerInRange(1, 100));
+		object.addProperty("VALUE", CFW.Random.integer(1, 100));
 
 		
 		return object;
@@ -1479,30 +1445,30 @@ public class CFWRandom {
 		// Base Values
 		String id = UUID.randomUUID().toString().substring(0, 22);
 		object.addProperty("LINK", "http://serviceportal.example.url/ticket?id="+id);
-		object.addProperty("TICKET_ID",  "TKT-00"+integerInRange(10000, 99999));
+		object.addProperty("TICKET_ID",  "TKT-00"+integer(10000, 99999));
 		String status = fromArray(ticketStatus);
 		object.addProperty("STATUS",  status);
-		object.addProperty("PRIORITY",  integerInRange(1, 9));
+		object.addProperty("PRIORITY",  integer(1, 9));
 		object.addProperty("TITLE",  fromArray(firstWorldProblemTitles));
 		object.addProperty("SERVICE",  ultimateServiceName());
-		object.addProperty("USER_ID", "u"+integerInRange(10000, 99999) );
+		object.addProperty("USER_ID", "u"+integer(10000, 99999) );
 		object.addProperty("USERNAME", CFW.Random.lastnameSweden().toUpperCase()+" "+CFW.Random.firstnameOfGod());
 		
 		//--------------------------------------
 		// Assignee: 50% Unassigned when Status == New
-		if(status.equals("New") && integerInRange(0, 100) > 50) { 
+		if(status.equals("New") && integer(0, 100) > 50) { 
 			object.add("ASSIGNEE_ID", JsonNull.INSTANCE );
 			object.add("ASSIGNEE_NAME", JsonNull.INSTANCE); 
 		}else {
-			object.addProperty("ASSIGNEE_ID", "u"+integerInRange(10000, 99999) );
+			object.addProperty("ASSIGNEE_ID", "u"+integer(10000, 99999) );
 			object.addProperty("ASSIGNEE_NAME", CFW.Random.lastnameSweden().toUpperCase()+" "+CFW.Random.firstnameOfGod());
 		}
 		
 		//--------------------------------------
 		// Times
-		int createdOffsetMinutes = CFW.Random.integerInRange(200, 10000);
+		int createdOffsetMinutes = CFW.Random.integer(200, 10000);
 		long createdMillis = CFWTimeUnit.m.offset(currentTime, createdOffsetMinutes);
-		int updatedOffsetMinutes = CFW.Random.integerInRange(10, createdOffsetMinutes-(createdOffsetMinutes/6));
+		int updatedOffsetMinutes = CFW.Random.integer(10, createdOffsetMinutes-(createdOffsetMinutes/6));
 		long updatedMillis = CFWTimeUnit.m.offset(currentTime, updatedOffsetMinutes);
 		
 		object.addProperty("TIME_CREATED", createdMillis );
@@ -1510,7 +1476,7 @@ public class CFWRandom {
 		
 		//--------------------------------------
 		// Health
-		object.addProperty("HEALTH", CFW.Random.integerInRange(1, 100));
+		object.addProperty("HEALTH", CFW.Random.integer(1, 100));
 
 		
 		return object;
@@ -1524,8 +1490,8 @@ public class CFWRandom {
 
 		//-------------------------------------------
 		// Prepare values in thousand steps
-		double multiplier = Math.pow(1000, integerInRange(0, 4));
-		double thousands = integerInRange(0, 1000) * multiplier;
+		double multiplier = Math.pow(1000, integer(0, 4));
+		double thousands = integer(0, 1000) * multiplier;
 		BigDecimal tiny = bigDecimal(0, 1000).setScale(12).divide( new BigDecimal(multiplier+1000), CFW.Math.ROUND_UP );
 		
 		JsonObject object = new JsonObject();

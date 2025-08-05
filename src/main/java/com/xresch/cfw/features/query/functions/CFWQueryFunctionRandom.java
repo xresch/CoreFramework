@@ -143,7 +143,7 @@ public class CFWQueryFunctionRandom extends CFWQueryFunction {
 		//----------------------------------
 		// Return Number
 		return QueryPartValue.newNumber(
-				CFW.Random.integerInRange(lowerInclusive, upperInclusive, nullPercentage)
+				CFW.Random.integer(lowerInclusive, upperInclusive, nullPercentage)
 			);
 		
 	}
