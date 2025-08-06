@@ -3638,6 +3638,61 @@ function cfw_format_epochToTimestamp(epoch){
 }
 
 /**************************************************************************************
+ * Create a date string Like 2022-02-22
+ * @param epoch unix epoch milliseconds since 01.01.1970
+ * @return date as string
+ *************************************************************************************/
+function cfw_format_epochToDate(epoch){
+	
+	//--------------------------
+	// Checks
+	if(CFW.utils.isNullOrEmpty(epoch)){ return ""; }
+	if( isNaN(epoch) ){ return ""; }
+	if(typeof epoch == "string"){ epoch = parseInt(epoch) }
+	
+	//--------------------------
+	// Format
+	var a = new Date(epoch);
+	var year 		= a.getFullYear();
+	var month 	= a.getMonth()+1 < 10 	? "0"+(a.getMonth()+1) : a.getMonth()+1;
+	var day 		= a.getDate() < 10 		? "0"+a.getDate() : a.getDate();
+	
+	var time = year + '-' + month + '-' + day ;
+	return time;
+}
+
+/**************************************************************************************
+ * Create a short date string like "Wed 6 Aug 25 23:00".
+ * 
+ * @param epoch unix epoch milliseconds since 01.01.1970
+ * @return date as string
+ *************************************************************************************/
+function cfw_format_epochToShortDate(epoch){
+	
+	//--------------------------
+	// Checks
+	if(CFW.utils.isNullOrEmpty(epoch)){ return ""; }
+	if( isNaN(epoch) ){ return ""; }
+	if(typeof epoch == "string"){ epoch = parseInt(epoch) }
+  
+	const date = new Date(epoch);
+
+	const weekday = date.toLocaleDateString('en-US', { weekday: 'short' }); // "Wed"
+	const day = date.getDate(); // 6
+	const month = date.toLocaleDateString('en-US', { month: 'short' }); // "Aug"
+	const year = String(date.getFullYear()).slice(-2); // "25"
+	const time = date.toLocaleTimeString('en-US', {
+		hour: '2-digit',
+		minute: '2-digit',
+		hour12: false
+	}); // "23:00"
+
+	return `${weekday} ${day} ${month} ${year} ${time}`;
+	
+}
+
+
+/**************************************************************************************
  * Create a clock string in the format HH:mm:ss from an epoch time
  * @param epoch milliseconds of epoch date and time
  * @return clock string
@@ -3779,30 +3834,6 @@ function cfw_format_millisToDurationClock(epoch){
 
 }
 
-
-/**************************************************************************************
- * Create a date string
- * @param epoch unix epoch milliseconds since 01.01.1970
- * @return date as string
- *************************************************************************************/
-function cfw_format_epochToDate(epoch){
-	
-	//--------------------------
-	// Checks
-	if(CFW.utils.isNullOrEmpty(epoch)){ return ""; }
-	if( isNaN(epoch) ){ return ""; }
-	if(typeof epoch == "string"){ epoch = parseInt(epoch) }
-	
-	//--------------------------
-	// Format
-	var a = new Date(epoch);
-	var year 		= a.getFullYear();
-	var month 	= a.getMonth()+1 < 10 	? "0"+(a.getMonth()+1) : a.getMonth()+1;
-	var day 		= a.getDate() < 10 		? "0"+a.getDate() : a.getDate();
-	
-	var time = year + '-' + month + '-' + day ;
-	return time;
-}
 
 /**************************************************************************************
  * Create a timestamp string
@@ -5916,23 +5947,36 @@ function cfw_ui_storeJsonDataModal(jsonArray, sourceElementOrID, nameSuggestions
 		// earliest
 		let earliest = selectedTime.earliest;
 		let earliestDate = CFW.format.epochToDate(earliest);
+		let earliestDateShort = CFW.format.epochToShortDate(earliest);
 		let earliestTimestamp = CFW.format.epochToTimestamp(earliest);
-		nameSuggestionsArray.push( earliestDate );
-		nameSuggestionsArray.push( earliestTimestamp );
 		
 		//---------------------
 		// latest
 		let latest = selectedTime.latest;
 		let latestDate = CFW.format.epochToDate(latest);
+		let latestDateShort = CFW.format.epochToShortDate(latest);
 		let latestTimestamp = CFW.format.epochToTimestamp(latest);
-		nameSuggestionsArray.push( latestDate );
-		nameSuggestionsArray.push( latestTimestamp );
+		
+		if(earliestDate == latestDate){
+			nameSuggestionsArray.push( earliestDate );
+			// nameSuggestionsArray.push( latestDate ); // will be removed by _uniq later
+			
+			// this is just spam
+			//nameSuggestionsArray.push( earliestDateShort );
+			//nameSuggestionsArray.push( earliestTimestamp );
+
+			//nameSuggestionsArray.push( latestDateShort );
+			//nameSuggestionsArray.push( latestTimestamp );
+		}
+			
+		
 		
 		//---------------------
 		// earliest to latest
 		
 		if(earliestDate != latestDate){
 			nameSuggestionsArray.push( earliestDate +" to " + latestDate );
+			nameSuggestionsArray.push( earliestDateShort +" to " + latestDateShort );
 			nameSuggestionsArray.push( earliestTimestamp +" to " + latestTimestamp );
 		}else{
 			// <Date> <Time> to <Time>
@@ -5942,6 +5986,12 @@ function cfw_ui_storeJsonDataModal(jsonArray, sourceElementOrID, nameSuggestions
 			// <Time> to <Time>
 			earliestTimestamp = earliestTimestamp.replace(earliestDate+" ", "");
 			nameSuggestionsArray.push( earliestTimestamp +" to " + latestTimestamp );
+			
+			// <DateShort> <Time> to <Time>
+			let latestTime = latestDateShort.split(" ");
+			latestTime = latestTime[latestTime.length - 1];
+			nameSuggestionsArray.push( earliestDateShort +" to " + latestTimestamp );
+			
 		}
 		
 		
@@ -5981,7 +6031,7 @@ function cfw_ui_storeJsonDataModal(jsonArray, sourceElementOrID, nameSuggestions
 	for(let i in nameSuggestionsArray){
 		let suggestion = nameSuggestionsArray[i];
 		
-		let button = $('<button class=" btn btn-sm btn-primary m-1">'+suggestion+'</button>');
+		let button = $('<button class="col-4 btn btn-sm btn-primary m-0">'+suggestion+'</button>');
 		button.click(
 			function() {
 				let name = nameField.val();
@@ -6944,6 +6994,7 @@ var CFW = {
 	format: {
 		  epochToTimestamp: 	cfw_format_epochToTimestamp
 		, epochToDate: 			cfw_format_epochToDate
+		, epochToShortDate: 	cfw_format_epochToShortDate
 		, fieldNameToLabel: 	cfw_format_fieldNameToLabel
 		, millisToClock: 		cfw_format_millisToClock
 		, timeToDuration: 		cfw_format_timeToDuration
