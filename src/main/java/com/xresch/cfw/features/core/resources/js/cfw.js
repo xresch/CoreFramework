@@ -5883,11 +5883,11 @@ function cfw_http_postStoreJsonData(name, jsonArray) {
 		
 			let CFW_URL_STOREJSONDATA = '/app/stream/storejsondata';
 			
-			let formData = new FormData()	  		
-	  		formData.append('name', name)
-	  		formData.append('data', JSON.stringify(jsonArray) )
+			let formData =  JSON.stringify(jsonArray);
 	
-			CFW.http.postFormData(CFW_URL_STOREJSONDATA, formData, function(response, status, xhr){
+			CFW.http.postFormData(CFW_URL_STOREJSONDATA+"?name="+ encodeURIComponent(name)
+			, formData
+			, function(response, status, xhr){
 				if(response.payload != null){
 					uploadedArray = _.concat(uploadedArray, response.payload);
 				}

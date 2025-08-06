@@ -46,8 +46,8 @@ public class ServletStreamFileStoreJsonData extends HttpServlet
 			
 			//-------------------------
 			// Name
-			Part namePart = request.getPart("name");
-			String name = CFW.Files.readContentsFromInputStream(namePart.getInputStream());
+			
+			String name = request.getParameter("name");
 			
 			String type = "application/json";
 			String extension = "json";
@@ -64,10 +64,10 @@ public class ServletStreamFileStoreJsonData extends HttpServlet
 			
 			//-------------------------
 			// File
-			Part filePart = request.getPart("data");
-			String size = ""+filePart.getSize();
+
+			String size = request.getHeader("Content-Length");
 			
-			InputStream dataInputStream = filePart.getInputStream();
+			InputStream dataInputStream = request.getInputStream();
 			
 				//-----------------------------------------
 				// Create New File
