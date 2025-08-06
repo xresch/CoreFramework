@@ -3625,24 +3625,34 @@ function cfw_sortArrayByValueOfObject(array, key, reverse){
  * @return timestamp as string
  *************************************************************************************/
 function cfw_format_epochToTimestamp(epoch){
-
-  if(epoch != null){
-	  return new  moment(epoch).format('YYYY-MM-DD HH:mm:ss');
-  }
+	
+	//--------------------------
+	// Checks
+	if(CFW.utils.isNullOrEmpty(epoch)){ return ""; }
+	if( isNaN(epoch) ){ return ""; }
+	if(typeof epoch == "string"){ epoch = parseInt(epoch) }
   
-  return "";
+
+	return new  moment(epoch).format('YYYY-MM-DD HH:mm:ss');
+
 }
 
 /**************************************************************************************
  * Create a clock string in the format HH:mm:ss from an epoch time
- * @param millis milliseconds of epoch date and time
+ * @param epoch milliseconds of epoch date and time
  * @return clock string
  *************************************************************************************/
-function cfw_format_millisToClock(millis){
+function cfw_format_millisToClock(epoch){
 
-  if(millis != null){
-	  return moment.utc(millis).format("HH:mm:ss");
-  }
+	//--------------------------
+	// Checks
+	if(CFW.utils.isNullOrEmpty(epoch)){ return ""; }
+	if( isNaN(epoch) ){ return ""; }
+	if(typeof epoch == "string"){ epoch = parseInt(epoch) }
+	
+
+	return moment.utc(epoch).format("HH:mm:ss");
+  
   
   return "";
 }
@@ -3672,90 +3682,101 @@ function cfw_format_timeToDuration(timeValue, timeUnit){
 		}
 	}
 	
-	
 	return cfw_format_millisToDuration(millisValue);
 }
 
 /**************************************************************************************
  * Create a duration string in the format # d ##h ##m ##.#s 
- * @param millis milliseconds
+ * @param epoch milliseconds
  * @return clock string
  *************************************************************************************/
-function cfw_format_millisToDuration(millis){
+function cfw_format_millisToDuration(epoch){
 	
-	if(millis != null){
-		var isNegative = (millis < 0);
-		millis = Math.abs(millis);
-		
-		var milliseconds = parseInt((millis % 1000) / 100);
-		var seconds = Math.floor((millis / 1000) % 60);
-		var minutes = Math.floor((millis / (1000 * 60)) % 60);
-		var hours = Math.floor((millis / (1000 * 60 * 60)) % 24);
-		var days = Math.floor( millis / (1000 * 60 * 60 * 24) );
-		
+	//--------------------------
+	// Checks
+	if(CFW.utils.isNullOrEmpty(epoch)){ return ""; }
+	if( isNaN(epoch) ){ return ""; }
+	if(typeof epoch == "string"){ epoch = parseInt(epoch) }
+	
+	//--------------------------
+	// Format
+	var isNegative = (epoch < 0);
+	epoch = Math.abs(epoch);
+	
+	var milliseconds = parseInt((epoch % 1000) / 100);
+	var seconds = Math.floor((epoch / 1000) % 60);
+	var minutes = Math.floor((epoch / (1000 * 60)) % 60);
+	var hours = Math.floor((epoch / (1000 * 60 * 60)) % 24);
+	var days = Math.floor( epoch / (1000 * 60 * 60 * 24) );
+	
 
-		
-		hours = (hours < 10) ? "0" + hours : hours;
-		minutes = (minutes < 10) ? "0" + minutes : minutes;
-		seconds = (seconds < 10) ? "0" + seconds : seconds;
-		
-		var clockString = seconds + "." + milliseconds + "s";
-		
-		if(minutes != "00" 
-		|| hours != "00" 
-		|| days != 0
-		){
-			clockString = minutes + "m "+clockString;
-		}
-		
-		if(hours != "00" 
-		|| days != 0){
-			clockString = hours + "h " +clockString;
-			
-		}
-		
-		if(days != 0){
-			clockString = days + "d " +clockString;
-		}
-		
-		if(isNegative){
-			clockString = "-" +clockString;
-		}
-		return clockString;
+	
+	hours = (hours < 10) ? "0" + hours : hours;
+	minutes = (minutes < 10) ? "0" + minutes : minutes;
+	seconds = (seconds < 10) ? "0" + seconds : seconds;
+	
+	var clockString = seconds + "." + milliseconds + "s";
+	
+	if(minutes != "00" 
+	|| hours != "00" 
+	|| days != 0
+	){
+		clockString = minutes + "m "+clockString;
 	}
-	    
-  return "";
+	
+	if(hours != "00" 
+	|| days != 0){
+		clockString = hours + "h " +clockString;
+		
+	}
+	
+	if(days != 0){
+		clockString = days + "d " +clockString;
+	}
+	
+	if(isNegative){
+		clockString = "-" +clockString;
+	}
+	return clockString;
+	
 }
 
 /**************************************************************************************
- * Create a duration string in the format # d ##h ##m ##.#s 
- * @param millis milliseconds
+ * Create a duration string in the format HH:MM:SS 
+ * @param epoch milliseconds
  * @return clock string
  *************************************************************************************/
-function cfw_format_millisToDurationClock(millis){
+function cfw_format_millisToDurationClock(epoch){
 	
-	if(millis != null){
-		var isNegative = (millis < 0);
-		millis = Math.abs(millis);
-		
-		var seconds = Math.floor((millis / 1000) % 60);
-		var minutes = Math.floor((millis / (1000 * 60)) % 60);
-		var hours = Math.floor((millis / (1000 * 60 * 60)));
+	//--------------------------
+	// Checks
+	if(CFW.utils.isNullOrEmpty(epoch)){ return ""; }
+	if( isNaN(epoch) ){ return ""; }
+	if(typeof epoch == "string"){ epoch = parseInt(epoch) }
+	
+	//--------------------------
+	// Format
+	var isNegative = (epoch < 0);
+	epoch = Math.abs(epoch);
+	
+	var seconds = Math.floor((epoch / 1000) % 60);
+	var minutes = Math.floor((epoch / (1000 * 60)) % 60);
+	var hours = Math.floor((epoch / (1000 * 60 * 60)));
 
-		hours = (hours < 10) ? "0" + hours : hours;
-		minutes = (minutes < 10) ? "0" + minutes : minutes;
-		seconds = (seconds < 10) ? "0" + seconds : seconds;
-		
-		var clockString = hours + ":" + minutes + ":" +seconds ;
-		
-		if(isNegative){
-			clockString = "-" +clockString;
-		}
-		
-		return clockString;
+	hours = (hours < 10) ? "0" + hours : hours;
+	minutes = (minutes < 10) ? "0" + minutes : minutes;
+	seconds = (seconds < 10) ? "0" + seconds : seconds;
+	
+	var clockString = hours + ":" + minutes + ":" +seconds ;
+	
+	if(isNegative){
+		clockString = "-" +clockString;
 	}
+	
+	return clockString;
+	
 	    
-  return "";
+
 }
 
 
@@ -3765,10 +3786,15 @@ function cfw_format_millisToDurationClock(millis){
  * @return date as string
  *************************************************************************************/
 function cfw_format_epochToDate(epoch){
-	if(CFW.utils.isNullOrEmpty(epoch)){
-		return "";
-	}
 	
+	//--------------------------
+	// Checks
+	if(CFW.utils.isNullOrEmpty(epoch)){ return ""; }
+	if( isNaN(epoch) ){ return ""; }
+	if(typeof epoch == "string"){ epoch = parseInt(epoch) }
+	
+	//--------------------------
+	// Format
 	var a = new Date(epoch);
 	var year 		= a.getFullYear();
 	var month 	= a.getMonth()+1 < 10 	? "0"+(a.getMonth()+1) : a.getMonth()+1;
@@ -5826,19 +5852,23 @@ function cfw_http_postFormData(url, formData, callbackFunc){
  * 
  * @param name the name for the stored file
  * @param jsonArray array of json objects
- * @param loaderTarget the elmenet the loader should be toggles
+ * @param sourceElementOrID the elment or ID (with #) that is the source of the action
  * @param nameSuggestionsArray array of strings for name suggestions
  *************************************************************************************/
-function cfw_ui_storeJsonDataModal(jsonArray, nameSuggestionsArray) {
+function cfw_ui_storeJsonDataModal(jsonArray, sourceElementOrID, nameSuggestionsArray) {
 	
-	//------------------------------------
+	if(nameSuggestionsArray == null){
+		nameSuggestionsArray = [];
+	}
+	
+	//==============================================
 	// Create Name Field
 	
 	let wrapperID ='cfw-storeJsonData-wrapper';
 	let fieldID ='cfw-storeJsonData-name';
 	let nameField = $(`<input class="col-9" id="${fieldID}" type="text" placeholder="Name" >`);	
 	
-	//------------------------------------
+	//==============================================
 	// Create Button
 	let button = $('<button class="col-3 btn btn-sm btn-primary">Store to File Manager</button>');
 	button.click(
@@ -5846,21 +5876,183 @@ function cfw_ui_storeJsonDataModal(jsonArray, nameSuggestionsArray) {
 			let name = nameField.val();
 			cfw_http_postStoreJsonData(name, jsonArray);
 		});
+	
+	//==============================================
+	// Get UI Suggestions
+	
+	let sourceElement = $(sourceElementOrID);
 
-	//------------------------------------
+	sourceElement.closest('.grid-stack-item-content')
+				 .find('.cfw-dashboard-widget-title')
+				 .each(function(){
+					 let widgetTitle = $(this).text();
+					 nameSuggestionsArray.push(widgetTitle);
+				 });
+				 
+	$('#dashboardName span')
+		.each(function(){
+			 let dashboardTitle = $(this).text();
+			 nameSuggestionsArray.push(dashboardTitle);
+		 });	
+	
+	$("button[data-toggle='dropdown']")
+		.each(function(){
+			 let buttonText = $(this).text();
+			 nameSuggestionsArray.push(buttonText);
+		 });	
+		 	 
+		 		 
+	
+				 
+	//==============================================
+	// Get Time Suggestions
+	
+	
+	let timeframePickers = $(".cfw-timeframepicker-wrapper > input");
+	timeframePickers.each(function(){
+		let selectedTime = JSON.parse( $(this).val() );
+		
+		//---------------------
+		// earliest
+		let earliest = selectedTime.earliest;
+		let earliestDate = CFW.format.epochToDate(earliest);
+		let earliestTimestamp = CFW.format.epochToTimestamp(earliest);
+		nameSuggestionsArray.push( earliestDate );
+		nameSuggestionsArray.push( earliestTimestamp );
+		
+		//---------------------
+		// latest
+		let latest = selectedTime.latest;
+		let latestDate = CFW.format.epochToDate(latest);
+		let latestTimestamp = CFW.format.epochToTimestamp(latest);
+		nameSuggestionsArray.push( latestDate );
+		nameSuggestionsArray.push( latestTimestamp );
+		
+		//---------------------
+		// earliest to latest
+		
+		if(earliestDate != latestDate){
+			nameSuggestionsArray.push( earliestDate +" to " + latestDate );
+			nameSuggestionsArray.push( earliestTimestamp +" to " + latestTimestamp );
+		}else{
+			// <Date> <Time> to <Time>
+			latestTimestamp = latestTimestamp.replace(latestDate+" ", "");
+			nameSuggestionsArray.push( earliestTimestamp +" to " + latestTimestamp );
+			
+			// <Time> to <Time>
+			earliestTimestamp = earliestTimestamp.replace(earliestDate+" ", "");
+			nameSuggestionsArray.push( earliestTimestamp +" to " + latestTimestamp );
+		}
+		
+		
+		//---------------------
+		// duration
+		let duration = latest - earliest;
+		nameSuggestionsArray.push( CFW.format.millisToClock(duration) );
+		nameSuggestionsArray.push( CFW.format.millisToDuration(duration) );
+		nameSuggestionsArray.push( CFW.format.millisToDurationClock(duration) );
+
+		//---------------------
+		// duration
+		nameSuggestionsArray.push(selectedTime.offset);
+	
+	});
+	
+	//==============================================
+	// Get Parameter Suggestions
+	let params = CFW.http.getURLParamsDecoded();
+	
+	cfw_ui_storeJsonDataModal_createNameSuggestionsRecursively(nameSuggestionsArray, params);
+	
+	//==============================================
+	// Filter Suggestions Array
+	nameSuggestionsArray = _.uniq(nameSuggestionsArray);
+	nameSuggestionsArray = _.map(nameSuggestionsArray, _.trim);
+	_.remove(nameSuggestionsArray, function(item) {
+		  return CFW.utils.isNullOrEmpty(item);
+	});
+		
+	console.log(nameSuggestionsArray);
+	
+	//==============================================
+	// create name suggestions Buttons
+	let suggestionsDiv = $('<div class="p-2">');
+	suggestionsDiv.append('<p class="w-100 mt-4">Suggestions - click to append to name: </p>');
+	for(let i in nameSuggestionsArray){
+		let suggestion = nameSuggestionsArray[i];
+		
+		let button = $('<button class=" btn btn-sm btn-primary m-1">'+suggestion+'</button>');
+		button.click(
+			function() {
+				let name = nameField.val();
+				if(CFW.utils.isNullOrEmpty(name)){
+					nameField.val(suggestion);
+				}else{
+					nameField.val(name +" "+suggestion);
+				}
+			});
+			
+		suggestionsDiv.append(button);
+		
+	}
+	
+	//==============================================
 	// Create Wrapper
 	let wrapper = $(`<div class="row" id="${wrapperID}">
 		<p>Select a name for the file that will be stored in the file manager.</p>
 	</div>`);	
 	wrapper.append(nameField);
 	wrapper.append(button);
+	wrapper.append(suggestionsDiv);
 	
-	//------------------------------------
+	//==============================================
 	// Show the Modal
 	CFW.ui.showModalMedium(
 			  CFWL("cfw_common_storeJsonData", "Store Data to File Manager")
 			, wrapper
 			);
+}
+
+/**************************************************************************************
+ * Add name suggestions recursively.
+ * 
+ * @param nameSuggestionsArray array of strings for name suggestions
+ * @param jsonObject the object to parse through
+ *************************************************************************************/
+function cfw_ui_storeJsonDataModal_createNameSuggestionsRecursively(nameSuggestionsArray, jsonObject) {
+	
+	for(let key in jsonObject){
+		
+		let paramValue = jsonObject[key];
+		
+		// skip these bastards
+		if(key == "earliest" 
+		|| key == "latest" 
+		|| key == "offset" 
+		|| key == "query" 
+		){
+			continue;
+		}
+		
+		try{
+			if(typeof paramValue == "string"
+			&& ( paramValue.startsWith("{") || paramValue.startsWith("[")) 
+			){
+				paramValue = JSON.parse(paramValue);
+			}
+		}catch{ /* do nothing */ }
+		
+		if(Array.isArray(paramValue)){
+			continue;
+		}
+		
+		if(typeof paramValue == "object" ){
+			cfw_ui_storeJsonDataModal_createNameSuggestionsRecursively(nameSuggestionsArray, paramValue);
+		}else{
+			
+			nameSuggestionsArray.push(paramValue);
+		}
+	}
 }
 	
 /**************************************************************************************

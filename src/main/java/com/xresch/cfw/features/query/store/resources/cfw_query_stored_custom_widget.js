@@ -8,8 +8,6 @@ CFW.dashboard.registerCategory("fas fa-star", "Custom");
  ******************************************************************/
 function createStoredQueryCustomWidget(queryName, widgetCategory, description){
 		
-		console.log("category: "+widgetCategory)
-		console.log("queryName: "+queryName)
 	//-------------------------
 	// Get Description
 	let finalDescription = "This is a custom widget based on a stored query.";

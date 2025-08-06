@@ -704,8 +704,9 @@ function cfw_renderer_dataviewer_triggerStoreData(dataviewerID) {
 	
 	let dataviewerDiv = $("#"+dataviewerID);
 	let renderDef = dataviewerDiv.data('renderDef');
-
-	cfw_ui_storeJsonDataModal(renderDef.data, null);
+	let nameSuggestions = [];
+	
+	cfw_ui_storeJsonDataModal(renderDef.data, dataviewerDiv, nameSuggestions);
 
 }
 
