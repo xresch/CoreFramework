@@ -3,14 +3,14 @@
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT
  **************************************************************************************************************/
-const CFW_CACHE_STATISTICS_URL='./sessionoverview';
+const CFW_SESSIONOVERVIEW_URL='./sessionoverview';
 	
 /******************************************************************
  * 
  ******************************************************************/
 function cfw_sessionoverview_fetchsessionoverviewAndDisplay(){
 
-	CFW.http.getJSON(CFW_CACHE_STATISTICS_URL, {action: "fetch", item: "sessionoverview"}, function(data){
+	CFW.http.getJSON(CFW_SESSIONOVERVIEW_URL, {action: "fetch", item: "sessionoverview"}, function(data){
 		
 		if(data.payload != null){
 			//-----------------------------------

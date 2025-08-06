@@ -7,7 +7,7 @@
 	<groupId>com.xresch</groupId>
 	<artifactId>cfw</artifactId>
 	<packaging>jar</packaging>
-	<version>11.1.11</version>
+	<version>11.1.1</version>
 
 	<name>cfw</name>
 	<description>CoreFramework is a java application boilerplate providing various functionalities like user management, configurations, API and dashboarding out of the box.</description>
@@ -18,7 +18,7 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<jettyVersion>9.4.51.v20230217</jettyVersion>
+		<jettyVersion>9.4.57.v20241219</jettyVersion>
 		<prometheusVersion>0.16.0</prometheusVersion>
 		<luceneVersion>8.0.0</luceneVersion>
 
@@ -29,8 +29,8 @@
 		<zipFolder>${basedir}/target/${releaseName}</zipFolder>
 		
 		<skipMakeFolder>true</skipMakeFolder>
-		<skipJavadoc>false</skipJavadoc>
-		<skipSigning>false</skipSigning>
+		<skipJavadoc>true</skipJavadoc>
+		<skipSigning>true</skipSigning>
 		<skipTests>true</skipTests>
 		<skipLicense>true</skipLicense>
 	</properties>
@@ -264,7 +264,7 @@
 		<dependency>
 			<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
 			<artifactId>owasp-java-html-sanitizer</artifactId>
-			<version>20211018.1</version>
+			<version>20240325.1</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
@@ -308,18 +308,18 @@
 		<!-- ======================= DB EXTENSION DEPENDENCIES ======================== -->
 		<!-- ========================================================================== -->	
 		
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
 		<dependency>
-		    <groupId>mysql</groupId>
-		    <artifactId>mysql-connector-java</artifactId>
-		    <version>8.0.28</version>
+		    <groupId>com.mysql</groupId>
+		    <artifactId>mysql-connector-j</artifactId>
+		    <version>9.4.0</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
 		<dependency>
 		    <groupId>org.postgresql</groupId>
 		    <artifactId>postgresql</artifactId>
-		    <version>42.7.4</version>
+		    <version>42.7.7</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->

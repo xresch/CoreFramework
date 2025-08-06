@@ -1192,12 +1192,13 @@ function cfw_setSelectValue(fieldID, valueToSelect){
 		for(var i = 0; i < options.length; i++){
 			
 			var currentOption = options[i];
+
 			if(currentOption.value == valueToSelect){
 
 				inputField.val(currentOption.value);
 				
 				if( !CFW.utils.isNullOrEmpty(currentOption.label) ) {
-					button.text(currentOption.label);
+					button.html(currentOption.label);
 				}else{
 					button.html("&nbsp;");
 				}
@@ -5814,6 +5815,47 @@ function cfw_http_postFormData(url, formData, callbackFunc){
 	  .always(function(response) {
 		  cfw_internal_handleMessages(response);
 	  });
+}
+
+/**************************************************************************************
+ * Uploads JSON data to the server and stores it in the File Manager.
+ * @param name the name for the stored file
+ * @param jsonArray array of json objects
+ * @param loaderTarget the elmenet the loader should be toggles
+ *************************************************************************************/
+function cfw_http_postStoreJsonData(name, jsonArray, loaderTarget) {
+	
+	
+	if(files.length <= 0){ return; }
+	
+	CFW.ui.toggleLoader(true, loaderTarget);
+	
+	cfw_utils_sleep(500).then(() => {
+		
+		//-------------------------------
+		// Upload Files
+		let uploadedArray = [];
+		$.ajaxSetup({async: false});
+		
+			let file = files[i];
+			
+			let CFW_URL_STOREJSONDATA = '/app/stream/storejsondata';
+			
+			let formData = new FormData()	  		
+	  		formData.append('name', name)
+	  		formData.append('data', file)
+	
+			CFW.http.postFormData(CFW_URL_STOREJSONDATA, formData, function(response, status, xhr){
+				if(response.payload != null){
+					uploadedArray = _.concat(uploadedArray, response.payload);
+				}
+			});
+		
+		$.ajaxSetup({async: true});
+		
+		CFW.ui.toggleLoader(false, loaderTarget);
+	});
+	
 }
 
 /**************************************************************************************

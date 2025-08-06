@@ -53,6 +53,7 @@ public class FeatureParameter extends CFWAppFeature {
 		CFW.Registry.Parameters.add(new ParameterDefinitionChartTypes());
 		CFW.Registry.Parameters.add(new ParameterDefinitionChartSettings());
 		CFW.Registry.Parameters.add(new ParameterDefinitionTimeRange());
+		CFW.Registry.Parameters.add(new ParameterDefinitionUserFileList());
 
 		CFW.Registry.Parameters.add(new ParameterQuerySelect());
 		CFW.Registry.Parameters.add(new ParameterQuerySelectMultiple());

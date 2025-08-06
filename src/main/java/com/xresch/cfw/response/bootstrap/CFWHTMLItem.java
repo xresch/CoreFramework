@@ -196,7 +196,7 @@ public abstract class CFWHTMLItem {
 			if(entry.getValue() != null) {
 				builder.append(entry.getKey())
 				.append("=\"")
-				.append(entry.getValue())
+				.append(entry.getValue().replace("\"", "&quot;"))
 				.append("\" ");
 			}
 		}

@@ -176,9 +176,12 @@ public class CFWSQL {
 	/****************************************************************
 	 * Caches the query with the specified name for lower performance
 	 * impact.
+	 * @deprecated use queryCache() whenever possible to make your
+	 * code more prone to copy & paste issues.
 	 * @param Class of the class using the query.
 	 * @param name of the query
 	 ****************************************************************/
+	@Deprecated
 	public CFWSQL queryCache(Class<?> clazz, String name) {
 		this.queryName = clazz.getName()+"."+name;
 		return this;

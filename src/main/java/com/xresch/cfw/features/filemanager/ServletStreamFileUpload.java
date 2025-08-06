@@ -169,7 +169,7 @@ public class ServletStreamFileUpload extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private void setStoredFileData(CFWStoredFile file, String name, String extension, String size, String type,
+	public static void setStoredFileData(CFWStoredFile file, String name, String extension, String size, String type,
 			String lastModified) {
 		file.name(name);
 		file.mimetype(type);

@@ -13,7 +13,10 @@ public class SeleniumTest {
     //@Test
 	public void seleniumTest() {
 
-	    WebDriverManager.chromedriver().setup();
+	    WebDriverManager.chromedriver()
+	    				//.browserVersion("137.0.7151.104")
+	    				.setup()
+	    				;
 	    
 	    ChromeOptions options = new ChromeOptions();
 	    options.addArguments("start-maximized");

@@ -29,6 +29,7 @@ import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 public class CFWTime {
 	
 	public static final String FORMAT_TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS"; // IMPORTANT: DO NOT CHANGE THIS
+	public static final String FORMAT_TIMESTAMP_READABLE = "yyyy-MM-dd HH:mm"; // IMPORTANT: DO NOT CHANGE THIS
 	public static final String FORMAT_ISO8601_DATE = "yyyy-MM-dd";
 	
 	private static TimeZone machineTimezone = TimeZone.getDefault();

@@ -3,7 +3,7 @@
  * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT
  **************************************************************************************************************/
-const CFW_CACHE_STATISTICS_URL='/app/statusmonitor';
+const CFW_STATUSMONITOR_URL='/app/statusmonitor';
 
 
 /******************************************************************
@@ -44,7 +44,7 @@ function cfw_statusmonitor_loadInMenu(){
  ******************************************************************/
 function cfw_statusmonitor_fetchStatusMonitorsAndDisplay(isMenu){
 
-	CFW.http.getJSON(CFW_CACHE_STATISTICS_URL, {action: "fetch", item: "statusmonitor"}, function(data){
+	CFW.http.getJSON(CFW_STATUSMONITOR_URL, {action: "fetch", item: "statusmonitor"}, function(data){
 		
 		if(data.payload != null){
 			

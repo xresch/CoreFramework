@@ -8,6 +8,7 @@ import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
@@ -665,6 +666,83 @@ public class CFWDBStoredFile {
 	/***************************************************************
 	 * 
 	 ***************************************************************/
+	public static ArrayList<CFWStoredFile> getUsersAccessibleFiles() {
+		
+
+		//-----------------------------
+		// Get Files
+		// inefficient, but wörks
+		ArrayList<CFWStoredFile> allFiles = 
+			new CFWSQL(new CFWStoredFile())
+				.queryCache()
+				//.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+				.selectWithout( CFWStoredFileFields.DATA.toString() )
+				.where(CFWStoredFileFields.IS_ARCHIVED, false)
+				.orderby(CFWStoredFileFields.NAME, CFWStoredFileFields.LAST_MODIFIED )
+				.getAsObjectListConvert(CFWStoredFile.class);
+		
+		//------------------------------------
+		// Filter by Access
+		ArrayList<CFWStoredFile> filteredList = new ArrayList<>();
+		
+		for(CFWStoredFile current : allFiles) {
+			if(hasUserAccessToStoredFile(current.getPrimaryKeyValue())) {
+				filteredList.add(current);
+			}
+		}
+		
+		return filteredList;
+		
+	}
+	
+	/***************************************************************
+	 * Returns a map containing Value/Labels that can be used
+	 * for select options.
+	 * The map-key(option-value) will be something like:
+	 * <pre><code>
+	 * {id: 1, name: "myfile.json"}
+	 * </code></pre>
+	 * The map-value(option-label) will be something like:
+	 * <pre><code>
+	 * myfile.json (ID: 1, Size: 123 KB, Modified: 2022-02-02 22:22)
+	 * </code></pre>
+	 ***************************************************************/
+	public static LinkedHashMap<String, String> getUsersAccessibleFilesAsOptionsMap() {
+		
+		ArrayList<CFWStoredFile> files = getUsersAccessibleFiles();
+		
+		LinkedHashMap<String,String> options = new LinkedHashMap<>();
+		
+		for(CFWStoredFile file : files) {
+			
+			//---------------------------------
+			// Make Option Value
+			JsonObject json = new JsonObject();
+			json.addProperty("id", file.id());
+			json.addProperty("name", file.name());
+			String value = CFW.JSON.toJSON(json);
+			
+			//---------------------------------
+			// Make Option Label
+			String label = "<b>"+file.name()+"</b>"
+						 + " ("
+						 + "<b>ID:&nbsp;</b>" + file.id()
+						 + ", <b>Size:&nbsp;</b>" + CFW.Utils.Text.toHumanReadableBytes(file.size(), 1)
+						 + ", <b>Modified:&nbsp;</b>: " + CFW.Time.formatMillis(file.lastModified().getTime(), CFW.Time.FORMAT_TIMESTAMP_READABLE)
+						 + ")"
+						;
+			
+			//---------------------------------
+			// Make Option Label
+			options.put(value, label);
+		}
+		
+		return options;
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
 	public static void autocompleteFileForQuery(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
 		
 		if( helper.getCommandTokenCount() < 2 ) {
@@ -683,17 +761,19 @@ public class CFWDBStoredFile {
 			};
 		}
 		
-		ResultSet resultSet = new CFWStoredFile()
-			.queryCache(CFWDBStoredFile.class, "autocompleteStoredFile")
-			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-			.select( CFWStoredFileFields.PK_ID
-					, CFWStoredFileFields.NAME
-					, CFWStoredFileFields.SIZE
-					)
-			.whereLike(CFWStoredFileFields.NAME, "%"+searchValue+"%")
-				.and(CFWStoredFileFields.IS_ARCHIVED, false)
-			.limit(50)
-			.getResultSet();
+		ResultSet resultSet = 
+			new CFWSQL(new CFWStoredFile())
+				.queryCache()
+				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+				.select( CFWStoredFileFields.PK_ID
+						, CFWStoredFileFields.NAME
+						, CFWStoredFileFields.SIZE
+						, CFWStoredFileFields.LAST_MODIFIED
+						)
+				.whereLike(CFWStoredFileFields.NAME, "%"+searchValue+"%")
+					.and(CFWStoredFileFields.IS_ARCHIVED, false)
+				.limit(50)
+				.getResultSet();
 		
 		
 		//------------------------------------
@@ -710,6 +790,7 @@ public class CFWDBStoredFile {
 					String name = resultSet.getString("NAME");
 					String owner = resultSet.getString("OWNER");
 					Long size = resultSet.getLong("SIZE");
+					Timestamp lastModified = resultSet.getTimestamp("LAST_MODIFIED");
 					
 					JsonObject json = new JsonObject();
 					json.addProperty("id", id);
@@ -728,6 +809,7 @@ public class CFWDBStoredFile {
 								+ "<b>ID:&nbsp;</b>" + id 
 								+ "&emsp;<b>Owner:&nbsp;</b>" + owner 
 								+ "&emsp;<b>Size:&nbsp;</b>" + CFW.Utils.Text.toHumanReadableBytes(size, 1) 
+								+ "&emsp;<b>Modified:&nbsp;</b>" + CFW.Time.formatMillis(lastModified.getTime(), CFW.Time.FORMAT_TIMESTAMP_READABLE)
 							+ "<span>"
 							);
 					
