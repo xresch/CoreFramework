@@ -1275,6 +1275,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 					sizes: queryResult.displaySettings.sizes,
 					defaultsize: queryResult.displaySettings.defaultsize,
 					download: queryResult.displaySettings.download,
+					store: queryResult.displaySettings.store,
 					sortable: false,
 					renderers: [
 						{	label: 'Table',

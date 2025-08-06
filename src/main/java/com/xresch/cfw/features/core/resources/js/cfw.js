@@ -537,7 +537,7 @@ function cfw_colors_getThresholdDirection(
 	var thresholds = [tExellent, tGood, tWarning, tEmergency, tDanger];
 	var firstDefined = null;
 
-	for(var i = 0; i < thresholds.length; i++){
+	for(let i = 0; i < thresholds.length; i++){
 		var current = thresholds[i];
 		if (!CFW.utils.isNullOrEmpty(current)){
 			if(firstDefined == null){
@@ -1189,7 +1189,7 @@ function cfw_setSelectValue(fieldID, valueToSelect){
 	var button = wrapper.find('button');
 	
 	if(options != null){
-		for(var i = 0; i < options.length; i++){
+		for(let i = 0; i < options.length; i++){
 			
 			var currentOption = options[i];
 
@@ -1530,7 +1530,7 @@ function cfw_initializeCustomListField(fieldID, values){
 
 	//----------------------------------
 	// Add Values
-	for(var index in values){
+	for(let index in values){
 		var fields = cfw_initializeCustomListField_createField(values[index]);
 		wrapper.append(fields);
 	}
@@ -3026,6 +3026,7 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 	let isMultiple = wrapper.data("isMultiple");
 	let replaceExisting = wrapper.data("replaceExisting");
 	
+	
 	if(files.length <= 0){ return; }
 	
 	CFW.ui.toggleLoader(true, wrapperID);
@@ -3037,8 +3038,11 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 		let uploadedArray = [];
 		$.ajaxSetup({async: false});
 		
-			for(i = 0; i < files.length; i++){
-		
+			for(let i = 0; i < files.length; i++){
+				
+				console.log("============");
+				console.log("i: "+i);
+				console.log(files.length);
 				let file = files[i];
 				
 				let CFW_URL_FILEUPLOAD = '/app/stream/fileupload';
@@ -3169,7 +3173,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 			
 			//----------------------------
 		    // Filter Array
-		    for (var i = 0; i < array.length && filteredArray.length < maxResults; i++) {
+		    for (let i = 0; i < array.length && filteredArray.length < maxResults; i++) {
 		      
 			   	var currentValue = array[i];
 			    
@@ -4061,7 +4065,7 @@ function cfw_format_fieldNameToLabel(fieldname){
 	var splitted = fieldname.split(regex);
 	
 	var result = '';
-	for(var i = 0; i < splitted.length; i++) {
+	for(let i = 0; i < splitted.length; i++) {
 		result += (CFW.format.capitalize(splitted[i]));
 		
 		//only do if not last
@@ -4093,7 +4097,7 @@ function cfw_format_csvToObjectArray(csvString, delimiter){
  	// Create Objects
  	var resultArray = [];
  	
- 	for(var i = 1; i < lines.length; i++){
+ 	for(let i = 1; i < lines.length; i++){
  		var line = lines[i];
  		var values = line.split(delimiter);
  		var object = {};
@@ -4141,7 +4145,7 @@ function cfw_format_numberSeparators(value, separator, eachDigit) {
 	
 	var position = 0;
 	
-	for(var i = startingPos; i >= 0; i--){
+	for(let i = startingPos; i >= 0; i--){
 		position++;
 		
 		resultString = stringValue.charAt(i) + resultString;
@@ -4331,7 +4335,7 @@ function cfw_format_formToObject(formOrID, numbersAsStrings){
 	var paramsArray = cfw_format_formToArray(formOrID, numbersAsStrings);
 	
 	var object = {};
-	for(var i in paramsArray){
+	for(let i in paramsArray){
 		var name = paramsArray[i].name;
 		var value = paramsArray[i].value;
 		object[name] = value;
@@ -4424,7 +4428,7 @@ function cfw_format_objectToHTMLList(object, style, paddingLeft, doLabelize){
 	}
 	
 	if(Array.isArray(object)){
-		for(var i = 0; i < object.length; i++ ){
+		for(let i = 0; i < object.length; i++ ){
 			var currentItem = object[i];
 			
 			if(currentItem == null){
@@ -4513,7 +4517,7 @@ function cfw_ui_createTOC(contentAreaSelector, resultSelector, headerTag){
 	//Loop all visible headers
 	var currentLevel = 1;
 	var resultHTML = '<'+h+' class="cfw-toc-header">Table of Contents</'+h+'><ul>';
-	for(var i = 0; i < headers.length ; i++){
+	for(let i = 0; i < headers.length ; i++){
 		var head = headers[i];
 		var headLevel = head.tagName[1];
 		
@@ -5498,7 +5502,7 @@ function cfw_ui_createPrintView(title, description){
 function cfw_http_readCookie(name) {
     var nameEQ = name + "=";
     var cookieArray = document.cookie.split(';');
-    for (var i = 0; i < cookieArray.length; i++) {
+    for (let i = 0; i < cookieArray.length; i++) {
         var cookie = cookieArray[i];
         while (cookie.charAt(0) == ' ') {
         	cookie = cookie.substring(1, cookie.length);
@@ -5818,17 +5822,57 @@ function cfw_http_postFormData(url, formData, callbackFunc){
 }
 
 /**************************************************************************************
+ * Opens a Modal to store JSON data in the File Manager.
+ * 
+ * @param name the name for the stored file
+ * @param jsonArray array of json objects
+ * @param loaderTarget the elmenet the loader should be toggles
+ * @param nameSuggestionsArray array of strings for name suggestions
+ *************************************************************************************/
+function cfw_ui_storeJsonDataModal(jsonArray, nameSuggestionsArray) {
+	
+	//------------------------------------
+	// Create Name Field
+	
+	let wrapperID ='cfw-storeJsonData-wrapper';
+	let fieldID ='cfw-storeJsonData-name';
+	let nameField = $(`<input class="col-9" id="${fieldID}" type="text" placeholder="Name" >`);	
+	
+	//------------------------------------
+	// Create Button
+	let button = $('<button class="col-3 btn btn-sm btn-primary">Store to File Manager</button>');
+	button.click(
+		function() {
+			let name = nameField.val();
+			cfw_http_postStoreJsonData(name, jsonArray);
+		});
+
+	//------------------------------------
+	// Create Wrapper
+	let wrapper = $(`<div class="row" id="${wrapperID}">
+		<p>Select a name for the file that will be stored in the file manager.</p>
+	</div>`);	
+	wrapper.append(nameField);
+	wrapper.append(button);
+	
+	//------------------------------------
+	// Show the Modal
+	CFW.ui.showModalMedium(
+			  CFWL("cfw_common_storeJsonData", "Store Data to File Manager")
+			, wrapper
+			);
+}
+	
+/**************************************************************************************
  * Uploads JSON data to the server and stores it in the File Manager.
  * @param name the name for the stored file
  * @param jsonArray array of json objects
  * @param loaderTarget the elmenet the loader should be toggles
  *************************************************************************************/
-function cfw_http_postStoreJsonData(name, jsonArray, loaderTarget) {
+function cfw_http_postStoreJsonData(name, jsonArray) {
 	
-	
-	if(files.length <= 0){ return; }
-	
-	CFW.ui.toggleLoader(true, loaderTarget);
+
+	CFW.ui.toggleLoader(true);
 	
 	cfw_utils_sleep(500).then(() => {
 		
@@ -5837,13 +5881,11 @@ function cfw_http_postStoreJsonData(name, jsonArray, loaderTarget) {
 		let uploadedArray = [];
 		$.ajaxSetup({async: false});
 		
-			let file = files[i];
-			
 			let CFW_URL_STOREJSONDATA = '/app/stream/storejsondata';
 			
 			let formData = new FormData()	  		
 	  		formData.append('name', name)
-	  		formData.append('data', file)
+	  		formData.append('data', JSON.stringify(jsonArray) )
 	
 			CFW.http.postFormData(CFW_URL_STOREJSONDATA, formData, function(response, status, xhr){
 				if(response.payload != null){
@@ -5853,7 +5895,7 @@ function cfw_http_postStoreJsonData(name, jsonArray, loaderTarget) {
 		
 		$.ajaxSetup({async: true});
 		
-		CFW.ui.toggleLoader(false, loaderTarget);
+		CFW.ui.toggleLoader(false);
 	});
 	
 }
@@ -6066,7 +6108,7 @@ function cfw_internal_handleMessages(response){
 	  if(msgArray != undefined
 	  && msgArray != null
 	  && msgArray.length > 0){
-		  for(var i = 0; i < msgArray.length; i++ ){
+		  for(let i = 0; i < msgArray.length; i++ ){
 			  CFW.ui.addToast(msgArray[i].message, null, msgArray[i].type, CFW.config.toastErrorDelay);
 		  }
 	  }
@@ -6272,15 +6314,15 @@ function cfw_tutorial_drawStartpage(){
 	//Make sure anything previous tutorials are closed 
 	cfw_tutorial_close();
 	
-	var parent = $('body');
+	let parent = $('body');
 
 	cfw_tutorial_objectAppendOverlays(parent)
 	
 	//-----------------------------
 	// Overlays
-	for(var index in CFW.tutorial.data.bundles){
-		var bundle = CFW.tutorial.data.bundles[index];
-		var object = $(bundle.startingObject);
+	for(let index in CFW.tutorial.data.bundles){
+		let bundle = CFW.tutorial.data.bundles[index];
+		let object = $(bundle.startingObject);
 
 		if(object.length == 0){
 			continue;
@@ -6790,24 +6832,25 @@ var CFW = {
 		
 	},
 	ui: {
-		createToggleButton: cfw_ui_createToggleButton,
-		toc: cfw_ui_createTOC,
-		createPrintView: cfw_ui_createPrintView,
+		addAlert: cfw_ui_addAlert,
 		addToast: cfw_ui_addToast,
 		addToastInfo: function(text){cfw_ui_addToast(text, null, "info", CFW.config.toastDelay);},
 		addToastSuccess: function(text){cfw_ui_addToast(text, null, "success", CFW.config.toastDelay);},
 		addToastWarning: function(text){cfw_ui_addToast(text, null, "warning", CFW.config.toastDelay);},
 		addToastDanger: function(text){cfw_ui_addToast(text, null, "danger", CFW.config.toastErrorDelay);},
+		createToggleButton: cfw_ui_createToggleButton,
+		createPrintView: cfw_ui_createPrintView,
+		createLoaderHTML: cfw_ui_createLoaderHTML,
+		confirmExecute: cfw_ui_confirmExecute,
+		getWorkspace: cfw_ui_getWorkspace,
 		showModalMedium: cfw_ui_showModalMedium,
 		showModalSmall: cfw_ui_showModalSmall,
 		showModalLarge: cfw_ui_showModalLarge,
-		confirmExecute: cfw_ui_confirmExecute,
+		storeJsonDataModal: cfw_ui_storeJsonDataModal,
+		toc: cfw_ui_createTOC,
 		toggleLoader: cfw_ui_toggleLoader,
 		toggleLoaderQuotes: cfw_ui_toggleLoaderQuotes,
-		createLoaderHTML: cfw_ui_createLoaderHTML,
 		toggleDropdownMenuFixed: cfw_ui_toggleDropdownMenuFixed,
-		addAlert: cfw_ui_addAlert,
-		getWorkspace: cfw_ui_getWorkspace,
 		waitForAppear: cfw_ui_waitForAppear
 	},
 	hasPermission: cfw_hasPermission,

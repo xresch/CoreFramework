@@ -1,0 +1,16 @@
+
+<p>
+This parameter will give the user the list of files he has access to as a select box. 
+</p>
+
+<p>The returned value of the parameter will be a JSON string like:</p> 
+<pre><code class="language-cfwquery">{id: 1, name: "myfile.json"}</code></pre>
+
+<p>The purpose of this parameter is mainly to use in combination with the query "| source file", for example: </p>
+<pre><code class="language-cfwquery">| paramdefaults
+	file = -1
+| source file
+	file = p(file, -1)</code></pre>
+
+
+

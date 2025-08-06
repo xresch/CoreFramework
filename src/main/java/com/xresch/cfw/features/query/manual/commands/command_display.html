@@ -58,11 +58,13 @@ This is for example useful when displaying as tiles, when you only want to show 
 	visiblefields=[]</code></pre>  
 	
 	
-<p>You can display a button in the menu to give the option to download the data in either CSV, JSON or XML format: </p>
+<p>You can display a button in the menu to give the option to download the data in either CSV, JSON or XML format.
+You can also display a store button that allows the user to store their data in the File Manager: </p>
 
 <pre><code class="language-cfwquery">| source random
 | display as=table
 	download = true
-	# menu=button # download button does not work when the menu is displayed as a button</code></pre>  
+	store = true
+	# menu=button # above buttons do not work when the menu is displayed as a button</code></pre>  
 	
 

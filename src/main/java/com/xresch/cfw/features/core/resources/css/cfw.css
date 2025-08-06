@@ -5,13 +5,13 @@
  * Overview of Relevant z-indexes
  * ==============================
  * 
+ * Loaders >> 			#cfw-loader-body   					z-index: 9999;
  * Toast Messages >> 	#cfw-toasts 						z-index: 2048;
  * BT Tooltip >> 		.tooltip 							z-index: 1070;
  * BT Popover >> 		.popover 							z-index: 1060;
  * Confirm Dialog >>	.cfw-confirm-dialog					z-index: 1055;
  * BT Modals >> 		.modal 								z-index: 1050;
  * BT Modal BG >> 		.modal -backdrop					z-index: 1040;
- * Loaders >> 			#cfw-loader-body   					z-index: 1024;
  * BT Dropdown Menu >> 	.dropdown-menu 						z-index: 1000;
  * Autocomplete >>		.autocomplete-wrapper 				z-index: 99;
  * Menu Button >>		.cfw-dataviewer-settings-button 	z-index: 75;
@@ -700,7 +700,7 @@ label {
 
 
 .cfw-loader-body {
-	z-index: 1024;
+	z-index: 9999;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -716,7 +716,7 @@ label {
 }
 
 .cfw-loader-custom {
-	z-index: 1024;
+	z-index: 9999;
     position: absolute;
 /*     top: 50%;
     left: 50%;

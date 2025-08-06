@@ -30,6 +30,7 @@ public class FeatureFilemanager extends CFWAppFeature {
 	
 	public static final String URI_FILEMANAGER = "/app/filemanager";
 	public static final String URI_FILEUPLOAD = "/app/stream/fileupload";
+	public static final String URI_STOREJSONDATA = "/app/stream/storejsondata";
 	public static final String URI_FILEDOWNLOAD = "/app/stream/filedownload";
 	
 	public static final String PERMISSION_STOREDFILE_VIEWER = "File Manager: Viewer";
@@ -173,7 +174,7 @@ public class FeatureFilemanager extends CFWAppFeature {
     	app.addAppServlet(ServletFilemanager.class,  URI_FILEMANAGER);
 
     	//----------------------------------
-    	// Get Filemanaget Config 
+    	// Get Filemanager Config 
     	int configMaxUploadSize = CFW.Properties.CFW_FILEMANAGER_MAX_UPLOAD_SIZE;
     	String configTempFolder = CFW.Properties.CFW_FILEMANAGER_TEMP_FOLDER;
     	int configTempThreshold = CFW.Properties.CFW_FILEMANAGER_TEMP_THRESHOLD;
@@ -203,6 +204,12 @@ public class FeatureFilemanager extends CFWAppFeature {
 	    app.addAppStreamServlet(uploadHolder, URI_FILEUPLOAD);
 	    
     	//----------------------------------
+    	// StoreJsonData Servlet
+    	ServletHolder storeJsonDataHolder = new ServletHolder(new ServletStreamFileStoreJsonData());
+	    storeJsonDataHolder.getRegistration().setMultipartConfig(uploadConfig);
+	    app.addAppStreamServlet(storeJsonDataHolder, URI_STOREJSONDATA);
+	    
+    	//----------------------------------
     	// Download Servlet
     	MultipartConfigElement downloadConfig = new MultipartConfigElement(
     											  configTempFolder
@@ -211,7 +218,7 @@ public class FeatureFilemanager extends CFWAppFeature {
     											, diskThreshold
     										);
 	    ServletHolder downloadHolder = new ServletHolder(new ServletStreamFileDownload());
-	    uploadHolder.getRegistration().setMultipartConfig(downloadConfig);
+	    downloadHolder.getRegistration().setMultipartConfig(downloadConfig);
 	    app.addAppStreamServlet(downloadHolder, URI_FILEDOWNLOAD);
 
 	}

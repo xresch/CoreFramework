@@ -14,6 +14,7 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWStoredFileReferences;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.logging.SysoutInterceptor;
@@ -50,7 +51,12 @@ public class ServletStreamFileStoreJsonData extends HttpServlet
 			
 			String type = "application/json";
 			String extension = "json";
-			String lastModified = ""+ System.currentTimeMillis();
+			long lastModifiedMillis = System.currentTimeMillis();
+			String lastModified = ""+ lastModifiedMillis;
+			
+			if(Strings.isNullOrEmpty(name)) {
+				name = "storedData_"+CFW.Time.formatMillisAsTimestamp(lastModifiedMillis);
+			}
 			
 			if( ! name.endsWith(".json") ) {
 				name += ".json";
@@ -72,6 +78,9 @@ public class ServletStreamFileStoreJsonData extends HttpServlet
 				boolean success = CFW.DB.StoredFile.createAndStoreData(newFile, dataInputStream);
 				
 				CFWStoredFileReferences reference = new CFWStoredFileReferences(newFile);
+				
+				if(success) {	jsonResponse.addAlert(MessageType.SUCCESS, "Stored successfully: "+name); }
+				else {			jsonResponse.addAlert(MessageType.ERROR, "Storing failed: "+name); }
 				
 				jsonResponse.setPayload( reference.getAsJsonArray() );
 				jsonResponse.setSuccess(success);

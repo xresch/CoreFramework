@@ -14,6 +14,7 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
+import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWStoredFileReferences;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.logging.SysoutInterceptor;
@@ -128,10 +129,13 @@ public class ServletStreamFileUpload extends HttpServlet
 						}
 						
 						//--------------------------
-						// Return Reference
+						// Return Reference & Message
 						if(success) {
 							CFWStoredFileReferences newReference = new CFWStoredFileReferences(existingFile);
+
+							jsonResponse.addAlert(MessageType.SUCCESS, "Data replaced: "+name);
 							jsonResponse.setPayload( newReference.getAsJsonArray() );
+							
 						}
 						
 					}
@@ -150,6 +154,9 @@ public class ServletStreamFileUpload extends HttpServlet
 				boolean success = CFW.DB.StoredFile.createAndStoreData(newFile, dataInputStream);
 				
 				CFWStoredFileReferences reference = new CFWStoredFileReferences(newFile);
+				
+				if(success) {	jsonResponse.addAlert(MessageType.SUCCESS, "File upload finished: "+name); }
+				else {			jsonResponse.addAlert(MessageType.ERROR, "File upload failed: "+name); }
 				
 				jsonResponse.setPayload( reference.getAsJsonArray() );
 				jsonResponse.setSuccess(success);

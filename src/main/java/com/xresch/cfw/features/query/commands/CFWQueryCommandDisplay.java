@@ -77,6 +77,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 			+"<li><b>sizes:&nbsp;</b>(Optional) An array of page sizes.</li>"	
 			+"<li><b>defaultsize:&nbsp;</b>(Optional) The default selected page size.</li>"	
 			+"<li><b>download:&nbsp;</b>(Optional) Toggle the data download button in the menu. This button does not work with 'menu=button' (Default:false).</li>"	
+			+"<li><b>store:&nbsp;</b>(Optional) Toggle the data store button in the menu. This button does not work with 'menu=button' (Default:false).</li>"	
 			+"<li><b>settings:&nbsp;</b>(Optional) Json Object containing more options for the selected display type.</li>";
 
 	public static final String COMMAND_NAME = "display";

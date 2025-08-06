@@ -28,6 +28,8 @@ function cfw_renderer_dataviewer(renderDef) {
 			menu: 'default', // either 'default' | 'button' | 'none' | true | false 
 			// Toggle if the menu should include a download button for the data
 			download: false, 
+			// Toggle if the menu should include a store button for the data
+			store: false, 
 			// Defines how the pagination should be rendered
 			pagination: 'both', // either 'both' | 'top' | 'botton' | 'none' | true | false 
 			// The initial page to be drawn.
@@ -499,6 +501,20 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	
 	//--------------------------------------
 	// Display As
+	console.log("X: "+dataviewerSettings.store);
+	if(dataviewerSettings.store){
+		
+		html += 
+			'<div class="float-right ml-2">'
+				+'<label for="storeButton">&nbsp;</label>'
+				+'<div name="storeButton">'
+					+cfw_renderer_dataviewer_createStoreButtonHTML(dataviewerID)
+				+'</div>'
+			+'</div>'
+			;
+	}
+	//--------------------------------------
+	// Display As
 	if(dataviewerSettings.download){
 		
 		html += 
@@ -684,6 +700,18 @@ function cfw_renderer_dataviewer_triggerDownload(dataviewerID, renderer) {
 /******************************************************************
  * 
  ******************************************************************/
+function cfw_renderer_dataviewer_triggerStoreData(dataviewerID) {
+	
+	let dataviewerDiv = $("#"+dataviewerID);
+	let renderDef = dataviewerDiv.data('renderDef');
+
+	cfw_ui_storeJsonDataModal(renderDef.data, null);
+
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
 function cfw_renderer_dataviewer_createDownloadButtonHTML(dataviewerID) {
 	
 	var dropDownID = 'dropdownMenuButton'+CFW.utils.randomString(12);
@@ -701,6 +729,25 @@ function cfw_renderer_dataviewer_createDownloadButtonHTML(dataviewerID) {
 		     	+ '<a class="dropdown-item" onclick="cfw_renderer_dataviewer_triggerDownload(\''+dataviewerID+'\', \'xml\')">XML</a>'
 		+'   </div>'
 		+'</div>';
+		
+	return dropdownHTML;
+
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_dataviewer_createStoreButtonHTML(dataviewerID) {
+	
+	var buttonID = 'storedataMenuButton'+CFW.utils.randomString(12);
+	
+	var dropdownHTML = 
+		  '<button  type="button" class="btn btn-sm btn-primary"'
+				+' id="'+buttonID+'" '
+				+' onclick="cfw_renderer_dataviewer_triggerStoreData(\''+dataviewerID+'\')">'
+		+ '  <i class="fas fa-save"></i>'
+		+ '</button>'
+		;
 		
 	return dropdownHTML;
 
