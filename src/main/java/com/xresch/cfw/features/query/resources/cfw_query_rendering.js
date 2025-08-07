@@ -113,7 +113,7 @@ function cfw_query_customizerCreateDefault(){
 			if(trimmed == ""){	return "&nbsp;"; }
 			if(trimmed.startsWith('http')){	return '<a href="'+value+'" target="blank" style="color: unset;">'+value+'</a>'; }
 			
-			return $('<span class="format-base word-wrap-preline">').text(value);
+			return $('<span class="format-base">').text(value);
 			
 		}else if(_.isNumber(value)){
 			

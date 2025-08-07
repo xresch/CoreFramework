@@ -269,6 +269,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 			else if(extension.startsWith("xml")) {		parseAs = CFWQueryStringParserType.xml.toString(); }
 			else if(extension.startsWith("html")) {		parseAs = CFWQueryStringParserType.html.toString(); }
 			else if(extension.startsWith("xls")) {		parseAs = "excel"; }
+			//else if(extension.startsWith("txt")) {		parseAs = CFWQueryStringParserType.plain.toString(); }
 			else { /*parse as lines by default*/		parseAs = CFWQueryStringParserType.lines.toString(); }
 			
 		}

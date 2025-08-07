@@ -1334,8 +1334,9 @@ label {
     display: inline-block;
     padding: 0.1em 0.2em;
     line-height: 1.0;
-    white-space: nowrap;
+    white-space: pre-wrap; /* pre-wrap will display tabs and newlines, plus will wrap text */
     vertical-align: text-top;
+    font-family: monospace;
 }
      
  /*************************************************************************
@@ -1343,6 +1344,7 @@ label {
  *************************************************************************/
 .monospace {    
     font-family: monospace;
+    white-space: pre;
     tab-size : 4;
 }
 
@@ -1541,7 +1543,7 @@ label {
 .word-wrap-break{ word-wrap: break-word; }
 .word-wrap-none{  white-space: nowrap;}
 .word-wrap-preline{  white-space: pre-line; }
-
+.word-wrap-prewrap{  white-space: pre-wrap; }
 .textarea-nowrap {
   white-space: pre;
   overflow:scroll;
