@@ -472,11 +472,17 @@ public class CFWSQL {
 	
 	/****************************************************************
 	 * Begins a SELECT statement including the specified fields.
+	 * If no fields are specified, do a SELECT *.
 	 * @param field names
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public CFWSQL select(Object ...fieldnames) {
 		if(!isQueryCached()) {
+			
+			if(fieldnames == null || fieldnames.length == 0) {
+				select();
+				return this;
+			}
 			
 			String select = " SELECT";
 			if(isNextSelectDistinct) {

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonElement;
@@ -153,7 +154,7 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 	public String descriptionSyntaxDetailsHTML() {
 		return  "<ul>"
 				+"<li><b>onCondition:&nbsp;</b>The condition, if evaluates to true, the records are joined together.</li>"
-				+"<li><b>joinType:&nbsp;</b>(Optional) The type of the join, either, 'inner', 'left' or 'right'. </li>"
+				+"<li><b>joinType:&nbsp;</b>(Optional) The type of the join, either, 'inner', 'left' or 'right'. (Default: left) </li>"
 				+"<li><b>remove:&nbsp;</b>(Optional) Toggle if the the original results should be removed. (Default: true) </li>"
 				+"<li><b>resultNameLeft:&nbsp;</b>(Optional) The name of the left result. If this is omitted, the second last result will be used.</li>"
 				+"<li><b>resultNameRight:&nbsp;</b>(Optional) The name of the right result. If this is omitted, the last result will be used.</li>"
@@ -224,18 +225,22 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 						// 
 						//-------------------------------------
 						case "on":
-							if(assignmentValuePart instanceof QueryPartValue ) {
-								onConditionFastLeft =  assignmentValuePart.determineValue(null).getAsString();
-								onConditionFastRight = onConditionFastLeft;
-							}else if(assignmentValuePart instanceof QueryPartArray ) {
+							if(assignmentValuePart instanceof QueryPartArray ) {
 								QueryPartArray arrayPart = (QueryPartArray)assignmentValuePart;
 								ArrayList<QueryPart> array = arrayPart.getAsParts();
-								if(array.size() > 0) {  onConditionFastLeft =  array.get(0).determineValue(null).getAsString(); }
-								if(array.size() > 1) {  onConditionFastRight =  array.get(1).determineValue(null).getAsString(); }
+								if(array.size() == 1) { 
+									onConditionFastLeft =  array.get(0).determineValue(null).getAsString(); 
+									onConditionFastRight = onConditionFastLeft;
+								}
+								else if(array.size() > 1) {  
+									onConditionFastLeft =  array.get(0).determineValue(null).getAsString(); 
+									onConditionFastRight =  array.get(1).determineValue(null).getAsString(); 
+								}
 							}else if(assignmentValuePart instanceof LeftRightEvaluatable) {
 								onConditionSlow = (LeftRightEvaluatable)assignmentValuePart; 
 							}else {
-								throw new ParseException(COMMAND_NAME+": value for on-parameter must be an array or expression.", -1);
+								onConditionFastLeft =  assignmentValuePart.determineValue(null).getAsString();
+								onConditionFastRight = onConditionFastLeft;
 							}
 							break;
 						
@@ -291,13 +296,6 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 			}
 		}
 		
-		//-------------------------------------
-		// 
-		//-------------------------------------
-		if(onConditionSlow == null
-		&& onConditionFastLeft == null) {
-			throw new ParseException(COMMAND_NAME+": Please provide a valid value for the on-parameter.", -1);
-		}
 	}
 		
 	
@@ -379,8 +377,34 @@ public class CFWQueryCommandResultJoin extends CFWQueryCommand {
 		
 		//-------------------------------------------
 		// Make sure we have both left and right Condition
+		if(onConditionFastLeft == null && onConditionFastRight == null ) {
+			//--------------------------------
+			// Get First Column Name of Left Data
+			if(left.getRecords().size() > 0) {
+				EnhancedJsonObject firstRecord = left.getRecords().get(0);
+				for (Entry<String, JsonElement> entry : firstRecord.entrySet()) {
+					onConditionFastLeft = entry.getKey();
+					break;
+				}
+			}
+			
+			//--------------------------------
+			// Get First Column Name of Left Data
+			if(right.getRecords().size() > 0) {
+				EnhancedJsonObject firstRecord = right.getRecords().get(0);
+				for (Entry<String, JsonElement> entry : firstRecord.entrySet()) {
+					onConditionFastRight = entry.getKey();
+					break;
+				}
+			}
+		}
+		
 		if(onConditionFastRight == null) {
 			onConditionFastRight = onConditionFastLeft;
+		}
+		
+		if(onConditionFastLeft == null) {
+			onConditionFastLeft = onConditionFastRight;
 		}
 		
 		//-------------------------------------------

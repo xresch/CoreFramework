@@ -5932,12 +5932,9 @@ function cfw_ui_storeJsonDataModal(jsonArray, sourceElementOrID, nameSuggestions
 			 nameSuggestionsArray.push(buttonText);
 		 });	
 		 	 
-		 		 
-	
-				 
+		 		 	 
 	//==============================================
 	// Get Time Suggestions
-	
 	
 	let timeframePickers = $(".cfw-timeframepicker-wrapper > input");
 	timeframePickers.each(function(){
@@ -5959,18 +5956,9 @@ function cfw_ui_storeJsonDataModal(jsonArray, sourceElementOrID, nameSuggestions
 		
 		if(earliestDate == latestDate){
 			nameSuggestionsArray.push( earliestDate );
-			// nameSuggestionsArray.push( latestDate ); // will be removed by _uniq later
-			
-			// this is just spam
-			//nameSuggestionsArray.push( earliestDateShort );
-			//nameSuggestionsArray.push( earliestTimestamp );
-
-			//nameSuggestionsArray.push( latestDateShort );
-			//nameSuggestionsArray.push( latestTimestamp );
 		}
 			
-		
-		
+
 		//---------------------
 		// earliest to latest
 		
@@ -6026,8 +6014,8 @@ function cfw_ui_storeJsonDataModal(jsonArray, sourceElementOrID, nameSuggestions
 	
 	//==============================================
 	// create name suggestions Buttons
-	let suggestionsDiv = $('<div class="p-2">');
-	suggestionsDiv.append('<p class="w-100 mt-4">Suggestions - click to append to name: </p>');
+	let suggestionsDiv = $('<div class="p-2 d-flex align-items-stretch flex-wrap">');
+
 	for(let i in nameSuggestionsArray){
 		let suggestion = nameSuggestionsArray[i];
 		
@@ -6053,6 +6041,7 @@ function cfw_ui_storeJsonDataModal(jsonArray, sourceElementOrID, nameSuggestions
 	</div>`);	
 	wrapper.append(nameField);
 	wrapper.append(button);
+	wrapper.append('<p class="w-100 mt-4">Suggestions - click to append to name: </p>');
 	wrapper.append(suggestionsDiv);
 	
 	//==============================================
