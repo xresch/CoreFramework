@@ -170,6 +170,8 @@ DONE
 ====
 
 ------- current -------
+
+------- v.11.11.11 -------
 - NEW FEATURE: File Manager, upload/download files
 - NEW FEATURE: Query can now read data from files stored in the File Manager, including excel files. 
 - NEW FEATURE: Data from Query results can now be stored to the File Manager with "| display store=true"

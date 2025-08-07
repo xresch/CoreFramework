@@ -12,7 +12,7 @@ COPY ./scripts/docker_start.sh ./start.sh
 COPY ./scripts/docker_stop.sh ./stop.sh
 
 COPY ./target/lib ${BASEDIR}/lib/
-COPY ./target/cfw-??.?.?.jar ${BASEDIR}/lib/
+COPY ./target/cfw-*.jar ${BASEDIR}/lib/
 
 #HTTP
 EXPOSE 8888
