@@ -170,6 +170,7 @@ DONE
 ====
 
 ------- current -------
+BUGFIX: Query resultcompare - fixed issue where id-columns where displayed as null values
 
 ------- v.11.11.11 -------
 - NEW FEATURE: File Manager, upload/download files

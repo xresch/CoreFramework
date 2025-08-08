@@ -1334,7 +1334,7 @@ label {
     display: inline-block;
     padding: 0.1em 0.2em;
     line-height: 1.0;
-    white-space: pre-wrap; /* pre-wrap will display tabs and newlines, plus will wrap text */
+    white-space: nowrap; /* pre-wrap will display tabs and newlines, plus will wrap text */
     vertical-align: text-top;
     font-family: monospace;
 }
@@ -1344,7 +1344,7 @@ label {
  *************************************************************************/
 .monospace {    
     font-family: monospace;
-    white-space: pre;
+    /* white-space: pre; */
     tab-size : 4;
 }
 

@@ -551,10 +551,18 @@ public class CFWQueryCommandResultCompareMethods {
 					//---------------------------------
 					// If Identifier just add without compare
 					if(identifierFields.contains(fieldname)) {
+						
+						// Make sure ID field uses a non null value if one is not null
+						JsonElement finalValue = youngValue;
+						if(finalValue == null || finalValue.isJsonNull()) {
+							finalValue = oldValue;
+						}
+						
+						// add count or no count
 						if(i == 0) {
-							resultObject.add(fieldname, youngValue);
+							resultObject.add(fieldname, finalValue);
 						}else {
-							String indexed = (!youngValue.isJsonNull()) ? youngValue.getAsString() : "null";
+							String indexed = (!finalValue.isJsonNull()) ? finalValue.getAsString() : "null";
 							indexed += "["+(i+1)+"]";
 							resultObject.addProperty(fieldname, indexed);
 						}
