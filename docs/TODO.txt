@@ -171,6 +171,8 @@ DONE
 
 ------- current -------
 BUGFIX: Query resultcompare - fixed issue where id-columns where displayed as null values
+BUGFIX: Number separators are properly shown for negative numbers
+
 
 ------- v.11.11.11 -------
 - NEW FEATURE: File Manager, upload/download files

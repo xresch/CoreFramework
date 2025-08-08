@@ -4186,6 +4186,7 @@ function cfw_format_numberSeparators(value, separator, eachDigit) {
 	
 	if(value == null) return '';
 	if(isNaN(value)) return value;
+	if(value == true || value == false) return value;
 	
 	var separator = (separator == null) ?  "'" : separator;
 	var eachDigit = (eachDigit == null) ?  3 : eachDigit;
@@ -4201,11 +4202,19 @@ function cfw_format_numberSeparators(value, separator, eachDigit) {
 	}
 	
 	var position = 0;
-	
 	for(let i = startingPos; i >= 0; i--){
 		position++;
 		
-		resultString = stringValue.charAt(i) + resultString;
+		let char = stringValue.charAt(i);
+
+		//handle minus in negative number
+		if(char == "-" && resultString.startsWith(separator) ){ 
+			resultString = char + resultString.substring(1); 
+			break;
+		}
+		
+		resultString = char + resultString;
+		
 		if(position % 3 == 0 && i > 0){
 			resultString = separator + resultString;
 		}
