@@ -172,7 +172,7 @@ DONE
 ------- current -------
 BUGFIX: Query resultcompare - fixed issue where id-columns where displayed as null values
 BUGFIX: Number separators are properly shown for negative numbers
-
+- Manual: Added links to existing youtube tutorials
 - Query: Added Functions:
 	- arrayDedup
 	
