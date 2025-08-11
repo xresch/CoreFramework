@@ -198,6 +198,49 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testArrayDedup() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source empty 
+| set  
+	ORIGINAL = [1,2,3,3,3]							# returns [1,2,3,3,3]
+	A = arrayDedup(ORIGINAL) 						# returns [1,2,3]
+	B = arrayDedup([1,2,"3",3, 3]) 					# returns [1, 2, "3", 3]
+	C = arrayDedup([null, "null", null, 0, null]) 	# returns [null, "null", 0]
+	D = arrayDedup([true, "true", "true", 1, true]) # returns [true, "true", 1]
+	E = arrayDedup([null, 1, true, "three"
+				  , null, 1, true, "three"]) 		# returns [null, 1, true, "three"]
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		Assertions.assertEquals("[1,2,3,3,3]", record.get("ORIGINAL").toString());
+		Assertions.assertEquals("[1,2,3]", record.get("A").toString());
+		Assertions.assertEquals("[1,2,\"3\",3]", record.get("B").toString());
+		Assertions.assertEquals("[null,\"null\",0]", record.get("C").toString());
+		Assertions.assertEquals("[true,\"true\",1]", record.get("D").toString());
+		Assertions.assertEquals("[null,1,true,\"three\"]", record.get("E").toString());
+
+
+
+		
+	}
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testAvg() throws IOException {
 		
 		//---------------------------------

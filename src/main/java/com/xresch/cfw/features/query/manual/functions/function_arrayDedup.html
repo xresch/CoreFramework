@@ -1,0 +1,16 @@
+
+<p>This function will take an array as input and creates a new array that has no duplicate values.
+The original array stays untouched, unmodified and blessed with infinite delight for eternity.</p>
+
+<p>The following query creates sample records and does some deduplication of arrays:</p>
+
+<pre><code class="language-cfwquery">| source empty 
+| set  
+	ORIGINAL = [1,2,3,3,3]							# returns [1,2,3,3,3]
+	A = arrayDedup(ORIGINAL) 						# returns [1,2,3]
+	B = arrayDedup([1,2,"3",3, 3]) 					# returns [1, 2, "3", 3]
+	C = arrayDedup([null, "null", null, 0, null]) 	# returns [null, "null", 0]
+	D = arrayDedup([true, "true", "true", 1, true]) # returns [true, "true", 1]
+	E = arrayDedup([null, 1, true, "three"
+				  , null, 1, true, "three"]) 		# returns [null, 1, true, "three"]</code></pre>
+
