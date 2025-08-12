@@ -310,12 +310,12 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 	 *
 	 ******************************************************************************************************/
 	private QueryPartValue evaluateBinaryExpression(CFWQueryContext context, QueryPartValue leftValue, QueryPartValue rightValue){
-			
+				
 		JsonElement evalResult = null;
 		
 		BigDecimal rightDeci;
 		BigDecimal leftDeci;
-		
+				
 		switch(type) {
 			case OPERATOR_AND:	
 				if(bothBooleans(leftValue, rightValue)) {
@@ -453,10 +453,13 @@ public class QueryPartBinaryExpression extends QueryPart implements LeftRightEva
 			break;
 						
 			case OPERATOR_DIVIDE:
+
 				nullToZero(leftValue, rightValue);
+
 				leftDeci = leftValue.getAsBigDecimal();
 				rightDeci = rightValue.getAsBigDecimal();
-				if(rightDeci.compareTo(BIG_ZERO) == 0) {   
+
+				if(rightDeci == null || rightDeci.compareTo(BIG_ZERO) == 0) {   
 					
 					evalResult = JsonNull.INSTANCE;
 				}else {

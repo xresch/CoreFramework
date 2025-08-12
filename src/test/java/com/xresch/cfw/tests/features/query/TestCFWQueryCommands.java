@@ -479,13 +479,63 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	}
 	
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testFilter_AND_OR() throws IOException {
+		
+		String queryString = """
+| record
+	[FIRSTNAME, LASTNAME, LIKES_TIRAMISU, VALUE]
+	["Luna", "Larsson", true, 0]  # keep
+	["Luna", "Larsson", false, 0] # remove as LIKES_TIRAMISU == false
+	["Luna", "Larsson", true, -1] # remove as VALUE == -1
+	["Hera", "Larsson", true, 0] # remove as FIRSTNAME != Luna AND LASTNAME ~= ".*son$"
+	["Hera", "Varia", true, 42] # keep as NOT LASTNAME ~= ".*son$"
+    #only humans called 'Luna' or with a lastname that does not end with "son"
+| filter 
+	( FIRSTNAME == Luna OR NOT LASTNAME ~= ".*son$" ) 
+	NOT LIKES_TIRAMISU == false			# only people that like tiramisu
+	NOT (VALUE == -1)					# only record where value is bigger than index
+	AND NOT (VALUE == -1)				# additional test with AND
+	AND NOT LIKES_TIRAMISU == false		# additional test with AND
+| formatfield
+	value = list
+				""";
+				
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(2, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		Assertions.assertEquals("Luna", record.get("FIRSTNAME").getAsString());
+		Assertions.assertEquals("Larsson", record.get("LASTNAME").getAsString());
+		Assertions.assertEquals(true, record.get("LIKES_TIRAMISU").getAsBoolean());
+		Assertions.assertEquals(0, record.get("VALUE").getAsInt());
+		
+		//------------------------------
+		// Check Second Query Result
+		record = queryResults.getRecordAsObject(1);
+		Assertions.assertEquals("Hera", record.get("FIRSTNAME").getAsString());
+		Assertions.assertEquals("Varia", record.get("LASTNAME").getAsString());
+		Assertions.assertEquals(true, record.get("LIKES_TIRAMISU").getAsBoolean());
+		Assertions.assertEquals(42, record.get("VALUE").getAsInt());
+	
+	}
 
 
 	/****************************************************************
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testFilterNullValues() throws IOException {
+	public void testFilter_NullValues() throws IOException {
 		
 		String queryString = """
 | source random type=numbers records=10000 limit=10000

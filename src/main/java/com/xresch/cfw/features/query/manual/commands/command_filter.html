@@ -15,11 +15,11 @@ If you do not specify any of the keywords AND/OR, and is used implicitely to com
 <p>The following code shows an example of how to use the keywords AND, OR and NOT, as well as how to group conditions using braces.</p>
 <pre><code class="language-cfwquery">| source random records=10000
     #only humans called 'Luna' or with a lastname that does not end with "son"
-| filter (FIRSTNAME==Luna OR NOT LASTNAME~=".*son$") 
+| filter (FIRSTNAME == Luna OR NOT LASTNAME ~= ".*son$") 
 	# only people that like tiramisu
-	NOT (LIKES_TIRAMISU==false)
+	AND NOT (LIKES_TIRAMISU == false)
 	# only record where value is bigger than index
-	NOT (VALUE / INDEX ) &lt;= 1</code></pre>
+	AND NOT (VALUE / INDEX ) &lt;= 1</code></pre>
 
 
 	
@@ -27,7 +27,7 @@ If you do not specify any of the keywords AND/OR, and is used implicitely to com
 
 <pre><code class="language-cfwquery">| source random type=numbers records=100000 limit=100000
 | filter 
-	_source~="^ra.*"+"dom" 
+	LASTNAME ~= "^.*s"+"son$" 
 	AND (THOUSANDS >= 1000^3 AND FLOAT >= (1000^2)*9 ) 
 	OR (BIG_DECIMAL>=700000 AND BIG_DECIMAL&lt;800000 ) 
 | formatfield 
@@ -35,7 +35,6 @@ If you do not specify any of the keywords AND/OR, and is used implicitely to com
 	[THOUSANDS,FLOAT,BIG_DECIMAL]=['threshold', 0, 1000, 1000^2, 1000^3, (1000^4)*500, "text"]</code></pre>
 
 
-	
 <p>If you process fields that contain null values, here is how the query language handles null values in binary expressions.
 The following filter will evaluate always to true as all conditions are true.</p>
 

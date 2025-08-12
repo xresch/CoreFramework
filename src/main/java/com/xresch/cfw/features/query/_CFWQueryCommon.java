@@ -85,6 +85,7 @@ public class _CFWQueryCommon {
 				  + "	<li><b>'&gt;':&nbsp;</b>  Checks if the field value is greater.</li>"
 				  + "	<li><b>AND:&nbsp;</b> Used to combine two or more conditions. Condition matches only if both sides are true.</li>"
 				  + "	<li><b>OR:&nbsp;</b>  Used to combine two or more conditions. Condition matches if either side is true.</li>"
+				  + "	<li><b>NOT:&nbsp;</b> Used to invert a condition. Condition matches only if the right side is false.</li>"
 				  + "</ul>"
 			  + "</li>"
 				;

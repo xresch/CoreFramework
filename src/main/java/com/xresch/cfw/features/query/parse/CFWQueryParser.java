@@ -17,7 +17,9 @@ import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField.FieldFormatterName;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -386,6 +388,15 @@ public class CFWQueryParser {
 			detectedFields.add("originalText");
 			partsResult.setDetectedFields(detectedFields);
 		}
+		
+		//============================================
+		// Add Formatting
+		try {
+			CFWQueryCommandFormatField.addFormatterByName(partsResult.getQueryContext(), "value", FieldFormatterName.LIST.toString());
+
+		} catch (ParseException e) {
+			new CFWLog(logger).severe("Error while creating debug output: "+e.getMessage(), e);
+		} 
 					
 		//-----------------------------
 		// Return Result
@@ -1081,8 +1092,8 @@ public class CFWQueryParser {
 				
 					case KEYWORD_AND: 	return setQueryText(parseBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_AND, false ), beginCursor);
 					case KEYWORD_OR: 	return setQueryText(parseBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_OR, false ), beginCursor);
-					
-					case KEYWORD_NOT: 	return setQueryText(parseBinaryExpressionPart(context, null, CFWQueryTokenType.OPERATOR_NOT, false ), beginCursor);
+										// Add a boolean as left side to not mess up the parsing, will not be used. Looks a bit ugly, and it is! ^^'
+					case KEYWORD_NOT: 	return setQueryText(parseBinaryExpressionPart(context, QueryPartValue.newBoolean(false), CFWQueryTokenType.OPERATOR_NOT, false ), beginCursor);
 					default:			this.throwParseException("Unknown keyword:"+keyword, firstToken.position());
 				}
 			break;
