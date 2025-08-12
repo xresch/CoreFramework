@@ -11,6 +11,8 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.parameter.CFWParameter;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField.FieldFormatterName;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandParamDefaults;
 import com.xresch.cfw.features.query.database.CFWDBQueryHistory;
@@ -295,7 +297,7 @@ public class CFWQueryExecutor {
 			) {
 		
 
-		//============================================
+		//============================================CFWQueryCommandFormatField.addFormatterByName(this.getQueryContext(), field, "special"); 
 		// Handle Empty List
 		if(queryList.isEmpty()) {
 			return new CFWQueryResultList();
@@ -499,6 +501,15 @@ public class CFWQueryExecutor {
 		
 		resultArray.addResult(debugState);
 		
+		//============================================
+		// Add Formatting
+		debugState.getDisplaySettings().addProperty("download", true);
+		try {
+			CFWQueryCommandFormatField.addFormatterByName(debugState.getQueryContext(), "VALUE", FieldFormatterName.WHITESPACE.toString());
+
+		} catch (ParseException e) {
+			new CFWLog(logger).severe("Error while creating debug output: "+e.getMessage(), e);
+		} 
 
 		return resultArray;
 	}

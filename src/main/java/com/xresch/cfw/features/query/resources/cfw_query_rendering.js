@@ -202,6 +202,7 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'threshold': 			cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
 				case 'timestamp': 			cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
 				case 'uppercase': 			cfw_query_formatUppercase(resultSpan); break;
+				case 'whitespace': 			cfw_query_formatWhitespace(resultSpan); break;
 			}	
 		}
 
@@ -1022,6 +1023,15 @@ function cfw_query_formatUppercase(span){
 	
 	span.addClass('text-uppercase');
 	span.removeClass('text-lowercase');
+
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatWhitespace(span){
+	
+	span.addClass('word-wrap-prewrap');
 
 }
 

@@ -61,6 +61,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		, THRESHOLD
 		, TIMESTAMP
 		, UPPERCASE
+		, WHITESPACE
 		
 	}
 	// Key: FormatterName Value: FormatterDefinition
@@ -488,6 +489,21 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			).example(
 				 "#makes the lastname uppercase."
 				+"\r\n| source random | formatfield LASTNAME=uppercase"
+			)
+		);
+		
+		//------------------------------------------------
+		// Whitespace 
+		//------------------------------------------------
+		formatterDefinitionArray.put(FieldFormatterName.WHITESPACE.toString(),
+			instance.new FormatterDefinition(
+				FieldFormatterName.WHITESPACE.toString(), 
+				"Displays newlines and tabs of values if they contain any.",
+				new Object[][] {
+				}
+			).example(
+				 "#makes the lastname uppercase."
+				+"\r\n| source random | formatfield LASTNAME=whitespace"
 			)
 		);
 		
