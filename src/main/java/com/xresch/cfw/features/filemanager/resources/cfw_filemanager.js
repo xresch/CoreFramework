@@ -135,7 +135,7 @@ function cfw_filemanager_replaceFile(element){
 function cfw_filemanager_importStoredFile(){
 	
 	var uploadHTML = 
-		'<p>Select a previously exported storedfile file. Share settings will be imported as well. If you exported the storedfile from another application or application instance, the widgets might not be able to load correctly.</p>'
+		'<p>Select a previously exported file. Share settings will be imported as well. If you exported the storedfile from another application or application instance, the widgets might not be able to load correctly.</p>'
 		+'<div class="form-group">'
 			+'<label for="importFile">Select File to Import:</label>'
 			+'<input type="file" class="form-control" name="importFile" id="importFile" />'
@@ -286,7 +286,7 @@ function cfw_filemanager_archive(id, isarchived){
 			if(data.success){
 				cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS);
 			}else{
-				CFW.ui.showModalSmall("Error!", '<span>The selected storedfile could <b style="color: red">NOT</b> be deleted.</span>');
+				CFW.ui.showModalSmall("Error!", '<span>The selected file could <b style="color: red">NOT</b> be deleted.</span>');
 			}
 	});
 }
@@ -399,19 +399,19 @@ function cfw_filemanager_printStoredFile(data, type){
 	// Tab Desciption
 
 	switch(type){
-		case "mystoredfile":		parent.append('<p>This tab shows all storedfile where you are the owner.</p>')
+		case "mystoredfile":		parent.append('<p>This tab shows all files where you are the owner.</p>')
 									break;	
 									
-		case "myarchived":			parent.append('<p>This tab shows all archived storedfile where you are the owner.</p>')
+		case "myarchived":			parent.append('<p>This tab shows all archived files where you are the owner.</p>')
 									break;	
 									
-		case "sharedstoredfile":	parent.append('<p>This list contains all the storedfile that are shared by others and by you.</p>')
+		case "sharedstoredfile":	parent.append('<p>This list contains all the files that are shared by others and by you.</p>')
 									break;
 									
-		case "adminarchived":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin archive. The list contains all archived storedfile of all users.</b></p>')
+		case "adminarchived":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin archive. The list contains all archived files of all users.</b></p>')
 									break;	
 									
-		case "adminstoredfile":	parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all storedfile of all users.</b></p>')
+		case "adminstoredfile":	parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all files of all users.</b></p>')
 									break;	
 														
 		default:					break;

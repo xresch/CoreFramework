@@ -48,7 +48,7 @@ public class FeatureFilemanager extends CFWAppFeature {
 	public static final String EAV_STATS_WIDGET_LOADS_CACHED = "Widget Loads Cached";
 	public static final String EAV_STATS_WIDGET_LOADS_UNCACHED = "Widget Loads Not Cached";
 	
-	public static final String MANUAL_NAME_STOREDFILE = "StoredFile";
+	public static final String MANUAL_NAME_FILEMANAGER = "File Manager";
 
 	public static ManualPage MANUAL_PAGE_ROOT;
 	
@@ -239,8 +239,8 @@ public class FeatureFilemanager extends CFWAppFeature {
 		//----------------------------------
     	// Register Manual Pages
 		MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
-				new ManualPage(MANUAL_NAME_STOREDFILE)
-					.faicon("fas fa-key")
+				new ManualPage(MANUAL_NAME_FILEMANAGER)
+					.faicon("fas fa-file")
 					.addPermission(PERMISSION_STOREDFILE_VIEWER)
 					.addPermission(PERMISSION_STOREDFILE_CREATOR)
 					.addPermission(PERMISSION_STOREDFILE_ADMIN)
