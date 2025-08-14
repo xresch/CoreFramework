@@ -308,6 +308,39 @@ public class ServletQuery extends HttpServlet
 	}
 	
 	/******************************************************************
+		 *
+		 ******************************************************************/
+		private void createEditForm(JSONResponse json, String ID) {
+	
+	//		Person Person = PersonDBMethods.selectByID(Integer.parseInt(ID));
+	//		
+	//		if(Person != null) {
+	//			
+	//			CFWForm editPersonForm = Person.toForm("cfwEditPersonForm"+ID, "Update Person");
+	//			
+	//			editPersonForm.setFormHandler(new CFWFormHandler() {
+	//				
+	//				@Override
+	//				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+	//					
+	//					if(origin.mapRequestParameters(request)) {
+	//						
+	//						if(PersonDBMethods.update((Person)origin)) {
+	//							CFW.Messages.addSuccessMessage("Updated!");
+	//						}
+	//							
+	//					}
+	//					
+	//				}
+	//			});
+	//			
+	//			editPersonForm.appendToPayload(json);
+	//			json.setSuccess(true);	
+	//		}
+	
+		}
+
+	/******************************************************************
 	 *
 	 ******************************************************************/
 	private void getAITrainingFile(HttpServletRequest request, JSONResponse jsonResponse) {
@@ -355,45 +388,274 @@ public class ServletQuery extends HttpServlet
 		instructions.add("Always include pipe symbols ('|') before the first command of the query.");
 		instructions.add("If a query is generated without pipe symbols ('|'), automatically detect and add them before each command.");
 		instructions.add("The pipe symbol ('|') before each command must be included.");
-		instructions.add("Do not invent new sources, only use the sources given in the file.");
-		instructions.add("Do not invent new commands, only use the commands given in the file.");
-		instructions.add("Do not invent new functions, only use the functions given in the file.");
+		instructions.add("Do not invent new sources, only use the sources given in the field 'allowed_sources' in this file.");
+		instructions.add("Do not invent new commands, only use the commands given in the field 'allowed_commands' in this file.");
+		instructions.add("Do not invent new functions, only use the functions given in field 'allowed_functions' in this file.");
 		instructions.add("Use bash or shell for code formatting of the output.");
 		
 		result.add("instructions", instructions);
 		
-		
-		//-------------------------
-		// All Examples: Intentional Duplicate
-		JsonArray query_examples = new JsonArray();
-		result.add("query_examples", query_examples);
-		
+	
 		//-------------------------
 		// Language Description
 		JsonArray description = new JsonArray();
 		description.add("The language is used to to query data from one or multiple sources.");
 		description.add("The data is processed as a stream of records.");
 		description.add("Records can have one or multiple fields that have values.");
-		description.add("The main parts of the language are: sources, commands, and functions.");
+		description.add("The main parts of the language are: queries, sources, commands, and functions.");
+		
+		description.add("The term query refers to two things: (A) The whole query string. (B). Parts of the whole query string that are separated by semicolons \";\". ");
+		description.add("Partial Queries (A) will have a result of an array of records. These results can be reused by further queries in the list using commands like resultcompare, resultjoin, resultcopy, resultconcat, resultremove.");
+		description.add("Queries (A) will have a result consisting of one or multiple results of partial queries (B), so an array of arrays of records. ");
+		
 		description.add("Commands are preceeded by a pipe-symbol '|', for example '| <command>'. Records are passed from one command to the next through the whole pipeline.");
 		description.add("Commands are used to fetch data, manipulate data and define how data should be displayed.");
 		description.add("Some of the most important commands are: source, set, filter, sort, keep, remove, move, display, formatfield, formatrecord, chart");
 		description.add("Commands can have zero or more parameters.");
 		description.add("Commands have tags that indicate their usage.");
 		description.add("Different commands can have different structures of parameters. Some take key-value-pairs, while others take strings and others take arrays or combinations of those types.");
+		description.add("There is a special command 'source', which should not be confused with the actual sources. The command 'source' takes a name of a source as it's first parameter(e.g. '| source web'). Then it takes all the parameters of the specified source.(e.g. \"| source web as=html url='https://www.acme.com'\").");
+		
 		description.add("Functions are used to manipulate data.");
 		description.add("Functions can have zero or more parameters.");
 		description.add("Functions have tags that indicate their usage.");
+		description.add("Functions can be used in aggregation commands if they support aggregation(field: supports_aggregation). If they do so, they can be used in aggregation commands like: stats, statsmatrix and aggregate.");
 		description.add("To get the selected time, there are the two functions 'earliest' and 'latest'.");
-		description.add("There is a special command 'source', which should not be confused with the actual sources. The command 'source' takes a name of a source as it's first parameter(e.g. '| source web'). Then it takes all the parameters of the specified source.(e.g. \"| source web as=html url='https://www.acme.com'\").");
+		
 		description.add("Available sources are listed in this file by the field 'sources' with details and example queries.");
 		description.add("Available commands are listed in this file by the field 'commands' with details and example queries.");
 		description.add("Available functions are listed in this file by the field 'functions' with details and example queries.");
+		
 		description.add("Comments: Everything after a hashtag '#' until the end of a line is a comment.");
 		description.add("Comments: Everything between '/*' and '*/' is a comment. The '*/' is optional, if it is not present, everything from '/*' to the end of the query is considered a comment.");
 		description.add("Comments: The command 'off' can be used to turn off a command.");
+		
+		description.add("The field 'cookbook' in this file contains special examples showing specific use cases. The comments in each example explain more.");
 
 		result.add("language_description", description);
+		
+		
+		//-------------------------
+		// Language Description
+		JsonArray cookbook = new JsonArray();
+cookbook.add("""
+# Pattern: Repeat the previous query
+| ...first query...
+;  # end query 1
+| mimic               # copies and runs the previous query as query 2
+;  # end query 2
+""");
+
+cookbook.add("""
+# Pattern: Mimic a named query, remove parts, add parts
+| metadata name="BaseQuery"
+| ...commands...
+;  # end named base
+| mimic name="BaseQuery" remove=[metadata, keep]
+| keep FOO, BAR
+;  # end derived
+""");
+
+cookbook.add("""
+# Pattern: Execute template query for two timeframes and compare
+| metadata 
+	name="fetchData"
+	template = true # this query part until semicolon will not automatically execute, it will be executed with mimic commands
+
+| ...fetch + transform + stats...
+;  # end template
+
+# offset the selected timeframe earliest/latest into the past one time
+# e.g. if the selected timeframe is 2 days, will shift to the previous two days
+| execute timeframeOffset(-1) 
+| metadata name="Previous" # name this query
+| mimic name="fetchData" # execute the template
+;  # end Previous
+
+| metadata name="Current"
+| mimic name="fetchData"
+; # end Current
+
+| resultcompare 
+	results=["Previous", "Current"] 
+	by=[rowIdentifierField, ]
+""");
+		
+cookbook.add("""
+# Pattern: Using Credentials with web requests
+| globals
+	# the credentials function selects credentials by name an returns an object with various fields.
+	# these fields can be accessed with the dot operator.
+	# some of the more important fields: account, url, password, secret, token, hostname, domain, custom
+	CREDS = credentials("myCredentialsName") 
+
+# Fetch data From web API 
+| source web 
+	url = g(CREDS).url + "/api/v2/metrics/query"
+			+ "?value="+encode('myValue')
+			+ "&filter="+encode('my search')
+	# Following creates an object for the header containing the API token. 
+	# the function "object" can take endless amount of parameters, odd parameters are keys while even parameters are values
+	# the function "globals" retrieves values defined with the command "globals", in this case it retrieves CREDS and gets the token from the retrieved value (in this case an object)
+	headers = object( "Authorization" "Api-Token " + globals(CREDS).token ) 
+
+
+""");
+
+cookbook.add("""
+# Example on how to fetch data from a Web API that returns data in multiple chunks/pages and has to be called multiple times
+# Also an example on how to retrieve data from Dynatrace for a specific management zone
+#================================================
+# Initialize
+#================================================
+| paramdefaults
+	management_zone = "My Management Zone"
+| globals
+	CREDS = credentials("DYN_API_PROD")
+#================================================
+# Fetch data From API and unbox Data
+#================================================
+| source web 
+	url = g(CREDS).url 
+			+ "/api/v2/problems"
+			+ "?problemSelector="+encode('managementZones('+p(management_zone, "-1") + ')')
+			+ "&from="+earliest()
+			+ "&to="+latest()
+			+ "&pageSize=500"
+			+ if(sourcepage() == null, "", "&nextPageKey="+encode(sourcepage()) )
+		
+	headers = object( "Authorization" "Api-Token "+ g(CREDS).password )
+	
+	pagination = true 
+	pageinitial = null
+	page = tojson(sourceWebResponse().body).nextPageKey # extract next page, stop if not found(null)
+	pagemax = 20
+	pageend = (sourceWebResponse().status >= 400  # stop pagination if status is bad
+			OR contains(sourceWebResponse().body, "nextPageKey") == false ) # stop pagination if body does not contains the string
+
+
+| unbox problems
+| unbox problems replace=true
+| set
+	rootCause = rootCauseEntity.name	
+""");
+
+cookbook.add("""
+# An extreme example with dynatrace
+# First source web fetches data that includes ID values, but doesn't get any human readable names.
+# All ID values are added to the global IDARRAY.
+# IDARRAY is later used to fetch 50 service names with each request.
+# The names are then mapped to the records using resultjoin.
+
+#================================================
+# Initialize
+#================================================
+| paramdefaults
+	resolution = "15m"
+	min_response_time = 1
+	management_zone = "My Management Zone Name"
+| globals
+	CREDS = credentials("DYN_API_PROD")
+	IDARRAY = [] # !!! NAMES: global array to store IDs
+#================================================
+# Fetch Service Response Times from API and unbox Data
+#================================================
+| source web 
+	url = g(CREDS).url 
+			+ "/api/v2/metrics/query"
+			+ "?metricSelector="+encode('builtin:service.response.time:splitby(dt.entity.service):avg')
+			+ "&entitySelector="+encode(`type(SERVICE), mzName(`+p(management_zone, "-1")+`)`)
+			+ "&resolution="+param(resolution)
+			+ "&from="+earliest()
+			+ "&to="+latest()
+		
+	headers = object( "Authorization" "Api-Token "+ g(CREDS).password )
+
+| unbox result
+| unbox result.data replace = true
+
+| set 
+	ID = data.dimensionMap."dt.entity.service"
+	time = data.timestamps
+	val = data.values
+# !!! NAMES: add each ID to the global Array
+| each arrayAdd(g(IDARRAY), ID)
+| dedup ID, time
+
+#================================================
+# Map and unbox times and values
+#================================================
+| maparrays name=metrics time val replace = true
+| unbox metrics
+| unbox ID, Name, metrics replace = true
+| sort ID, Name
+
+#================================================
+# Make Stats
+#================================================
+| stats
+	by = [ID]
+	val = avg(val /1000, false, 2) # make milliseconds
+;
+###########################################################
+# Get Names for IDs
+###########################################################
+| source web 
+	each = arraySplit(g(IDARRAY), 50) # !!! NAMES: Fetch 50 names at once
+	url = g(CREDS).url
+			+ "/api/v2/entities" 
+			+ "?entitySelector=type(SERVICE),entityId("
+				+encode( replaceregex(sourceEach(), "\\[|\\]", "") ) # !!! NAMES: remove square braces from array
+			+")"
+			#+ "&fields=properties.monitoringMode,tags" # choose additional fields to display
+			+ "&from=now-24h"
+			+ "&pageSize=500"
+	
+	headers= object( 
+				 "Authorization" "Api-Token "+ credentials("DYN_API_PROD").password 
+				)
+
+| unbox entities
+| set
+	ID = entities.entityId 
+	Name = entities.displayName 
+| keep ID Name 
+;
+###########################################################
+# Join Values with Names and Format
+###########################################################
+| resultjoin
+	on=ID
+| sort val reverse = true
+#================================================
+# Add a Link to Dynatrace Service
+#================================================
+| set
+	ID = g(CREDS).url+"/#smgd;sci="+ID+";tab=RT;gtf="+earliest("yyyy-MM-dd'T'HH:mm:ssz",true)+"%20to%20"+latest("yyyy-MM-dd'T'HH:mm:ssz",true)+";gf=all;"
+#================================================
+# Format & Display
+#================================================
+| rename 
+	ID = Link
+	val = 'Avg[ms]'
+| move Link 'Avg[ms]'  before=Name
+| formatfield 
+	Link = ['link', ""]
+	'Avg[ms]' = ['align', "right"]
+
+| display 
+	defaultsize=25 
+	download=true
+| display 
+	as=table
+	download = true
+""");
+		
+		result.add("cookbook", cookbook);
+		//-------------------------
+		// All Examples: Intentional Duplicate
+		JsonArray query_examples = new JsonArray();
+		result.add("query_examples", query_examples);
 		
 		//-------------------------
 		// Language Syntax	
@@ -460,10 +722,12 @@ public class ServletQuery extends HttpServlet
 		//-------------------------
 		// Sources 
 		
+		TreeMap<String, Class<? extends CFWQuerySource>> sourcelist = CFW.Registry.Query.getSourceList();
+		
+		result.add("allowed_sources", CFW.JSON.arrayToJsonArray( sourcelist.keySet().toArray() ) );
+		
 		JsonObject sources = new JsonObject();
 		result.add("sources", sources);
-		
-		TreeMap<String, Class<? extends CFWQuerySource>> sourcelist = CFW.Registry.Query.getSourceList();
 		
 		for(String sourceName : sourcelist.keySet()) {
 			
@@ -477,7 +741,6 @@ public class ServletQuery extends HttpServlet
 				sourceObject.addProperty("time_handling", current.descriptionTime());
 				sourceObject.addProperty("required_permissions", current.descriptionRequiredPermission());
 				sourceObject.addProperty("parameters_list_html", current.getParameterListHTML());
-				
 				
 				JsonArray examplesArray = new JsonArray();
 				List<String> codeExamples = Jsoup.parse(current.descriptionHTML()).getElementsByTag("code").eachText();
@@ -496,11 +759,13 @@ public class ServletQuery extends HttpServlet
 		
 		//-------------------------
 		// Commands 
+		TreeMap<String, Class<? extends CFWQueryCommand>> commandlist = CFW.Registry.Query.getCommandList();
+		
+		
+		result.add("allowed_commands", CFW.JSON.arrayToJsonArray( commandlist.keySet().toArray() ) );
 		
 		JsonObject commands = new JsonObject();
 		result.add("commands", commands);
-		
-		TreeMap<String, Class<? extends CFWQueryCommand>> commandlist = CFW.Registry.Query.getCommandList();
 		
 		for(String commandName : commandlist.keySet()) {
 			
@@ -532,11 +797,12 @@ public class ServletQuery extends HttpServlet
 		
 		//-------------------------
 		// Functions 
+		TreeMap<String, Class<? extends CFWQueryFunction>> functionlist = CFW.Registry.Query.getFunctionList();
+		
+		result.add("allowed_functions", CFW.JSON.arrayToJsonArray( functionlist.keySet().toArray() ) );
 		
 		JsonObject functions = new JsonObject();
 		result.add("functions", functions);
-		
-		TreeMap<String, Class<? extends CFWQueryFunction>> functionlist = CFW.Registry.Query.getFunctionList();
 		
 		for(String functionName : functionlist.keySet()) {
 			
@@ -549,6 +815,7 @@ public class ServletQuery extends HttpServlet
 				//functionObject.addProperty("description_detailed_html", current.descriptionHTML());
 				functionObject.addProperty("syntax", current.descriptionSyntax());
 				functionObject.addProperty("syntax_details_and_parameters_html", current.descriptionSyntaxDetailsHTML());
+				functionObject.addProperty("supports_aggregation", current.supportsAggregation());
 				functionObject.add("tags", CFW.JSON.toJSONElement(current.getTags()) );
 				
 				JsonArray examplesArray = new JsonArray();
@@ -569,38 +836,5 @@ public class ServletQuery extends HttpServlet
 		//-------------------------
 		// Return Result 
 		return result;
-	}
-	
-	/******************************************************************
-	 *
-	 ******************************************************************/
-	private void createEditForm(JSONResponse json, String ID) {
-
-//		Person Person = PersonDBMethods.selectByID(Integer.parseInt(ID));
-//		
-//		if(Person != null) {
-//			
-//			CFWForm editPersonForm = Person.toForm("cfwEditPersonForm"+ID, "Update Person");
-//			
-//			editPersonForm.setFormHandler(new CFWFormHandler() {
-//				
-//				@Override
-//				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
-//					
-//					if(origin.mapRequestParameters(request)) {
-//						
-//						if(PersonDBMethods.update((Person)origin)) {
-//							CFW.Messages.addSuccessMessage("Updated!");
-//						}
-//							
-//					}
-//					
-//				}
-//			});
-//			
-//			editPersonForm.appendToPayload(json);
-//			json.setSuccess(true);	
-//		}
-
 	}
 }
