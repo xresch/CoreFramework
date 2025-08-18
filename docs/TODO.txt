@@ -170,11 +170,12 @@ DONE
 ====
 
 ------- current -------
-BUGFIX: Query resultcompare - fixed issue where id-columns where displayed as null values
-BUGFIX: Query NOT-operator - fixed issue wher the NOT operator caused strange filtering results
-BUGFIX: Number separators are properly shown for negative numbers
+- BUGFIX: Query resultcompare - fixed issue where id-columns where displayed as null values
+- BUGFIX: Query NOT-operator - fixed issue wher the NOT operator caused strange filtering results
+- BUGFIX: Number separators are properly shown for negative numbers
 - Manual: Added links to existing youtube tutorials
-- Query: Command formatfield: added whitespace formatter
+- Query: Command formatfield - added whitespace formatter
+- Query: Command resultcompare - keeps column order even if first row contains null values
 
 - Query: Added Functions:
 	- arrayDedup

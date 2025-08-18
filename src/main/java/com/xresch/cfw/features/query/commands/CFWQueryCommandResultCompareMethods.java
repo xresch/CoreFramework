@@ -576,6 +576,11 @@ public class CFWQueryCommandResultCompareMethods {
 					resultObject.add(fieldname+labelYoung, youngValue);
 					
 					//---------------------------------
+					// Ensure Column Order
+					if(compareNumbersAbsolute) { resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE); }
+					if(compareNumbersDiffPercent) { resultObject.add(fieldname+labelDiffPercent, JsonNull.INSTANCE); }
+					
+					//---------------------------------
 					// Check Nulls
 					String nullLabel = (fieldHasPercentage.contains(fieldname))	? labelDiffPercent : labelDiff;
 					if( (youngValue == null || youngValue.isJsonNull())
@@ -593,7 +598,7 @@ public class CFWQueryCommandResultCompareMethods {
 						resultObject.addProperty(fieldname+nullLabel, false);
 						continue;
 					}
-					
+										
 					//---------------------------------
 					// Check Primitives
 					if(youngValue.isJsonPrimitive() && oldValue.isJsonPrimitive()) {
