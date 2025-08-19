@@ -684,7 +684,7 @@ function cfw_format_numberSeparators(value, separator, eachDigit) {
 	if(value == null) return '';
 	if(isNaN(value)) return value;
 	if(value == true || value == false) return value;
-	
+
 	var separator = (separator == null) ?  "'" : separator;
 	var eachDigit = (eachDigit == null) ?  3 : eachDigit;
 	
@@ -716,6 +716,9 @@ function cfw_format_numberSeparators(value, separator, eachDigit) {
 			resultString = separator + resultString;
 		}
 	}
+	
+		
+	
 	
 	return resultString;
 }

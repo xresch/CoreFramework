@@ -76,6 +76,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 			+"<li><b>zoomNumber:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</li>"	
 			+"<li><b>sizes:&nbsp;</b>(Optional) An array of page sizes.</li>"	
 			+"<li><b>defaultsize:&nbsp;</b>(Optional) The default selected page size.</li>"	
+			+"<li><b>sticky:&nbsp;</b>(Optional) Makes the headers of tables stick when scrolling and keep them visible.</li>"	
 			+"<li><b>download:&nbsp;</b>(Optional) Toggle the data download button in the menu. This button does not work with 'menu=button' (Default:false).</li>"	
 			+"<li><b>store:&nbsp;</b>(Optional) Toggle the data store button in the menu. This button does not work with 'menu=button' (Default:false).</li>"	
 			+"<li><b>settings:&nbsp;</b>(Optional) Json Object containing more options for the selected display type.</li>";

@@ -1200,11 +1200,10 @@ function cfw_ui_storeJsonDataModal_createNameSuggestionsRecursively(nameSuggesti
 		}
 		
 		try{
-			if(typeof paramValue == "string"
-			&& ( paramValue.startsWith("{") || paramValue.startsWith("[")) ){
+			if(typeof paramValue == "string" && ( paramValue.startsWith("{") || paramValue.startsWith("[") ) ){
 				paramValue = JSON.parse(paramValue);
 			}
-		}catch{ /* do nothing */ }
+		}catch(e){ /* do nothing */ }
 		
 		if(Array.isArray(paramValue)){
 			continue;

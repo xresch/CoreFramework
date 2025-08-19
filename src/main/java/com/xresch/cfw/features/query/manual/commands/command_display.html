@@ -1,12 +1,22 @@
 
 <p><b>Video Tutorial:&nbsp;</b> <a target="newtab" href="https://www.youtube.com/watch?v=tAkI2MJoqB8&pp=0gcJCa0JAYcqIYzv"><i class="fab fa-youtube"></i>&nbsp;Youtube</a> </p>
 		
-<p>This command lets you change how the data is rendered. With the 'as' parameter you can choose the renderer that will be used to display the data.</p>
+<p>This command lets you change how the data is rendered. By default data is rendered as a table. 
+With the 'as' parameter you can choose the renderer that will be used to display the data.</p>
+
+
 
 <p>The following query creates 42 random records and displays them as panels. </p>
-
 <pre><code class="language-cfwquery">source random records = 42
 | display as=panels</code></pre>
+
+
+
+<p>The  following will render the data as a table, and make the header of the table stick when scrolling and keep it visble. </p>
+<pre><code class="language-cfwquery">| source random 
+| display sticky = true</code></pre>
+
+
 
 <p>Further you can set the fields that should be visible by providing an array of fieldnames. This might not work for all renderers, for example the JSON display will always show all fields. </p>
 <pre><code class="language-cfwquery">| source random
@@ -15,9 +25,9 @@
 | display as=table  visiblefields=[FIRSTNAME, LASTNAME, "Last Login", url]</code></pre>
 
 
+
 <p>For renderers like panels, cards and tiles, you can set the fields used for the title by setting the parameters titlefields and titleformat.
 If titleformat is not set, the field values are joined with a blank as a separator: </p>
-
 <pre><code class="language-cfwquery">| source random
 | rename URL = url
 | rename LAST_LOGIN = "Last Login"
@@ -28,9 +38,9 @@ If titleformat is not set, the field values are joined with a blank as a separat
     
     
 
+
 <p>The statusmap renderer will only properly display when the menu is turned off using menu=false.
 The following example does that: </p>
-
 <pre><code class="language-cfwquery">| source random records=50
 | remove _source
 | formatrecord 
@@ -41,9 +51,9 @@ The following example does that: </p>
 | display as=statusmap menu=false</code></pre>  
     
 
+
 <p>To get rid of visible fields, define an empty array(mote: null is default and makes all fields visible).
 This is for example useful when displaying as tiles, when you only want to show a single value: </p>
-
 <pre><code class="language-cfwquery">| source random records=100
 | remove _source
 | formatrecord 
@@ -60,9 +70,9 @@ This is for example useful when displaying as tiles, when you only want to show 
 	visiblefields=[]</code></pre>  
 	
 	
+
 <p>You can display a button in the menu to give the option to download the data in either CSV, JSON or XML format.
 You can also display a store button that allows the user to store their data in the File Manager: </p>
-
 <pre><code class="language-cfwquery">| source random
 | display as=table
 	download = true

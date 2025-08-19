@@ -1300,6 +1300,10 @@ label {
     background: inherit;
 }
 
+.cfwRecordContainer .cfw-sticky-th { /* For example inside a table cell*/
+	top: 0px;
+}
+
 /**************************************************************
  * Scrollbar
  **************************************************************/

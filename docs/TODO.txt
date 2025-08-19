@@ -175,6 +175,7 @@ DONE
 - BUGFIX: Number separators are properly shown for negative numbers
 - Manual: Added links to existing youtube tutorials
 - UI: Timefram Pickers are now showing a time range instead of "Custom Time" if such time is selected
+- Query: Command display - added option "sticky" to make table headers stick when scrolling.
 - Query: Command formatfield - added whitespace formatter
 - Query: Command resultcompare - keeps column order even if first row contains null values
 

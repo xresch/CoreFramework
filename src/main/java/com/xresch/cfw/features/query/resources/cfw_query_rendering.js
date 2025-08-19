@@ -697,15 +697,22 @@ function cfw_query_formatPostfix(span, value, postfix){
  ******************************************************************************/
 function cfw_query_formatSeparators(span, value, separator, eachDigit ){
 	
+	//-----------------------------
+	// Checks
+	if(value == null){
+		return cfw_query_formatShowNulls(span, value, true);
+	}
+	
+	//-----------------------------
 	// set defaults
 	if(separator == null )	{ separator = "'"; }
 	if(eachDigit == null )	{ eachDigit = 3; }
 	
 	span.addClass('text-right');
 	
-		var valueToProcess = value;
+	let valueToProcess = value;
 	
-	var stringValue = span.text();
+	let stringValue = span.text();
 	if(stringValue != null && !isNaN(stringValue)){
 		valueToProcess = parseFloat(stringValue);
 	}
@@ -1211,12 +1218,20 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	if(queryResult.displaySettings.textstylefield != undefined){
 		options.textstylefield = queryResult.displaySettings.textstylefield;
 	}
+	
 	//-----------------------------------
 	// Zoom
 	if(queryResult.displaySettings.zoom != null){
 		let zoomString = ""+queryResult.displaySettings.zoom;
 		if(!zoomString.endsWith("%")){ zoomString += "%";}
 		targetDiv.css('zoom', zoomString);
+	}
+	
+	//-----------------------------------
+	// Sticky
+	let isSticky = false
+	if(queryResult.displaySettings.sticky != null){
+		isSticky = queryResult.displaySettings.sticky;
 	}
 	
 	//-----------------------------------
@@ -1255,7 +1270,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		 	customizers: options.customizers,
 
 			rendererSettings: {
-				table: { filterable: false, narrow: true},
+				table: { filterable: false, narrow: true, stickyheader: isSticky},
 				panels: { narrow: true},
 				properties: { narrow: true},
 				cards: { narrow: true},
