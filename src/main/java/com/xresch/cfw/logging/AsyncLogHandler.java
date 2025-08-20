@@ -21,14 +21,29 @@ public class AsyncLogHandler extends FileHandler implements Runnable {
 	private static Thread worker;
 	private static int intervalMillis = 50;
 
+	// Workaround to make it possible to flush logs on shutdown
+	private static AsyncLogHandler INSTANCE = null;
+
+			
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public AsyncLogHandler() throws SecurityException, IOException {
 		super();
 		this.setFormatter(new LogFormatterJSON());
 		worker = new Thread(this);
 
 		worker.start();
+		
+		if(INSTANCE == null) {
+			INSTANCE = this;
+		}
 	}
+	
 
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	@Override
 	public synchronized void publish(LogRecord record) {
 		try {
@@ -38,29 +53,54 @@ public class AsyncLogHandler extends FileHandler implements Runnable {
 			Thread.currentThread().interrupt();
 		}
 	}
-
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void run() {
 
 		while (runWorker) {
-
-			if (logQueue.isEmpty()) {
-
-				try {
-					Thread.sleep(intervalMillis);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					Thread.currentThread().interrupt();
-				}
-
-			} else {
-				ArrayList<LogRecord> records = new ArrayList<LogRecord>();
-				logQueue.drainTo(records);
-
-				for (LogRecord rec : records) {
-					super.publish(rec);
-				}
-			}
+			writeLogs();
 		}
 
+	}
+	
+	/***********************************************************************
+	 * Flush the current logs to make sure they end up in the log.
+	 * Used on application shutdown.
+	 ***********************************************************************/
+	public static void flushLogs() {
+
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			Thread.currentThread().interrupt();
+		}
+		
+		INSTANCE.writeLogs();
+	}
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	public void writeLogs() {
+
+		if (logQueue.isEmpty()) {
+
+			try {
+				Thread.sleep(intervalMillis);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				Thread.currentThread().interrupt();
+			}
+
+		} else {
+			ArrayList<LogRecord> records = new ArrayList<LogRecord>();
+			logQueue.drainTo(records);
+
+			for (LogRecord rec : records) {
+				super.publish(rec);
+			}
+		}
 	}
 }

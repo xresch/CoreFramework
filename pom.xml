@@ -28,9 +28,9 @@
 		<releaseName>CFWServer_v${project.version}</releaseName> <!-- making versioned folder for zipping -->
 		<zipFolder>${basedir}/target/${releaseName}</zipFolder>
 		
-		<skipMakeFolder>false</skipMakeFolder>
-		<skipJavadoc>true</skipJavadoc>
-		<skipSigning>true</skipSigning>
+		<skipMakeFolder>true</skipMakeFolder>
+		<skipJavadoc>false</skipJavadoc>
+		<skipSigning>false</skipSigning>
 		<skipTests>true</skipTests>
 		<skipLicense>true</skipLicense>
 	</properties>

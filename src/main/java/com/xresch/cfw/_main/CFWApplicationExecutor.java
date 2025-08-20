@@ -52,6 +52,7 @@ import com.xresch.cfw.features.usermgmt.SessionTracker;
 import com.xresch.cfw.handler.HTTPSRedirectHandler;
 import com.xresch.cfw.handler.RedirectDefaultPageHandler;
 import com.xresch.cfw.handler.RequestHandler;
+import com.xresch.cfw.logging.AsyncLogHandler;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.spi.CFWAppFeature;
 import com.xresch.cfw.spi.CFWAppInterface;
@@ -660,6 +661,7 @@ public class CFWApplicationExecutor {
 		//----------------------------------
 		// Shutdown Database
 		// shutdown first to reduce likelihood of DB file corruption
+		 
 		try {
 		    new CFWLog(logger).info("Stop Database Server");
 			CFW.DB.stopDBServer();
@@ -691,6 +693,7 @@ public class CFWApplicationExecutor {
 			new CFWLog(logger)
 				.severe("Error while stopping application features: "+e.getMessage(), e);
 		}
+		
 		//----------------------------------
 		// Stop Application
 		try {
@@ -701,8 +704,12 @@ public class CFWApplicationExecutor {
 				.severe("Error while stopping application: "+e.getMessage(), e);
 		}
 			
-		new CFWLog(logger).info("System.exit(0)");
-		System.exit(0);
+		// that doesn't seem to make a difference, keeping it here  because it was already implemented and
+		// it might suddenly work by magic
+		AsyncLogHandler.flushLogs();
+		
+		// !!! IMPORTANT !!! Following causes an endless loop, so don't do it!
+		// System.exit(0);
        
 	}
 

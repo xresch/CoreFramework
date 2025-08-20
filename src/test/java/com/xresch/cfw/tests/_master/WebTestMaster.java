@@ -116,6 +116,8 @@ public class WebTestMaster {
 	public static void stopDefaultApplication() throws Exception {
 		System.out.println("========== ALERTS =========");
 		System.out.println(CFW.Context.Request.getAlertsAsJSONArray());
+		
+		System.exit(0);
 
 	}
 }
