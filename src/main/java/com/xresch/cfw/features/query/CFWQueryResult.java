@@ -45,6 +45,32 @@ public class CFWQueryResult {
 	/****************************************************
 	 * 
 	 ****************************************************/
+	private CFWQueryResult(CFWQueryContext context, JsonObject resultObject) {
+		
+		//-------------------------------------
+		// Call Constructor
+		this(context);
+		
+		//-------------------------------------
+		// Sanitize
+		if( ! resultObject.has(RESULTFIELDS_RESULTS)
+		||  ! resultObject.get(RESULTFIELDS_RESULTS).isJsonArray()) {
+			return;
+		}
+		
+		JsonArray recordsArray = resultObject.get(RESULTFIELDS_RESULTS).getAsJsonArray();
+		
+		for(JsonElement record : recordsArray) {
+			if(record.isJsonObject()) {
+				enhancedRecords.add(new EnhancedJsonObject( record.getAsJsonObject() ));
+			}
+		}
+		
+	}
+	
+	/****************************************************
+	 * 
+	 ****************************************************/
 	public JsonObject toJson() {
 		
 		JsonArray array = new JsonArray();
@@ -57,6 +83,16 @@ public class CFWQueryResult {
 		this.updateResultCount();
 		
 		return object;
+	}
+	
+	/****************************************************
+	 * Clones this result and returns the clone.
+	 ****************************************************/
+	public CFWQueryResult clone() {
+		JsonObject json = this.toJson();
+		JsonObject clone =json.deepCopy();
+		context.createClone(true);
+		return new CFWQueryResult(context, clone);
 	}
 	
 	/****************************************************

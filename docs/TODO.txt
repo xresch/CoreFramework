@@ -177,6 +177,7 @@ DONE
 - UI: Timeframe Pickers are now showing a time range instead of "Custom Time" if such time is selected
 - Charts: Improved display of charts types: pie, doughnut, radar, polar
 - Dashboard Widget: New Standard Settings "Button Popup" and "Button Label" to display any widget as a button. Widget content will be loaded in a popup window on button click.
+- Query: Command globals & meta - multidisplay can display columns with variable width. See manual of the commands for example queries.
 - Query: Command display - added option "sticky" to make table headers stick when scrolling.
 - Query: Command formatfield - added whitespace formatter
 - Query: Command resultcompare - keeps column order even if first row contains null values

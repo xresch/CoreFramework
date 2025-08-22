@@ -41,7 +41,7 @@ public class CFWQueryCommandResultCopy extends CFWQueryCommand {
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandResultCopy.class.getName());
 	
 	CFWQuerySource source = null;
-	ArrayList<String> resultnames = new ArrayList<>();
+	HashSet<String> resultnames = new HashSet<>();
 		
 	HashSet<String> encounters = new HashSet<>();
 	
@@ -134,7 +134,9 @@ public class CFWQueryCommandResultCopy extends CFWQueryCommand {
 		for(QueryPart part : parts) {
 			
 			if(part instanceof QueryPartAssignment) {
-				// unsupported
+				// just take whatever assignment comes in, support name = bla
+				QueryPartAssignment assignment = (QueryPartAssignment)part;
+				resultnames.add(assignment.getRightSide().determineValue(null).getAsString() );
 			}else if(part instanceof QueryPartArray) {
 				QueryPartArray array = (QueryPartArray)part;
 
@@ -199,14 +201,9 @@ public class CFWQueryCommandResultCopy extends CFWQueryCommand {
 				
 				//----------------------------
 				// Iterate Results
-				current.getRecords().forEach(new Consumer<EnhancedJsonObject>() {
-
-					@Override
-					public void accept(EnhancedJsonObject e) {
-						
-						outQueue.add(e.clone());
-					}
-				});
+				for(EnhancedJsonObject recordToCopy : current.getRecords()) {
+					outQueue.add(recordToCopy.clone());
+				}
 				
 			}
 			

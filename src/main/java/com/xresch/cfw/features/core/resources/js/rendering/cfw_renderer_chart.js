@@ -987,7 +987,7 @@ function cfw_renderer_chart_customTooltip(context) {
     		// The ultimate Value handling
     		let value = tooltipModel.dataPoints[i].parsed.y;
     		if(value == undefined){ // needed e.g. for Pie Charts
-    			console.log(tooltipModel.dataPoints[i])
+    			
     			if(tooltipModel.dataPoints[i].parsed.r == undefined){
 					value = tooltipModel.dataPoints[i].parsed;
 				}else{
