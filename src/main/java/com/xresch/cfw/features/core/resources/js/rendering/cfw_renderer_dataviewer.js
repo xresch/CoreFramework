@@ -501,7 +501,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	
 	//--------------------------------------
 	// Display As
-	console.log("X: "+dataviewerSettings.store);
+
 	if(dataviewerSettings.store){
 		
 		html += 

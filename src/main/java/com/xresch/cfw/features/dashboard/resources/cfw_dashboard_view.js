@@ -253,9 +253,6 @@ function cfw_parameter_fireParamWidgetUpdate(paramButton){
 	var widgetElement = $('.grid-stack-item[data-id='+widgetID+']');
 	var paramForms = $('.cfw-parameter-widget-parent form');
 	
-	console.log(paramButton)
-	console.log(widgetID)
-	console.log(widgetElement)
 	//-----------------------------------------------
 	// Create merged Params of All Parameter Widgets
 	var mergedParams = {}; 
@@ -1446,7 +1443,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 					widgetDefinition.createWidgetInstance(widgetCloneParameterized, finalParams,
 						function(widgetAdjustedByWidgetDef, widgetContent){
 							
-							let wrapperDiv = $('<div class="vh-50 minvh-50">');
+							let wrapperDiv = $('<div class="vh-80 minvh-80">');
 							
 							wrapperDiv.append( $(widgetContent) );
 							CFW.ui.showModalLarge(widgetCloneParameterized.TITLE, wrapperDiv, null);

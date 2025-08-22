@@ -1135,8 +1135,6 @@ function cfw_ui_storeJsonDataModal(jsonArray, sourceElementOrID, nameSuggestions
 	_.remove(nameSuggestionsArray, function(item) {
 		  return CFW.utils.isNullOrEmpty(item);
 	});
-		
-	console.log(nameSuggestionsArray);
 	
 	//==============================================
 	// create name suggestions Buttons

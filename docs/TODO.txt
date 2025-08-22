@@ -174,7 +174,8 @@ DONE
 - BUGFIX: Query NOT-operator - fixed issue wher the NOT operator caused strange filtering results
 - BUGFIX: Number separators are properly shown for negative numbers
 - Manual: Added links to existing youtube tutorials
-- UI: Timefram Pickers are now showing a time range instead of "Custom Time" if such time is selected
+- UI: Timeframe Pickers are now showing a time range instead of "Custom Time" if such time is selected
+- Charts: Improved display of charts types: pie, doughnut, radar, polar
 - Dashboard Widget: New Standard Settings "Button Popup" and "Button Label" to display any widget as a button. Widget content will be loaded in a popup window on button click.
 - Query: Command display - added option "sticky" to make table headers stick when scrolling.
 - Query: Command formatfield - added whitespace formatter

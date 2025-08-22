@@ -1,5 +1,6 @@
 
 const CFW_RENDER_NAME_CHART = 'chart';
+const CFW_AGGREGATED_CHARTS = ['radar', 'polarArea', 'pie', 'doughnut'];
 
 /******************************************************************
  * 
@@ -204,6 +205,10 @@ function cfw_renderer_chart(renderDef) {
 		stacked: false,
 		// show or hide the legend
 		showlegend: true, 
+		// position of the legend
+		legendpos: "auto", 
+		// alignment of the legend: "start" | "center" | "end"
+		legendalign: "center", 
 		// show or hide the axes, useful to create sparkline like charts
 		showaxes: true,
 		// if true, connect lines if there is a gap in the data 
@@ -291,7 +296,7 @@ function cfw_renderer_chart(renderDef) {
 	settings.indexAxis = 'x';
 	settings.isLabelBased = false;
 	settings.tooltipmode = 'index';
-
+	
 	switch(settings.charttype.toLowerCase()){
 		case 'sparkarea':
 			settings.showaxes = false;
@@ -350,15 +355,26 @@ function cfw_renderer_chart(renderDef) {
 			break;
 	}
 	
-	settings.isCategoryChart = ['radar', 'polarArea', 'pie', 'doughnut'].includes(settings.charttype);
+	settings.isCategoryChart = CFW_AGGREGATED_CHARTS.includes(settings.charttype);
 	
 	if(settings.isCategoryChart){
+		
 		settings.showaxes = false;
+		settings.tooltipmode = 'nearest';
+		
+		if(settings.legendpos == "auto"){
+			settings.legendpos = "right";
+		}
+	}
+	
+	if(settings.legendpos == "auto"){
+		settings.legendpos = "bottom";
 	}
 	//========================================
 	// Fix Multichart Endless Size Bug
 	if(settings.multichart == true 
-	&& settings.height.endsWith('%') ){
+	&& settings.height.endsWith('%')
+	&& !settings.isCategoryChart ){
 		settings.height = "200px";
 	}
 		
@@ -468,8 +484,9 @@ function cfw_renderer_chart(renderDef) {
 				case "count":	value = current.cfwCount; break;
 				default:		value = current.cfwSum; break;
 			}
-
+			
 			data.labels.push(label);
+			// only add the first dataset, then the values of the other dataset are added to the first one
 			if(data.datasets.length == 0){
 				data.datasets.push(current);
 				data.datasets[0].data = [];
@@ -787,6 +804,8 @@ function cfw_renderer_chart_createChartOptions(settings) {
 			plugins:  {
 				legend: {
 		    		display: settings.showlegend,
+		    		position: settings.legendpos,
+		    		align: settings.legendalign,
 		    	},
 		    	// doesn't work, seems not to be part of chartjs but of QuickChart
 	    	    //tickFormat: { notation: 'compact' },
@@ -963,9 +982,22 @@ function cfw_renderer_chart_customTooltip(context) {
         bodyLines.forEach(function(body, i) {
             let colors = tooltipModel.labelColors[i];
             let label = tooltipModel.dataPoints[i].dataset.label;
-    		let value = tooltipModel.dataPoints[i].parsed.y
+    		
+    		//-----------------------------
+    		// The ultimate Value handling
+    		let value = tooltipModel.dataPoints[i].parsed.y;
+    		if(value == undefined){ // needed e.g. for Pie Charts
+    			console.log(tooltipModel.dataPoints[i])
+    			if(tooltipModel.dataPoints[i].parsed.r == undefined){
+					value = tooltipModel.dataPoints[i].parsed;
+				}else{
+					value = tooltipModel.dataPoints[i].parsed.r;
+				}
+			}
 
-            var div = '<div class="cfw-color-box" '
+    		//-----------------------------
+    		// Create ze Color Box
+            var colorBox = '<div class="cfw-color-box" '
             			  +'style=" background:' + colors.backgroundColor
             					+'; border-color:' + colors.borderColor
             				   + '; border-width: 2px;">&nbsp;</div>';
@@ -994,7 +1026,7 @@ function cfw_renderer_chart_customTooltip(context) {
             
             //---------------------------------
             // Add Body
-            innerHtml += '<tr><td>' + div + finalBody + '</td></tr>';
+            innerHtml += '<tr><td>' + colorBox + finalBody + '</td></tr>';
         });
         innerHtml += '</tbody>';
 
