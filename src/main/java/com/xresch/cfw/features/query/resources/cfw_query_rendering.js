@@ -1125,38 +1125,91 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 	}
 	
 	//-----------------------------------
-	// Handle MultiDisplay
-	var multidisplayColumns=1;
+	// Handle Multi Display
+	let  multidisplayColumns = 1;
 	
 	if(queryResultsPayload[0].globals.multidisplay != null){
 		multidisplayColumns = queryResultsPayload[0].globals.multidisplay;
 	}
 	
-	if(multidisplayColumns < 1){ multidisplayColumns = 1; }
-	if(multidisplayColumns > 6){ multidisplayColumns = 6; }
+	//---------------------------------
+	// Get Percent per column
+	let metaBased = false;
+	let colCount = 1;
+	let colStyles = [];
+	if(typeof multidisplayColumns == "number"){
+		
+		if(multidisplayColumns < 1){ multidisplayColumns = 1; }
+		if(multidisplayColumns > 6){ multidisplayColumns = 6; }
+		
+		for(let i = 0; i < multidisplayColumns; i++){
+			colStyles.push("width: "+Math.floor(100 / multidisplayColumns)+"% !important;");
+		}
+				
+	}if(Array.isArray(multidisplayColumns) ){
+		
+		let total = _.sum(multidisplayColumns);
+		for(let i = 0; i < multidisplayColumns.length; i++){
+			let factor = multidisplayColumns[i];
+			let ratioPercent = Math.floor(100 * (factor / total) );
+			colStyles.push("width: "+ratioPercent+"% !important;");
+		}
+		
+	}if(multidisplayColumns == true || multidisplayColumns == "meta" ){
+		metaBased = true;
+	}
 	
-	//get percent column
-	var colClass = "col-"+Math.floor(100/multidisplayColumns)+"pc";
+	colCount = colStyles.length;
 	
 	//-----------------------------------
-	// Iterate all Query results
+	// Prepare first row
 	var maxheightClass = (queryResultsPayload.length == 1) ? "h-100 mh-100" : "" ; // needed to prevent overflow (e.g. charts)
 	var currentRow = $('<div class="row m-0 flex-grow-1 '+maxheightClass+'">');
 	resultTarget.append(currentRow);
-	
-	for(var i = 0; i < queryResultsPayload.length; i++){
-		var currentColumn = $('<div class="col-percent mh-100 '+colClass+'">');
 		
-		var currentResults = queryResultsPayload[i];
-			
-		cfw_query_renderQueryResult(currentColumn, currentResults);
-		currentRow.append(currentColumn);
-		
-		if((i+1) % multidisplayColumns == 0 
-		&& i < queryResultsPayload.length-1 ){
+	//-----------------------------------
+	// Iterate all Query results
+	if( ! metaBased ){
+		for(var i = 0; i < queryResultsPayload.length; i++){
+			let currentResults = queryResultsPayload[i];
 
-			currentRow = $('<div class="row m-0 flex-grow-1">');
-			resultTarget.append(currentRow);
+			let colStyleIndex = Math.min( (i % colCount), colCount-1);
+			let currentColumn = $('<div class="col-percent mh-100" style="'+colStyles[colStyleIndex]+'">');
+			
+			cfw_query_renderQueryResult(currentColumn, currentResults);
+			currentRow.append(currentColumn);
+			
+			if((i+1) % colCount == 0 
+			&& i < queryResultsPayload.length-1 ){
+	
+				currentRow = $('<div class="row m-0 flex-grow-1">');
+				resultTarget.append(currentRow);
+			}
+		}
+	}else{
+		
+		let currentRowWidth = 0;
+		for(var i = 0; i < queryResultsPayload.length; i++){
+			
+			let currentResults = queryResultsPayload[i];
+			let percentWidth = currentResults.metadata.multipercent;
+			if( CFW.utils.isNullOrEmpty(percentWidth) ){ percentWidth = 100; }
+			
+			if(currentRowWidth + percentWidth <= 100){
+				currentRowWidth += percentWidth;
+			}
+			else if(i < queryResultsPayload.length-1 ){
+				currentRowWidth = percentWidth; // reset 
+				currentRow = $('<div class="row m-0 flex-grow-1">');
+				resultTarget.append(currentRow);
+			}
+			
+			var currentColumn = $('<div class="col-percent mh-100" style="width: '+ percentWidth +'% !important;">');
+			
+			cfw_query_renderQueryResult(currentColumn, currentResults);
+			currentRow.append(currentColumn);
+			
+			
 		}
 	}
 }

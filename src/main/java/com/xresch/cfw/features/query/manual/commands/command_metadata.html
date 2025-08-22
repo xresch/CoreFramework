@@ -8,10 +8,11 @@
 	<li><b>titleduration:&nbsp;</b> When set to true, the title will also contain the queries execution duration. (Default: true)</li>
 	<li><b>description:&nbsp;</b> Will be used as a description on the user interface.</li>
 	<li><b>template:&nbsp;</b> Set to true if query is a template to be used with mimic command. Query will be cancelled at the metadata command. Any results caused by the query will be removed.</li>
+	<li><b>multipercent:&nbsp;</b> Set to a percentage value to define the width of your result on a row. See below for an example.</li>
 </ul>
 
+<h2>Basic Example </h2>
 <p>Following code has two queries and adds the properties name and description to each query. The name property will also be used in the user interface for the title of the query. </p>
-
 <pre><code class="language-cfwquery">| metadata 
 	name="Random Records" 
 	title=true
@@ -24,3 +25,38 @@
 	title=true
 	description="just another example query"
 | source random</code></pre>
+
+
+
+<h2>Multidisplay: Custom Rows with Custom Columns </h2>
+<p>Use &quot;| globals multidisplay = true&quot; and use &quot;| meta multipercent = {percent}&quot; to define a custom amount of columns every row.
+Each row get's filled up until it's width get's about 100%. Here is an example that makes rows with 1, 2, 3, and 4 charts:</p>
+
+<pre><code class="language-cfwquery">| paramdefaults
+	dataAndChart = `
+		| source random type="stats" seriesCount=1 
+		| chart  
+			type="area" 
+			x="TIME" 
+			y=[MIN, AVG, P90, MAX] 
+			height="300px" 
+			tension = 0.4
+		`
+| globals multidisplay = true # set th
+
+# 1 row 1 chart 100%
+| meta multipercent = 100 $dataAndChart$ # insert the code above like this because we are lazy
+# 1 row 2 charts 50%
+; | meta multipercent = 50 $dataAndChart$
+; | meta multipercent = 50 $dataAndChart$
+
+# 1 row 3 charts 33%
+; | meta multipercent = 33 $dataAndChart$
+; | meta multipercent = 33 $dataAndChart$
+; | meta multipercent = 33 $dataAndChart$
+
+# 1 row 4 charts various widths
+; | meta multipercent = 10 $dataAndChart$
+; | meta multipercent = 20 $dataAndChart$
+; | meta multipercent = 30 $dataAndChart$
+; | meta multipercent = 40 $dataAndChart$</code></pre>
