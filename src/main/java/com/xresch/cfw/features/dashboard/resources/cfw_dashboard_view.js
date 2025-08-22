@@ -1312,12 +1312,12 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
 // content: CFW.ui.createLoaderHTML()
 // };
 	
-	var placeholderWidget = _.cloneDeep(widgetObject);
+	let placeholderWidget = _.cloneDeep(widgetObject);
 	placeholderWidget.widgetBody = CFW.ui.createLoaderHTML();
 
-	var widgetInstance = cfw_dashboard_widget_createHTMLElement(placeholderWidget);
+	let widgetInstance = cfw_dashboard_widget_createHTMLElement(placeholderWidget);
 
-	var grid = cfw_dashboard_getGrid();
+	let grid = cfw_dashboard_getGrid();
 
     grid.addWidget($(widgetInstance).get(0),
     		{
@@ -1389,12 +1389,24 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 			var placeholderWidget = $('#'+originalWidgetObject.guid);
 			
 			// ---------------------------------------
-			// Replica Position
+			// Update new Position
+			if(doAutoposition){
+				originalWidgetObject.X = placeholderWidget.attr("gs-x");
+				originalWidgetObject.Y = placeholderWidget.attr("gs-y");
+				
+				placeholderWidget.data("widgetObject", originalWidgetObject); // must be done to avoid overrides
+				
+				cfw_dashboard_widget_save_state(originalWidgetObject, false, true);
+			}
+				    
+			// ---------------------------------------
+			// Replica  Position
 			// Use the autopositioning from the placeholder
 			// Else positioning will not work when using "Widget Menu >> Copy Replica"
 			widgetCloneParameterized.X = placeholderWidget.attr("gs-x");
 			widgetCloneParameterized.Y = placeholderWidget.attr("gs-y");
 			
+
 			// ---------------------------------------
 			// Handle Widget Pause
 			if(widgetCloneParameterized.PAUSE == true){
@@ -1435,7 +1447,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 						function(widgetAdjustedByWidgetDef, widgetContent){
 							
 							let wrapperDiv = $('<div class="vh-50 minvh-50">');
-							console.log(widgetContent)
+							
 							wrapperDiv.append( $(widgetContent) );
 							CFW.ui.showModalLarge(widgetCloneParameterized.TITLE, wrapperDiv, null);
 							
@@ -1458,7 +1470,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 			// Create Instance by Widget Definition
 			widgetDefinition.createWidgetInstance(widgetCloneParameterized, finalParams,
 				function(widgetAdjustedByWidgetDef, widgetContent){
-				
+					
 					// ---------------------------------------
 					// Remove Placeholder
 					cfw_dashboard_widget_removeFromGrid(placeholderWidget);
