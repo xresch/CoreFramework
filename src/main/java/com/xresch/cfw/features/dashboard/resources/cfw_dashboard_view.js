@@ -1396,22 +1396,61 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 			widgetCloneParameterized.Y = placeholderWidget.attr("gs-y");
 			
 			// ---------------------------------------
-			// Handle Parameter Widget Pause, Load & Manual Load
+			// Handle Widget Pause
 			if(widgetCloneParameterized.PAUSE == true){
 				placeholderWidget.find('.cfw-dashboard-widget-body')
 					.html('<span class=" cfw-centered" title="Widget Paused"><i class="fas fa-lg fa-pause-circle" ></i></span>');
 				return;
 			}
 			
+			// ---------------------------------------
+			// Handle Parameter Load
 			if(!manualLoad && widgetCloneParameterized.PARAM_WIDGET_LOAD == true){
 				placeholderWidget.find('.cfw-dashboard-widget-body')
 					.html('&nbsp;');
 				return;
 			}
 			
+			// ---------------------------------------
+			// Handle Manual Load
 			if(!manualLoad && widgetCloneParameterized.MANUAL_LOAD == true){
 				placeholderWidget.find('.cfw-dashboard-widget-body')
 					.html('<button class="btn btn-sm btn-primary cfw-centered" onclick="cfw_dashboard_widget_rerender(\''+originalWidgetObject.guid+'\', true)">Click to Load</button>');
+				return;
+			}
+			
+			// ---------------------------------------
+			// Handle Button Load
+			if(!manualLoad && widgetCloneParameterized.BUTTON_POPUP == true){
+				
+				let buttonLabel = widgetCloneParameterized.BUTTON_LABEL;
+				if(CFW.utils.isNullOrEmpty(buttonLabel)){
+					buttonLabel = "Load";
+				}
+				
+				let button = $('<button class="btn btn-sm btn-primary wh-100">'+buttonLabel+'</button>');
+				
+				button.click(function(){
+					widgetDefinition.createWidgetInstance(widgetCloneParameterized, finalParams,
+						function(widgetAdjustedByWidgetDef, widgetContent){
+							
+							let wrapperDiv = $('<div class="vh-50 minvh-50">');
+							console.log(widgetContent)
+							wrapperDiv.append( $(widgetContent) );
+							CFW.ui.showModalLarge(widgetCloneParameterized.TITLE, wrapperDiv, null);
+							
+						    if(callback != null){
+						    	callback(originalWidgetObject);
+						    }
+						}
+					)
+				});
+				
+				let widgetBody = placeholderWidget.find('.cfw-dashboard-widget-body');
+				widgetBody.addClass("m-0");
+				widgetBody.html("");
+				widgetBody.append(button);
+				
 				return;
 			}
 			

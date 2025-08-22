@@ -29,7 +29,7 @@
 		<zipFolder>${basedir}/target/${releaseName}</zipFolder>
 		
 		<skipMakeFolder>true</skipMakeFolder>
-		<skipJavadoc>false</skipJavadoc>
+		<skipJavadoc>true</skipJavadoc>
 		<skipSigning>false</skipSigning>
 		<skipTests>true</skipTests>
 		<skipLicense>true</skipLicense>

@@ -60,6 +60,8 @@ public class DashboardWidget extends CFWObject {
 		PAUSE,
 		MANUAL_LOAD,
 		PARAM_WIDGET_LOAD,
+		BUTTON_POPUP,
+		BUTTON_LABEL,
 		JSON_SETTINGS,
 		JSON_TASK_PARAMETERS,
 	}
@@ -218,6 +220,18 @@ public class DashboardWidget extends CFWObject {
 			.setValue(false)
 			;
 	
+	private CFWField<Boolean> buttonPopup = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.BUTTON_POPUP)
+			.setLabel("Button Popup")
+			.setDescription("Displays a button in the widget. When clicked, open a popup and show the widget content inside.")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			.setValue(false)
+			;
+	
+	private CFWField<String> buttonLabel = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.BUTTON_LABEL)
+			.setDescription("The label for the popup button, default is 'Load'.")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			.setValue("")
+			;
 	
 	/** Settings are coming from the fields defined by {@link WidgetDefinition#getSettings()}. Security can be disabled here. */
 	private CFWField<String> settings = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_SETTINGS)
@@ -269,6 +283,8 @@ public class DashboardWidget extends CFWObject {
 				, pause
 				, manualLoad
 				, paramWidgetLoad
+				, buttonPopup
+				, buttonLabel
 				, settings
 				, taskParameters
 			);
