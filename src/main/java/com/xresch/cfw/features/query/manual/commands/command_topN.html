@@ -1,0 +1,21 @@
+
+<p>This command returns only the first N records after sorting them by the value field.
+It also allows to aggregate the remaining records into a single "Others" record</p>
+
+<p>Following an example query that uses the command to create a doughnut chart:</p>
+
+<pre><code class="language-cfwquery">| source random type="series" records = 100 seriesCount=20
+| stats #reduce data points to timegroup
+	by=[ITEM] 
+	"COUNT"	= sum("COUNT")
+| topN
+	n=5
+	value="COUNT"
+	label="ITEM"
+	others = true
+| chart 
+	by = "ITEM"
+	y= "COUNT"
+	type= "doughnut"
+	height = "400px"
+	legendpos = left</code></pre>

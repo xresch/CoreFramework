@@ -269,9 +269,11 @@ function cfw_renderer_chart(renderDef) {
 		detailsposition: "bottom",
 		// if multichart is true, each series is drawn in it's own chart.
 		multichart: false,
+		// define the fields the multicharts should be grouped by. Should be equal or a subset of the by-parameters 
+		multichartby: [],
 		// toogle if multicharts have a title
 		multicharttitle: false,
-		// toogle if multicharts have a title
+		// define the number of columns for multicharts
 		multichartcolumns: 1,
 		// function to execute on double click, will receive an object with the chart settings and chart data: function(chartSettings, chartData)
 		ondblclick: cfw_renderer_chart_defaultOnDoubleClick,
@@ -295,11 +297,21 @@ function cfw_renderer_chart(renderDef) {
 	
 	//========================================
 	// Make yfield an array to support multiple fields
-	if( !Array.isArray(settings.yfield) ){
+	if( ! Array.isArray(settings.yfield) ){
 		if(settings.yfield != null){
 			settings.yfield = [settings.yfield]
 		}else{
 			settings.yfield = [];
+		}
+	};
+	
+	//========================================
+	// Make multichartby an array to support multiple fields
+	if( ! Array.isArray(settings.multichartby) ){
+		if(settings.multichartby != null){
+			settings.multichartby = [settings.multichartby]
+		}else{
+			settings.multichartby = [];
 		}
 	};
 	
@@ -385,6 +397,7 @@ function cfw_renderer_chart(renderDef) {
 	if(settings.legendpos == "auto"){
 		settings.legendpos = "bottom";
 	}
+	
 	//========================================
 	// Fix Multichart Endless Size Bug
 	if(settings.multichart == true 
@@ -476,8 +489,8 @@ function cfw_renderer_chart(renderDef) {
 	//=======================================================
 	// Create ChartJS Data Object
 	//=======================================================
-	var dataArray = [];
-	var data;
+	let dataArray = [];
+	let data;
 
 	if(settings.isCategoryChart){
 		
@@ -571,24 +584,42 @@ function cfw_renderer_chart(renderDef) {
 		
 		//====================================================
 		// Regular Charts
-		data = {datasets: []};
-		dataArray.push(data);
-		
+		dataGroups = {};
+				
 		isFirst = true;
 		for(label in datasets){
+			
+			let currentData = datasets[label];
 			if(!settings.multichart){
-				// Show all datasets in a single chart
-				data.datasets.push(datasets[label]);
+				if(dataGroups["allSeries"] == undefined){ 
+					dataGroups["allSeries"] = {datasets: []};
+					dataArray.push(dataGroups["allSeries"]);
+				}
+				dataGroups["allSeries"].datasets.push(currentData);
 			}else{
 				// Show every dataset in it's own chart
-				data.datasets.push(datasets[label]);
-				if(!isFirst){
-					dataArray.push(data);
-				}else{
-					isFirst = false;
+				let originalData = currentData.originalData[0];
+				let byFields = settings.multichartby;
+
+				//-----------------------
+				// Create GroupID
+				let groupID = "";
+				for(let i in byFields){
+					let fieldname = byFields[i];
+					groupID += originalData[fieldname];
+					
 				}
 				
-				data = {datasets: []};
+				if(groupID == ""){ groupID = label; } // if there is no group, make each series it's own group
+				
+				//-----------------------
+				// Add to Group
+				
+				if(dataGroups[groupID] == undefined){ 
+					dataGroups[groupID] = {datasets: []};
+					dataArray.push(dataGroups[groupID]);
+				}
+				dataGroups[groupID].datasets.push(currentData);
 			}
 		}
 	}
