@@ -117,7 +117,9 @@ public class WebTestMaster {
 		System.out.println("========== ALERTS =========");
 		System.out.println(CFW.Context.Request.getAlertsAsJSONArray());
 		
-		System.exit(0);
+		// Can't do this as the application is started once, but this is executed by test class
+		// JUnit terminates the instance for you
+		//System.exit(0);
 
 	}
 }

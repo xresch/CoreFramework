@@ -43,7 +43,7 @@ import io.prometheus.client.Counter;
  * @license MIT-License
  ************************************************************************************************************/
 public class CFWQueryCommandSource extends CFWQueryCommand {
-	
+
 	public static final String COMMAND_NAME = "source";
 
 	public static final String MESSAGE_LIMIT_REACHED = "One or more sources have reached their fetch limit.";
@@ -538,7 +538,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 							for(JsonElement element : paramEach) {
 								currentEachValue = QueryPartValue.newFromJsonElement(element);
 								// Depreciated, will not work properly if multiple sources use each in the same query
-								source.getParent().getContext().addMetadata("each", currentEachValue);
+								//source.getParent().getContext().addMetadata(CFW_META_SOURCE_EACH, currentEachValue);
 								
 								executeSource(earliestMillis, latestMillis, localQueue);
 							}
