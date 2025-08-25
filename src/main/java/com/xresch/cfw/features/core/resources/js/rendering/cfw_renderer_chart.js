@@ -2,6 +2,16 @@
 const CFW_RENDER_NAME_CHART = 'chart';
 const CFW_AGGREGATED_CHARTS = ['radar', 'polarArea', 'pie', 'doughnut'];
 
+// functions that take min x, max x, and chart object as input
+var CFW_RENDERER_CHART_ZOOM_CALLBACKS = [];
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_chart_registerZoomCallback(callbackFunction){ 
+	CFW_RENDERER_CHART_ZOOM_CALLBACKS.push(callbackFunction);
+}
+
 /******************************************************************
  * 
  ******************************************************************/
@@ -265,6 +275,10 @@ function cfw_renderer_chart(renderDef) {
 		multichartcolumns: 1,
 		// function to execute on double click, will receive an object with the chart settings and chart data: function(chartSettings, chartData)
 		ondblclick: cfw_renderer_chart_defaultOnDoubleClick,
+		// toggle zooming of charts
+		zoom: true,
+		// toggle refreshing of dashboards, queries etc...
+		zoomrefresh: false,
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -360,6 +374,7 @@ function cfw_renderer_chart(renderDef) {
 	if(settings.isCategoryChart){
 		
 		settings.showaxes = false;
+		settings.zoom = false;
 		settings.tooltipmode = 'nearest';
 		
 		if(settings.legendpos == "auto"){
@@ -816,6 +831,28 @@ function cfw_renderer_chart_createChartOptions(settings) {
 					mode: settings.tooltipmode,
 					external: cfw_renderer_chart_customTooltip,
 				},
+				
+				zoom: {
+					zoom: {
+						drag: {
+							enabled: settings.zoom
+						},
+						mode: 'x',
+						onZoomComplete({ chart }) {
+							const xScale = chart.scales.x;
+							const start = xScale.min;
+							const end = xScale.max;
+							console.log(`Zoom complete. Start: ${start}, End: ${end}`);
+
+							if(settings.zoomrefresh){
+								for (let i in CFW_RENDERER_CHART_ZOOM_CALLBACKS) {
+									let callbackFunction = CFW_RENDERER_CHART_ZOOM_CALLBACKS[i];
+									callbackFunction(start, end, chart);
+								}
+							}
+						}
+					}
+				}
 			}
 	    };
 	    

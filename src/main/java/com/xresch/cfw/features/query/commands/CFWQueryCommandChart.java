@@ -80,9 +80,12 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 		+"</ul>"
 	+"<p><b>ymin:&nbsp;</b>Suggest a minimum value for the y-axis.</p>"	
 	+"<p><b>ymax:&nbsp;</b>Suggest a maximum value for the y-axis.</p>"	
+	+"<p><b>height:&nbsp;</b> The minimum height of the chart(e.g. 200px, 20vh etc..).</p>"	
 	+"<p><b>stacked:&nbsp;</b>Toogle if the series should be stacked. (Default:false)</p>"	
-	+"<p><b>showlegend:&nbsp;</b>Toogle if the legend should be displayed. (Default:false)</p>"	
 	+"<p><b>showaxes:&nbsp;</b>Toogle if the axes should be displayed. (Default:true)</p>"	
+	+"<p><b>showlegend:&nbsp;</b>Toogle if the legend should be displayed. (Default:false)</p>"	
+	+"<p><b>legendpos:&nbsp;</b>Define where the legend should be displayed: auto, top, bottom, left right. (Default: auto)</p>"	
+	+"<p><b>legendalign:&nbsp;</b>Define how the legend should be aligned: start, center, end. (Default: center)</p>"	
 	+"<p><b>pointradius:&nbsp;</b>Radius of the points drawn in charts. (Default: 1)</p>"	
 	+"<p><b>tension:&nbsp;</b>The tension of the lines, used to make lines smoother. (Value between 0-1, Default: 0)</p>"	
 	+"<p><b>spangaps:&nbsp;</b>Set to true to connect lines if there is a gap in the data.</p>"	
@@ -94,7 +97,8 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	+"<p><b>multichart:&nbsp;</b>Set to true to display each series in it's own chart.</p>"	
 	+"<p><b>multicharttitle:&nbsp;</b>Set to true to display title for charts.</p>"	
 	+"<p><b>multichartcolumns:&nbsp;</b> Number of columns for multi chart display.</p>"	
-	+"<p><b>height:&nbsp;</b> The minimum height of the chart(e.g. 200px, 20vh etc..).</p>"	
+	+"<p><b>zoom:&nbsp;</b> Toggle if the chart can be zoomed(Default: true).</p>"	
+	+"<p><b>zoomrefresh:&nbsp;</b> Toggle if zooming should trigger refreshing, like setting the timeframe and reloading a dashboard. (Default: false).</p>"	
 	;
 
 	

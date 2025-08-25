@@ -671,27 +671,38 @@ class CFWQueryEditor{
 					queryEditor.executeQuery(false);
 				};
 		
-		var picker = $('#'+this.settings.timeframePickerID);
+		let pickerID = this.settings.timeframePickerID;
+		var picker = $('#'+pickerID);
 		if(picker.length == 0){
 			var executeButton = $('#executeButton-'+this.guid);
-			var timeframePicker = $(`<input id="${this.settings.timeframePickerID}" name="timeframePicker" type="text" class="form-control">`);
+			var timeframePicker = $(`<input id="${pickerID}" name="timeframePicker" type="text" class="form-control">`);
 			executeButton.before(timeframePicker);
 			
 			var queryEditor  = this;
 			
 			if(!CFW.utils.isNullOrEmpty(urlParams.offset)){
-				cfw_initializeTimeframePicker(this.settings.timeframePickerID
+				cfw_initializeTimeframePicker(pickerID
 								, {offset: urlParams.offset}
 								, callbackFunction );
 			}else{
 				if(!CFW.utils.isNullOrEmpty(urlParams.earliest)
 				&& !CFW.utils.isNullOrEmpty(urlParams.latest) ){
-					cfw_initializeTimeframePicker(this.settings.timeframePickerID, {earliest: urlParams.earliest, latest: urlParams.latest}, callbackFunction);
+					cfw_initializeTimeframePicker(pickerID, {earliest: urlParams.earliest, latest: urlParams.latest}, callbackFunction);
 				}else{
-					cfw_initializeTimeframePicker(this.settings.timeframePickerID, {offset: '1-h'}, callbackFunction);
+					cfw_initializeTimeframePicker(pickerID, {offset: '1-h'}, callbackFunction);
 				}
 			}
 		}
+		
+		//-----------------------------------
+		// Add Callback for charts
+		cfw_renderer_chart_registerZoomCallback(function(start, end, chart){
+			cfw_timeframePicker_setCustom(
+							  pickerID
+							, Math.floor(start)
+							, Math.floor(end)
+						);
+		});
 				
 	}
 				

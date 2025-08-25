@@ -1912,14 +1912,18 @@ function cfw_timeframePicker_confirmRelativeOffset(origin){
  ******************************************************************************/
 function cfw_timeframePicker_setCustom(fieldID, earliestMillis, latestMillis){
 	var selector = '#'+fieldID;
-	$(selector+'-timeframeSelectorButton').text(
-		cfw_format_timerangeToString(earliestMillis, latestMillis)
+	let selectorButton = $(selector+'-timeframeSelectorButton');
+	
+	if(selectorButton.length > 0){
+		selectorButton.text(
+			cfw_format_timerangeToString(earliestMillis, latestMillis)
 		);
 		
-	// -----------------------------------------
-	// Update Original Field
-	cfw_timeframePicker_storeValue(fieldID, null, parseFloat(earliestMillis), parseFloat(latestMillis) );
-	
+		// -----------------------------------------
+		// Update Original Field
+		cfw_timeframePicker_storeValue(fieldID, null, parseFloat(earliestMillis), parseFloat(latestMillis) );
+	}
+		
 }
 
 

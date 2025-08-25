@@ -142,7 +142,7 @@ function cfw_dashboard_timeframe_setCustom(earliestMillis, latestMillis){
 	
 	cfw_timeframePicker_setCustom(CFW_DASHBOARD_TIME_FIELD_ID, earliestMillis, latestMillis)	
 
-	$('#timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
+	//$('#timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
 	
 }
 
@@ -2029,8 +2029,20 @@ function cfw_dashboard_initialDraw(){
 	
 	cfw_dashboard_initialize('.grid-stack');
 	
-	cfw_initializeTimeframePicker(CFW_DASHBOARD_TIME_FIELD_ID, null, cfw_dashboard_timeframeChangeCallback)
-	
+
+	//-----------------------------------
+	// Timeframe Picker
+	cfw_initializeTimeframePicker(CFW_DASHBOARD_TIME_FIELD_ID, null, cfw_dashboard_timeframeChangeCallback);
+		
+	cfw_renderer_chart_registerZoomCallback(function(start, end, chart){
+		cfw_dashboard_timeframe_setCustom(
+						  Math.floor(start)
+						, Math.floor(end)
+					);
+	});
+
+	//-----------------------------------------------
+	// Render
 	cfw_dashboard_applyParamsFromURLAndDraw();
 	
 	//-----------------------------------------------

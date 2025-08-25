@@ -57,8 +57,25 @@
 	multichartcolumns=3
 	height='150px' # cannot be a percentage value when multichart=true
 	showlegend=false</code></pre>
+	
+	
+	
+<h2>Zoom And Refresh on Zoom</h2>	
+<p>The two options "zoom" can be used to disable the zoom in charts. The option "zoomrefresh" can be used to enable refreshing the data based on the zoomed timeframe.
+This can be useful to refresh a whole dashboard or when you are creating multicharts.</p>
+<pre><code class="language-cfwquery">| source random type="stats" seriesCount=1 
+| chart  
+	type="area" 
+	x="TIME" 
+	y=[MIN, AVG, P90, MAX] 
+	height="300px" 
+	multichart=true
+	zoom = true
+	zoomrefresh = true</code></pre>
 
 
+
+	
 <h2>Display Details</h2>
 <p>Use the details parameters to display the chart details with another renderer. </p>
 <pre><code class="language-cfwquery">| source random records=300 type=series
