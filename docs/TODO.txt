@@ -179,6 +179,7 @@ DONE
 - UI: Timeframe Pickers are now showing a time range instead of "Custom Time" if such time is selected
 - Charts: Improved display of charts types: pie, doughnut, radar, polar
 - Dashboard Widget: New Standard Settings "Button Popup" and "Button Label" to display any widget as a button. Widget content will be loaded in a popup window on button click.
+- Query: Command chart - chart series can now have custom colors using option "colors"
 - Query: Command chart - Legend can now be positioned with new options "legendpos" and "legendalign"
 - Query: Command chart - Chart zoom can now be controlled with new options "zoom" and "zoomrefresh"
 - Query: Command chart - multichart splitting can now be controlled with option "multichartby"

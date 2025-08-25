@@ -97,7 +97,7 @@ function cfw_colors_colorizeElement(element, color, type, borderSize){
 		
 	
 /************************************************************************************************
- * Creates a random RGB string like "rgba(112, 54, 210, 1.0)" 
+ * Creates a hex color like #112233 from a string like "rgba(112, 54, 210, 1.0)"
  ************************************************************************************************/
 function cfw_colors_RGB2HEX(rgb) {
     if(CFW.utils.isNullOrEmpty(rgb) ){
@@ -114,6 +114,82 @@ function cfw_colors_RGB2HEX(rgb) {
     
     return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
 }
+
+/************************************************************************************************
+ * Creates an RGBA string like "rgba(112, 54, 210, 1.0)" from a hex color like "#33FF55".
+ ************************************************************************************************/
+function cfw_colors_HEX2RGBA(hex, alpha = 1) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+/************************************************************************************************
+ * Creates an RGBA string like "rgba(112, 54, 210, 1.0)" from a cfw color class like "cfw-green".
+ ************************************************************************************************/
+function cfw_colors_cfwColorToRGBA(colorName, alpha = 1) {
+	
+	const temp = document.createElement("div");
+	temp.classList.toggle("text-"+colorName);
+
+	var workspace = CFW.ui.getWorkspace();
+	workspace.append(temp);
+
+	const rgb = getComputedStyle(temp).color;
+	$(temp).remove();
+
+	const [r, g, b] = rgb.match(/\d+/g);
+	return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+/************************************************************************************************
+ * Creates an RGBA string like "rgba(112, 54, 210, 1.0)" from a named color.
+ ************************************************************************************************/
+function cfw_colors_nameToRGBA(colorName, alpha = 1) {
+	
+	const temp = document.createElement("div");
+	temp.style.color = colorName;
+	var workspace = CFW.ui.getWorkspace();
+	workspace.append(temp);
+
+	const rgb = getComputedStyle(temp).color;
+	$(temp).remove();
+
+	const [r, g, b] = rgb.match(/\d+/g);
+	return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+/************************************************************************************************
+ * Creates an RGB string like "rgba(112, 54, 210, 1.0)" from a color.
+ * some inputs will be returned unchanged.
+ ************************************************************************************************/
+function cfw_colors_colorToRGBA(color, alpha = 1) {
+	
+	//----------------------------
+	// Empty
+	if(CFW.utils.isNullOrEmpty(color)){ return ""; }
+	
+	//----------------------------
+	// RGBA
+	if(color.startsWith("rgba")){ return color; }
+	
+	//----------------------------
+	// HSLA
+	if(color.startsWith("hsla")){ return color; }
+	
+	//----------------------------
+	// Hex Color
+	if(color.startsWith("#")){ return cfw_colors_HEX2RGBA(color, alpha); }
+	//----------------------------
+	// Hex Color
+	if(color.startsWith("cfw-")){ return cfw_colors_cfwColorToRGBA(color, alpha); }
+
+	//----------------------------
+	// Named color
+	return cfw_colors_nameToRGBA(color, alpha = 1);
+}
+
 	
 /************************************************************************************************
  * Creates a random RGB string like "rgba(112, 54, 210, 1.0)" 

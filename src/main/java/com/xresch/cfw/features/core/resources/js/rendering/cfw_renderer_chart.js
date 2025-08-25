@@ -259,6 +259,8 @@ function cfw_renderer_chart(renderDef) {
 		xminunit: 'millisecond',
 		// the momentjs format used to parse the time, or a function(value) that returns a value that can be parsed by moment
 		timeformat: null, 
+		// allows to define an array of colors used for the charts
+		colors: null,
 		// if true show a details with the data of the series
 		details: false,
 		// the name of the renderer used for the details
@@ -613,13 +615,29 @@ function cfw_renderer_chart(renderDef) {
 				if(groupID == ""){ groupID = label; } // if there is no group, make each series it's own group
 				
 				//-----------------------
-				// Add to Group
+				// Create Group
 				
 				if(dataGroups[groupID] == undefined){ 
 					dataGroups[groupID] = {datasets: []};
 					dataArray.push(dataGroups[groupID]);
 				}
-				dataGroups[groupID].datasets.push(currentData);
+				
+				let currentGroup = dataGroups[groupID];
+				
+				//-----------------------
+				// Re-Color
+				if(byFields.length > 0){
+					
+					let colorIndex = currentGroup.datasets.length;
+					let newColors = cfw_renderer_chart_createDatasetColor(settings, colorIndex);
+					
+					currentData.backgroundColor = newColors.bg;
+					currentData.borderColor = newColors.border;
+				}
+				
+				//-----------------------
+				// Add to Group
+				currentGroup.datasets.push(currentData);
 			}
 		}
 	}
@@ -873,7 +891,6 @@ function cfw_renderer_chart_createChartOptions(settings) {
 							const xScale = chart.scales.x;
 							const start = xScale.min;
 							const end = xScale.max;
-							console.log(`Zoom complete. Start: ${start}, End: ${end}`);
 
 							if(settings.zoomrefresh){
 								for (let i in CFW_RENDERER_CHART_ZOOM_CALLBACKS) {
@@ -1123,16 +1140,29 @@ function cfw_renderer_chart_customTooltip(context) {
  ******************************************************************/
 function cfw_renderer_chart_createDatasetColor(settings, index) {
 	
-	let hue = 195; 
-	hue += index * 31;
+	let colors = settings.colors;
+	//-----------------------------
+	// Default
+	if(colors == null){
+		let hue = 195; 
+		hue += index * 31;
+		
+		let borderColor = CFW.colors.randomSL(hue,65,100,55,70);
+		let bgColor = borderColor.replace('1.0)', '0.65)');
 	
-	var borderColor = CFW.colors.randomSL(hue,65,100,55,70);
-	var bgColor = borderColor.replace('1.0)', '0.65)');
-
-	return {
-		border: borderColor
-		, bg: bgColor
-	};
+		return { border: borderColor , bg: bgColor };
+		
+	}else if(Array.isArray(colors)){
+		
+		let color = colors[ index % colors.length ];
+		
+		let borderColor = CFW.colors.colorToRGBA(color, 1.0);
+		borderColor = borderColor.replace('1)', '1.0)');
+		let bgColor = borderColor.replace('1.0)', '0.65)');
+		
+		return { border: borderColor , bg: bgColor };
+		
+	}
 }
 /******************************************************************
  * 

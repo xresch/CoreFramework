@@ -309,6 +309,7 @@ var CFW = {
 	colors: {
 		colorizeElement: cfw_colors_colorizeElement,
 		RGB2HEX: cfw_colors_RGB2HEX,
+		colorToRGBA: cfw_colors_colorToRGBA,
 		randomRGB: cfw_colors_randomRGB,
 		randomHSL: cfw_colors_randomHSL,
 		randomSL: cfw_colors_randomSL,

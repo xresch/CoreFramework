@@ -89,6 +89,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	+"<p><b>pointradius:&nbsp;</b>Radius of the points drawn in charts. (Default: 1)</p>"	
 	+"<p><b>tension:&nbsp;</b>The tension of the lines, used to make lines smoother. (Value between 0-1, Default: 0)</p>"	
 	+"<p><b>spangaps:&nbsp;</b>Set to true to connect lines if there is a gap in the data.</p>"	
+	+"<p><b>colors:&nbsp;</b>Allows you to define an array of colors used for the series.</p>"	
 	
 	+"<p><b>details:&nbsp;</b>If true show display the details of the chart data. (Default: false)</p>"	
 	+"<p><b>detailsrenderer:&nbsp;</b>The renderer used for the data. (Default: table, see command 'display' parameter 'as' for list of values)</p>"	

@@ -44,6 +44,22 @@
 	pointradius = 0</code></pre>
 	
 	
+<h2>Coloring Charts</h2>	
+<p>You can use the colors-parameter to define the colors for your series.
+The colors will be taken sequentially and looped if there are not enough specified.</p>
+<pre><code class="language-cfwquery">| source random type="stats" seriesCount=1
+| chart  
+	type="area" 
+	x="TIME" 
+	y=[MIN, AVG, MAX] 
+	height="400px" 
+	colors = ["yellow", "cyan", "magenta"] # CSS color names
+	#colors = ["#e57f19", "#19e57f", "#7f19e5"] # hex colors
+	#colors = [ "rgba(182, 244, 37, 0.6)", "rgba(37, 182, 244, 0.6)", "rgba(244, 37, 182, 0.6)" ] # rgba colors
+	#colors = ["cfw-green", "cfw-orange", "cfw-red"] # CoreFramework (CFW) cfw color names</code></pre>
+	
+	
+	
 <h2>Multiple Charts</h2>	
 <p>If you have multiple series you would like to show in separate charts, you can use the multichart options to split them up. </p>
 <pre><code class="language-cfwquery">| source random records=300 type=series
