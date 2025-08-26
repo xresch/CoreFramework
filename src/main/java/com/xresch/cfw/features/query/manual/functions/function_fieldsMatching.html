@@ -1,0 +1,29 @@
+
+<p>The fields-function returns a array containing all the fieldnames that match one or more of the given regular expressions.</p>
+
+<p>This command can be very useful combined with commands like remove, move and fieldformat, here an example:</p>
+
+<pre><code class="language-cfwquery">| source random records=10000	# create random records  			
+| keep FIRSTNAME, VALUE			# keep only specified fields
+| stats	by=FIRSTNAME			# Create Statistics
+		COUNT=count(VALUE)
+		AVG=avg(VALUE)
+		SUM=sum(VALUE)
+; # ==== Start Second Query =====
+# copies the commands from the first query to create another result
+| mimic
+; # ==== Start Third Query =====															
+| resultcompare 				# compare the two previous results 
+	by=FIRSTNAME
+| sort "VALUE_%" reverse=true
+| remove fieldsMatching("_Diff")
+| move 
+	after="SUM_B" 
+	fieldsMatching("_%")
+| fieldformat
+	fieldsMatching("_A") = ['css', "background-color", "purple"]</code></pre>
+
+
+
+
+

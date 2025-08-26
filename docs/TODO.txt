@@ -193,6 +193,7 @@ DONE
 	
 - Query: Added Functions:
 	- arrayDedup
+	- fieldsMatching
 	
 	
 ------- v.11.11.11 -------

@@ -1231,11 +1231,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	// Create Title				
 	if(queryResult.metadata.title == true){
 		let execSeconds = '';
-		if( (
-			   queryResult.metadata.titleduration == null 
-			|| queryResult.metadata.titleduration == true
-			)
-		 &&  queryResult.execTimeMillis != -1
+		if( queryResult.metadata.titleduration == true
+		 && queryResult.execTimeMillis != -1
 		 ){
 			execSeconds = " ("+(queryResult.execTimeMillis / 1000).toFixed(3)+"s)";
 		}

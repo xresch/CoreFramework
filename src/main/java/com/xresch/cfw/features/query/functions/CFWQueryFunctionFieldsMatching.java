@@ -1,8 +1,11 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
@@ -15,15 +18,17 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @author Reto Scheiwiller, (c) Copyright 2025
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionFields extends CFWQueryFunction {
+public class CFWQueryFunctionFieldsMatching extends CFWQueryFunction {
 
 	
-	public static final String FUNCTION_NAME = "fields";
+	public static final String FUNCTION_NAME = "fieldsMatching";
 
-	public CFWQueryFunctionFields(CFWQueryContext context) {
+	private static final HashMap<String, Pattern> patternCache = new HashMap<>();
+	
+	public CFWQueryFunctionFieldsMatching(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -52,7 +57,7 @@ public class CFWQueryFunctionFields extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(excludeFieldsArray)";
+		return FUNCTION_NAME+"(regex, regex...)";
 	}
 	
 	/***********************************************************************************************
@@ -60,7 +65,7 @@ public class CFWQueryFunctionFields extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the current list of detected fields.";
+		return "Returns an arrayof fieldnames from the detected fieldnames that match any of the specified regular expressions.";
 	}
 	
 	/***********************************************************************************************
@@ -70,7 +75,7 @@ public class CFWQueryFunctionFields extends CFWQueryFunction {
 	public String descriptionSyntaxDetailsHTML() {
 		return 
 			"<ul>"
-				+"<li><b>excludeFieldsArray:&nbsp;</b>(Optional) Array of fieldnames to exclude.</li>"
+				+"<li><b>regex:&nbsp;</b>The regular expression to match.</li>"
 			+"</ul>"
 			;
 	}
@@ -114,16 +119,34 @@ public class CFWQueryFunctionFields extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
+		// Make sure to keep the Order
+		LinkedHashSet<String> matches = new LinkedHashSet<>();
+		
 		HashSet<String> detectedFieldnames = this.context.getFinalFieldnames();
-		for(QueryPartValue withoutFields : parameters) {
+		for(QueryPartValue regex : parameters) {
+			String regexString = regex.getAsString();
 			
-			for( String fieldname : withoutFields.getAsStringArray()){
-				detectedFieldnames.remove(fieldname);
+			//-----------------------
+			// Get Pattern
+			if( ! patternCache.containsKey(regexString) ) {
+				patternCache.put(regexString, Pattern.compile(regexString) );
+			}
+			Pattern p  = patternCache.get(regexString);
+			
+			//-----------------------
+			// Find Matches
+			for( String fieldname : detectedFieldnames){
+				if(p.matcher(fieldname).find()) {
+					
+					matches.add(fieldname);
+				};
 			}
 		}
 		
+		//-----------------------
+		// Return Matches
 		JsonArray array = new JsonArray();
-		for(String fieldname : detectedFieldnames) {
+		for(String fieldname : matches) {
 			array.add(fieldname);
 		}
 		
