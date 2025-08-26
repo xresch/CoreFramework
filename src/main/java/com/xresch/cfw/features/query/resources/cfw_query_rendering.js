@@ -1174,7 +1174,7 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 			let currentResults = queryResultsPayload[i];
 
 			let colStyleIndex = Math.min( (i % colCount), colCount-1);
-			let currentColumn = $('<div class="col-percent mh-100" style="'+colStyles[colStyleIndex]+'">');
+			let currentColumn = $('<div class="col-percent flex-column mh-100" style="'+colStyles[colStyleIndex]+'">');
 			
 			cfw_query_renderQueryResult(currentColumn, currentResults);
 			currentRow.append(currentColumn);
@@ -1200,11 +1200,11 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 			}
 			else if(i < queryResultsPayload.length-1 ){
 				currentRowWidth = percentWidth; // reset 
-				currentRow = $('<div class="row m-0 flex-grow-1">');
+				currentRow = $('<div class="row flex-grow-1 m-0">');
 				resultTarget.append(currentRow);
 			}
 			
-			var currentColumn = $('<div class="col-percent mh-100" style="width: '+ percentWidth +'% !important;">');
+			var currentColumn = $('<div class="col-percent flex-column mh-100" style="width: '+ percentWidth +'% !important;">');
 			
 			cfw_query_renderQueryResult(currentColumn, currentResults);
 			currentRow.append(currentColumn);
@@ -1239,7 +1239,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		 ){
 			execSeconds = " ("+(queryResult.execTimeMillis / 1000).toFixed(3)+"s)";
 		}
-		let title = $('<p class="query-title">');
+		let title = $('<p class="query-title mt-2">');
 		
 		title.text(queryResult.metadata.name + execSeconds);
 		targetDiv.append(title);
@@ -1249,7 +1249,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	//-----------------------------------
 	// Handle Description
 	if(queryResult.metadata.description != null){
-		targetDiv.append('<span>'+queryResult.metadata.description+'</span>');
+		targetDiv.append('<span class="mb-2">'+queryResult.metadata.description+'</span>');
 	}
 	
 	

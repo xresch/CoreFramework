@@ -1158,7 +1158,7 @@ function cfw_renderer_chart_createDatasetColor(settings, index) {
 		
 		let borderColor = CFW.colors.colorToRGBA(color, 1.0);
 		borderColor = borderColor.replace('1)', '1.0)');
-		let bgColor = borderColor.replace('1.0)', '0.65)');
+		let bgColor = borderColor.replace('1.0)', '0.80)');
 		
 		return { border: borderColor , bg: bgColor };
 		
