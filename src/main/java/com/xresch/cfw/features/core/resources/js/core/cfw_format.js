@@ -717,9 +717,6 @@ function cfw_format_numberSeparators(value, separator, eachDigit) {
 		}
 	}
 	
-		
-	
-	
 	return resultString;
 }
 

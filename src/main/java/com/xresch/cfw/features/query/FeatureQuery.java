@@ -310,6 +310,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionReplaceRegex(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRound(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSin(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSeparators(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSourceEach(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSourcepage(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSplit(null));

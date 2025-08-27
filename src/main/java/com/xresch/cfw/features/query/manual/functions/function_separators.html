@@ -1,0 +1,10 @@
+
+<p>This function adds separators to numbers and converts them into a formatted string representation of that number.</p>
+
+<p>Following query creates example records and uses the separators-function:</p>
+
+<pre><code class="language-cfwquery">| source random type = numbers
+| set
+	SEP = separators(THOUSANDS * random(-999, 999))
+	SEP_B = separators(FLOAT * randomFloat(-999.1, 999.1) )</code></pre>
+

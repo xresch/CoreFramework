@@ -194,6 +194,7 @@ DONE
 - Query: Added Functions:
 	- arrayDedup
 	- fieldsMatching
+	- separators
 	
 	
 ------- v.11.11.11 -------
