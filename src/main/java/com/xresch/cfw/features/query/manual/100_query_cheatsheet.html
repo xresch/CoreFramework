@@ -1014,34 +1014,6 @@ for each query with the metadata "multipercent". There are various commands to w
 		</div>
 	</div>
 	
-	<div class="card flex-grow-1">
-		<div class="card-header pt-1 pb-1">
-			<div>Joining Results</div>
-		</div>
-		<div class="card-body maxvw-40">
-			You can join two results using the resultjoin command. This works very similar to an SQL join.
-			<pre><code class="language-cfwquery">  | source random | keep INDEX, FIRSTNAME 
-; | source random | keep INDEX, LASTNAME 
-; | resultjoin
-	on=INDEX 
-	join=inner</code></pre>
-		</div>
-	</div>
-	
-	<div class="card flex-grow-1">
-		<div class="card-header pt-1 pb-1">
-			<div>Concatenate Results</div>
-		</div>
-		<div class="card-body maxvw-40">
-			You can concatenate results together using the resultconcat command. You can either concatenate all
-			previous results (like in the example), or define names of results you want to concatenate.
-			<pre><code class="language-cfwquery">  | source random records=1
-; | source random records=2
-; | source random records=4
-; | resultconcat </code></pre>
-		</div>
-	</div>
-	
 </div>
 
 
