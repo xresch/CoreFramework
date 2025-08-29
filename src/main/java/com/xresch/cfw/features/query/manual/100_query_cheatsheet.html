@@ -815,16 +815,234 @@ We are strings too</code></pre>
 	
 	<div class="card flex-grow-1">
 		<div class="card-header pt-1 pb-1">
-			<div>Coming soon...</div>
+			<div>Subquery</div>
 		</div>
 		<div class="card-body maxvw-40">
-			...
-			<pre><code class="language-cfwquery"></code></pre>
+			You can make subqueries using the subquery function. This allows you as well to fetch data from one datasource and get
+			additional data from another datasource.
+			<pre><code class="language-cfwquery">| source random records=10
+| set 
+	IS_BUSY = subquery(`
+		| source empty
+		| set IS_BUSY=if(
+			  endsWith("`+LASTNAME+`", "son")
+			, true
+			, false
+		)
+		| keep IS_BUSY
+	`) </code></pre>
+		</div>
+	</div>
+	
+	
+</div>
+
+
+<!-- ============================================================ -->
+<!-- MULTIPLE QUERIES -->
+<!-- ============================================================ -->
+<h2>Multiple Queries and Results</h2>
+<p>The query language can execute multiple queries at once and display their results. 
+Displaying is done with rows and columns, while this can be controlled with the globals property "multidisplay" and 
+for each query with the metadata "multipercent". There are various commands to work with the results of multiple queries.</p>
+
+<!-- =========================== FIRST ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Multiple Queries</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Use a semicolon to end a query and start a new one. The results will be displayed after each other:
+			<pre><code class="language-cfwquery">| source random records = 3
+; # End Query and start a new one
+| source random records = 7</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Multiple Columns</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Set the globals property "multidisplay" to a number to set the number of columns the results should be displayed in.
+			
+			<pre><code class="language-cfwquery"># display results in 2 columns
+| globals multidisplay = 2
+| source random 
+; | source random  
+	</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Variable Column Width</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Set "multidisplay" to an array of numbers that define the ratio between the columns.
+			Can be percentages but doesn't have to
+			<pre><code class="language-cfwquery"># display results in 2 columns with 30% and 70% width
+| globals multidisplay = [30, 70]
+| source random 
+; | source random  </code></pre>
 		</div>
 	</div>
 </div>
 
+<!-- =========================== SECOND ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
 
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Custom Display for each Query</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Set "multidisplay = true" and set the metadata "multipercent"  to define a custom amount of columns every row.
+			Each row get's filled up until it's width reaches 100%. Here is an example that makes one rwo with two results 
+			and one row with one result:
+			<pre><code class="language-cfwquery"># display results in 2 columns
+| globals multidisplay = true
+| meta multipercent = 30 | source random records = 5
+; | meta multipercent = 70  | source random  records = 5
+; | meta multipercent = 100  | source random  records = 5</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Mimic Query</div>
+		</div>
+		<div class="card-body maxvw-40">
+			To reuse a query, you can use the mimic command. Mimic will basically insert the commands of a query at the place of mimic:
+			<pre><code class="language-cfwquery">| meta name = "fetchData" 
+| source random records = 5
+; # execute same query with mimic
+| mimic name = "fetchData" </code></pre>
+		</div>
+	</div>
+	
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Query Template</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can define a query as a template by setting the metadata "template = true" and using the mimic command to execute it
+			with different metadata.
+			<pre><code class="language-cfwquery"># Make a template but do not execute
+| meta name = "fetchData" 
+	   template = true 
+| source random records = meta(records)
+; 
+| meta records = 4
+| mimic name = "fetchData" 
+; 
+| meta records = 8
+| mimic name = "fetchData" </code></pre>
+		</div>
+	</div>
+	
+</div>
+
+<!-- =========================== THIRD ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Copy And Remove Results</div>
+		</div>
+		<div class="card-body maxvw-40">
+			To save time, you can fetch data once and then copy the result of a query.
+			Useful when you manipulate the same base data in different ways or if you want to display it differently(like chart + table):
+			<pre><code class="language-cfwquery"># display results in 2 columns
+| globals multidisplay = 2
+| meta name = "data"
+| source random records = 500
+; | resultcopy "data" | stats by="FIRSTNAME" count()
+; | resultcopy "data" | stats by="LASTNAME" count()
+  | resultremove "data"</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Joining Results</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can join two results using the resultjoin command. This works very similar to an SQL join.
+			<pre><code class="language-cfwquery">  | source random | keep INDEX, FIRSTNAME 
+; | source random | keep INDEX, LASTNAME 
+; | resultjoin
+	on=INDEX 
+	join=inner</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Concatenate Results</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can concatenate results together using the resultconcat command. You can either concatenate all
+			previous results (like in the example), or define names of results you want to concatenate.
+			<pre><code class="language-cfwquery">  | source random records=1
+; | source random records=2
+; | source random records=4
+; | resultconcat </code></pre>
+		</div>
+	</div>
+	
+</div>
+<!-- =========================== FORTH ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Compare  Results</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can compare two results very fast by using the resultcompare command:
+			<pre><code class="language-cfwquery">| source random records=10000		
+| stats	by=[FIRSTNAME, LIKES_TIRAMISU]		
+		COUNT=count(VALUE)
+		VALUE=avg(VALUE)
+; | mimic # make a second result
+; | resultcompare # compare previous two results
+		by=[FIRSTNAME, LIKES_TIRAMISU]</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Joining Results</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can join two results using the resultjoin command. This works very similar to an SQL join.
+			<pre><code class="language-cfwquery">  | source random | keep INDEX, FIRSTNAME 
+; | source random | keep INDEX, LASTNAME 
+; | resultjoin
+	on=INDEX 
+	join=inner</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Concatenate Results</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can concatenate results together using the resultconcat command. You can either concatenate all
+			previous results (like in the example), or define names of results you want to concatenate.
+			<pre><code class="language-cfwquery">  | source random records=1
+; | source random records=2
+; | source random records=4
+; | resultconcat </code></pre>
+		</div>
+	</div>
+	
+</div>
 
 
 	
