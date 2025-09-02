@@ -411,15 +411,30 @@ public class CFWJson {
 	}
 	
 	/*************************************************************************************
-	 * 
+	 * Escapes a string for JSON, but without double quotes.
 	 *************************************************************************************/
 	public static String escapeString(String string) {
-
+		
 		if(string != null) {
 	        for (String[] esc : escapes) {
 	            string = string.replace(esc[0], esc[1]);
 	        }
 		}
+		
+        return string;
+    }
+	
+	/*************************************************************************************
+	 * Unescape a string.
+	 *************************************************************************************/
+	public static String unescapeString(String string) {
+
+		if(string != null) {
+	        for (String[] esc : escapes) {
+	            string = string.replace(esc[1], esc[0]);
+	        }
+		}
+		
         return string;
     }
 	

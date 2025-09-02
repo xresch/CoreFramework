@@ -900,7 +900,9 @@ public class CFWQueryParser {
 					if(token.type() == CFWQueryTokenType.TEXT_SINGLE_QUOTES
 					|| token.type() == CFWQueryTokenType.TEXT_DOUBLE_QUOTES
 					|| token.type() == CFWQueryTokenType.LITERAL_STRING) {
-						jsonBuilder.append("\""+CFW.JSON.escapeString(token.value())+"\"");
+						//unescape first to avoid double escaping
+						String unescaped = CFW.JSON.unescapeString(token.value());
+						jsonBuilder.append("\""+CFW.JSON.escapeString(unescaped)+"\"");
 						continue;
 					}
 					

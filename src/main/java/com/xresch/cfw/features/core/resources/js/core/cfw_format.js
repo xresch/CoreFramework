@@ -997,9 +997,36 @@ function cfw_format_objectToHTMLList(object, style, paddingLeft, doLabelize){
 			if(currentItem == null){
 				htmlString += '<li>null</li>';
 			}else if(typeof currentItem == "object"){
+				let keys = Object.keys(currentItem);
+				let lowercase = _.map(keys, _.toLower);
+				
+				//--------------------------------
+				// Convert Key Value Pairs
+				if(keys.length == 2 
+				&& keys.includes("name") || keys.includes("key")
+				&& keys.includes("value") || keys.includes("label")
+				){
+					let name = "cfw-NotSet-Placeholder";
+					let value = "cfw-NotSet-Placeholder";
+					
+					if( keys.includes("name") ){   name = currentItem[ keys[ lowercase.indexOf("name")] ]; }
+					else if(keys.includes("key")){ name = currentItem[ keys[ lowercase.indexOf("key")] ]; }
+					
+					if( keys.includes("value") ){   value = currentItem[ keys[ lowercase.indexOf("value")] ]; }
+					else if(keys.includes("label")){ value = currentItem[ keys[ lowercase.indexOf("label")] ]; }
+					
+					if(name != "cfw-NotSet-Placeholder" 
+					&& value != "cfw-NotSet-Placeholder"){
+						htmlString += '<li><strong>'+name+':&nbsp;</strong>'+value+'</li>';
+						continue;
+					}
+				}
+				//--------------------------------
+				// Default if not a key value pair
 				htmlString += '<li><b>Object:&nbsp;</b>'
 					+ cfw_format_objectToHTMLList(currentItem, style, paddingLeft, doLabelize)
 				+'</li>';
+				
 			}else{
 				htmlString += '<li>'+currentItem+'</li>';
 			}
