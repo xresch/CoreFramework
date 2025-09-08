@@ -55,7 +55,7 @@ function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
 			rendererSettings: {
 				dataviewer: {
 					defaultsize: 25,
-					sortfields: ['NAME', 'DESCRIPTION'],
+					sortoptions: ['NAME', 'DESCRIPTION'],
 					storeid: 'usermgmtToggleTable'+mapName+itemID,
 					datainterface: {
 						url: CFW_USERMGMT_URL,

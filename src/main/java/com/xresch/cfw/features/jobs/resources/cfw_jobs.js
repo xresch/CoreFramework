@@ -435,7 +435,7 @@ function cfwjobs_printJobs(itemType){
 			rendererSettings: {
 				dataviewer: {
 					storeid: itemType,
-					sortfields: fieldsWithoutOwner,
+					sortoptions: fieldsWithoutOwner,
 					datainterface: {
 						url: CFWJOBS_URL,
 						item: itemType,
