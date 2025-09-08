@@ -498,7 +498,7 @@ function cfw_renderer_csv(renderDef) {
 	// Render Specific settings
 	var defaultSettings = {
 		// the delimiter for the csv
-		delimiter: ';',
+		delimiter: ',',
 		// customizers used for customizing CSV values. Do only return text.
 		csvcustomizers: {}
 	};

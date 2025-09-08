@@ -315,3 +315,33 @@ function cfw_utils_filterItems(context, searchField, itemSelector){
 		  }
 	});
 }
+
+/**************************************************************************************
+ * Sort an object array by the values for the given key.
+ * @param array the object array to be sorted
+ * @param key the name of the field that should be used for sorting
+ * @param reverse the order 
+ * @return sorted array
+ *************************************************************************************/
+function cfw_sortArrayByValueOfObject(array, key, reverse){
+	array.sort(function(a, b) {
+		
+			var valueA = a[key];
+			var valueB = b[key];
+			
+			if(valueA == undefined) valueA = 0;
+			if(valueB == undefined) valueA = 0;
+			
+			if(isNaN(valueA)) valueA = Number.MAX_VALUE;
+			if(isNaN(valueB)) valueB = Number.MAX_VALUE;
+			
+			
+		if(reverse){
+			return valueB - valueA;
+		}else{
+			return valueA - valueB;
+		}
+	});
+	
+	return array;
+}

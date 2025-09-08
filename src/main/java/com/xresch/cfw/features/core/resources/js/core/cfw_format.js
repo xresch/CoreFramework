@@ -1057,3 +1057,52 @@ function cfw_format_objectToHTMLList(object, style, paddingLeft, doLabelize){
 	return htmlString;
 		
 }
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_customizer_booleanFormat(record, value) { 
+	if(value){
+		return '<span class="cfw-badge bg-success">true</span>';
+	}else{
+		return '<span class="cfw-badge bg-danger">false</span>';
+	} 
+};
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_customizer_badgesFromArray(record, value) { 
+	return cfw_format_badgesFromArray(value);
+};
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_customizer_badgesFromObjectValues(record, value) { 
+	return cfw_format_badgesFromObjectValues(value);
+};
+
+/**************************************************************************************
+ * Returns the number with separators and aligned right.
+ *************************************************************************************/
+function cfw_customizer_number(record, value, renderer) { 
+
+	let clazz = 'd-inline-block w-100 pl-1 pr-1 text-right';
+	if(renderer != 'table'){
+		clazz = '';
+	}
+	
+	return '<span class="'+clazz+'">'
+		+cfw_format_numberSeparators(value)
+	+'</span>';
+			 		
+};
+
+/**************************************************************************************
+ * Returns the value without formatting.
+ *************************************************************************************/
+function cfw_customizer_none(record, value) { 
+	return value;		
+};
+
