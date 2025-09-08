@@ -253,21 +253,57 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	// Create sorting function
 	
 	//default to "asc" if undefined
-	let sortDirectionArray = (sortbyDirection == null) ? ['asc'] : [sortbyDirection];
+	let sortDirectionArray = [];
+	let sortFunctionArray = [];
+	if(sortbyFields != null 
+	&& sortbyFields.trim().startsWith("[")
+	){
+		// handle inputs like [ ['FieldA', 'FieldB'] , ['asc', 'asc'] ]
+		try{
 
-	
-	let sortFunctionArray = [
-		record => {
+			let sortbyFieldsArray = JSON.parse(sortbyFields);
+			sortDirectionArray = (sortbyDirection == null) ? ['asc'] : sortbyDirection;
 			
-			if (typeof record[sortbyFields] === 'string'){
-				// make lowercase to have proper string sorting
-				return record[sortbyFields].toLowerCase();
+			if(sortbyFieldsArray.length > 0){	
+				for(let i in sortbyFieldsArray[0]){
+					let fieldname = sortbyFieldsArray[i];
+					sortFunctionArray.push(
+						record => {
+							
+							if (typeof record[fieldname] === 'string'){
+								// make lowercase to have proper string sorting
+								return record[fieldname].toLowerCase();
+							}
+							
+							return record[fieldname];
+							
+						}
+					);
+				}
 			}
 			
-			return record[sortbyFields];
 			
+		}catch(e){
+			console.log(e);
 		}
-	];
+
+		
+		
+	}else{
+		sortDirectionArray = (sortbyDirection == null) ? ['asc'] : [sortbyDirection];
+		sortFunctionArray.push(
+			record => {
+				
+				if (typeof record[sortbyFields] === 'string'){
+					// make lowercase to have proper string sorting
+					return record[sortbyFields].toLowerCase();
+				}
+				
+				return record[sortbyFields];
+				
+			}
+		);
+	}
 
 	
 	//=====================================================
@@ -718,7 +754,10 @@ function cfw_renderer_dataviewer_createStoreButtonHTML(dataviewerID) {
  ******************************************************************/
 function cfw_renderer_dataviewer_createSortSelectHTML(dataviewerSettings, renderDef, onchangeAttribute) {
 	
-	let html = "";		
+	let html = '<div class="float-right ml-2">'
+			+'	<label for="sortby">Sort By:&nbsp;</label>'
+			+'	<select name="sortby" class="dataviewer-sortby form-control form-control-sm" '+onchangeAttribute+'>'
+			
 	
 	//--------------------------------------
 	// Prepare Settings
@@ -734,26 +773,26 @@ function cfw_renderer_dataviewer_createSortSelectHTML(dataviewerSettings, render
 	//-----------------------------
 	// Handle Nulls
 	let sortoptions = dataviewerSettings.sortoptions;
-	if(sortoptions == null || sortoptions.length == null){
+
+	if(sortoptions == null 
+	|| (Array.isArray(sortoptions) && sortoptions.length == null )
+	){
 		sortoptions = renderDef.visiblefields;
 	}
 	
 	//-----------------------------
 	// Array of Names
 	if(Array.isArray(sortoptions)){
-		html += '<div class="float-right ml-2">'
-			+'	<label for="sortby">Sort By:&nbsp;</label>'
-			+'	<select name="sortby" class="dataviewer-sortby form-control form-control-sm" '+onchangeAttribute+'>'
-		
+
 			let ascendingHTML = ""; 
 			let descendingHTML = ""; 
 			for(index in sortoptions){
-				var fieldName = sortoptions[index];
-				var fielLabel = renderDef.getLabel(fieldName, CFW_RENDER_NAME_DATAVIEWER);
+				let fieldName = sortoptions[index];
+				let fielLabel = renderDef.getLabel(fieldName, CFW_RENDER_NAME_DATAVIEWER);
 				
 				
-				var selectedAsc = '';
-				var selectedDesc = '';
+				let selectedAsc = '';
+				let selectedDesc = '';
 				if(index == 0 && selectedSortbyFields == null){
 					selectedAsc = 'selected';
 				}else{
@@ -773,12 +812,59 @@ function cfw_renderer_dataviewer_createSortSelectHTML(dataviewerSettings, render
 				
 			}
 		
-		html += ascendingHTML + descendingHTML + '	</select>'
-				+'</div>';
+			html += ascendingHTML + descendingHTML;
 	}
 	
 	//-----------------------------
-	// Array of Names
+	// Object of Names
+	if( ! Array.isArray(sortoptions) && typeof sortoptions == 'object'){
+			let ascendingHTML = ""; 
+			let descendingHTML = ""; 
+			for(let fielLabel in sortoptions){
+				let fieldValue = sortoptions[fielLabel];
+				
+				let sortbyFields = [];
+				let sortbyDirections = [];
+				if(fieldValue.length > 0){ sortbyFields = JSON.stringify(fieldValue[0]); }
+				if(fieldValue.length > 1){ sortbyDirections = JSON.stringify(fieldValue[1]); }
+				
+				
+				let selectedAsc = '';
+				let selectedDesc = '';
+				if(index == 0 && selectedSortbyFields == null){
+					selectedAsc = 'selected';
+				}else{
+					if(sortbyFields == selectedSortbyFields){
+						if(selectedSortbyDirection == sortbyDirections){
+							selectedDesc = 'selected';
+						}else{
+							//default
+							selectedAsc = 'selected';
+						}
+					}
+				}
+
+				sortbyFields = sortbyFields.replaceAll('"', '&quot;');
+				sortbyDirections = sortbyDirections.replaceAll('"', '&quot;');
+				let sortbyDirectionsDesc = 
+							sortbyDirections.toLowerCase()
+										.replaceAll('asc', 'temp')
+										.replaceAll('desc', 'asc')
+										.replaceAll('temp', 'desc')
+										;
+					
+				ascendingHTML += '<option value="'+sortbyFields+'" data-direction="'+sortbyDirections+'" '+selectedAsc+'>&uarr; '+fielLabel+'</option>';
+				descendingHTML += '<option value="'+sortbyFields+'" data-direction="'+sortbyDirectionsDesc+'" '+selectedDesc+'>&darr; '+fielLabel+'</option>';
+				
+			}
+		
+			html += ascendingHTML + descendingHTML;
+	}
+	
+	//-----------------------------
+	// Close HTML
+	html +='	</select>'
+		 + '</div>';
 	
 	return html;
 	

@@ -1271,6 +1271,14 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	}
 	
 	//-----------------------------------
+	// Sort Options
+	options.sortable = false;
+	if(queryResult.displaySettings.sortoptions != null){
+		options.sortable = true;
+		options.sortoptions = queryResult.displaySettings.sortoptions;
+	}
+	
+	//-----------------------------------
 	// Zoom
 	if(queryResult.displaySettings.zoom != null){
 		let zoomString = ""+queryResult.displaySettings.zoom;
@@ -1352,7 +1360,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 					defaultsize: queryResult.displaySettings.defaultsize,
 					download: queryResult.displaySettings.download,
 					store: queryResult.displaySettings.store,
-					sortable: false,
+					sortable: options.sortable,
+					sortoptions: options.sortoptions,
 					renderers: [
 						{	label: 'Table',
 							name: 'table',

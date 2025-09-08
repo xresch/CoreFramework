@@ -5,27 +5,48 @@
 With the 'as' parameter you can choose the renderer that will be used to display the data.</p>
 
 
-
+<h2>Panels</h2>
 <p>The following query creates 42 random records and displays them as panels. </p>
 <pre><code class="language-cfwquery">source random records = 42
 | display as=panels</code></pre>
 
 
-
+<h2>Sticky Table Headers</h2>
 <p>The  following will render the data as a table, and make the header of the table stick when scrolling and keep it visble. </p>
 <pre><code class="language-cfwquery">| source random 
 | display sticky = true</code></pre>
 
 
+<h2>Sorting: Basic</h2>
+<p>To enable sorting, you can define the fieldnames you want to sort by as an array: </p>
+<pre><code class="language-cfwquery">| source random records= 1000
+| display
+	sortoptions = [FIRSTNAME, LASTNAME]
+	</code></pre>
 
-<p>Further you can set the fields that should be visible by providing an array of fieldnames. This might not work for all renderers, for example the JSON display will always show all fields. </p>
+
+<h2>Sorting: Advanced</h2>
+<p>To do advanced sorting, you can define an object like the following: </p>
+<pre><code class="language-cfwquery">| source random records= 1000
+| display
+	sortoptions = { 
+		  "Firstname": [ [FIRSTNAME], ['asc'] ] 
+		, "Lastname": [ [LASTNAME], ['asc'] ] 
+		, "First and Lastname": [ [FIRSTNAME, LASTNAME], ['asc', 'asc'] ] 
+		, "First and Location": [ [FIRSTNAME, LOCATION], ['asc', 'desc'] ] 
+	}</code></pre>
+
+
+<h2>Visible Fields</h2>
+<p>Further you can set the fields that should be visible by providing an array of fieldnames. 
+This might not work for all renderers, for example the JSON display will always show all fields. </p>
 <pre><code class="language-cfwquery">| source random
 | rename URL = url
 | rename LAST_LOGIN = "Last Login"
 | display as=table  visiblefields=[FIRSTNAME, LASTNAME, "Last Login", url]</code></pre>
 
 
-
+<h2>Define Title</h2>
 <p>For renderers like panels, cards and tiles, you can set the fields used for the title by setting the parameters titlefields and titleformat.
 If titleformat is not set, the field values are joined with a blank as a separator: </p>
 <pre><code class="language-cfwquery">| source random
@@ -38,7 +59,7 @@ If titleformat is not set, the field values are joined with a blank as a separat
     
     
 
-
+<h2>Colored Status Map</h2>
 <p>The statusmap renderer will only properly display when the menu is turned off using menu=false.
 The following example does that: </p>
 <pre><code class="language-cfwquery">| source random records=50
@@ -49,28 +70,9 @@ The following example does that: </p>
 	[(VALUE >= 0), "cfw-green"] 
 | sort VALUE reverse=true
 | display as=statusmap menu=false</code></pre>  
-    
 
 
-<p>To get rid of visible fields, define an empty array(mote: null is default and makes all fields visible).
-This is for example useful when displaying as tiles, when you only want to show a single value: </p>
-<pre><code class="language-cfwquery">| source random records=100
-| remove _source
-| formatrecord 
-	[(VALUE >= 80), "cfw-red"] 
-	[(VALUE >= 40), "cfw-yellow"] 
-	[(VALUE >= 0), "cfw-green"] 
-| sort VALUE reverse=true
-| formatfield 
-	VALUE=postfix,"%" 
-| display 
-	as=tiles 
-	menu=false 
-	titlefields=[VALUE] 
-	visiblefields=[]</code></pre>  
-	
-	
-
+<h2>Download and Store</h2>
 <p>You can display a button in the menu to give the option to download the data in either CSV, JSON or XML format.
 You can also display a store button that allows the user to store their data in the File Manager: </p>
 <pre><code class="language-cfwquery">| source random
