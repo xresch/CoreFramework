@@ -499,8 +499,21 @@ function cfw_renderer_dataviewer_resolveSelectedRendererDetails(params) {
 		rendererName = dataviewerSettings.renderers[rendererIndex].name;
 	}
 
-	let finalRenderDef = _.merge({}, renderDef, renderDefOverrides);
+	//-------------------------------------
+	// Merge Definitions
+	let merge = true;
+	if(renderDefOverrides.merge != null){
+		merge = renderDefOverrides.merge;
+	}
+	let finalRenderDef;
+	if(merge){
+		finalRenderDef = _.merge({}, renderDef, renderDefOverrides);
+	}else{
+		finalRenderDef = _.assign({}, renderDef, renderDefOverrides);
+	}
 	
+	//-------------------------------------
+	// Set Params
 	params.rendererName =  rendererName;
 	params.finalRenderDef =	finalRenderDef;
 		
