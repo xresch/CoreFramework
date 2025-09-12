@@ -1359,8 +1359,16 @@ label {
 .font-xsm { font-size: x-small; }
 
 /*************************************************************************
- * Fill Available
+ * Width, Height and Fill Available
  *************************************************************************/
+td .w-100-cell{
+	width: 100% !important;
+}
+
+td .h-100-cell{
+	height: 100% !important;
+}
+
 .w-fill { 
 	width: -webkit-fill-available;
 }
@@ -1378,6 +1386,8 @@ label {
   width: 100% !important;
   height: 100% !important;
 }
+
+
 
 /*************************************************************************
  * min width percent

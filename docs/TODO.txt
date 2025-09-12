@@ -186,8 +186,10 @@ DONE
 - Query: Command display - added option "sticky" to make table headers stick when scrolling.
 - Query: Command display - added option "sortoptions" to enable sorting of data.
 - Query: Command formatfield - added whitespace formatter
+- Query: Command formatfield - align formatter only applies to table views
 - Query: Command globals & meta - multidisplay can display columns with variable width. See manual of the commands for example queries.
 - Query: Command resultcompare - keeps column order even if first row contains null values
+
 
 - Query: Added Commands:
 	- topN

@@ -216,13 +216,14 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
  ******************************************************************************/
 function cfw_query_formatAlign(span, value, alignment){
 	
+	//---------------------------
 	// set defaults
 	if(alignment == null ){
 		alignment = 'center';
 	}
-	
+
 	lower = alignment.toLowerCase();
-	span.addClass('w-100 text-'+lower);
+	span.addClass('w-100-cell text-'+lower);
 	
 	if(lower == "center"){
 		span.removeClass('text-left text-right');

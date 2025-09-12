@@ -94,7 +94,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		formatterDefinitionArray.put(FieldFormatterName.ALIGN.toString(),
 			instance.new FormatterDefinition(
 				FieldFormatterName.ALIGN.toString(), 
-				"Choose how the text is aligned.",
+				"Choose how the text is aligned in table cells.",
 				new Object[][] {
 					 new Object[] {"position", "center", "The alignment of the text, either left, right or center."}
 				}
