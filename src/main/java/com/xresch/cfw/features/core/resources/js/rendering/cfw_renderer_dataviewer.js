@@ -449,7 +449,9 @@ function cfw_renderer_dataviewer_renderPage(params) {
 		
 	//-------------------------------------
 	// Call Renderer
-	params.finalRenderDef.data = dataToRender;
+	if(params.finalRenderDef.data == null){
+		params.finalRenderDef.data = dataToRender;
+	}
 	var renderResult = CFW.render.getRenderer(params.rendererName).render(params.finalRenderDef);
 	var renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex flex-grow-1 w-100">');
 	renderWrapper.append(renderResult);
