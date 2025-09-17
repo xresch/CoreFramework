@@ -131,16 +131,16 @@ function cfw_renderer_dataviewer_createParams(dataviewerIDOrJQuery, pageToRender
 	
 	//=====================================================
 	// Initialize
-	var dataviewerDiv = $(dataviewerIDOrJQuery);
-	var settingsDiv = dataviewerDiv.find('.cfw-dataviewer-settings');
-	var targetDiv = dataviewerDiv.find('.cfw-dataviewer-content');
-	var dataviewerID = "#"+dataviewerDiv.attr('id');
-	var renderDef = dataviewerDiv.data('renderDef');
+	let dataviewerDiv = $(dataviewerIDOrJQuery);
+	let settingsDiv = dataviewerDiv.find('.cfw-dataviewer-settings');
+	let targetDiv = dataviewerDiv.find('.cfw-dataviewer-content');
+	let dataviewerID = "#"+dataviewerDiv.attr('id');
+	let renderDef = dataviewerDiv.data('renderDef');
 	// settings fir dataviewer
-	var settings = dataviewerDiv.data('settings');
+	let settings = dataviewerDiv.data('settings');
 	
 	// create params object to have everything together and can be passed to other functions
-	var params = {
+	let params = {
 		dataviewerDiv: dataviewerDiv
 		,settingsDiv: settingsDiv
 		,targetDiv: targetDiv
@@ -180,16 +180,16 @@ function cfw_renderer_dataviewer_createParams(dataviewerIDOrJQuery, pageToRender
 
 	//=====================================================
 	// Get Settings
-	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
-	var filterquery = settingsDiv.find('input[name="filterquery"]').val();
-	var rendererIndex = settingsDiv.find('select[name="displayas"]').val();
-	var sortbyFields = settingsDiv.find('select[name="sortby"]').val();
-	var sortbyDirection = settingsDiv.find('select[name="sortby"]').find('option:selected').data('direction');
+	let pageSize = settingsDiv.find('select[name="pagesize"]').val();
+	let filterquery = settingsDiv.find('input[name="filterquery"]').val();
+	let rendererIndex = settingsDiv.find('select[name="displayas"]').val();
+	let sortbyFields = settingsDiv.find('select[name="sortby"]').val();
+	let sortbyDirection = settingsDiv.find('select[name="sortby"]').find('option:selected').data('direction');
 	
 	if(pageSize != null){
 		pageSize = parseInt(pageSize);
 	}
-	var offset = (pageSize > 0 ) ? pageSize * (pageToRender-1): 0;
+	let offset = (pageSize > 0 ) ? pageSize * (pageToRender-1): 0;
 		
 	if(settings.storeid != null){
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][pageSize]', pageSize);
@@ -219,19 +219,19 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	
 	//=====================================================
 	// Initialize
-	var params = cfw_renderer_dataviewer_createParams(dataviewerIDOrJQuery, pageToRender);
+	let params = cfw_renderer_dataviewer_createParams(dataviewerIDOrJQuery, pageToRender);
 	
-	//var dataviewerDiv = params.dataviewerDiv ;
-	//var targetDiv = params.targetDiv ;
-	//var dataviewerID = params.dataviewerID ;
-	var settingsDiv = params.settingsDiv ;
-	var renderDef = params.renderDef ;
-	var settings = params.settings ;
-	var filterquery = params.filterquery ;
-	var sortbyFields = params.sortbyFields ;
-	var sortbyDirection = params.sortbyDirection ;
-	var offset = params.offset ;
-	var pageSize = params.pageSize;
+	//let dataviewerDiv = params.dataviewerDiv ;
+	//let targetDiv = params.targetDiv ;
+	//let dataviewerID = params.dataviewerID ;
+	let settingsDiv = params.settingsDiv ;
+	let finalRenderDef = params.finalRenderDef ;
+	let settings = params.settings ;
+	let filterquery = params.filterquery ;
+	let sortbyFields = params.sortbyFields ;
+	let sortbyDirection = params.sortbyDirection ;
+	let offset = params.offset ;
+	let pageSize = params.pageSize;
 	
 	//=====================================================
 	// Handle Filter Highlight
@@ -316,7 +316,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			
 			//---------------------------------
 			// Sort
-			let sortedData = renderDef.data;
+			let sortedData = finalRenderDef.data;
 			if(settings.sortable && sortbyFields != null){
 				sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
 			}
@@ -345,7 +345,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 				regex =  new RegExp(filterquery.replace(/\*/g, '.*'));
 			}
 
-			let filteredData = _.filter(renderDef.data, function(o) { 
+			let filteredData = _.filter(finalRenderDef.data, function(o) { 
 				let jsonString = JSON.stringify(o).toLowerCase();
 				
 				return ( 
@@ -427,38 +427,38 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 function cfw_renderer_dataviewer_renderPage(params) {
 	
 	params.dataviewerDiv.data('visibledata', params.dataToRender);
+	
 	//-------------------------------------
 	// Initialize
 	//var dataviewerDiv = $(dataviewerID);
-	var settingsDiv = params.settingsDiv;
-	var targetDiv = params.targetDiv;
-	var dataviewerID = params.dataviewerID;
-	var renderDef = params.renderDef;
-	var dataviewerSettings = params.settings;
-	var pageToRender = params.pageToRender;
-	var pageSize = params.pageSize;
-	var dataToRender = params.dataToRender;
-	var totalRecords = params.totalRecords;
+	let settingsDiv = params.settingsDiv;
+	let targetDiv = params.targetDiv;
+	let dataviewerID = params.dataviewerID;
+	let renderDef = params.renderDef;
+	let dataviewerSettings = params.settings;
+	let pageToRender = params.pageToRender;
+	let pageSize = params.pageSize;
+	let dataToRender = params.dataToRender;
+	let totalRecords = params.totalRecords;
 	
 	//-------------------------------------
 	// Get Settings
 	//var totalRecords = dataToRender.length;
 	//var pageSize = settingsDiv.find('select[name="pagesize"]').val();
 	
-	var offset = pageSize * (pageToRender-1);
+	let offset = pageSize * (pageToRender-1);
 		
 	//-------------------------------------
 	// Call Renderer
-	if(params.finalRenderDef.data == null){
-		params.finalRenderDef.data = dataToRender;
-	}
-	var renderResult = CFW.render.getRenderer(params.rendererName).render(params.finalRenderDef);
-	var renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex flex-grow-1 w-100">');
+	params.finalRenderDef.data = dataToRender;
+	
+	let renderResult = CFW.render.getRenderer(params.rendererName).render(params.finalRenderDef);
+	let renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex flex-grow-1 w-100">');
 	renderWrapper.append(renderResult);
 	
 	//-------------------------------------
 	// Create Paginator
-	var pageNavigation = cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords, pageSize, pageToRender);
+	let pageNavigation = cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords, pageSize, pageToRender);
 	
 
 	targetDiv.html('');
@@ -515,6 +515,15 @@ function cfw_renderer_dataviewer_resolveSelectedRendererDetails(params) {
 	}
 	
 	//-------------------------------------
+	// Remove Data if not overriden
+	// For the sake of complexity, the 
+	// the data has to be removed here as
+	// else it will mess up the pagination.
+	if(renderDefOverrides.data == null){
+		finalRenderDef.data = renderDef.data;
+	}
+	
+	//-------------------------------------
 	// Set Params
 	params.rendererName =  rendererName;
 	params.finalRenderDef =	finalRenderDef;
@@ -528,14 +537,14 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	
 	//--------------------------------------
 	// Initialize Variables
-	var onchangeAttribute = ' onchange="cfw_renderer_dataviewer_fireChange(\'#'+dataviewerID+'\', 1)" ';
-	var html = '<div class="cfw-dataviewer-settings">';
+	let onchangeAttribute = ' onchange="cfw_renderer_dataviewer_fireChange(\'#'+dataviewerID+'\', 1)" ';
+	let html = '<div class="cfw-dataviewer-settings">';
 	
 	//--------------------------------------
 	// Prepare Settings
-	var selectedRendererIndex = 0;
-	var selectedSize = dataviewerSettings.defaultsize;
-	var filterquery = '';
+	let selectedRendererIndex = 0;
+	let selectedSize = dataviewerSettings.defaultsize;
+	let filterquery = '';
 	
 	if(dataviewerSettings.storeid != null){
 		selectedRendererIndex 	= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][rendererIndex]', selectedRendererIndex);
@@ -636,7 +645,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	//--------------------------------------
 	// Toogle Button
 	
-	var topCorrectionCSS = "";
+	let topCorrectionCSS = "";
 	if(dataviewerSettings.pagination == "bottom" 
 	|| dataviewerSettings.pagination == "none"
 	|| dataviewerSettings.pagination == false){
@@ -644,8 +653,8 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	}
 	
 	if(dataviewerSettings.menu == 'button'){
-		var dropDownID = 'dropdownMenuButton'+CFW.utils.randomString(12);
-		var dropdownHTML = '<div class="dropleft d-inline pl-1 cfw-dataviewer-settings-button">'
+		let dropDownID = 'dropdownMenuButton'+CFW.utils.randomString(12);
+		let dropdownHTML = '<div class="dropleft d-inline pl-1 cfw-dataviewer-settings-button">'
 			+ '<button  type="button" class="btn btn-xs btn-primary mb-2 '+filterHighlightClass+'"'
 					+' id="'+dropDownID+'" '
 					+' style="'+topCorrectionCSS+'" '
