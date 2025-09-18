@@ -69,6 +69,7 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 
 				String csv = bodyContents;
 
+				
 				JsonArray csvArray = CFW.CSV.toJsonArray(csv, separator, true, true); 
 				
 
@@ -81,9 +82,7 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 					JsonObject attributesObject = object.get("attributes").getAsJsonObject();
 					LinkedHashMap<String,String> attributes = CFW.JSON.fromJsonLinkedHashMap(attributesObject);
 
-					int count = 0;
-					if(object.has("count")) { count = object.get("count").getAsInt(); }
-					
+					BigDecimal count = null;
 					BigDecimal min = null;
 					BigDecimal avg = null;
 					BigDecimal max = null;
@@ -93,6 +92,7 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 					BigDecimal p75 = null;
 					BigDecimal p95 = null;
 					
+					if(object.has("count") && !object.get("count").isJsonNull()) { count = object.get("count").getAsBigDecimal(); }
 					if(object.has("min") && !object.get("min").isJsonNull() ) {  min = object.get("min").getAsBigDecimal(); }
 					if(object.has("avg") && !object.get("avg").isJsonNull() ) {  avg = object.get("avg").getAsBigDecimal(); }
 					if(object.has("max") && !object.get("max").isJsonNull() ) {  max = object.get("max").getAsBigDecimal(); }

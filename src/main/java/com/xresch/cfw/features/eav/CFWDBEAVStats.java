@@ -187,7 +187,6 @@ public class CFWDBEAVStats {
 		
 		return result;
 	}
-	
 	/********************************************************************************************
 	 * Will combine all the stats given 
 	 ********************************************************************************************/
@@ -196,6 +195,26 @@ public class CFWDBEAVStats {
 			, String entityName
 			, LinkedHashMap<String,String> attributes
 			, int count
+			, BigDecimal min
+			, BigDecimal avg
+			, BigDecimal max
+			, BigDecimal sum
+			, BigDecimal p25
+			, BigDecimal p50
+			, BigDecimal p75
+			, BigDecimal p95
+		) {
+		
+		return pushStatsCustom(category, entityName, attributes, new BigDecimal(count), min, avg, max, sum, p25, p50, p75, p95);
+	}
+	/********************************************************************************************
+	 * Will combine all the stats given 
+	 ********************************************************************************************/
+	public static boolean pushStatsCustom(
+			  String category
+			, String entityName
+			, LinkedHashMap<String,String> attributes
+			, BigDecimal count
 			, BigDecimal min
 			, BigDecimal avg
 			, BigDecimal max
@@ -466,7 +485,7 @@ public class CFWDBEAVStats {
 				BigDecimal p75 = null;
 				BigDecimal p95 = null;
 								
-				int count = target.get(EAVStats.COUNT).getAsInt();
+				BigDecimal count = target.get(EAVStats.COUNT).getAsBigDecimal();
 				
 				if( toMerge.has(EAVStats.MIN) && !toMerge.get(EAVStats.MIN).isJsonNull()) { min = toMerge.get(EAVStats.MIN).getAsBigDecimal(); }
 				if( toMerge.has(EAVStats.AVG) && !toMerge.get(EAVStats.AVG).isJsonNull()) { avg = toMerge.get(EAVStats.AVG).getAsBigDecimal(); }

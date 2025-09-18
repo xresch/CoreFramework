@@ -143,7 +143,7 @@ public class CFWCSV {
 						//----------------------------
 						// Extract Column Value
 						String potentialEscapedQuotes = line.substring(startPos+1, cursor);
-						String noEscapes = potentialEscapedQuotes.replace("\\\"", "\"").replace("\"\"", "\"");
+						String noEscapes = potentialEscapedQuotes.replace("\"\"", "\"").replace("\\\"", "\"");
 						result.add(noEscapes);
 						cursor++;
 						if(cursor < LENGTH ) {

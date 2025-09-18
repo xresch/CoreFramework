@@ -329,7 +329,7 @@ public class EAVStats extends CFWObject {
 	 * Calculates the statistical values for putting it in the database.
 	 ****************************************************************/
 	public EAVStats addStatisticsCustom(
-			  int count
+			  BigDecimal count
 			, BigDecimal min
 			, BigDecimal avg
 			, BigDecimal max
@@ -355,9 +355,11 @@ public class EAVStats extends CFWObject {
 		
 		//-----------------------------------
 		// Count
+		int addThis = (count != null) ? count.intValue() : 0;
 		Integer currentCount = this.count.getValue();
 		int sureNumber = ( currentCount != null) ? currentCount : 0;
-		this.count.setValue(sureNumber + count);
+		
+		this.count.setValue(sureNumber + addThis);
 		
 		statisticsCustomArray.get(EAVStatsFields.MIN).add(min);
 		statisticsCustomArray.get(EAVStatsFields.AVG).add(avg);
