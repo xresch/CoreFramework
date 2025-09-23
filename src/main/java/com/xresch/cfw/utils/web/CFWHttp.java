@@ -88,6 +88,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.logging.CFWLog;
@@ -482,6 +483,42 @@ public class CFWHttp {
 		return proxyArray;
 	}
 
+	/******************************************************************************************************
+	 * Returns a Proxy retrieved from the Proxy PAC Config.
+	 * Returns null if there is no Proxy needed or proxies are disabled.
+	 * 
+	 ******************************************************************************************************/
+	public static Proxy getProxy(String url) {
+		
+		if(CFW.Properties.PROXY_ENABLED == false) {
+			return null;
+		}else {
+
+			ArrayList<CFWProxy> proxiesArray = getProxies(url);
+			
+			//--------------------------------------------------
+			// Iterate PAC Proxies until address is resolved
+			for(CFWProxy cfwProxy : proxiesArray) {
+
+				if(cfwProxy.type.trim().toUpperCase().equals("DIRECT")) {
+					return null;
+				}else {
+					
+					InetSocketAddress address = new InetSocketAddress(cfwProxy.host, cfwProxy.port);
+					if(address.isUnresolved()) { 
+						continue;
+					}
+					Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
+					return proxy;
+				}
+				
+			}
+			
+		}
+		
+		return null;
+		
+	}
 	/******************************************************************************************************
 	 * Return a URL or null in case of exceptions.
 	 * 
@@ -960,6 +997,7 @@ public class CFWHttp {
 		String URL = null;
 		String requestBody = null;
 		String requestBodyContentType = "plain/text; charset=UTF-8";
+		private boolean autoCloseClient = true;
 		long responseTimeoutMillis = CFWTimeUnit.m.toMillis(10); //default timeout of  10 minutes
 
 		private HashMap<String, String> params = new HashMap<>();
@@ -1013,6 +1051,8 @@ public class CFWHttp {
 			headers.put(name, value);
 			return this;
 		}
+		
+
 
 		
 		/***********************************************
@@ -1025,6 +1065,21 @@ public class CFWHttp {
 			this.headers.putAll(headerMap);
 			return this;
 			
+		}
+		
+		/***********************************************
+		 * Toggle autoCloseClient
+		 ***********************************************/
+		public CFWHttpRequestBuilder autoCloseClient(boolean autoCloseClient) {
+			this.autoCloseClient = autoCloseClient;
+			return this;
+		}
+		
+		/***********************************************
+		 * Get autoCloseClient
+		 ***********************************************/
+		public boolean autoCloseClient() {
+			return this.autoCloseClient;
 		}
 		
 		/***********************************************
@@ -1053,6 +1108,7 @@ public class CFWHttp {
 			this.requestBody = content;
 			return this;
 		}
+		
 		/***********************************************
 		 * Add a request Body
 		 ***********************************************/
@@ -1254,7 +1310,7 @@ public class CFWHttp {
 
 					CloseableHttpClient httpClient = clientBuilder.build();
 
-					CFWHttpResponse response = instance.new CFWHttpResponse(httpClient, requestBase);
+					CFWHttpResponse response = instance.new CFWHttpResponse(httpClient, requestBase, autoCloseClient);
 					return response;
 					
 				}
@@ -1362,75 +1418,15 @@ public class CFWHttp {
 		private boolean errorOccured = false;
 		private String errorMessage = null;
 		
+		CloseableHttpClient httpClient = null;
+		private HttpServletResponse response = null;
+		
 		/******************************************************************************************************
 		 * 
 		 ******************************************************************************************************/
-//		public CFWHttpResponse(HttpURLConnection conn) {
-//			
-//			BufferedReader in = null;
-//			StringBuilder builder = new StringBuilder();
-//			int responseCode = -1;
-//			
-//			long startMillis = System.currentTimeMillis();
-//			try{
-//				url = conn.getURL();
-//				
-//				//------------------------------
-//				// connect if not already done
-//				conn.connect();
-//				
-//				//------------------------------
-//				// Read Response Body
-//				status = conn.getResponseCode();
-//				//headers = conn.getHeaderFields();
-//
-//				//------------------------------
-//				// Get Response Stream
-//				if (status <= 299) {
-//				    in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//				} else {
-//				    in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-//				}
-//				
-//				//------------------------------
-//				// Read Response Body
-//		        String inputLine;
-//		
-//		        while ((inputLine = in.readLine()) != null) {
-//		        	builder.append(inputLine);
-//		        	builder.append("\n");
-//		        }
-//		        
-//		        body = builder.toString();
-//
-//			}catch(Exception e) {
-//				new CFWLog(responseLogger)
-//					.severe("Exception occured while accessing URL: Type=\""+e.getClass().getSimpleName()
-//							+"\", HTTPStatus=\""+responseCode+"\""
-//							+"\", Message=\""+e.getMessage()+"\""
-//							, e);
-//				errorOccured = true;
-//			}finally {
-//				
-//				long endMillis = System.currentTimeMillis();
-//		        duration = endMillis - startMillis;
-//		        
-//				if(in != null) {
-//					try {
-//						conn.disconnect();
-//						in.close();
-//					} catch (IOException e) {
-//						new CFWLog(responseLogger)
-//							.severe("Exception occured while closing http stream.", e);
-//					}
-//				}
-//			}
-//		}
-
-		/******************************************************************************************************
-		 * 
-		 ******************************************************************************************************/
-		public CFWHttpResponse(CloseableHttpClient httpClient, HttpUriRequestBase requestBase) {
+		public CFWHttpResponse(CloseableHttpClient httpClient, HttpUriRequestBase requestBase, boolean autoCloseClient) {
+			
+			this.httpClient = httpClient;
 			
 			//----------------------------------
 			// Get URL
@@ -1446,11 +1442,11 @@ public class CFWHttp {
 			// Send Request and Read Response
 			long startMillis = System.currentTimeMillis();
 			try {
+				
 				Boolean success = httpClient.execute(requestBase, new HttpClientResponseHandler<Boolean>() {
 					@Override
 					public Boolean handleResponse(ClassicHttpResponse response) throws HttpException, IOException {
 						if(response != null) {
-							
 							status = response.getCode();
 							headers = response.getHeaders();
 							
@@ -1473,9 +1469,18 @@ public class CFWHttp {
 				long endMillis = System.currentTimeMillis();
 				duration = endMillis - startMillis;
 				
-				if(httpClient != null) {
-					httpClient.close(CloseMode.IMMEDIATE);
+				if(autoCloseClient) {
+					close();
 				}
+			}
+		}
+		
+		/******************************************************************************************************
+		 * 
+		 ******************************************************************************************************/
+		public void close() {
+			if(httpClient != null) {
+				httpClient.close(CloseMode.IMMEDIATE);
 			}
 		}
 		

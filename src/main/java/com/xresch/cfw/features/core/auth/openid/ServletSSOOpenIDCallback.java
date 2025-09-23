@@ -2,12 +2,9 @@ package com.xresch.cfw.features.core.auth.openid;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -26,6 +23,7 @@ import com.nimbusds.oauth2.sdk.SerializeException;
 import com.nimbusds.oauth2.sdk.TokenErrorResponse;
 import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.TokenResponse;
+import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
@@ -207,10 +205,11 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		ClientID clientID = new ClientID(provider.clientID());
 
 		TokenRequest tokenReq;
+		URI tokenEndpoint = providerMetadata.getTokenEndpointURI();
 		if(grantType.equals(SSOProviderSettingsOpenID.GRANTTYPE_AUTHORIZATION_CODE) ) {
 			tokenReq = 
 					new TokenRequest(
-							providerMetadata.getTokenEndpointURI(),
+							tokenEndpoint,
 							new ClientID(clientID),
 							new AuthorizationCodeGrant(code, redirectURI, codeVerifier),
 							provider.getScope()
@@ -242,10 +241,16 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		new CFWLog(logger).finer("SSO Token URL Query:"+tokenReq.toHTTPRequest().getQuery());
 
 		//-------------------------------
-		// Send Request
+		// Create and Send Request
 		HTTPResponse tokenHTTPResp = null;
-		tokenHTTPResp = tokenReq.toHTTPRequest().send();
-
+		Proxy proxy = CFW.HTTP.getProxy(tokenEndpoint.toURL().toString());
+		
+		HTTPRequest request = tokenReq.toHTTPRequest();
+		if(proxy != null) {
+			request.setProxy(proxy);
+		}
+		tokenHTTPResp = request.send();
+		
 		//-------------------------------	
 		// Parse and Check Response
 		TokenResponse tokenResponse = null;

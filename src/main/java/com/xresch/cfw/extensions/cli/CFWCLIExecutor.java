@@ -3,7 +3,6 @@ package com.xresch.cfw.extensions.cli;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.logging.Logger;
 import com.google.common.base.Strings;
 import com.google.common.collect.EvictingQueue;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWMonitor;
 import com.xresch.cfw.utils.CFWReadableOutputStream;
@@ -150,6 +150,15 @@ public class CFWCLIExecutor extends Thread {
 				if(directory != null) {		builder.directory(directory); }
 				if(envVariables != null) { 	builder.environment().putAll(envVariables);}
 				
+				//---------------------------------
+				// Add User Details to ENV
+				User user = CFW.Context.Request.getUser();
+				if(user != null) {
+					if(user.username() != null ) {	builder.environment().put("CFW_USER_USERNAME", user.username()); }
+					if(user.email() != null ) {		builder.environment().put("CFW_USER_EMAIL", user.email()); }
+					if(user.firstname() != null ) {	builder.environment().put("CFW_USER_FIRSTNAME", user.firstname()); }
+					if(user.lastname() != null ) {	builder.environment().put("CFW_USER_LASTNAME", user.lastname()); }
+				}
 				
 				pipeline.add(builder);   
 			}

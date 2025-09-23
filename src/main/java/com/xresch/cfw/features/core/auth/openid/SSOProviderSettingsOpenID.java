@@ -37,6 +37,7 @@ import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.core.auth.SSOProviderSettings;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.web.CFWHttp.CFWHttpResponse;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 
 /**************************************************************************************************************
@@ -230,9 +231,16 @@ public class SSOProviderSettingsOpenID extends SSOProviderSettings {
 			    .endpointURI(endpointURI)
 			    .state(state)
 			    .nonce(nonce)
-			    .codeChallenge(codeVerifier, CodeChallengeMethod.S256)
-			    .customParameter("resource", this.resource());
+			    .codeChallenge(codeVerifier, CodeChallengeMethod.S256);
 			
+			//-------------------------------
+			// Add resource param
+			if(!Strings.isNullOrEmpty(this.resource())) {
+				authRequestBuilder.customParameter("resource", this.resource());
+			}
+			
+			//-------------------------------
+			// Add Custom Params
 			LinkedHashMap<String, String> params = customParams.getValue();
 			if(params != null && params.size() > 0) {
 				for(Entry<String, String> entry : params.entrySet()) {
@@ -344,15 +352,19 @@ public class SSOProviderSettingsOpenID extends SSOProviderSettings {
 		
 		//providerURLString = (providerURLString.endsWith("/")) ? providerURLString : providerURLString+"/";
 		
-		URI wellknownURI = new URI(this.wellknownURL());
-		URL providerConfigurationURL = wellknownURI.toURL();
-		InputStream stream = providerConfigurationURL.openStream();
+//		URI wellknownURI = new URI(this.wellknownURL());
+//		URL providerConfigurationURL = wellknownURI.toURL();
+//		InputStream stream = providerConfigurationURL.openStream();
+//		
+//		// Read all data from URL
+//		String providerInfo = null;
+//		try (java.util.Scanner s = new java.util.Scanner(stream)) {
+//		  providerInfo = s.useDelimiter("\\A").hasNext() ? s.next() : "";
+//		}
 		
-		// Read all data from URL
-		String providerInfo = null;
-		try (java.util.Scanner s = new java.util.Scanner(stream)) {
-		  providerInfo = s.useDelimiter("\\A").hasNext() ? s.next() : "";
-		}
+		CFWHttpResponse response = CFW.HTTP.sendGETRequest(this.wellknownURL());
+		
+		String providerInfo = response.getResponseBody();
 		
 		providerMetadata = OIDCProviderMetadata.parse(providerInfo);
 		
