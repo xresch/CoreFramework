@@ -20,7 +20,7 @@
 
 		<jettyVersion>9.4.57.v20241219</jettyVersion>
 		<prometheusVersion>0.16.0</prometheusVersion>
-		<luceneVersion>8.0.0</luceneVersion>
+		<luceneVersion>9.12.1</luceneVersion>
 
 		<folderName>CFWServer</folderName> <!-- making folder without version name, as antrun can't handle regex with folders -->
 		<binariesFolder>${basedir}/target/${folderName}</binariesFolder>
@@ -207,7 +207,7 @@
 		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-common</artifactId>
+			<artifactId>lucene-analysis-common</artifactId>
 			<version>${luceneVersion}</version>
 		</dependency>
 		
