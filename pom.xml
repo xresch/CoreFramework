@@ -30,7 +30,7 @@
 		
 		<skipMakeFolder>false</skipMakeFolder>
 		<skipJavadoc>true</skipJavadoc>
-		<skipSigning>false</skipSigning>
+		<skipSigning>true</skipSigning>
 		<skipTests>true</skipTests>
 		<skipLicense>true</skipLicense>
 	</properties>
@@ -222,6 +222,12 @@
 		<dependency>
 		    <groupId>org.apache.lucene</groupId>
 		    <artifactId>lucene-highlighter</artifactId>
+		    <version>${luceneVersion}</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.lucene</groupId>
+		    <artifactId>lucene-backward-codecs</artifactId>
 		    <version>${luceneVersion}</version>
 		</dependency>
 		

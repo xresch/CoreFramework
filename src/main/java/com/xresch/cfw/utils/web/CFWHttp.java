@@ -1,6 +1,7 @@
 package com.xresch.cfw.utils.web;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -88,7 +89,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.logging.CFWLog;
@@ -1345,17 +1345,24 @@ public class CFWHttp {
     	
     	//-------------------------------------
     	// Load Keystore
-		InputStream keyStoreStream = instance.getClass().getResourceAsStream(path);
-	    KeyStore keyStore = KeyStore.getInstance(keystoreType); // or "PKCS12"
-	    keyStore.load(keyStoreStream, keystorePW.toCharArray());
 
-    	//-------------------------------------
-    	// Add to Context Builder
-	    if( !Strings.isNullOrEmpty(keyManagerPW) ) {
-	    	builder.loadKeyMaterial(keyStore, keyManagerPW.toCharArray());
-	    }else {
-	    	builder.loadKeyMaterial(keyStore, null);
-	    }
+		try (FileInputStream keyStoreStream = new FileInputStream(path)) { 
+			KeyStore keyStore = KeyStore.getInstance(keystoreType); // or "PKCS12"
+		    keyStore.load(keyStoreStream, keystorePW.toCharArray());
+		    
+		    //-------------------------------------
+	    	// Add to Context Builder
+		    if( !Strings.isNullOrEmpty(keyManagerPW) ) {
+		    	builder.loadKeyMaterial(keyStore, keyManagerPW.toCharArray());
+		    }else {
+		    	builder.loadKeyMaterial(keyStore, null);
+		    }
+		}catch (Exception e) {
+			new CFWLog(logger).severe("Error loading keystore: "+e.getMessage(), e);
+		}
+	    
+
+    	
 		
 		
     }
