@@ -110,6 +110,8 @@ public class CFWHttp {
 	//Use Threadlocal to avoid polyglot multi thread exceptions
 	private static ThreadLocal<CFWScriptingContext> javascriptEngine = new ThreadLocal<CFWScriptingContext>();
 	
+	private static KeyStore cachedKeyStore = null;
+	
 	private static String proxyPAC = null;
 	private static Cache<String, ArrayList<CFWProxy>> resolvedProxiesCache = CFW.Caching.addCache("CFW Proxies", 
 			CacheBuilder.newBuilder()
@@ -1323,7 +1325,40 @@ public class CFWHttp {
 		}
 	}
 	
+	/**************************************************************************************
+	 * Loads the keystore, caches it and then returns the cached instance.
+	 * 
+	 * @return keystore or null if it could not be loaded 
+	 **************************************************************************************/
+    private static KeyStore getCachedKeyStore() {
+    	
+    	if(cachedKeyStore == null) {
+
+	    	//-------------------------------------
+	    	// Settings
+	    	String path = CFWProperties.HTTPS_KEYSTORE_PATH; // or .p12
+	    	String keystorePW = CFWProperties.HTTPS_KEYSTORE_PASSWORD;
 	
+	    	String keystoreType = "PKCS12";
+			if(path.endsWith("jks")) {
+				keystoreType = "JKS";
+			}
+	    	
+	    	//-------------------------------------
+	    	// Load Keystore
+			try (FileInputStream keyStoreStream = new FileInputStream(path)) { 
+				KeyStore cachedKeyStore = KeyStore.getInstance(keystoreType); // or "PKCS12"
+				cachedKeyStore.load(keyStoreStream, keystorePW.toCharArray());
+			    
+			}catch (Exception e) {
+				new CFWLog(logger).severe("Error loading keystore: "+e.getMessage(), e);
+			}
+    	}
+    	
+    	return cachedKeyStore;
+	    
+    }
+    
 	/**************************************************************************************
 	 * Set SSL Context
 	 * @throws KeyStoreException 
@@ -1333,38 +1368,20 @@ public class CFWHttp {
     private static void addKeyStore(SSLContextBuilder builder) throws Exception {
     	
     	//-------------------------------------
-    	// Settings
-    	String path = CFWProperties.HTTPS_KEYSTORE_PATH; // or .p12
-    	String keystorePW = CFWProperties.HTTPS_KEYSTORE_PASSWORD;
+    	// Initialize
+    	KeyStore keyStore = getCachedKeyStore();
     	String keyManagerPW = CFWProperties.HTTPS_KEYMANAGER_PASSWORD;
 		
-    	String keystoreType = "PKCS12";
-		if(path.endsWith("jks")) {
-			keystoreType = "JKS";
-		}
-    	
-    	//-------------------------------------
-    	// Load Keystore
-
-		try (FileInputStream keyStoreStream = new FileInputStream(path)) { 
-			KeyStore keyStore = KeyStore.getInstance(keystoreType); // or "PKCS12"
-		    keyStore.load(keyStoreStream, keystorePW.toCharArray());
-		    
-		    //-------------------------------------
-	    	// Add to Context Builder
+	    //-------------------------------------
+    	// Add to Context Builder
+    	if(keyStore != null) {
 		    if( !Strings.isNullOrEmpty(keyManagerPW) ) {
 		    	builder.loadKeyMaterial(keyStore, keyManagerPW.toCharArray());
 		    }else {
 		    	builder.loadKeyMaterial(keyStore, null);
 		    }
-		}catch (Exception e) {
-			new CFWLog(logger).severe("Error loading keystore: "+e.getMessage(), e);
-		}
-	    
+    	}
 
-    	
-		
-		
     }
     
     
