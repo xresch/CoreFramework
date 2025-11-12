@@ -20,7 +20,7 @@ public class CFWUtilsText {
 	private static AlphanumericComparator alphanumComparator = INSTANCE.new AlphanumericComparator();
 	
 	public enum CheckType {
-		CONTAINS
+		  CONTAINS
 		, DOES_NOT_CONTAIN
 		, STARTS_WITH
 		, ENDS_WITH
