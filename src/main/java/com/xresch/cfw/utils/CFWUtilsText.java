@@ -19,6 +19,8 @@ public class CFWUtilsText {
 	private static final CFWUtilsText INSTANCE = new CFWUtilsText();
 	private static AlphanumericComparator alphanumComparator = INSTANCE.new AlphanumericComparator();
 	
+	private static SimpleCache<String, Pattern> regexPatternCache = new SimpleCache<>(10000);
+	
 	public enum CheckType {
 		  CONTAINS
 		, DOES_NOT_CONTAIN
@@ -62,6 +64,7 @@ public class CFWUtilsText {
 	public static boolean checkTextForContent(String checkType, String text, String checkFor) {
 		return checkTextForContent(CheckType.valueOf(checkType), text, checkFor);
 	}
+	
 	/*******************************************************************
 	 * Returns true if the condition matches.
 	 * 
@@ -72,25 +75,43 @@ public class CFWUtilsText {
 		
 			case STARTS_WITH:		return text.startsWith(checkFor);
 			case ENDS_WITH:			return text.endsWith(checkFor);	
-			case CONTAINS:			return text.contains(checkFor);
-			case DOES_NOT_CONTAIN:	return text.contains(checkFor);	
-			case EQUALS:			return text.equals(checkFor);
-			case NOT_EQUALS:		return text.equals(checkFor);
 			
-			case MATCH_REGEX:
-				Pattern pattern = Pattern.compile(checkFor, Pattern.MULTILINE | Pattern.DOTALL);
-				Matcher matcher = pattern.matcher(text);
-				return matcher.find();
-				
-				
-			case DO_NOT_MATCH_REGEX:
-				Pattern pattern2 = Pattern.compile(checkFor, Pattern.MULTILINE | Pattern.DOTALL);
-				Matcher matcher2 = pattern2.matcher(text);
-				return !matcher2.find();
+			case CONTAINS:			return text.contains(checkFor);
+			case DOES_NOT_CONTAIN:	return ! text.contains(checkFor);	
+			
+			case EQUALS:			return text.equals(checkFor);
+			case NOT_EQUALS:		return ! text.equals(checkFor);
+			
+			case MATCH_REGEX:		return getRegexMatcherCached(checkFor, text).find();
+			case DO_NOT_MATCH_REGEX: return ! getRegexMatcherCached(checkFor, text).find();
 
 		}
 		
 		return false;
+	}
+	
+	/*******************************************************************
+	 * Will return a regex matcher for a pattern that applies the flags
+	 * Pattern.MULTILINE and Pattern.DOTALL.
+	 *******************************************************************/
+	private static Matcher getRegexMatcherCached(String regex, String textToMatch) {
+				
+		return getRegexPatternCached(regex, textToMatch).matcher(textToMatch);
+	}
+	
+	/*******************************************************************
+	 * Will return a regex pattern that also applies the flags
+	 * Pattern.MULTILINE and Pattern.DOTALL.
+	 * 
+	 *******************************************************************/
+	private static Pattern getRegexPatternCached(String regex, String textToMatch) {
+		
+		if(!regexPatternCache.containsKey(regex)) {
+			Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
+			regexPatternCache.put(regex, pattern);
+		}
+		
+		return regexPatternCache.get(regex);
 	}
 	
 	/*******************************************************************
