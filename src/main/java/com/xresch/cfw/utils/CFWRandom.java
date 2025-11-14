@@ -493,6 +493,17 @@ public class CFWRandom {
 	    return fromArray(0, array);
 	}
 	
+	/******************************************************************************
+	 * Returns a random String from an array.
+	 * 
+	 * @param array to choose from
+	 * 
+	 ******************************************************************************/
+	public static <T> T fromArray(ArrayList<T> array) {
+	    int index = random.nextInt(array.size());
+	    return array.get(index);
+	}
+	
 
 
 	/******************************************************************************
