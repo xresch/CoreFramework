@@ -142,18 +142,14 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 		
 		//-------------------------
 		// Extract
-		Pattern p = Pattern.compile(regex.getAsString(), Pattern.MULTILINE | Pattern.DOTALL);
-		Matcher m = p.matcher(valueToSearch.getAsString());
-		if(m.matches()) {
-			if(m.groupCount() > groupIndex && groupIndex >= -1) {
-				return QueryPartValue.newString(m.group(groupIndex+1));
-			}else {
-				this.getContext().addMessage(MessageType.WARNING, FUNCTION_NAME+": could not match group with index: "+groupIndex);
-				QueryPartValue.newNull();
-			}
+		String extracted = CFW.Utils.Text.extractRegex(regex.getAsString(), groupIndex, valueToSearch.getAsString());
+		
+		if(extracted == null) {
+			this.getContext().addMessage(MessageType.WARNING, FUNCTION_NAME+": could not match group with index: "+groupIndex);
 		}
 		
-		return QueryPartValue.newNull();
+		return QueryPartValue.newString(extracted);
+		
 	}
 
 }

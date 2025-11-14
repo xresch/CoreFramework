@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw.datahandling.CFWField;
 
 /**************************************************************************************************************
@@ -94,7 +95,7 @@ public class CFWUtilsText {
 	 * Will return a regex matcher for a pattern that applies the flags
 	 * Pattern.MULTILINE and Pattern.DOTALL.
 	 *******************************************************************/
-	private static Matcher getRegexMatcherCached(String regex, String textToMatch) {
+	public static Matcher getRegexMatcherCached(String regex, String textToMatch) {
 				
 		return getRegexPatternCached(regex, textToMatch).matcher(textToMatch);
 	}
@@ -104,7 +105,7 @@ public class CFWUtilsText {
 	 * Pattern.MULTILINE and Pattern.DOTALL.
 	 * 
 	 *******************************************************************/
-	private static Pattern getRegexPatternCached(String regex, String textToMatch) {
+	public static Pattern getRegexPatternCached(String regex, String textToMatch) {
 		
 		if(!regexPatternCache.containsKey(regex)) {
 			Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
@@ -113,6 +114,91 @@ public class CFWUtilsText {
 		
 		return regexPatternCache.get(regex);
 	}
+	
+	/*******************************************************************
+	 * Extracts a single value of the first match of a regex using regex groups.
+	 * For example, to extract the id from a url:
+	 * <ul>
+	 * 		<li><b>URL:&nbsp;</b>http://www.example.url/mightyperson?id=123</li>
+	 * 		<li><b>Method Call:&nbsp;</b>extractRegex(".*?www.(.*?).url/.*?id=(.*)", 1, URL)</li>
+	 * 		<li><b>Result:&nbsp;</b>123</li>
+	 * </ul>
+	 * 
+	 * @param regex the regular expression that contains regex groups
+	 * @param groupIndex the index of the group, first group is 0
+	 * @param valueToSearch the text to search through
+	 *******************************************************************/
+	public static String extractRegex(String regex, int groupIndex, String valueToSearch) {
+		
+		Matcher m = getRegexMatcherCached(regex, valueToSearch);
+		if(m.matches()
+		&& m.groupCount() > groupIndex 
+		&& groupIndex >= -1
+		){
+			return m.group(groupIndex+1);
+		}
+		
+		return null;
+	}
+	
+	/*******************************************************************
+	 * For example, to extract the parts separated by "-" of an id:
+	 * <ul>
+	 * 		<li><b>ID:&nbsp;</b>420f2d3d-ed2d-4749-94e</li>
+	 * 		<li><b>Method Call:&nbsp;</b>extractAll("-?([^-]+)", 0, ID )</li>
+	 * 		<li><b>Result:&nbsp;</b>["420f2d3d", "ed2d", "4749", "94e"]</li>
+	 * </ul>
+	 * 
+	 * @param regex the regular expression that contains regex groups
+	 * @param groupIndex the index of the group, first group is 0
+	 * @param valueToSearch the text to search through
+	 * 
+	 * @return ArrayList of strings, empty if no matches, never null
+	 *******************************************************************/
+	public static ArrayList<String> extractRegexAll(String regex, int groupIndex, String valueToSearch) {
+		
+		ArrayList<String> result = new ArrayList<>();
+		Matcher m = getRegexMatcherCached(regex, valueToSearch);
+		while (m.find()) {
+			
+			if(m.groupCount() > groupIndex && groupIndex >= -1) {
+				result.add( m.group(groupIndex+1) );
+			}
+		}
+		
+		return result;
+	}
+	
+	/*******************************************************************
+	 * Extracts multiple values from a string using regex and regex groups.
+	 * For example, to extract the parts separated by "-" of an id:
+	 * <ul>
+	 * 		<li><b>ID:&nbsp;</b>420f2d3d-ed2d-4749-94e</li>
+	 * 		<li><b>Method Call:&nbsp;</b>extractAll("-?([^-]+)", 0, ID )</li>
+	 * 		<li><b>Result:&nbsp;</b>["420f2d3d", "ed2d", "4749", "94e"]</li>
+	 * </ul>
+	 * 
+	 * @param regex the regular expression that contains regex groups
+	 * @param groupIndex the index of the group, first group is 0
+	 * @param valueToSearch the text to search through
+	 * 
+	 * @return ArrayList of strings, empty if no matches, never null
+	 *******************************************************************/
+	public static JsonArray extractRegexAllAsJson(String regex, int groupIndex, String valueToSearch) {
+		
+		JsonArray result = new JsonArray();
+		Matcher m = getRegexMatcherCached(regex, valueToSearch);
+		while (m.find()) {
+			
+			if(m.groupCount() > groupIndex && groupIndex >= -1) {
+				result.add( m.group(groupIndex+1) );
+			}
+		}
+		
+		return result;
+	}
+	
+	
 	
 	/*******************************************************************
 	 * 

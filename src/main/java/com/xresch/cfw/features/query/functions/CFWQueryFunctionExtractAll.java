@@ -146,20 +146,15 @@ public class CFWQueryFunctionExtractAll extends CFWQueryFunction {
 		Pattern p = Pattern.compile(regex.getAsString(), Pattern.MULTILINE | Pattern.DOTALL);
 		Matcher m = p.matcher(valueToSearch.getAsString());
 		
-		JsonArray array = new JsonArray();
+		JsonArray array = CFW.Utils.Text.extractRegexAllAsJson(regex.getAsString(), groupIndex, valueToSearch.getAsString());
 		
-		while (m.find()) {
-			
-			if(m.groupCount() > groupIndex && groupIndex >= -1) {
-				array.add( m.group(groupIndex+1) );
-			}else {
-				this.getContext().addMessage(MessageType.WARNING, FUNCTION_NAME+": could not match group with index: "+groupIndex);
-				QueryPartValue.newNull();
-			}
+		if(array.isEmpty()) {
+			this.getContext().addMessage(MessageType.WARNING, FUNCTION_NAME+": could not match group with index: "+groupIndex);
+			return QueryPartValue.newNull();
 		}
 		
-		
 		return QueryPartValue.newJson(array);
+		
 	}
 
 }
