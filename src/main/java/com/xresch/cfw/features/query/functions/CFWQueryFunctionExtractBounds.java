@@ -135,44 +135,12 @@ public class CFWQueryFunctionExtractBounds extends CFWQueryFunction {
 		
 		//-------------------------
 		// Prepare Variables
-
 		String searchThis = valueToSearch.getAsString();
 		String left = leftBound.getAsString();
 		String right = rightBound.getAsString();
-		boolean boundsEquals = left.equals(right);
-
-		//-------------------------
-		// Start Index
-		int startIndex = 1;
-		if(boundsEquals) {
-			startIndex = searchThis.indexOf(left, 0)+1;
-		}
 		
-		//-------------------------
-		// Extraction Loop
-		// Search first for the rightBound and then backwards for the leftBound.
-		// This will prevent to run into false positives on the left bound and getting unexpected long extractions.
-		ArrayList<String> results = new ArrayList<>();
-		int rightIndex = searchThis.indexOf(right, startIndex); // start at one, as right index cannot be at the start of the string
-		while(rightIndex != -1) {
-			
-			//----------------------------
-			// Find Left
-			int leftIndex = searchThis.lastIndexOf(left, rightIndex-1);
-			
-			//----------------------------
-			// Extract
-			if(leftIndex != -1) {
-				leftIndex += left.length();
-				String extracted = searchThis.substring(leftIndex, rightIndex);
-				results.add(extracted);
-			}
-			
-			//----------------------------
-			// Prepare next Round
-			searchThis = searchThis.substring(rightIndex); // substring to remove already found results.
-			rightIndex = searchThis.indexOf(right, 1);
-		}
+		
+		ArrayList<String> results = CFW.Text.extractBounds(left, right, searchThis);
 		
 		if(results.isEmpty()) {
 			return QueryPartValue.newNull();

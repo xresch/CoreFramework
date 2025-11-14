@@ -186,7 +186,7 @@ public class CFWACMEClient {
         	result.addProperty("Error Message", e.getMessage());
         	result.addProperty(
         						  "Error Stacktrace"
-        						, CFW.Utils.Text.stacktraceToString(e)
+        						, CFW.Text.stacktraceToString(e)
         					);
         }
         

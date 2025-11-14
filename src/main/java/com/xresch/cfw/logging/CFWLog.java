@@ -457,7 +457,7 @@ public class CFWLog {
 			//-------------------------
 			if(throwable != null){
 								
-				this.exception = CFW.Utils.Text.stacktraceToString(throwable);
+				this.exception = CFW.Text.stacktraceToString(throwable);
 			
 			}
 			

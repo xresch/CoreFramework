@@ -140,7 +140,7 @@ public class WidgetStoredQuery extends WidgetDefinition {
 			valueField
 				//.addAttribute("data-settingslabel", param.paramSettingsLabel())
 				.setName(param.name())
-				.setLabel(CFW.Utils.Text.fieldNameToLabel(param.name()))
+				.setLabel(CFW.Text.fieldNameToLabel(param.name()))
 				.setDescription(param.description())
 				//.isDecoratorDisplayed(true)
 				//.addCssClass(" form-control-sm cfw-widget-parameter-marker")

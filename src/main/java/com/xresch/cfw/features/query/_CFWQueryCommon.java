@@ -62,7 +62,7 @@ public class _CFWQueryCommon {
 			}else if(value2.isNull()) {
 				 compareResult = nullsBigger; 
 			}else {
-				compareResult = CFW.Utils.Text.compareStringsAlphanum(value1.getAsString(), value2.getAsString());
+				compareResult = CFW.Text.compareStringsAlphanum(value1.getAsString(), value2.getAsString());
 			}
 		}
 		return compareResult;
@@ -137,7 +137,7 @@ public class _CFWQueryCommon {
 		
 		EnhancedJsonObject exceptionObject = new EnhancedJsonObject();
 		exceptionObject.addProperty("Key", "Exception" );
-		exceptionObject.addProperty("Value", CFW.Utils.Text.stacktraceToString(e) );
+		exceptionObject.addProperty("Value", CFW.Text.stacktraceToString(e) );
 		outQueue.add( exceptionObject );
 		
 		exceptionObject = new EnhancedJsonObject();

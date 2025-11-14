@@ -676,7 +676,7 @@ public class CFWJson {
 		html.append("<tbody>");
 		for(Entry<String, JsonElement> entry : thisToTable.entrySet()) {
 			html.append("<tr>")
-				.append("<td>").append( CFW.Utils.Text.fieldNameToLabel(entry.getKey()) ).append("</td>")
+				.append("<td>").append( CFW.Text.fieldNameToLabel(entry.getKey()) ).append("</td>")
 				.append("<td>").append(entry.getValue().getAsString()).append("</td>")
 				.append("</tr>")
 				;

@@ -255,7 +255,7 @@ public class CFWCSV {
 		ArrayList<String> headerArray = splitCSVQuotesAware(separator, header);
 		
 		if(makeFieldsLowercase) {
-			headerArray = CFW.Utils.Text.arrayToLowercase(headerArray);
+			headerArray = CFW.Text.arrayToLowercase(headerArray);
 		}
 		
 		//----------------------------

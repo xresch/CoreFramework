@@ -179,7 +179,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		this.valueClass = clazz;
 		this.type = type;
 		this.name = fieldName;
-		this.formLabel = CFW.Utils.Text.fieldNameToLabel(fieldName);
+		this.formLabel = CFW.Text.fieldNameToLabel(fieldName);
 	}
 			
 	//###################################################################################

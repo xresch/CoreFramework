@@ -65,7 +65,7 @@ public class TaskACMEUpdateCertificates extends CFWScheduledTask {
 							  CFW.Properties.HTTPS_ACME_URL
 							, CFW.Properties.HTTPS_ACME_DOMAINS
 							, e.getMessage()
-							, CFW.Utils.Text.stacktraceToString(e)
+							, CFW.Text.stacktraceToString(e)
 							
 						)
 					)

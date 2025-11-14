@@ -198,6 +198,64 @@ public class CFWUtilsText {
 		return result;
 	}
 	
+	/*******************************************************************
+	 * For example, to extract the parts separated by "-" of an id:
+	 * <ul>
+	 * 		<li><b>Text:&nbsp;</b>"a} {bb} ccc} {dddd}"</li>
+	 * 		<li><b>Method Call:&nbsp;</b>extractBounds("{", "}", Text) # </li>
+	 * 		<li><b>Result:&nbsp;</b>["bb", "dddd"]</li>
+	 * </ul>
+	 * 
+	 * @param left the left bound for the extraction
+	 * @param right the right bound for the extraction
+	 * @param searchThis the text to search through
+	 * 
+	 * @return ArrayList of strings, empty if no matches, never null
+	 *******************************************************************/
+	public static ArrayList<String> extractBounds(String left, String right, String searchThis) {
+		
+		//-------------------------
+		// Prepare Variables
+		boolean boundsEquals = left.equals(right);
+
+		//-------------------------
+		// Start Index
+		int startIndex = 1;
+		if(boundsEquals) {
+			startIndex = searchThis.indexOf(left, 0)+1;
+		}
+		
+		//-------------------------
+		// Extraction Loop
+		// Search first for the rightBound and then backwards for the leftBound.
+		// This will prevent to run into false positives on the left bound and getting unexpected long extractions.
+		ArrayList<String> results = new ArrayList<>();
+		int rightIndex = searchThis.indexOf(right, startIndex); // start at one, as right index cannot be at the start of the string
+		while(rightIndex != -1) {
+			
+			//----------------------------
+			// Find Left
+			int leftIndex = searchThis.lastIndexOf(left, rightIndex-1);
+			
+			//----------------------------
+			// Extract
+			if(leftIndex != -1) {
+				leftIndex += left.length();
+				String extracted = searchThis.substring(leftIndex, rightIndex);
+				results.add(extracted);
+			}
+			
+			//----------------------------
+			// Prepare next Round
+			searchThis = searchThis.substring(rightIndex); // substring to remove already found results.
+			rightIndex = searchThis.indexOf(right, 1);
+		}
+		
+		return results;
+	}
+	
+
+	
 	
 	
 	/*******************************************************************

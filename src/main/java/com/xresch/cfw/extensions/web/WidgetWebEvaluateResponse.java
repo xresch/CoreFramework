@@ -152,7 +152,7 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 				
 				// Labels for the URL ?
 				.addField(
-						CFW.Utils.Text.getCheckTypeOptionField(
+						CFW.Text.getCheckTypeOptionField(
 								  PARAM_CHECK_TYPE
 								, "{!cfw_widget_webextensions_checktype!}"
 								, "{!cfw_widget_webextensions_checktype_desc!}"
@@ -321,7 +321,7 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 			if(Strings.isNullOrEmpty(checkFor)) {
 				result = true;
 			}else {
-				result = CFW.Utils.Text.checkTextForContent(checkType, response.getResponseBody(), checkFor);
+				result = CFW.Text.checkTextForContent(checkType, response.getResponseBody(), checkFor);
 			}
 			
 			returnObject.addProperty("CHECK_RESULT", result);

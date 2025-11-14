@@ -239,10 +239,10 @@ public class CFW {
 	public static class Schedule extends CFWTaskScheduler {}
 	public static class Scripting extends CFWScripting {}
 	public static class Security extends CFWSecurity {}
+	public static class Text extends CFWUtilsText {}
 	public static class Utils {
 		public static class Analysis extends CFWUtilsAnalysis {}
 		public static class Array extends CFWUtilsArray {}
-		public static class Text extends CFWUtilsText {}
 	}
 	public static class Validation extends CFWValidation {}
 	

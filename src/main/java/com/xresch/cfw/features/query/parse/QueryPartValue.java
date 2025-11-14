@@ -964,7 +964,7 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 	 ******************************************************************************************************/
 	@Override
 	public int compareTo(QueryPartValue o) {
-		return CFW.Utils.Text.compareStringsAlphanum(this.getAsString(), o.getAsString());
+		return CFW.Text.compareStringsAlphanum(this.getAsString(), o.getAsString());
 	}
 	
 	/******************************************************************************************************

@@ -142,7 +142,7 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 		
 		//-------------------------
 		// Extract
-		String extracted = CFW.Utils.Text.extractRegex(regex.getAsString(), groupIndex, valueToSearch.getAsString());
+		String extracted = CFW.Text.extractRegex(regex.getAsString(), groupIndex, valueToSearch.getAsString());
 		
 		if(extracted == null) {
 			this.getContext().addMessage(MessageType.WARNING, FUNCTION_NAME+": could not match group with index: "+groupIndex);

@@ -25,7 +25,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// With Various Quotes
 		//---------------------------------
-		isEscaped = CFW.Utils.Text.isCharacterEscaped("""
+		isEscaped = CFW.Text.isCharacterEscaped("""
 				ab\\cd""", 3);
 		
 		Assertions.assertEquals(true, isEscaped);
@@ -33,7 +33,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// With Various Quotes
 		//---------------------------------
-		isEscaped = CFW.Utils.Text.isCharacterEscaped("""
+		isEscaped = CFW.Text.isCharacterEscaped("""
 				ab\\\\cd""", 4);
 		
 		Assertions.assertEquals(false, isEscaped);
@@ -52,7 +52,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// With Various Quotes
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitQuotesAware(" ", """
+		splitted = CFW.Text.splitQuotesAware(" ", """
 				a "b c" 'd e' `f g` h""", true, true, true, false);
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
@@ -69,7 +69,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Unescape Quotes
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitQuotesAware(" ", "a \"b \\\" c\" d", true, true, true, false);
+		splitted = CFW.Text.splitQuotesAware(" ", "a \"b \\\" c\" d", true, true, true, false);
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
 		
@@ -83,7 +83,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Single Quotes Only
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitQuotesAware(" ", """
+		splitted = CFW.Text.splitQuotesAware(" ", """
 				a "b c" 'd e' `f g` h""", false, true, false, false);
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
@@ -102,7 +102,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Command Line Style
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitQuotesAware(" ", """
+		splitted = CFW.Text.splitQuotesAware(" ", """
 				java -jar -DmyProps.test="abc def" -DmyProps.foobar="y z" """, true, false, false, false);
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
@@ -117,7 +117,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Command Line Style all Quotes
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitQuotesAware(" ", """
+		splitted = CFW.Text.splitQuotesAware(" ", """
 				java -jar acme.jar -DmyProps.test="abc def" -DmyProps.foobar='y z' -DmyProps.yay=`Woohoo!`""", true, true, true, false);
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
@@ -135,7 +135,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Command Line Pipes
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitQuotesAware("|", """
+		splitted = CFW.Text.splitQuotesAware("|", """
 				echo "hello world !" | wc -l | sort -u""", true, true, true, false);
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
@@ -149,7 +149,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// Escaped Separators
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitQuotesAware("\n", """
+		splitted = CFW.Text.splitQuotesAware("\n", """
 				curl -H "Cookie: CFWSESSIONID=token" -G \\
 				--data-urlencode "QUERY=| source random limit=10" \\
 				-X GET "http://localhost:8888/app/api"
@@ -167,7 +167,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// CLI Pipeline Escaped
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitQuotesAware("|", """
+		splitted = CFW.Text.splitQuotesAware("|", """
 				cmd /c echo "hello world" > file.txt \\| type file.txt""", true, true, true, true);
 		
 		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
@@ -179,7 +179,7 @@ public class TestCFWUtilsText {
 		//---------------------------------
 		// CLI Multiline pipeline
 		//---------------------------------
-		splitted = CFW.Utils.Text.splitQuotesAware("\n", """
+		splitted = CFW.Text.splitQuotesAware("\n", """
 				echo 'test me' \\
 				| wc -l \\
 				| uniq -c """, true, true, true, true);

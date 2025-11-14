@@ -727,7 +727,7 @@ public class CFWDBStoredFile {
 			String label = "<b>"+file.name()+"</b>"
 						 + " ("
 						 + "<b>ID:&nbsp;</b>" + file.id()
-						 + ", <b>Size:&nbsp;</b>" + CFW.Utils.Text.toHumanReadableBytes(file.size(), 1)
+						 + ", <b>Size:&nbsp;</b>" + CFW.Text.toHumanReadableBytes(file.size(), 1)
 						 + ", <b>Modified:&nbsp;</b>: " + CFW.Time.formatMillis(file.lastModified().getTime(), CFW.Time.FORMAT_TIMESTAMP_READABLE)
 						 + ")"
 						;
@@ -808,7 +808,7 @@ public class CFWDBStoredFile {
 							  "<span>"
 								+ "<b>ID:&nbsp;</b>" + id 
 								+ "&emsp;<b>Owner:&nbsp;</b>" + owner 
-								+ "&emsp;<b>Size:&nbsp;</b>" + CFW.Utils.Text.toHumanReadableBytes(size, 1) 
+								+ "&emsp;<b>Size:&nbsp;</b>" + CFW.Text.toHumanReadableBytes(size, 1) 
 								+ "&emsp;<b>Modified:&nbsp;</b>" + CFW.Time.formatMillis(lastModified.getTime(), CFW.Time.FORMAT_TIMESTAMP_READABLE)
 							+ "<span>"
 							);

@@ -129,20 +129,20 @@ public class CFWCLIExecutor extends Thread {
 		cliCommands = cliCommands.replaceAll("\r\n", "\n");
 		
 		// might be multiline if it has newline in quotes
-		ArrayList<String> lines = CFW.Utils.Text.splitQuotesAware("\n", cliCommands, true, true, true, true);
+		ArrayList<String> lines = CFW.Text.splitQuotesAware("\n", cliCommands, true, true, true, true);
 		
 		for(String currentLine : lines) {
 			
 			if(currentLine.trim().startsWith("#")) { continue; }
 			
-			ArrayList<String> commands = CFW.Utils.Text.splitQuotesAware("|", currentLine, true, true, true, true);
+			ArrayList<String> commands = CFW.Text.splitQuotesAware("|", currentLine, true, true, true, true);
 			
 			ArrayList<ProcessBuilder> pipeline = new ArrayList<>();
 			for(String command : commands) {
 				
 				if(command.isBlank()) { continue; }
 				
-				ArrayList<String> commandAndParams = CFW.Utils.Text.splitQuotesAware(" ", command.trim(), true, true, true, false);
+				ArrayList<String> commandAndParams = CFW.Text.splitQuotesAware(" ", command.trim(), true, true, true, false);
 				
 				ProcessBuilder builder = new ProcessBuilder(commandAndParams);
 				builder.redirectErrorStream(true);

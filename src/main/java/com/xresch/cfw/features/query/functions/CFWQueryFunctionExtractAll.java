@@ -146,7 +146,7 @@ public class CFWQueryFunctionExtractAll extends CFWQueryFunction {
 		Pattern p = Pattern.compile(regex.getAsString(), Pattern.MULTILINE | Pattern.DOTALL);
 		Matcher m = p.matcher(valueToSearch.getAsString());
 		
-		JsonArray array = CFW.Utils.Text.extractRegexAllAsJson(regex.getAsString(), groupIndex, valueToSearch.getAsString());
+		JsonArray array = CFW.Text.extractRegexAllAsJson(regex.getAsString(), groupIndex, valueToSearch.getAsString());
 		
 		if(array.isEmpty()) {
 			this.getContext().addMessage(MessageType.WARNING, FUNCTION_NAME+": could not match group with index: "+groupIndex);
