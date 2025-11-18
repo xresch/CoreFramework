@@ -88,8 +88,19 @@ This can be useful to refresh a whole dashboard or when you are creating multich
 	multichart=true
 	zoom = true
 	zoomrefresh = true</code></pre>
-
-
+	
+	
+<h2>Chart Settings as Parameter</h2>	
+<p>The dashboard allows you to define a chart settings parameter, which allows your user to set his own chart settings. 
+One important thing is to wrap them with the tojson()-function to make it work: </p>
+<pre><code class="language-cfwquery">| paramdefaults
+	chart_settings = {charttype: "area"}
+| source random records=100 type="stats" seriesCount = 1
+| chart 
+	x = TIME 
+	y = [MIN, AVG, P90, MAX]
+	# following will override any formatting settings you give to the chart command
+	settings = tojson(param(chart_settings, {charttype: "bar"}))</code></pre>
 
 	
 <h2>Display Details</h2>

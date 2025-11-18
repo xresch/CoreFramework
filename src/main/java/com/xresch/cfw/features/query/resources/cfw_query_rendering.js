@@ -1541,9 +1541,10 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 		finalSettings.charttype = settings.type;
 	}
 	
+	//---------------------------
 	//Final override by param "settings" of chart command
 	Object.assign(finalSettings, settings.settings)
-
+	
 	//---------------------------
 	// Render Settings
 	var dataToRender = {
