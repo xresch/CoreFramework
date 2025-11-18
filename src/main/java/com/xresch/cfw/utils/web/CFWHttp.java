@@ -1343,11 +1343,16 @@ public class CFWHttp {
 			if(path.endsWith("jks")) {
 				keystoreType = "JKS";
 			}
-	    	
+			
+    		new CFWLog(logger)
+    				.custom("path", path)
+    				.custom("type", keystoreType)
+    				.finest("Loading Keystore")
+    				;
 	    	//-------------------------------------
 	    	// Load Keystore
 			try (FileInputStream keyStoreStream = new FileInputStream(path)) { 
-				KeyStore cachedKeyStore = KeyStore.getInstance(keystoreType); // or "PKCS12"
+				cachedKeyStore = KeyStore.getInstance(keystoreType); // or "PKCS12"
 				cachedKeyStore.load(keyStoreStream, keystorePW.toCharArray());
 			    
 			}catch (Exception e) {
