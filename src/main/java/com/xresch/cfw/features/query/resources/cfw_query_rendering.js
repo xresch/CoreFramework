@@ -31,6 +31,7 @@ function cfw_query_getRendererIndex(queryResult){
 			case 'csv':				rendererIndex = 12; break;	
 			case 'json':			rendererIndex = 13; break;	
 			case 'xml':				rendererIndex = 14; break;	
+			case 'texttable':		rendererIndex = 15; break;	
 			
 		}
 	}
@@ -1447,6 +1448,10 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 						},
 						{	label: 'XML',
 							name: 'xml',
+							renderdef: {}
+						},
+						{	label: 'Text Table',
+							name: 'texttable',
 							renderdef: {}
 						}
 					],

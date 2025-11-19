@@ -229,12 +229,17 @@ function cfw_render_createDataviewerDefaults(){
 			name: 'csv',
 			renderdef: {}
 		},
-		{	label: 'XML',
-			name: 'xml',
-			renderdef: {}
-		},
+
 		{	label: 'JSON',
 			name: 'json',
+			renderdef: {}
+		},
+		{	label: 'Text Table',
+			name: 'texttable',
+			renderdef: {}
+		},
+		{	label: 'XML',
+			name: 'xml',
 			renderdef: {}
 		}
 	];

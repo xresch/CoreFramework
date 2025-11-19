@@ -712,6 +712,10 @@ function cfw_renderer_dataviewer_triggerDownload(dataviewerID, renderer) {
 		case "xml": 
 			CFW.utils.downloadText("data.xml", formattedData); 
 		break;
+		
+		case "texttable": 
+			CFW.utils.downloadText("data.txt", formattedData); 
+		break;
 
 	}
 }
@@ -747,6 +751,7 @@ function cfw_renderer_dataviewer_createDownloadButtonHTML(dataviewerID) {
 		     	+ '<a class="dropdown-item" onclick="cfw_renderer_dataviewer_triggerDownload(\''+dataviewerID+'\', \'csv\')">CSV</a>'
 		     	+ '<a class="dropdown-item" onclick="cfw_renderer_dataviewer_triggerDownload(\''+dataviewerID+'\', \'json\')">JSON</a>'
 		     	+ '<a class="dropdown-item" onclick="cfw_renderer_dataviewer_triggerDownload(\''+dataviewerID+'\', \'xml\')">XML</a>'
+		     	+ '<a class="dropdown-item" onclick="cfw_renderer_dataviewer_triggerDownload(\''+dataviewerID+'\', \'texttable\')">Text Table</a>'
 		+'   </div>'
 		+'</div>';
 		

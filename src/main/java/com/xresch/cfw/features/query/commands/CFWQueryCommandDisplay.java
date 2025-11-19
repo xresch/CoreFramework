@@ -53,6 +53,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 					+"<li>csv</li>"
 					+"<li>json</li>"
 					+"<li>xml</li>"
+					+"<li>texttable</li>"
 				+"</ul>"
 			+"</li>"
 			+"<li><b>menu:&nbsp;</b>(Optional) Defines how the menu should be displayed. One of the following options:"
