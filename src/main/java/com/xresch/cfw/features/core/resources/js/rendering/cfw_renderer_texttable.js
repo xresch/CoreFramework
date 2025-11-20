@@ -101,8 +101,12 @@ function cfw_renderer_texttable(renderDef) {
 	// Build ASCII lines
 	function makeRow(values) {
 		let result = "|";
+		
 		for (let c = 0; c < values.length; c++) {
-			let padded = values[c].padEnd(colWidths[c], " ");
+			let currentVal = values[c];
+			let padded = (isNaN(currentVal)) ? 
+							values[c].padEnd(colWidths[c], " ")
+							: values[c].padStart(colWidths[c], " ") ;
 			result += " " + padded + " |";
 		}
 		return result + "\r\n";
@@ -114,7 +118,7 @@ function cfw_renderer_texttable(renderDef) {
 
 	output += verticalLine;
 	output += makeRow(tableData[0]);    // header
-	output += verticalLine;
+	output += verticalLine.replaceAll("\+","|");
 
 	for (let r = 1; r < tableData.length; r++) {
 		output += makeRow(tableData[r]);
