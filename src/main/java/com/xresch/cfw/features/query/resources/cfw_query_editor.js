@@ -993,6 +993,7 @@ class CFWQueryEditor{
 		this.toggleLoading(true);
 		
 		CFW.http.postJSON(CFW_QUERY_URL, params, 
+			// ===== Success =====
 			function(data) {
 				
 				if(data.success){
@@ -1012,7 +1013,13 @@ class CFWQueryEditor{
 				}
 				queryEditor.toggleLoading(false);
 				
-		});
+			}
+			// ===== Fail =====
+			, function() {
+				queryEditor.toggleLoading(false);
+				this.highlightExecuteButton(false);
+			}
+		);
 	
 	}
 	

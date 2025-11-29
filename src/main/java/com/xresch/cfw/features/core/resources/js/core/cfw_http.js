@@ -264,10 +264,13 @@ function cfw_http_getJSON(url, params, callbackFunc){
  * 		payload: {...}|[...] object or array
  * }
  * 
- * @param uri to decode
- * @return decoded URI or the same URI in case of errors.
+ * @param url to call
+ * @param params request parameters
+ * @param callbackFunc function to callback on success
+ * @param callbackFuncFail (optional) function to callback on fail
+ * @return nothing
  *************************************************************************************/
-function cfw_http_postJSON(url, params, callbackFunc){
+function cfw_http_postJSON(url, params, callbackFunc, callbackFuncFail){
 
 	$.post(url, params)
 		  .done(function(response, status, xhr) {
@@ -278,7 +281,10 @@ function cfw_http_postJSON(url, params, callbackFunc){
 			  CFW.ui.addToast("Request failed", "URL: "+url, "danger", CFW.config.toastErrorDelay);
 			  var response = JSON.parse(xhr.responseText);
 			  cfw_internal_handleMessages(response);
-			  //callbackFunc(response);
+			  
+			  if(callbackFuncFail != null){
+			 		callbackFuncFail(response, status, errorThrown);
+			  }
 		  })
 		  .always(function(response) {
 			  cfw_internal_handleMessages(response);
