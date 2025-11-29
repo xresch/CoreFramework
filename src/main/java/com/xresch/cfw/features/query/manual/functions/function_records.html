@@ -1,9 +1,21 @@
 
 <p>This function is used to create an array of records in aggregation function. 
 This is useful in case you want to group records and format them in a table cell.
-In most cases this function is combined with the displayfields and chartfields command.</p>
+In many cases this function is combined with the displayfields and chartfields command.</p>
 
+	
 <p>Following is an example on how to use this function in aggregation commands:</p>
+<pre><code class="language-cfwquery">| source random records=20 
+| keep FIRSTNAME, LASTNAME, LIKES_TIRAMISU
+# Aggregate the records into multiple arrays
+| stats
+	by = meta(BY)
+	"All" = records( ) # makes an array of all the records
+	"Lovers" = records( (LIKES_TIRAMISU == true) ) # tiramisu lovers only 
+	"Haters" = records( (LIKES_TIRAMISU == false) ) # tiramisu haters only)</code></pre>
+	
+	
+<p>Here an example how to combine it with the displayfields and chartfields command:</p>
 <pre><code class="language-cfwquery"># set metadata
 | meta 
 	BY = [WAREHOUSE, ITEM]
@@ -51,6 +63,7 @@ In most cases this function is combined with the displayfields and chartfields c
 	y = PRICE
 	height = meta(HEIGHT)
 	width = meta(WIDTH)</code></pre>
+
 	
 <p>Following uses the records function outside of an aggregation context. This will just return a copy of the current record:</p>
 <pre><code class="language-cfwquery">| source json data=`
@@ -63,7 +76,7 @@ In most cases this function is combined with the displayfields and chartfields c
 ]
 `
 | set 
-	# return number of items in array that are null
+	# return a copy of the current record
 	record=records()</code></pre>
 
 

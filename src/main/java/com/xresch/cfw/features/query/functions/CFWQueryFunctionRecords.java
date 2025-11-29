@@ -54,7 +54,7 @@ public class CFWQueryFunctionRecords extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"()";
+		return FUNCTION_NAME+"(condition)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -70,7 +70,11 @@ public class CFWQueryFunctionRecords extends CFWQueryFunction {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return 
-			 "This function does not take any arguments."
+			 """
+				<ul>
+						<li><b>condition:&nbsp;</b>(Optional) A boolean or condition to filter records. Records will be added to the aggregation if true.</li>
+				</ul>
+			 """
 			;
 	}
 
@@ -100,7 +104,19 @@ public class CFWQueryFunctionRecords extends CFWQueryFunction {
 		
 		isAggregated = true;
 		
-		valuesList.add(QueryPartValue.newFromJsonElement(object.getWrappedObject()));
+		//---------------------------
+		// Evaluate Condition
+		boolean doAdd = true;
+		
+		if(parameters.size() > 0) {
+			doAdd = parameters.get(0).getAsBoolean();
+		}
+		
+		//---------------------------
+		// Add Condition
+		if(doAdd) {
+			valuesList.add(QueryPartValue.newFromJsonElement(object.getWrappedObject()));
+		}
 
 	}
 
@@ -113,9 +129,22 @@ public class CFWQueryFunctionRecords extends CFWQueryFunction {
 		//-------------------------------
 		// Do Not Aggregated
 		if(!isAggregated) {
-			return QueryPartValue.newFromJsonElement(object.getWrappedObject().deepCopy());
-		}
+			//---------------------------
+			// Evaluate Condition
+			boolean doReturn = true;
 			
+			if(parameters.size() > 0) {
+				doReturn = parameters.get(0).getAsBoolean();
+			}
+			
+			if(doReturn) {
+				return QueryPartValue.newFromJsonElement(object.getWrappedObject().deepCopy());
+			}else {
+				return QueryPartValue.newNull();
+			}
+		}
+		
+
 		//-------------------------------
 		// Create Array and Return
 		JsonArray array = new JsonArray();

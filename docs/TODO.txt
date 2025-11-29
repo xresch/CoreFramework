@@ -190,7 +190,7 @@ DONE
 - Query: Command formatfield - align formatter only applies to table views
 - Query: Command globals & meta - multidisplay can display columns with variable width. See manual of the commands for example queries.
 - Query: Command resultcompare - keeps column order even if first row contains null values
-
+- Query: Function records() - now takes a condition as an argument to filter and group records
 
 - Query: Added Commands:
 	- topN
