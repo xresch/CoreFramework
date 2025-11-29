@@ -73,7 +73,7 @@ public class CFWQueryCommandTopN extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Sorts the values based on the specified fields.";
+		return "Sorts the records by a specified value and only keeps the top N records.";
 	}
 
 	/***********************************************************************************************
@@ -89,9 +89,16 @@ public class CFWQueryCommandTopN extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>fieldname:&nbsp;</b> Names of the fields that should be used for sorting.</p>"
-		 	  +"<p><b>reverse:&nbsp;</b> Set to true to reverse the sort order.</p>"
-			  +"<p><b>reversenulls:&nbsp;</b> Set to true to list null values first.</p>"
+		return """
+			<ul>
+				<li><b>n:&nbsp;</b> Number of records to keep.</li>
+				<li><b>value:&nbsp;</b> Field to sort by.</li>
+				<li><b>label:&nbsp;</b> Name of the field that contains the labels.</li>
+				<li><b>others:&nbsp;</b> Toggle if all other values should be summarized in new record "Others".</li>
+				<li><b>reverse:&nbsp;</b> Set to true to reverse the sort order.</li>
+				<li><b>reversenulls:&nbsp;</b> Set to true to list null values first.</li>
+			</ul>
+			  """
 			  ;
 	}
 
