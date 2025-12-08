@@ -96,7 +96,6 @@ Potential TODOs
 - Query: Mimic calling mimic working with meta()
 - Query: Autocomplete - fix "F:" replace issue
 - Query: fixed ConcurrentModificationException when using command resultconcat
-- Query: 
 - Query: Test cases
 	- command await
 	- command each
@@ -175,6 +174,7 @@ DONE
 - BUGFIX: Query resultcompare - fixed issue where id-columns where displayed as null values
 - BUGFIX: Query NOT-operator - fixed issue wher the NOT operator caused strange filtering results
 - BUGFIX: Number separators are properly shown for negative numbers
+- BUGFIX: Fixing that chartfields command did not evaluate records (e.g. could not adjust chart colors based on field value)
 - NEW FEATURE: CHARTS ARE NOW ZOOMABLE!
 - Manual: Added links to existing youtube tutorials
 - UI: Timeframe Pickers are now showing a time range instead of "Custom Time" if such time is selected
