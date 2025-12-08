@@ -228,9 +228,9 @@ public class CFWQueryCommandChartFields extends CFWQueryCommand {
 					displaySettings.addProperty("menu", false);
 					for(QueryPartAssignment assignment : chartSettingsParts) {
 
-						String propertyName = assignment.getLeftSideAsString(null);
+						String propertyName = assignment.getLeftSideAsString(record);
 
-						QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
+						QueryPartValue valuePart = assignment.getRightSide().determineValue(record);
 						if(valuePart.isString()) {
 							String value = valuePart.getAsString();
 							value = CFW.Security.sanitizeHTML(value);
