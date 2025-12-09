@@ -6,6 +6,9 @@
  * @license MIT-License
  **************************************************************************************************************/
 
+// contains original value + Alpha and RGBA value
+var CACHE_COLOR_TO_RGBA = {};
+
 /*************************************************************
  * Adds coloring to the element based on the records value and
  * the value added in the fields bgstylefield and textstylefield.
@@ -166,28 +169,41 @@ function cfw_colors_nameToRGBA(colorName, alpha = 1) {
  ************************************************************************************************/
 function cfw_colors_colorToRGBA(color, alpha = 1) {
 	
+	let rgba;
 	//----------------------------
 	// Empty
 	if(CFW.utils.isNullOrEmpty(color)){ return ""; }
 	
 	//----------------------------
+	// Read from Cache	
+	let transformID = color + alpha;
+	if(CACHE_COLOR_TO_RGBA.hasOwnProperty(transformID)){
+		return CACHE_COLOR_TO_RGBA[transformID];
+	}
+
+	//----------------------------
 	// RGBA
-	if(color.startsWith("rgba")){ return color; }
+	
+	if(color.startsWith("rgba")){ rgba = color; }
 	
 	//----------------------------
 	// HSLA
-	if(color.startsWith("hsla")){ return color; }
+	else if(color.startsWith("hsla")){ rgba = color; }
 	
 	//----------------------------
 	// Hex Color
-	if(color.startsWith("#")){ return cfw_colors_HEX2RGBA(color, alpha); }
+	else if(color.startsWith("#")){ rgba = cfw_colors_HEX2RGBA(color, alpha); }
 	//----------------------------
 	// Hex Color
-	if(color.startsWith("cfw-")){ return cfw_colors_cfwColorToRGBA(color, alpha); }
+	else if(color.startsWith("cfw-")){ rgba = cfw_colors_cfwColorToRGBA(color, alpha); }
 
 	//----------------------------
 	// Named color
-	return cfw_colors_nameToRGBA(color, alpha = 1);
+	else { rgba = cfw_colors_nameToRGBA(color, alpha); }
+	
+	CACHE_COLOR_TO_RGBA[transformID] = rgba;
+	
+	return rgba;
 }
 
 	

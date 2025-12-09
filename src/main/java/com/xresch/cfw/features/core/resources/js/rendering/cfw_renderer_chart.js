@@ -6,6 +6,11 @@ const CFW_AGGREGATED_CHARTS = ['radar', 'polarArea', 'pie', 'doughnut'];
 var CFW_RENDERER_CHART_ZOOM_CALLBACKS = [];
 
 /******************************************************************
+ * Register Plugins
+ ******************************************************************/
+Chart.register('chartjs-plugin-annotation');
+
+/******************************************************************
  * 
  ******************************************************************/
 function cfw_renderer_chart_registerZoomCallback(callbackFunction){ 
@@ -261,6 +266,8 @@ function cfw_renderer_chart(renderDef) {
 		timeformat: null, 
 		// allows to define an array of colors used for the charts
 		colors: null,
+		// allows to define an array of thresholds in the format [ [minValue, maxValue, color, label], ...]
+		thresholds: null,
 		// if true show a details with the data of the series
 		details: false,
 		// the name of the renderer used for the details
@@ -296,6 +303,10 @@ function cfw_renderer_chart(renderDef) {
 	if(settings.yaxescolor == null){
 		settings.yaxescolor = Chart.defaults.color.replace('1.0)', '0.2)');
 	}
+	
+	//========================================
+	// Thresholds
+	cfw_renderer_chart_addAnnotations(settings);
 	
 	//========================================
 	// Make yfield an array to support multiple fields
@@ -880,7 +891,9 @@ function cfw_renderer_chart_createChartOptions(settings) {
 					mode: settings.tooltipmode,
 					external: cfw_renderer_chart_customTooltip,
 				},
-				
+				annotation: {
+					annotations: settings.annotations
+				},
 				zoom: {
 					zoom: {
 						drag: {
@@ -941,6 +954,65 @@ function cfw_renderer_chart_createChartOptions(settings) {
 	
 	return chartOptions;
 }
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_chart_addAnnotations(settings){
+	settings.annotations = {};
+		
+	if(settings.thresholds != null){
+		
+		for(let i in settings.thresholds){
+			
+			//----------------------------
+			// Get current 
+			let current = settings.thresholds[i];
+
+			if(current == null || ! Array.isArray(current)){ continue; }
+			
+			let length = current.length;
+			
+			let min = (length > 0) ? current[0] : null;
+			let max = (length > 1) ? current[1] : null;
+			let color = (length > 2) ? CFW.colors.colorToRGBA(current[2], 0.33) : CFW.colors.colorToRGBA("cfw-info", 0.33);
+			let label = (length > 3) ? current[3] : null;
+			
+			//----------------------------
+			// Define Threshold
+			let box = {
+		            type: 'box'
+		          , yMin: min
+		          , yMax: max
+		          , backgroundColor: color
+		          , borderWidth: 0
+				  , drawTime: 'beforeDatasetsDraw'
+
+			  };
+			  
+			//----------------------------
+			// Add Label
+			if(label != null){
+				
+				box.label = {
+					  display: true
+					, content: label
+					, color: "white"
+					//, color: color.replace('0.33)', '1.00)')
+					, position: {x: 'start', y: 'start' }
+					, drawTime: 'afterDatasetsDraw'
+					
+				}
+			}
+			
+			settings.annotations["box"+i] = box;
+		
+		}
+	}
+	
+
+}
+
 /******************************************************************
  * 
  ******************************************************************/

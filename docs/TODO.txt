@@ -184,6 +184,7 @@ DONE
 - Query: Command chart - Legend can now be positioned with new options "legendpos" and "legendalign"
 - Query: Command chart - Chart zoom can now be controlled with new options "zoom" and "zoomrefresh"
 - Query: Command chart - multichart splitting can now be controlled with option "multichartby"
+- Query: Command chart - thresholds can now be defined with option "thresholds"
 - Query: Command display - added option "sticky" to make table headers stick when scrolling.
 - Query: Command display - added option "sortoptions" to enable sorting of data.
 - Query: Command formatfield - added whitespace formatter

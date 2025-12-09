@@ -29,12 +29,11 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	
 	
-	public static final String DESCIRPTION_SYNTAX = " as=<asOption> [menu=<menu>] [pagination=<pagination>]  [visiblefields=<visiblefields>] [titlefields=<titlefields>]"
-			+"\n[titleformat=<titleformat>]  [zoom=<zoomNumber>]";
+	public static final String DESCIRPTION_SYNTAX = "  [param=<paramValue>]";
 	
 	public static final String DESCRIPTION_SYNTAX_DETAILS = "<ul>"
 			+"<!-- placeholder -->"
-			+"<li><b>asOption:&nbsp;</b>Defines how the data should be displayed. One of the following options:"
+			+"<li><b>as:&nbsp;</b>Defines how the data should be displayed. One of the following options:"
 				+"<ul>"
 					+"<li>table</li>"
 					+"<li>panels</li>"
@@ -74,7 +73,9 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 			+"<li><b>titlefields:&nbsp;</b>(Optional) Array of the fieldnames used for title.</li>"	
 			+"<li><b>titleformat:&nbsp;</b>(Optional) Format of the title. Use '{0}', '{1}'... as placeholders for field values.</li>"	
 			+"<li><b>visiblefields:&nbsp;</b>(Optional) Array of the fieldnames that should be visible.</li>"	
-			+"<li><b>zoomNumber:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</li>"	
+			+"<li><b>zoom:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</li>"	
+			+"<li><b>sortoptions:&nbsp;</b>(Optional) Allows you to enable sorting by defining the fields to sort by.</li>"	
+			
 			+"<li><b>sizes:&nbsp;</b>(Optional) An array of page sizes.</li>"	
 			+"<li><b>defaultsize:&nbsp;</b>(Optional) The default selected page size.</li>"	
 			+"<li><b>sticky:&nbsp;</b>(Optional) Makes the headers of tables stick when scrolling and keep them visible.</li>"	

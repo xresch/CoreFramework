@@ -59,6 +59,21 @@ The colors will be taken sequentially and looped if there are not enough specifi
 	#colors = ["cfw-green", "cfw-orange", "cfw-red"] # CoreFramework (CFW) cfw color names</code></pre>
 	
 	
+<h2>Adding Thresholds</h2>	
+<p>You can add an array of thresholds to indicate areas of goodness and badness and such. 
+Following is adding green, yellow and red areas on a percent chart using the applications standard colors. You can also define use any CSS colors you like.</p>
+<pre><code class="language-cfwquery">| source random records=100 type="series" seriesCount = 1
+| chart 
+	type = area
+	x = TIME 
+	y = [PERCENT]
+	height = "500px"
+	tension = 0.3
+	thresholds = [
+		  [0, 50, "cfw-green", "Good"] # Arrays contain values as [minValue, maxValue, color, label]
+		, [50, 70, "cfw-yellow", "Warn"]
+		, [70, null, "cfw-red", "AAAAHHH!!!"] # null will take max height
+	]</code></pre>
 	
 <h2>Multiple Charts</h2>	
 <p>If you have multiple series you would like to show in separate charts, you can use the multichart options to split them up. </p>
@@ -73,6 +88,18 @@ The colors will be taken sequentially and looped if there are not enough specifi
 	multichartcolumns=3
 	height='150px' # cannot be a percentage value when multichart=true
 	showlegend=false</code></pre>
+	
+<p>By default, all the series are split up into their own charts. You can adjust this behavior by using the option multichartby: </p>
+<pre><code class="language-cfwquery">| source random records=50 type="series" seriesCount = 20
+| chart 
+	by=[WAREHOUSE, ITEM]
+	type = area
+	x = TIME 
+	y = [PERCENT]
+	height = "300px"
+	multichart = true
+	multichartby = [ITEM]
+	multichartcolumns = 3</code></pre>
 	
 	
 	
