@@ -250,7 +250,7 @@ public class CFWMath {
 		int count = values.size();
 		
 		if(count == 0) {
-			return null;
+			return ZERO;
 		}
 				
 		int percentilePosition = (int)Math.ceil( count * (percentile / 100f) );
