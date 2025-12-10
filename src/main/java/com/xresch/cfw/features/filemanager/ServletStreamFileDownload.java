@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.logging.CFWLog;
@@ -40,6 +41,13 @@ public class ServletStreamFileDownload extends HttpServlet
 			//-------------------------
 			// Get File ID
 			String id = request.getParameter("id");
+			String mode = request.getParameter("mode");
+			
+			if(Strings.isNullOrEmpty(mode)) {
+				mode = "normal";
+			}
+			
+			mode = mode.trim().toLowerCase();
 			
 			//-------------------------
 			// Check has Access
@@ -52,11 +60,24 @@ public class ServletStreamFileDownload extends HttpServlet
 			//-------------------------
 			// Get File
 			CFWStoredFile downloadThis = CFW.DB.StoredFile.selectByID(id);
-			
-			response.setHeader("Content-disposition", "inline;filename="+downloadThis.name());
-			response.setHeader("Content-Type", downloadThis.mimetype() );
-			
 			OutputStream out = response.getOutputStream();
+			switch(mode) {
+			
+				case "normal":	
+						response.setHeader("Content-disposition", "inline;filename="+downloadThis.name());
+						response.setHeader("Content-Type", downloadThis.mimetype() );
+						break;
+						
+				case "extraplain":	
+						out.write("---".getBytes());
+						
+				case "plain":
+						response.setHeader("Content-disposition", "inline;filename=data.txt");
+						response.setHeader("Content-Type", "text/plain" );
+						break;
+			}
+			
+			
 			boolean success = CFW.DB.StoredFile.retrieveData(downloadThis, out);
 			
 			if(!success) {

@@ -328,9 +328,10 @@ function cfw_filemanager_restoreMultiple(elements, records, values){
 /******************************************************************
  * Download
  ******************************************************************/
-function cfw_filemanager_download(id){
+function cfw_filemanager_download(id, mode){
 	
-	var params = {id: id};
+	var params = {id: id, mode: mode};
+	
 	CFW.http.getJSON(CFW_FILEDOWNLOAD_URL, params, 
 		function(data) {
 			if(data != null
@@ -340,6 +341,8 @@ function cfw_filemanager_download(id){
 			}
 	});
 }
+
+
 
 /******************************************************************
  * 
@@ -459,6 +462,40 @@ function cfw_filemanager_printStoredFile(data, type){
 		var bulkActions = {};		
 		
 		//-------------------------
+		// Hidden Download Button 2
+		actionButtons.push(
+			function (record, id){
+				
+				// IMPORTANT: Do only allow download if the user can edit the storedfile,
+				// else this would create a security issue.
+				var htmlString = '<a class="btn  btn-sm text-white" style="opacity: 0;" title="Corrupted Download" alt="Corrupted Download" '
+						+'target="_blank" '
+						//+'onclick="cfw_filemanager_download('+id+', \'normal\')">'
+						+'href="'+CFW.http.getHostURL()+CFW_FILEDOWNLOAD_URL+"?id="+id+'&mode=extraplain">'
+						+ '<i class="fas fa-download"></i>'
+						+ '</a>';
+
+				return htmlString;
+			}
+		);
+		//-------------------------
+		// Hidden Download Button
+		actionButtons.push(
+			function (record, id){
+				
+				// IMPORTANT: Do only allow download if the user can edit the storedfile,
+				// else this would create a security issue.
+				var htmlString = '<a class="btn btn-sm text-white" style="opacity: 0;" title="Plaintext Download" alt="Plaintext Download" '
+						+'target="_blank" '
+						//+'onclick="cfw_filemanager_download('+id+', \'normal\')">'
+						+'href="'+CFW.http.getHostURL()+CFW_FILEDOWNLOAD_URL+"?id="+id+'&mode=plain">'
+						+ '<i class="fas fa-download"></i>'
+						+ '</a>';
+
+				return htmlString;
+			}
+		);
+		//-------------------------
 		// Edit Button
 		actionButtons.push(
 			function (record, id){ 
@@ -509,7 +546,8 @@ function cfw_filemanager_printStoredFile(data, type){
 				// else this would create a security issue.
 				var htmlString = '<a class="btn btn-warning btn-sm text-white" alt="Download" title="Download" '
 						+'target="_blank" '
-						+'href="'+CFW.http.getHostURL()+CFW_FILEDOWNLOAD_URL+"?id="+id+'">'
+						//+'onclick="cfw_filemanager_download('+id+', \'normal\')">'
+						+'href="'+CFW.http.getHostURL()+CFW_FILEDOWNLOAD_URL+"?id="+id+'&mode=normal">'
 						+ '<i class="fas fa-download"></i>'
 						+ '</a>';
 
