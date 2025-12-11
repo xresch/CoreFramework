@@ -85,7 +85,7 @@ public class CFWMath {
 	}
 	/***********************************************************************************************
 	 * 
-	 * @return minimum value in the list, null if list is empty
+	 * @return minimum value in the list, zero if list is empty
 	 ***********************************************************************************************/
 	public static BigDecimal bigMin(List<BigDecimal> values) {
 		
@@ -102,13 +102,14 @@ public class CFWMath {
 			}
 		}
 		
+		if(min == null) { min = ZERO; } // avoid nullpointer exceptions
 		return min;
 		
 	}
 	
 	/***********************************************************************************************
 	 * 
-	 * @return maximum value in the list, null if list is empty
+	 * @return maximum value in the list, zero if list is empty
 	 ***********************************************************************************************/
 	public static BigDecimal bigMax(List<BigDecimal> values) {
 		
@@ -125,6 +126,7 @@ public class CFWMath {
 			}
 		}
 		
+		if(max == null) { max = ZERO; } // avoid nullpointer exceptions
 		return max;
 		
 	}
@@ -133,7 +135,7 @@ public class CFWMath {
 	 * Returns the Average
 	 * @param precision TODO
 	 * @param removeNulls set to false if you don't want to remove nulls from the original array.
-	 * @return average value in the list, null if list is empty or all values are null
+	 * @return average value in the list, zero if list is empty or all values are null
 	 ***********************************************************************************************/
 	public static BigDecimal bigAvg(List<BigDecimal> values, int precision, boolean removeNulls) {
 		
@@ -143,11 +145,11 @@ public class CFWMath {
 		}
 		
 		while( data.remove(null) ); // remove all null values
-		if(data.isEmpty()) { return null; }
+		if(data.isEmpty()) { return ZERO; } // avoid nullpointer exceptions
 		
 		BigDecimal sum = bigSum(data, precision, true);
 		sum = sum.setScale(precision, ROUND_UP); // won't calculate decimals if not set
-		if(sum == null) { return null; } 
+		if(sum == null) { return ZERO; } 
 		
 		BigDecimal count = new BigDecimal(data.size());
 		
@@ -159,7 +161,7 @@ public class CFWMath {
 	 * 
 	 * @param precision TODO
 	 * @param removeNulls TODO
-	 * @return sum value in the list, null if list is empty or all values are null
+	 * @return sum value in the list, zero if list is empty or all values are null
 	 ***********************************************************************************************/
 	public static BigDecimal bigSum(List<BigDecimal> values, int precision, boolean removeNulls) {
 		
@@ -169,7 +171,7 @@ public class CFWMath {
 		}
 		
 		while( data.remove(null) ); // remove all null values
-		if(data.isEmpty()) { return null; }
+		if(data.isEmpty()) { return ZERO; } // avoid nullpointer exceptions
 		
 		BigDecimal sum = ZERO.setScale(precision);
 
@@ -204,7 +206,7 @@ public class CFWMath {
 		int count = values.size();
 		
 		if(count == 0) {
-			return null;
+			return ZERO; // avoid null pointer exceptions
 		}
 		
 		int percentile = 50;
@@ -429,13 +431,13 @@ public class CFWMath {
 	 * @param period number of points that should be used for calculating the moving average
 	 * @param precision TODO
 	 * @param sensitivity 
-	 * @return boolean , null if list size is smaller than datapoints
+	 * @return boolean true if it is outlier, false if list size is smaller than datapoints
 	 ***********************************************************************************************/
 	public static Boolean bigIsOutlierModifiedZScore(List<BigDecimal> values, BigDecimal value, int precision, BigDecimal sensitivity) {
 		
-		if(value == null ) { return null; }
+		if(value == null ) { return false; }
 		while( values.remove(null) );
-		if(values.isEmpty() ) { return null; }
+		if(values.isEmpty() ) { return false; }
 		
 		if(sensitivity == null) {
 			sensitivity = new BigDecimal("3.5");
