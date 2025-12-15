@@ -1295,11 +1295,12 @@ label {
 
 .cfw-sticky-th {
     position: sticky;
-    top: 45px;
+    top: 45px;		/* TODO: because again of navbar getting in the way */
     z-index: 50;
     background: inherit;
 }
 
+.modal-body .cfw-sticky-th,  
 .cfwRecordContainer .cfw-sticky-th { /* For example inside a table cell*/
 	top: 0px;
 }

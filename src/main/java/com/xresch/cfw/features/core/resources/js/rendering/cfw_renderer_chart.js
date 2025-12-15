@@ -22,12 +22,81 @@ function cfw_renderer_chart_registerZoomCallback(callbackFunction){
  ******************************************************************/
 function cfw_renderer_chart_defaultOnDoubleClick(renderDef, chartSettings, data){ 
 
-	var chartDetailsDiv = $('<div class="w-100 h-100">'); 
-	var isVerticalize = (chartSettings.datamode == 'datapoints');
+	let chartDetailsDiv = $('<div class="w-100 h-100">'); 
+	let isVerticalize = (chartSettings.datamode == 'datapoints');
 	
-	//------------------------------
-	// Render Def	
-	var clonedRenderDef = _.cloneDeep(renderDef);
+	//==============================================
+	// Create Main Chart
+	//==============================================
+	let clonedRenderDef = _.cloneDeep(renderDef);
+	clonedRenderDef.rendererSettings.chart.height = "100%";
+	clonedRenderDef.rendererSettings.chart.width = null;
+	
+	let renderedChart = CFW.render.getRenderer('chart').render(clonedRenderDef);		
+			
+	let mainChartRow =  $('<div class="row vh-50">'); 
+	
+	let chartColumn =
+	 	$('<div class="col-12 vh-50">')
+			.append(renderedChart);
+			
+	mainChartRow.append(chartColumn);
+	
+	chartDetailsDiv
+		.append('<h3>Chart</h3>')
+		.append(mainChartRow);
+	
+	//==============================================
+	// Create Main Table
+	//==============================================
+	clonedRenderDef.rendererSettings.table = {
+					  filterable: false
+					, hover: true
+					, verticalize: isVerticalize
+					, stickyheader: true
+				};
+	clonedRenderDef.rendererSettings.dataviewer = {
+		download: true
+	};
+	
+	let renderedTable = CFW.render.getRenderer('dataviewer').render(clonedRenderDef);		
+
+	let mainTableRow =  $('<div class="row minvh-50">'); 
+
+	let tableColumn = 
+		$('<div class="col-12 maxvh-50" style="overflow: scroll;">')
+			.append(renderedTable);
+			
+	mainTableRow.append(tableColumn);
+	
+	chartDetailsDiv
+		.append('<h3>Data</h3>')
+		.append(mainTableRow);
+
+	//==============================================
+	// Create Main Chart
+	//==============================================
+
+	clonedRenderDef.rendererSettings.chart.height = "30vh";
+	clonedRenderDef.rendererSettings.chart.multichart = true;
+	clonedRenderDef.rendererSettings.chart.multichartcolumns = 3;
+
+	let renderedMultiChart = CFW.render.getRenderer('chart').render(clonedRenderDef);		
+			
+	let multiChartRow =  $('<div class="row minvh-50">'); 
+
+	let multiChartColumn =
+	 	$('<div class="col-12 maxvh-50">')
+			.append(renderedMultiChart);
+			
+	multiChartRow.append(multiChartColumn);
+	chartDetailsDiv
+		.append('<h3>Charts by Series</h3>')
+		.append(multiChartColumn);
+
+	/*//==============================================
+	// Create Other Charts
+	//==============================================	
 	clonedRenderDef.rendererSettings.chart.datamode = 'datasets';
 	clonedRenderDef.rendererSettings.chart.multichartcolumns = 1;
 	
@@ -40,40 +109,23 @@ function cfw_renderer_chart_defaultOnDoubleClick(renderDef, chartSettings, data)
 	for(index in data.datasets){
 		
 		var currentDataset = data.datasets[index];
-		
+
 		//------------------------------
 		// Chart 
 		clonedRenderDef.data = [currentDataset];
-		var renderedChart = CFW.render.getRenderer('chart').render(clonedRenderDef);		
+		let renderedChart = CFW.render.getRenderer('chart').render(clonedRenderDef);		
 		
-		//------------------------------
-		// Table
-		clonedRenderDef.data = currentDataset.originalData;
-
-		clonedRenderDef.rendererSettings.table = {
-						  filterable: false
-						, hover: true
-						, verticalize: isVerticalize
-					};
-		
-		var renderedTable = CFW.render.getRenderer('table').render(clonedRenderDef);		
-		
-
 		//------------------------------
 		// Create Details
 		
-		var row =  $('<div class="row maxvh-50">'); 
+		let row =  $('<div class="row minvh-30">'); 
 		
-		var chartColumn =
-		 	$('<div class="col-4 maxvh-50">')
+		let chartColumn =
+		 	$('<div class="col-4 minvh-30">')
 				.append(renderedChart);
 				
-		var tableColumn = 
-			$('<div class="col-8 maxvh-50" style="overflow: scroll;">')
-				.append(renderedTable);
 		
-		row.append(chartColumn)
-		   .append(tableColumn);
+		row.append(chartColumn);
 
 
 		chartDetailsDiv
@@ -81,7 +133,7 @@ function cfw_renderer_chart_defaultOnDoubleClick(renderDef, chartSettings, data)
 			.append(row);
 		
 		;
-	}
+	}*/
 	
 	//------------------------------
 	// Show Modal
