@@ -8,10 +8,10 @@ function cfw_renderer_texttable(renderDef) {
 	//-----------------------------------
 	// Render Specific settings
 	var defaultSettings = {
-		// the delimiter for the csv
-		delimiter: ',',
+		// Max column width in number of characters
+		maxwidth: 150,
 		// customizers used for customizing CSV values. Do only return text.
-		csvcustomizers: {}
+		texttablecustomizers: {}
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.csv);
@@ -52,8 +52,8 @@ function cfw_renderer_texttable(renderDef) {
 
 			// customizers (same as your CSV renderer)
 			var value = currentRecord[fieldname];
-			if(settings.csvcustomizers[fieldname] != undefined){
-				value = settings.csvcustomizers[fieldname](currentRecord, value, CFW_RENDER_NAME_CSV);
+			if(settings.texttablecustomizers[fieldname] != undefined){
+				value = settings.texttablecustomizers[fieldname](currentRecord, value, CFW_RENDER_NAME_CSV);
 			}
 
 			if (value == null) {
@@ -64,6 +64,7 @@ function cfw_renderer_texttable(renderDef) {
 				value = ("" + value)
 					.replaceAll('\n', '\\n')
 					.replaceAll('\r', '\\r')
+					.replaceAll('\t', '\\t')
 					.replaceAll('<', '&lt;');
 			}
 
@@ -74,7 +75,7 @@ function cfw_renderer_texttable(renderDef) {
 	}
 
 	//-----------------------------------
-	// Compute column widths using for loops
+	// Compute column widths 
 	let colWidths = [];
 	for (let c = 0; c < columns.length; c++) {
 		let max = 0;
@@ -82,7 +83,7 @@ function cfw_renderer_texttable(renderDef) {
 		for (let r = 0; r < tableData.length; r++) {
 			let cell = tableData[r][c];
 			if (cell.length > max) {
-				max = cell.length;
+				max = Math.min(cell.length, settings.maxwidth);
 			}
 		}
 
@@ -104,9 +105,16 @@ function cfw_renderer_texttable(renderDef) {
 		
 		for (let c = 0; c < values.length; c++) {
 			let currentVal = values[c];
-			let padded = (isNaN(currentVal)) ? 
-							values[c].padEnd(colWidths[c], " ")
-							: values[c].padStart(colWidths[c], " ") ;
+			currentVal = (currentVal.length <= settings.maxwidth) 
+								? currentVal
+								: currentVal.substr(0, settings.maxwidth - 5) + "[...]"
+								;
+								
+			let padded = (isNaN(currentVal)) 
+							? currentVal.padEnd(colWidths[c], " ")
+							: currentVal.padStart(colWidths[c], " ") 
+							;
+							
 			result += " " + padded + " |";
 		}
 		return result + "\r\n";
