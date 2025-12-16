@@ -29,8 +29,17 @@ function cfw_renderer_chart_defaultOnDoubleClick(renderDef, chartSettings, data)
 	// Create Main Chart
 	//==============================================
 	let clonedRenderDef = _.cloneDeep(renderDef);
+		
+	clonedRenderDef.visiblefields = null;
+	
 	clonedRenderDef.rendererSettings.chart.height = "100%";
 	clonedRenderDef.rendererSettings.chart.width = null;
+	clonedRenderDef.rendererSettings.chart.showaxes = true;
+	let type = clonedRenderDef.rendererSettings.chart.charttype;
+	
+	if(type != null){
+		clonedRenderDef.rendererSettings.chart.charttype = type.toLowerCase().replace("spark", "");
+	}
 	
 	let renderedChart = CFW.render.getRenderer('chart').render(clonedRenderDef);		
 			

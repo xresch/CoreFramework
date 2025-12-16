@@ -14,7 +14,7 @@ function cfw_renderer_texttable(renderDef) {
 		texttablecustomizers: {}
 	};
 	
-	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.csv);
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.texttable);
 	
 	//-----------------------------------
 	// Target Element
