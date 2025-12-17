@@ -603,7 +603,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 			+'	<label for="displayas">Display As:&nbsp;</label>'
 			+'	<select name="displayas" class="dataviewer-displayas form-control form-control-sm" '+onchangeAttribute+'>'
 		
-			for(index in dataviewerSettings.renderers){
+			for(let index in dataviewerSettings.renderers){
 				var renderer = dataviewerSettings.renderers[index];
 				var selected = (index == selectedRendererIndex) ? 'selected' : '';
 				
@@ -991,7 +991,7 @@ function cfw_renderer_dataviewer_createSortSelectHTML(dataviewerSettings, render
 
 			let ascendingHTML = ""; 
 			let descendingHTML = ""; 
-			for(index in sortoptions){
+			for(let index in sortoptions){
 				let fieldName = sortoptions[index];
 				let fielLabel = renderDef.getLabel(fieldName, CFW_RENDER_NAME_DATAVIEWER);
 				
@@ -1025,6 +1025,7 @@ function cfw_renderer_dataviewer_createSortSelectHTML(dataviewerSettings, render
 	if( ! Array.isArray(sortoptions) && typeof sortoptions == 'object'){
 			let ascendingHTML = ""; 
 			let descendingHTML = ""; 
+			let index = 0;
 			for(let fielLabel in sortoptions){
 				let fieldValue = sortoptions[fielLabel];
 				
@@ -1060,7 +1061,7 @@ function cfw_renderer_dataviewer_createSortSelectHTML(dataviewerSettings, render
 					
 				ascendingHTML += '<option value="'+sortbyFields+'" data-direction="'+sortbyDirections+'" '+selectedAsc+'>&uarr; '+fielLabel+'</option>';
 				descendingHTML += '<option value="'+sortbyFields+'" data-direction="'+sortbyDirectionsDesc+'" '+selectedDesc+'>&darr; '+fielLabel+'</option>';
-				
+				index++;
 			}
 		
 			html += ascendingHTML + descendingHTML;

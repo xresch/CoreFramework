@@ -901,7 +901,7 @@ function cfw_ui_createPrintView(title, description, doLandscape){
 	var stylesheets = $('link[rel="stylesheet"]');
 	for(let i = 0; i < stylesheets.length; i++){
 		let href = stylesheets.eq(i).attr('href');
-		if(!CFW.utils.isNullOrEmpty(href) && href.startsWith('/cfw')){
+		if(!CFW.utils.isNullOrEmpty(href)){
 			let cssLink = printView.document.createElement("link");
 			cssLink.rel = "stylesheet";
 			cssLink.media = "screen, print";
