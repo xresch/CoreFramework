@@ -30,6 +30,8 @@ function cfw_renderer_dataviewer(renderDef) {
 			download: false, 
 			// Toggle if the menu should include a store button for the data
 			store: false, 
+			// Toggle if the menu should include a print button for the data
+			print: false, 
 			// Defines how the pagination should be rendered
 			pagination: 'both', // either 'both' | 'top' | 'botton' | 'none' | true | false 
 			// The initial page to be drawn.
@@ -557,7 +559,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	}
 	
 	//--------------------------------------
-	// Display As
+	// Store Button
 
 	if(dataviewerSettings.store){
 		
@@ -570,8 +572,9 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 			+'</div>'
 			;
 	}
+	
 	//--------------------------------------
-	// Display As
+	// Download Button
 	if(dataviewerSettings.download){
 		
 		html += 
@@ -579,6 +582,20 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 				+'<label for="downloadButton">&nbsp;</label>'
 				+'<div name="downloadButton">'
 					+cfw_renderer_dataviewer_createDownloadButtonHTML(dataviewerID)
+				+'</div>'
+			+'</div>'
+			;
+	}
+	
+	//--------------------------------------
+	// Print Button
+	if(dataviewerSettings.print){
+		
+		html += 
+			'<div class="float-right ml-2">'
+				+'<label for="printButton">&nbsp;</label>'
+				+'<div name="printButton">'
+					+cfw_renderer_dataviewer_createPrintButtonHTML(dataviewerID)
 				+'</div>'
 			+'</div>'
 			;
@@ -692,7 +709,7 @@ function cfw_renderer_dataviewer_createPageListItem(dataviewerID, page, label, i
 function cfw_renderer_dataviewer_triggerDownload(dataviewerID, renderer) {
 	
 	let dataviewerDiv = $("#"+dataviewerID);
-	let renderDef = dataviewerDiv.data('renderDef');
+	let renderDef = _.cloneDeep(dataviewerDiv.data('renderDef'));
 	renderDef.visiblefields = null;
 	
 	let renderedResult = CFW.render.getRenderer(renderer).render(renderDef);
@@ -718,6 +735,152 @@ function cfw_renderer_dataviewer_triggerDownload(dataviewerID, renderer) {
 		break;
 
 	}
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_dataviewer_triggerPrint(dataviewerID) {
+	
+	//----------------------------
+	// Get Render Def
+	let dataviewerDiv = $("#"+dataviewerID);
+	let renderDef = _.cloneDeep(dataviewerDiv.data('renderDef'));
+	renderDef.menu = false;
+	renderDef.pagination = false;
+	
+	//----------------------------
+	// Get Dataviewer Params
+	var params = cfw_renderer_dataviewer_createParams(dataviewerDiv, 1);
+	
+	//----------------------------
+	// Prepare Final Def
+	rendererName = params.rendererName.trim().toLowerCase();
+	let finalDef = params.finalRenderDef;
+	finalDef.menu = false;
+	finalDef.pagination = false;
+
+	//----------------------------
+	// Prepare Print Options
+	let printOptions = $(`
+	<div class="form-group row ml-1">  
+		<label class="col-sm-3 col-form-label" for="cfw-print-title">Page Title:</label>   
+		<div class="col-sm-9 d-flex">
+			<div class="cfw-field-wrapper">
+				<input type="text" class="form-control" placeholder="Page Title(Optional)" id="cfw-print-title" onkeydown="return event.key != 'Enter';" value="Report" >
+			</div>
+		</div>
+	</div>
+	<div class="form-group row ml-1">  
+		<label class="col-sm-3 col-form-label" for="cfw-print-description">Description:</label>   
+		<div class="col-sm-9 d-flex">
+			<div class="cfw-field-wrapper">
+				<input type="text" class="form-control" placeholder="Description(Optional)" id="cfw-print-description" onkeydown="return event.key != 'Enter';" value="Data exported from EMP." >
+			</div>
+		</div>
+	</div>
+	<div class="form-group row ml-1">  
+			<label class="col-sm-3 col-form-label" for="cfw-print-landscape">Landscape:</label>   
+			<div class="col-sm-9 d-flex">
+				<div class="cfw-field-wrapper">
+					<input type="checkbox" class="" id="cfw-print-landscape" onkeydown="return event.key != 'Enter';">
+				</div>
+			</div>
+		</div>
+	`);
+	
+	//==============================================
+	// Create Buttons
+	let noneButton = $('<button class=" btn btn-sm btn-primary mb-3">None</button>');
+	noneButton.click(
+		function() {
+			$('#cfw-print-columnlist input').prop('checked', false);
+		});
+	let allButton = $('<button class="btn btn-sm btn-primary mb-3 mr-1">All</button>');
+	allButton.click(
+		function() {
+			$('#cfw-print-columnlist input').prop('checked', true);
+		});
+	//----------------------------
+	// Prepare Checkbox Options
+	let renderer = CFW.render.getRenderer(rendererName);
+	renderer.prepareDefinition(finalDef);
+
+	let checkboxWrapper = $('<div id="cfw-print-columnlist">');
+	let checkboxArray = [];
+	
+	for(let i in finalDef.visiblefields){
+		fieldname = finalDef.visiblefields[i];
+		fieldnameSafe = fieldname.replace('"', '\"'); 
+		
+		let label = $('<label for="'+fieldnameSafe+'">'+fieldname+'</label>')
+		let checkbox = $('<input id="'+fieldnameSafe+'" name="'+fieldnameSafe+'" type="checkbox" checked="checked">')
+		checkbox.data("fieldname", fieldname);
+		
+		let labelledBox = $('<div>');
+		
+		labelledBox.append(checkbox);
+		labelledBox.append(label);
+		checkboxWrapper.append(labelledBox);
+		
+		checkboxArray.push(checkbox);
+		
+	}
+	
+	//==============================================
+	// Create Button
+	let button = $('<button class="col-3 btn btn-sm btn-primary mt-3">Create Print View</button>');
+	button.click(
+		function() {
+			//----------------------------
+			// Get Visible Fields
+			let title = $('#cfw-print-title').val();
+			let description = $('#cfw-print-description').val();
+			let doLandscape = $('#cfw-print-landscape').prop('checked');
+			//----------------------------
+			// Get Visible Fields
+			let visibles = []
+			for(let i in checkboxArray){
+				let box = checkboxArray[i];
+				if(box.prop('checked') == true){
+					visibles.push(box.data('fieldname'));
+				}
+			}
+			finalDef.visiblefields = visibles;
+			
+			let renderResult = renderer.render(finalDef);
+
+			let printView = CFW.ui.createPrintView(title, description, doLandscape);
+			printView.append(renderResult);
+		});
+		
+	//==============================================
+	// Show the Modal
+	
+	let allWrapper = $('<div>');
+	allWrapper.append('<h4>Print Options:</h4>');
+	allWrapper.append(printOptions);
+	allWrapper.append('<h4>Select Columns:</h4>');
+	allWrapper.append(noneButton);
+	allWrapper.append(allButton);
+	allWrapper.append(checkboxWrapper);
+	allWrapper.append(`
+		<p class="mt-3"><b class="text-cfw-red">IMPORTANT: </b>After creating the print view in Chrome or Edge:</p>
+		<ul> 
+			<li>Use Ctrl+P to open the print dialog.</li>
+			<li>Choose &quot;Save As PDF&quot; and not &quot;Microsoft Print to PDF&quot;.</li>
+			<li>If data is cut off on the right: Under &quot;More Settings &gt;&gt; Scale&quot; choose Custom and adjust the percentage.</li>
+			<li>If colors are not shown: Enable &quot;More Settings &gt;&gt; Options &gt;&gt; Background Graphics&quot;.</li>
+
+		</ul>
+		</p>`);
+	allWrapper.append(button);
+	
+	CFW.ui.showModalMedium(
+			  "Create Print View"
+			, allWrapper
+			);
+
 }
 
 /******************************************************************
@@ -756,6 +919,25 @@ function cfw_renderer_dataviewer_createDownloadButtonHTML(dataviewerID) {
 		+'</div>';
 		
 	return dropdownHTML;
+
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_dataviewer_createPrintButtonHTML(dataviewerID) {
+	
+	var buttonID = 'printdataMenuButton'+CFW.utils.randomString(12);
+	
+	var printbuttonHTML = 
+		  '<button  type="button" class="btn btn-sm btn-primary"'
+				+' id="'+buttonID+'" '
+				+' onclick="cfw_renderer_dataviewer_triggerPrint(\''+dataviewerID+'\')">'
+		+ '  <i class="fas fa-print"></i>'
+		+ '</button>'
+		;
+		
+	return printbuttonHTML;
 
 }
 

@@ -882,15 +882,16 @@ function cfw_ui_waitForAppear(selector, timeoutMillis) {
 * can put the content inside which you want to print.
 * @param title title at the top of the page(optional)
 * @param description after the title(optional)
+* @param doLandscape true for landscape, false for portrait
 * @return jQueryElement a div you can write the content to print to.
 *********************************************************************************/
-function cfw_ui_createPrintView(title, description){
+function cfw_ui_createPrintView(title, description, doLandscape){
 	
 	//--------------------------
 	// Create Window
 	var hostURL = CFW.http.getHostURL();
 	var printView = window.open();
-	
+
 	var printBox = printView.document.createElement("div");
 	printBox.id = "cfw-manual-printview-box";
 	printView.document.body.appendChild(printBox);
@@ -944,45 +945,54 @@ function cfw_ui_createPrintView(title, description){
 	//--------------------------
 	//Create CSS
 	
-	var cssString = '<style  media="print, screen">'
-		+'html, body {'
-			+'margin: 0px;'
-			+'padding: 0px;'
-			+'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";'
-		+'}'
-		+'table, pre, code, p { page-break-inside:auto }'
-		+'tr    { page-break-inside:avoid; page-break-after:auto }'
-		+'#paper {'
-			+'padding: 20mm;'
-			+'width: 100%;'
-			+'border-collapse: collapse;'
-		+'}'
-		+'img{'
-			+'padding-bottom: 5mm;' 
-		+'}'
-		+'h1{'
-			+'page-break-before: always;' 
-		+'}'
-		+'.page-break{'
-			+'page-break-before: always;' 
-		+'}'
-		+'.cfw-toc-header{'
-			+'page-break-before: avoid;' 
-		+'}'
-		+'h1 {font-size: 32px;}' 
-		+'h2 {font-size: 30px;}' 
-		+'h3 {font-size: 28px;}' 
-		+'h4 {font-size: 26px;}'
-		+'h5 {font-size: 24px;}'
-		+'h6 {font-size: 22px;}'
-		+'div, p, span, table {font-size: 20px;}' 
-		+'h1, h2, h3, h4, h5, h6{'
-			+'padding-top: 5mm;' 
-		+'}'
-		+'#print-toc > h1, #doc-title, h1 + div > h1,  h1 + div > .page-break, h2 + div > .page-break, h3 + div > .page-break, h4 + div > .page-break{'
-			+'page-break-before: avoid;' 
-		+'}'
-		+'</style>';
+	var cssString = `<style media="print, screen">
+		html, body {
+			margin: 0px;
+			padding: 0px;
+			print-color-adjust: exact;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+		}
+		table, pre, code, p { page-break-inside:auto }
+		tr    { page-break-inside:avoid; page-break-after:auto }
+		#paper {
+			padding: 20mm;
+			width: 100%;
+			border-collapse: collapse;
+		}
+		img{
+			padding-bottom: 5mm;
+		}
+		h1{
+			page-break-before: always;
+		}
+		.page-break{
+			page-break-before: always;
+		}
+		.cfw-toc-header{ page-break-before: avoid; }
+		h1 {font-size: 32px;}
+		h2 {font-size: 30px;}
+		h3 {font-size: 28px;}
+		h4 {font-size: 26px;}
+		h5 {font-size: 24px;}
+		h6 {font-size: 22px;}
+		div, p, span, table {font-size: 20px;}
+		h1, h2, h3, h4, h5, h6{
+			padding-top: 5mm;
+		}
+		#print-toc > h1, #doc-title, h1 + div > h1,  h1 + div > .page-break, h2 + div > .page-break, h3 + div > .page-break, h4 + div > .page-break{
+			page-break-before: avoid;
+		}
+		.cfw-sticky-th{ position: unset; }
+		th, .cfw-sticky-th, th.bg-dark {
+			color: black !important;
+			background: transparent !important;
+		}
+		@page{ size: ` + (doLandscape ? 'landscape' : 'portrait') + `; }
+
+	</style>
+	
+	`
+		;
 	
 	parent.append(cssString);
 	
