@@ -223,9 +223,6 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	// Initialize
 	let params = cfw_renderer_dataviewer_createParams(dataviewerIDOrJQuery, pageToRender);
 	
-	//let dataviewerDiv = params.dataviewerDiv ;
-	//let targetDiv = params.targetDiv ;
-	//let dataviewerID = params.dataviewerID ;
 	let settingsDiv = params.settingsDiv ;
 	let finalRenderDef = params.finalRenderDef ;
 	let settings = params.settings ;
@@ -252,8 +249,72 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	}
 	
 	//=====================================================
-	// Create sorting function
+	// Get Render Results
+	if(settings.datainterface.url == null){
+		cfw_renderer_dataviewer_filterAndSort(params);
+		cfw_renderer_dataviewer_renderPage(params);
+	}else{
+		
+		//-------------------------------------
+		// Dynamic
+		let httpParams = {};
+		httpParams[settings.datainterface.actionparam] = "fetchpartial";
+		httpParams[settings.datainterface.sizeparam] = pageSize;
+		httpParams[settings.datainterface.pageparam] = pageToRender;
+		httpParams[settings.datainterface.filterqueryparam] = filterquery;
+		httpParams[settings.datainterface.itemparam] = settings.datainterface.item;
+		httpParams[settings.datainterface.sortbyparam] = sortbyFields;
+		httpParams[settings.datainterface.sortascendingparam] = (sortbyDirection == 'desc') ? false : true;
+
+		for(key in settings.datainterface.customparams){
+			httpParams[key] = settings.datainterface.customparams[key];
+		}
+		
+		CFW.http.getJSON(settings.datainterface.url, httpParams, function(data){
+			
+			if(data.payload != null){
+				let dataToRender = data.payload;
+				let totalRecords = (dataToRender.length > 0) ? dataToRender[0][settings.datainterface.totalrowsfield] : 0;
+				
+				//----------------------------------
+				// Call preprocess function
+				if(settings.datainterface.preprocess != null){
+					settings.datainterface.preprocess(dataToRender);
+				}
+				params.totalRecords = totalRecords;
+				params.dataToRender = dataToRender;
+				cfw_renderer_dataviewer_renderPage(params);
+				
+				
+			}
+		}
+	);
+	}
 	
+	//----------------------------------
+	// Callback
+	if(settings.postprocess != null){
+		settings.postprocess($(dataviewerIDOrJQuery));
+	}
+			
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_dataviewer_filterAndSort(params) {
+	
+	let finalRenderDef = params.finalRenderDef ;
+	let settings = params.settings ;
+	let filterquery = params.filterquery ;
+	let sortbyFields = params.sortbyFields ;
+	let sortbyDirection = params.sortbyDirection ;
+	let offset = params.offset ;
+	let pageSize = params.pageSize;
+	
+	//=====================================================
+	// Create sorting function
+
 	//default to "asc" if undefined
 	let sortDirectionArray = [];
 	let sortFunctionArray = [];
@@ -306,107 +367,56 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			}
 		);
 	}
-
 	
-	//=====================================================
-	// Get Render Results
-	if(settings.datainterface.url == null){
-
-		//-------------------------------------
-		// In Browser Data 
-		let sortedData = finalRenderDef.data;
+	//-------------------------------------
+	// In Browser Data 
+	let sortedData = finalRenderDef.data;
+	
+	//---------------------------------
+	// Filter
+	if( ! CFW.utils.isNullOrEmpty(filterquery) ){
 		
-		//---------------------------------
-		// Filter
-		if( ! CFW.utils.isNullOrEmpty(filterquery) ){
-			
-
-			filterquery = filterquery.toLowerCase();
-			
-			let regex = null;
-			if(filterquery.indexOf("*") > -1){
-				regex =  new RegExp(filterquery.replace(/\*/g, '.*'));
-			}
-
-			let filteredData = _.filter(finalRenderDef.data, function(o) { 
-				let jsonString = JSON.stringify(o).toLowerCase();
-				
-				return ( 
-				  (regex == null && jsonString.indexOf(filterquery) > -1)
-				  || (regex != null && regex.test(jsonString) )
-			  );
-
-			});
-			
-			sortedData = filteredData;
-			
-		}
+		filterquery = filterquery.toLowerCase();
 		
-		//---------------------------------
-		// Sort
-		if(settings.sortable && sortbyFields != null){
-			sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
+		let regex = null;
+		if(filterquery.indexOf("*") > -1){
+			regex =  new RegExp(filterquery.replace(/\*/g, '.*'));
 		}
-		
-		//---------------------------------
-		// Pagination
-		let totalRecords = sortedData.length;
-		let dataToRender = _.slice(sortedData, offset, offset+pageSize);
-		if(pageSize == -1
-		|| settings.pagination == 'none'
-		|| settings.pagination == false ){
-			// reset to unpaginated 
-			dataToRender = sortedData;
-		}
-		params.totalRecords = totalRecords;
-		params.dataToRender = dataToRender;
-		cfw_renderer_dataviewer_renderPage(params);
-	}else{
-		
-		//-------------------------------------
-		// Dynamic
-		let httpParams = {};
-		httpParams[settings.datainterface.actionparam] = "fetchpartial";
-		httpParams[settings.datainterface.sizeparam] = pageSize;
-		httpParams[settings.datainterface.pageparam] = pageToRender;
-		httpParams[settings.datainterface.filterqueryparam] = filterquery;
-		httpParams[settings.datainterface.itemparam] = settings.datainterface.item;
-		httpParams[settings.datainterface.sortbyparam] = sortbyFields;
-		httpParams[settings.datainterface.sortascendingparam] = (sortbyDirection == 'desc') ? false : true;
 
-		for(key in settings.datainterface.customparams){
-			httpParams[key] = settings.datainterface.customparams[key];
-		}
-		
-		CFW.http.getJSON(settings.datainterface.url, httpParams, function(data){
+		let filteredData = _.filter(finalRenderDef.data, function(o) { 
+			let jsonString = JSON.stringify(o).toLowerCase();
 			
-			if(data.payload != null){
-				let dataToRender = data.payload;
-				let totalRecords = (dataToRender.length > 0) ? dataToRender[0][settings.datainterface.totalrowsfield] : 0;
-				
-				//----------------------------------
-				// Call preprocess function
-				if(settings.datainterface.preprocess != null){
-					settings.datainterface.preprocess(dataToRender);
-				}
-				params.totalRecords = totalRecords;
-				params.dataToRender = dataToRender;
-				cfw_renderer_dataviewer_renderPage(params);
-				
-				
-			}
-		}
-	);
+			return ( 
+			  (regex == null && jsonString.indexOf(filterquery) > -1)
+			  || (regex != null && regex.test(jsonString) )
+		  );
+
+		});
+		
+		sortedData = filteredData;
+		
 	}
 	
-	//----------------------------------
-	// Callback
-	if(settings.postprocess != null){
-		settings.postprocess($(dataviewerIDOrJQuery));
+	//---------------------------------
+	// Sort
+	if(settings.sortable && sortbyFields != null){
+		sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
 	}
-			
+	
+	//---------------------------------
+	// Pagination
+	let totalRecords = sortedData.length;
+	let dataToRender = _.slice(sortedData, offset, offset+pageSize);
+	if(pageSize == -1
+	|| settings.pagination == 'none'
+	|| settings.pagination == false ){
+		// reset to unpaginated 
+		dataToRender = sortedData;
+	}
+	params.totalRecords = totalRecords;
+	params.dataToRender = dataToRender;
+	
 }
-
 /******************************************************************
  * 
  ******************************************************************/
@@ -730,20 +740,20 @@ function cfw_renderer_dataviewer_triggerPrint(dataviewerID) {
 	// Get Render Def
 	let dataviewerDiv = $("#"+dataviewerID);
 	let renderDef = _.cloneDeep(dataviewerDiv.data('renderDef'));
-	renderDef.menu = false;
-	renderDef.pagination = false;
 	
 	//----------------------------
 	// Get Dataviewer Params
 	var params = cfw_renderer_dataviewer_createParams(dataviewerDiv, 1);
+	params.settings.menu = false;
+	params.settings.pagination = false;
+	cfw_renderer_dataviewer_filterAndSort(params);
 	
 	//----------------------------
 	// Prepare Final Def
-	rendererName = params.rendererName.trim().toLowerCase();
 	let finalDef = params.finalRenderDef;
-	finalDef.menu = false;
-	finalDef.pagination = false;
-
+	rendererName = params.rendererName.trim().toLowerCase();
+	finalDef.data = params.dataToRender;
+	
 	//----------------------------
 	// Prepare Print Options
 	let printOptions = $(`
