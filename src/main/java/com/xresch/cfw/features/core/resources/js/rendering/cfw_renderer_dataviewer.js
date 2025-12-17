@@ -859,13 +859,13 @@ function cfw_renderer_dataviewer_triggerPrint(dataviewerID) {
 	allWrapper.append(allButton);
 	allWrapper.append(checkboxWrapper);
 	allWrapper.append(`
-		<p class="mt-3"><b class="text-cfw-red">IMPORTANT: </b>After creating the print view in Chrome or Edge:</p>
+		<p class="mt-3"><b class="text-cfw-red">IMPORTANT:&nbsp;</b>After creating the print view in Chrome or Edge:</p>
 		<ul> 
-			<li>Use Ctrl+P to open the print dialog.</li>
-			<li>Choose &quot;Save As PDF&quot; and not &quot;Microsoft Print to PDF&quot;.</li>
-			<li>If data is cut off on the right: Under &quot;More Settings &gt;&gt; Scale&quot; choose Custom and adjust the percentage.</li>
-			<li>If colors are not shown: Enable &quot;More Settings &gt;&gt; Options &gt;&gt; Background Graphics&quot;.</li>
-
+			<li><b>Print Dialog:&nbsp;</b>Use Ctrl+P to open the print dialog.</li>
+			<li><b>Save PDF:&nbsp;</b>Choose &quot;Save As PDF&quot; and not &quot;Microsoft Print to PDF&quot;.</li>
+			<li><b>Cut Off Data:&nbsp;</b>If data is cut off on the right: Under &quot;More Settings &gt;&gt; Scale&quot; choose Custom and adjust the percentage.</li>
+			<li><b>Missing Colors:&nbsp;</b>If colors are not shown: Enable &quot;More Settings &gt;&gt; Options &gt;&gt; Background Graphics&quot;.</li>
+			<li><b>No Charts:&nbsp;</b> This feature does not support charts in print views.</li>
 		</ul>
 		</p>`);
 	allWrapper.append(button);
