@@ -933,7 +933,7 @@ function cfw_ui_createPrintView(title, description, doLandscape){
 	for(let i = 0; i < javascripts.length; i++){
 
 		let source = javascripts.eq(i).attr('src');
-		if(!CFW.utils.isNullOrEmpty(source) && source.startsWith('/cfw')){
+		if(!CFW.utils.isNullOrEmpty(source)){
 			let script = printView.document.createElement("script");
 			script.src = hostURL+source;
 			printView.document.head.appendChild(script);

@@ -255,14 +255,17 @@ function cfw_loadLocalization(){
 	// 
 	if(CFW.cache.lang == null){
 		$.ajaxSetup({async: false});
-			cfw_http_getJSON("/cfw/locale", {id: JSDATA.localeIdentifier}, function(data, status, xhr){
+		
+			let localeID = (typeof JSDATA !== 'undefined')  ? JSDATA.localeIdentifier : "en_/";
+			
+			cfw_http_getJSON("/cfw/locale", {id: localeID}, function(data, status, xhr){
 				
 				if (xhr.status == 200){
-					window.localStorage.setItem("lang-"+JSDATA.localeIdentifier, JSON.stringify(data.payload) );
+					window.localStorage.setItem("lang-"+localeID, JSON.stringify(data.payload) );
 					CFW.cache.lang = data.payload;
 				}else if (xhr.status == 304){
 					//CFW.cache.lang = data.payload;
-					CFW.cache.lang = JSON.parse(window.localStorage.getItem("lang-"+JSDATA.localeIdentifier));
+					CFW.cache.lang = JSON.parse(window.localStorage.getItem("lang-"+localeID));
 				}
 
 			});
@@ -270,7 +273,7 @@ function cfw_loadLocalization(){
 		
 		//if load not successful, try to fall back to localStorage
 		if(CFW.cache.lang == null){
-			CFW.cache.lang = JSON.parse(window.localStorage.getItem("lang-"+JSDATA.localeIdentifier));
+			CFW.cache.lang = JSON.parse(window.localStorage.getItem("lang-"+localeID));
 		}
 	}
 }
