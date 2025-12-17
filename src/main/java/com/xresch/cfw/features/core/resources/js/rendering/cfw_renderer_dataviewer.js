@@ -313,33 +313,14 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	if(settings.datainterface.url == null){
 
 		//-------------------------------------
-		// Static 
-		if(CFW.utils.isNullOrEmpty(filterquery)){
+		// In Browser Data 
+		let sortedData = finalRenderDef.data;
+		
+		//---------------------------------
+		// Filter
+		if( ! CFW.utils.isNullOrEmpty(filterquery) ){
 			
-			//---------------------------------
-			// Sort
-			let sortedData = finalRenderDef.data;
-			if(settings.sortable && sortbyFields != null){
-				sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
-			}
-			
-			//---------------------------------
-			// Pagination
-			let totalRecords = sortedData.length;
-			let dataToRender = _.slice(sortedData, offset, offset+pageSize);
-			if(pageSize == -1
-			|| settings.pagination == 'none'
-			|| settings.pagination == false ){
-				// reset to unpaginated 
-				dataToRender = sortedData;
-			}
-			params.totalRecords = totalRecords;
-			params.dataToRender = dataToRender;
-			cfw_renderer_dataviewer_renderPage(params);
-		}else{
-			
-			//---------------------------------
-			// Filter
+
 			filterquery = filterquery.toLowerCase();
 			
 			let regex = null;
@@ -357,26 +338,29 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 
 			});
 			
-			//---------------------------------
-			// Sort
-			let sortedData = filteredData;
-			if(settings.sortable && sortbyFields != null){
-				sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
-			}
+			sortedData = filteredData;
 			
-			//---------------------------------
-			// Pagination
-			let totalRecords = sortedData.length;
-			let dataToRender = _.slice(sortedData, offset, offset+pageSize);
-			if(pageSize == -1
-			|| settings.pagination == 'none'
-			|| settings.pagination == false ){
-				dataToRender = sortedData;
-			}	
-			params.totalRecords = totalRecords;
-			params.dataToRender = dataToRender;
-			cfw_renderer_dataviewer_renderPage(params);
 		}
+		
+		//---------------------------------
+		// Sort
+		if(settings.sortable && sortbyFields != null){
+			sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
+		}
+		
+		//---------------------------------
+		// Pagination
+		let totalRecords = sortedData.length;
+		let dataToRender = _.slice(sortedData, offset, offset+pageSize);
+		if(pageSize == -1
+		|| settings.pagination == 'none'
+		|| settings.pagination == false ){
+			// reset to unpaginated 
+			dataToRender = sortedData;
+		}
+		params.totalRecords = totalRecords;
+		params.dataToRender = dataToRender;
+		cfw_renderer_dataviewer_renderPage(params);
 	}else{
 		
 		//-------------------------------------
