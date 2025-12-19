@@ -947,16 +947,29 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 	}
 	
 	/******************************************************************************************************
-	 * Returns true if both values are of the same type and have the same value
+	 * Returns true if both values have the same string value.
 	 ******************************************************************************************************/
 	@Override
 	public boolean equals(Object obj) {
+		
+		//---------------------------------
+		// Basic checks
 		if (this == obj)				 	{ return true;  }
 		if (obj == null) 					{ return false; }
 		if (getClass() != obj.getClass()) 	{ return false; }
 		
+		//---------------------------------
+		// Null Checks
 		QueryPartValue other = (QueryPartValue) obj;
-		return type == other.type && Objects.equals(value, other.value);
+		
+		if (value == null) { 
+			if(other.value == null) { return true; }
+			return false; 
+		}
+		
+		//---------------------------------
+		// Compare
+		return this.getAsString().equals( other.getAsString() );
 	}
 
 	/******************************************************************************************************

@@ -1,0 +1,41 @@
+
+<p>This function is used to get lists of successive distinct values by their string representation. It supports aggregation and can be used in aggregation commands.
+Values types are ignored, a string &quot;42&quot; is considered the same as number 42, same with string &quot;true&quot; and boolean true.</p>
+
+<p>Following query creates random records and uses the distinct-function for aggregation:</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| keep FIRSTNAME
+| set VALUE = if( random(0,20) &lt; 19
+				, random(0,3)
+				, null)
+| stats by=[FIRSTNAME] 
+	# regular count 
+	COUNT=count() 
+	MIN=min(VALUE) 
+	AVG=avg(VALUE) 
+	MAX=max(VALUE)
+	DISTINCT=distinctStream(VALUE) 					# returns an array of successive distinct values
+	DISTINCT_NONULLS=distinctStream(VALUE, false) 	# returns an array of successive distinct values, excluding null values
+	DISTINCT_SORT=distinctStream(VALUE, false, true) # returns an sorted array of successive distinct values
+| sort FIRSTNAME reverse=true</code></pre>
+
+<p>Here some examples of the distinct-function when used outside of an aggregation command:</p>
+<pre><code class="language-cfwquery">| source empty
+| set
+	DISTINCT_EMPTY		= distinctStream() 		#returns null
+	DISTINCT_NULL		= distinctStream(null) 	#returns null
+	DISTINCT_NUMBER		= distinctStream(123) 	#returns 123
+	DISTINCT_BOOLEAN	= distinctStream(true) 	#returns true
+	DISTINCT_STRING		= distinctStream("for fluff's sake") # returns "for fluff's sake"
+	DISTINCT_ARRAY		= distinctStream(['a', 'a', 'B', 'B', 'C!', 'C!']) 						# returns ["a", "B", "C!"]
+	DISTINCT_OBJECT		= distinctStream({a: "one", b: true, c: true, d: "one", e: 3, f: 3}) 	# returns ["one", true, "one", 3]
+	NULLS				= distinctStream(['a', 'a', null, null, 'b', null, null ]) 				# returns ["a", null, "b", null]
+	NO_NULLS			= distinctStream(['a', 'a', 'b', null, null ], false) 					# returns ["a", "b"]
+	DO_SORT 			= distinctStream(['c', 'a', 'b', 'c'], false, true) 					# returns ["a", "b", "c", "c"]
+	DO_NOT_SORT			= distinctStream(['c', 'a', 'b', 'c']) 									# returns ["c", "a", "b", "c"]
+	TYPES				= distinctStream(['1', 1, '2', 2, 'true', true, 1, '1']) 				# returns ["1", "2", "true", 1]</code></pre>
+
+
+
+
+

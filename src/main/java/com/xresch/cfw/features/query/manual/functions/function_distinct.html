@@ -1,5 +1,6 @@
 
-<p>This function is used to get lists of distinct values. It supports aggregation and can be used in aggregation commands.</p>
+<p>This function is used to get lists of distinct values by their string representation. It supports aggregation and can be used in aggregation commands.
+Values types are ignored, a string &quot;42&quot; is considered the same as number 42, same with string &quot;true&quot; and boolean true.</p>
 
 <p>Following query creates random records and uses the distinct-function for aggregation:</p>
 <pre><code class="language-cfwquery">| source random records=1000
@@ -31,7 +32,8 @@
 	NO_NULLS			= distinct(['a', 'a', 'b', null, null ], false) 				# returns ["a", "b"]
 	NULLS				= distinct(['a', 'a', 'b', null, null ], true) 					# returns ["a", "b", null]
 	DO_SORT 			= distinct(['c', 'a', 'b', null ], false) 						# returns ["a", "b", "c"]
-	DO_NOT_SORT			= distinct(['c', 'a', 'b', null ], false, false) 				# returns ["c", "a", "b"]</code></pre>
+	DO_NOT_SORT			= distinct(['c', 'a', 'b', null ], false, false) 				# returns ["c", "a", "b"]
+	TYPES				= distinct(['1', 1, '2', 2, 'true', true]) 						# returns ["1", "2", "true"]</code></pre>
 
 
 
