@@ -207,6 +207,21 @@ public class TestCFWCSV {
 		Assertions.assertEquals("1", splitted.get(++i));
 		Assertions.assertEquals("2", splitted.get(++i));
 		Assertions.assertEquals("", splitted.get(++i));
+		
+		//---------------------------------
+		// Unquoted with quotes
+		//---------------------------------
+		splitted = CFW.CSV.splitCSVQuotesAware(";", """
+				["Test"]; ["Test","Bla"]; x"y"z 
+				""");
+		
+		System.out.println("splitted: "+CFW.JSON.toJSON(splitted));
+		
+		i=-1;
+		Assertions.assertEquals(3, splitted.size());
+		Assertions.assertEquals("[\"Test\"]", splitted.get(++i));
+		Assertions.assertEquals("[\"Test\",\"Bla\"]", splitted.get(++i));
+		Assertions.assertEquals("x\"y\"z", splitted.get(++i));
 	
 	}
 	

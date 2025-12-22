@@ -77,8 +77,10 @@ public class CFWCSV {
 			
 			//----------------------------
 			// Grab Quoted Text
+			boolean isQuoted = false;
+			
 			if(current == '"') {
-				
+				isQuoted = true;
 				//----------------------------
 				// Prevent Endless Loops
 				if(cursor == LENGTH-1) {
@@ -183,7 +185,7 @@ public class CFWCSV {
 				separatorSkipped = false;
 				current = line.charAt(cursor);
 				
-				if(current == '"' ) { break; } // break and go let quotes section do the work
+				if(current == '"' && isQuoted ) { break; } // break and go let quotes section do the work
 	
 				if(current == separatorFirstChar
 				&& line.substring(cursor).startsWith(separator)) {
