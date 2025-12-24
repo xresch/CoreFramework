@@ -638,7 +638,8 @@ function cfw_query_formatPercent(span, value, greenThreshold, redThreshold, type
 		cfw_query_formatShowNulls(span, value, true);
 		return;
 	}else if(typeof value === "boolean"){
-		cfw_query_formatBoolean(span, value);
+		// do not do that, to much colors
+		//cfw_query_formatBoolean(span, value);
 		return;
 	}else if(typeof value !== "number"){
 		return;
@@ -649,16 +650,17 @@ function cfw_query_formatPercent(span, value, greenThreshold, redThreshold, type
 	if(redThreshold === undefined )		{ redThreshold = 0; }
 	if(redThreshold === undefined )		{ greenThreshold = 0; }
 	if(type 		=== undefined )		{ type = 'bg'; }
-	if(neutralColor === undefined )		{ neutralColor = null; }
+	if(neutralColor === undefined )		{ neutralColor = ""; }
 	
 	//------------------------------
 	// Add Styles
 	span.addClass('w-100 text-right font-weight-bold');
 		
 	var style = CFW.colors.getSplitThresholdStyle(value, greenThreshold, redThreshold, false);
-	style = (style == CFW.style.notevaluated && neutralColor != null) ? neutralColor : style;
+	style = (style == CFW.style.notevaluated) ? neutralColor : style;
 	
-	if(type == 'bg'){
+	console.log("style: "+style)
+	if(type == 'bg' && style != ""){
 		CFW.colors.colorizeElement(span, "white", "text");
 	}
 	

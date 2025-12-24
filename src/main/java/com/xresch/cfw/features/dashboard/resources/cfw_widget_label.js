@@ -31,7 +31,10 @@
 						target = "" ;
 					}
 					if(widgetObject.JSON_SETTINGS.link != null && widgetObject.JSON_SETTINGS.link != ''){
-						labelHTML += '<a '+target+' class="text-'+widgetObject.FGCOLOR+'" href="'+widgetObject.JSON_SETTINGS.link+'">'+widgetObject.JSON_SETTINGS.label+'</a>'
+						labelHTML += '<a '+target
+									+' class="text-'+widgetObject.FGCOLOR
+									+'" href="'+widgetObject.JSON_SETTINGS.link.replaceAll('"', "&quot;")
+									+'">'+widgetObject.JSON_SETTINGS.label+'</a>'
 						+'</span></div>'; 
 					}else{
 						labelHTML += widgetObject.JSON_SETTINGS.label
