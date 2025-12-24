@@ -55,41 +55,15 @@ function cfw_renderer_chart_defaultOnDoubleClick(renderDef, chartSettings, data)
 		.append('<h3>Chart</h3>')
 		.append(mainChartRow);
 	
-	//==============================================
-	// Create Main Table
-	//==============================================
-	clonedRenderDef.rendererSettings.table = {
-					  filterable: false
-					, hover: true
-					, verticalize: isVerticalize
-					, stickyheader: true
-				};
-	clonedRenderDef.rendererSettings.dataviewer = {
-		download: true
-	};
-	
-	let renderedTable = CFW.render.getRenderer('dataviewer').render(clonedRenderDef);		
-
-	let mainTableRow =  $('<div class="row minvh-50">'); 
-
-	let tableColumn = 
-		$('<div class="col-12 maxvh-50" style="overflow: scroll;">')
-			.append(renderedTable);
-			
-	mainTableRow.append(tableColumn);
-	
-	chartDetailsDiv
-		.append('<h3>Data</h3>')
-		.append(mainTableRow);
 
 	//==============================================
-	// Create Main Chart
+	// Create Multiple Charts
 	//==============================================
 
 	clonedRenderDef.rendererSettings.chart.height = "30vh";
 	clonedRenderDef.rendererSettings.chart.multichart = true;
 	clonedRenderDef.rendererSettings.chart.multichartcolumns = 3;
-
+	clonedRenderDef.rendererSettings.chart.showlegend = true;
 	let renderedMultiChart = CFW.render.getRenderer('chart').render(clonedRenderDef);		
 			
 	let multiChartRow =  $('<div class="row minvh-50">'); 
@@ -102,48 +76,35 @@ function cfw_renderer_chart_defaultOnDoubleClick(renderDef, chartSettings, data)
 	chartDetailsDiv
 		.append('<h3>Charts by Series</h3>')
 		.append(multiChartColumn);
-
-	/*//==============================================
-	// Create Other Charts
-	//==============================================	
-	clonedRenderDef.rendererSettings.chart.datamode = 'datasets';
-	clonedRenderDef.rendererSettings.chart.multichartcolumns = 1;
 	
-	// remove labels as they might be displayed wrongly
-	clonedRenderDef.rendererSettings.chart.xlabel = null;
-	clonedRenderDef.rendererSettings.chart.ylabel = null;
-	
-	//------------------------------
-	// Iterate Datasets
-	for(index in data.datasets){
-		
-		var currentDataset = data.datasets[index];
+	//==============================================
+	// Create Stats  Table
+	//==============================================
+	clonedRenderDef.rendererSettings.table = {
+					  filterable: false
+					, hover: true
+					, verticalize: isVerticalize
+					, stickyheader: true
+				};
+	clonedRenderDef.rendererSettings.dataviewer = {
+		download: true
+		, print: true
+	};
 
-		//------------------------------
-		// Chart 
-		clonedRenderDef.data = [currentDataset];
-		let renderedChart = CFW.render.getRenderer('chart').render(clonedRenderDef);		
-		
-		//------------------------------
-		// Create Details
-		
-		let row =  $('<div class="row minvh-30">'); 
-		
-		let chartColumn =
-		 	$('<div class="col-4 minvh-30">')
-				.append(renderedChart);
-				
-		
-		row.append(chartColumn);
+	let renderedTable = CFW.render.getRenderer('dataviewer').render(clonedRenderDef);		
 
+	let mainTableRow =  $('<div class="row minvh-50">'); 
 
-		chartDetailsDiv
-			.append('<h3>'+currentDataset.label+'</h3>')
-			.append(row);
-		
-		;
-	}*/
-	
+	let tableColumn = 
+		$('<div class="col-12 maxvh-50" style="overflow: scroll;">')
+			.append(renderedTable);
+			
+	mainTableRow.append(tableColumn);
+
+	chartDetailsDiv
+		.append('<h3>Data</h3>')
+		.append(mainTableRow);
+			
 	//------------------------------
 	// Show Modal
 	CFW.ui.showModalLarge("Chart Details", chartDetailsDiv, null, true);

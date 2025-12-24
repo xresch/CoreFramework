@@ -175,6 +175,7 @@ DONE
 - BUGFIX: Query NOT-operator - fixed issue wher the NOT operator caused strange filtering results
 - BUGFIX: Number separators are properly shown for negative numbers
 - BUGFIX: Fixing that chartfields command did not evaluate records (e.g. could not adjust chart colors based on field value)
+- BUGFIX: Widget Label: Fixed links not working that contain quotes
 - NEW FEATURE: CHARTS ARE NOW ZOOMABLE!
 - Manual: Added links to existing youtube tutorials
 - UI: Timeframe Pickers are now showing a time range instead of "Custom Time" if such time is selected
@@ -187,8 +188,11 @@ DONE
 - Query: Command chart - thresholds can now be defined with option "thresholds"
 - Query: Command display - added option "sticky" to make table headers stick when scrolling.
 - Query: Command display - added option "sortoptions" to enable sorting of data.
+- Query: Command formatdisplay - width and height parameters are working more reliable
+- Query: Command formatboxplot - width and height parameters are working more reliable
 - Query: Command formatfield - added whitespace formatter
 - Query: Command formatfield - align formatter only applies to table views
+- Query: Command formatfield - percent formatter does not automatically highlight boolean values
 - Query: Command globals & meta - multidisplay can display columns with variable width. See manual of the commands for example queries.
 - Query: Command resultcompare - keeps column order even if first row contains null values
 - Query: Function records() - now takes a condition as an argument to filter and group records

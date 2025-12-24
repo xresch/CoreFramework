@@ -659,7 +659,6 @@ function cfw_query_formatPercent(span, value, greenThreshold, redThreshold, type
 	var style = CFW.colors.getSplitThresholdStyle(value, greenThreshold, redThreshold, false);
 	style = (style == CFW.style.notevaluated) ? neutralColor : style;
 	
-	console.log("style: "+style)
 	if(type == 'bg' && style != ""){
 		CFW.colors.colorizeElement(span, "white", "text");
 	}
@@ -777,8 +776,8 @@ function cfw_query_formatSpecial_Boxplot(span, object){
 	
 	let values = object.values;
 
-	span.css("height", object.height);
-	span.css("width", object.width);
+	span[0].style.setProperty('height', object.height, 'important');
+	span[0].style.setProperty('width', object.width, 'important');
 
 	//---------------------------------
 	// Data is null
@@ -912,8 +911,8 @@ function cfw_query_formatSpecial_Display(span, object){
 	let records = object.queryResults.records;
 	let height =  object.height;
 	let width =  object.width;
-	span.css("height", height);
-	span.css("width", width);
+	span[0].style.setProperty('height', height, 'important');
+	span[0].style.setProperty('width', width, 'important');
 	span.css("overflow", "auto");
 	
 	
