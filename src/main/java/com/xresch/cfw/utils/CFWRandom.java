@@ -1080,9 +1080,9 @@ public class CFWRandom {
 		String location = mythicalLocation();
 		
 		//create birthday and age between 18 and 100
-		long birthdayMillis = longInRange(HSRTimeUnit.y.offset(null, -100), HSRTimeUnit.y.offset(null, -18));
-		String birthday = HSR.Time.formatMillis(birthdayMillis, "YYYY-MM-dd");
-		int age = (int)Math.ceil( HSRTimeUnit.y.difference(birthdayMillis, System.currentTimeMillis()) );
+		long birthdayMillis = longInRange(CFWTimeUnit.y.offset(null, -100), CFWTimeUnit.y.offset(null, -18));
+		String birthday = CFW.Time.formatMillis(birthdayMillis, "YYYY-MM-dd");
+		int age = (int)Math.ceil( CFWTimeUnit.y.difference(birthdayMillis, System.currentTimeMillis()) );
 		
 		JsonObject countryData = countryData();
 		String country = countryData.get("Country").getAsString();
