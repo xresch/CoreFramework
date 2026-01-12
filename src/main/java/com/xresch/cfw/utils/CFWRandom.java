@@ -1034,6 +1034,89 @@ public class CFWRandom {
 		return array;
 	}
 	
+	/************************************************************************
+	 * Person Record
+	 ************************************************************************/
+	public record Person(int id
+			, String uuid
+			, String username
+			, String firstname
+			, String lastname
+			, String email
+			, String birthday
+			, long birthdayMillis
+			, int age
+			, boolean active
+			, float percent
+			, String street
+			, String city
+			, String zipcode
+			, String country
+		) {};
+		
+	/************************************************************************
+	 * Returns a list of Person records.
+	 * 
+	 ************************************************************************/
+	public static ArrayList<Person> randomPersonArray(int count) {
+		
+		ArrayList<Person> personList = new ArrayList<>();
+		for(int i = 0 ; i < count; i++) {
+			personList.add(randomPerson(i));
+		}
+		
+		return personList;
+	}
+	
+	/************************************************************************
+	 * Returns a record for person data.
+	 ************************************************************************/
+	public static Person randomPerson(int id) {
+		
+		//------------------------
+		// Create Data
+		String firstname = firstnameOfGod();
+		String lastname = lastnameSweden();
+		String location = mythicalLocation();
+		
+		//create birthday and age between 18 and 100
+		long birthdayMillis = longInRange(HSRTimeUnit.y.offset(null, -100), HSRTimeUnit.y.offset(null, -18));
+		String birthday = HSR.Time.formatMillis(birthdayMillis, "YYYY-MM-dd");
+		int age = (int)Math.ceil( HSRTimeUnit.y.difference(birthdayMillis, System.currentTimeMillis()) );
+		
+		JsonObject countryData = countryData();
+		String country = countryData.get("Country").getAsString();
+		String countryCode = countryData.get("CountryCode").getAsString();
+		String capital = countryData.get("Capital").getAsString();
+		String zipcode = ""+integer(10000, 99999);
+		
+		String username = (firstname.charAt(0) +"."+ lastname).toLowerCase();
+		String email = (firstname +"."+ lastname + "@" + location.replace(" ", "-") + "." +countryCode).toLowerCase();
+		boolean isActive = bool();
+		float percent = floatInRange(0.0f, 100.0f);
+		
+
+		//------------------------
+		// Add To Array
+		return new Person(id 
+				, UUID.randomUUID().toString()
+				, username
+				, firstname
+				, lastname
+				, email
+				, birthday
+				, birthdayMillis
+				, age
+				, isActive
+				, percent
+				, street()
+				, capital
+				, zipcode
+				, country
+			);
+		
+	}
+	
 	/******************************************************************************
 	 * Enum of data types used in the next method.
 	 * 
