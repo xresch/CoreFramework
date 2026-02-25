@@ -29,6 +29,16 @@ import com.xresch.cfw.utils.CFWReadableOutputStream;
  * 		<li><b>Working Directory:&nbsp;</b> Can only be specified globally. Depending on your OS. </li>
  * </ul>
  * 
+ * Usage Example:
+ * <pre><code>
+   
+   CFWCLIExecutor executor = new CFWCLIExecutor(dir, commands, envMap); 
+   executor.execute();
+   
+   String dataString = executor.readOutputOrTimeout(timeout, head, tail, countSkipped);
+
+ * </code></pre>
+ * 
  * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
@@ -143,6 +153,9 @@ public class CFWCLIExecutor extends Thread {
 				if(command.isBlank()) { continue; }
 				
 				ArrayList<String> commandAndParams = CFW.Text.splitQuotesAware(" ", command.trim(), true, true, true, false);
+				
+				// remove empty strings
+				commandAndParams.removeIf(s -> s.isEmpty());
 				
 				ProcessBuilder builder = new ProcessBuilder(commandAndParams);
 				builder.redirectErrorStream(true);
