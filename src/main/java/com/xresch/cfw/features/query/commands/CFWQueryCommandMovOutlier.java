@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -22,7 +21,6 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.utils.math.CFWMath.CFWMathPeriodic;
 
 
 /************************************************************************************************************

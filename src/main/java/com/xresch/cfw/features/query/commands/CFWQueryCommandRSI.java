@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 
-import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -20,7 +19,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.utils.math.CFWMath.CFWMathPeriodic;
+import com.xresch.xrutils.utils.XRMath.XRMathPeriodic;
 
 
 /************************************************************************************************************
@@ -38,7 +37,7 @@ public class CFWQueryCommandRSI extends CFWQueryCommand {
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
 	// Group name and values of the group
-	private LinkedHashMap<String, CFWMathPeriodic> periodicMap = new LinkedHashMap<>();
+	private LinkedHashMap<String, XRMathPeriodic> periodicMap = new LinkedHashMap<>();
 
 	private String fieldname = null;
 	private String name = null;
@@ -212,7 +211,7 @@ public class CFWQueryCommandRSI extends CFWQueryCommand {
 				periodicMap.put(groupID, CFW.Math.createPeriodic(period, precision));
 			}
 			
-			CFWMathPeriodic mathPeriodic = periodicMap.get(groupID);
+			XRMathPeriodic mathPeriodic = periodicMap.get(groupID);
 			BigDecimal big = value.getAsBigDecimal();
 			if(big == null) { big = BigDecimal.ZERO; }
 			

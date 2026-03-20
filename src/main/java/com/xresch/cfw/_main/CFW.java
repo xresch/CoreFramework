@@ -116,13 +116,12 @@ import com.xresch.cfw.utils.CFWXML;
 import com.xresch.cfw.utils.excel.CFWExcel;
 import com.xresch.cfw.utils.files.CFWFiles;
 import com.xresch.cfw.utils.json.CFWJson;
-import com.xresch.cfw.utils.math.CFWMath;
 import com.xresch.cfw.utils.scriptengine.CFWScripting;
 import com.xresch.cfw.utils.web.CFWHTML;
 import com.xresch.cfw.utils.web.CFWHttp;
 import com.xresch.cfw.validation.CFWValidation;
 import com.xresch.xrutils.utils.XRCSV;
-
+import com.xresch.xrutils.utils.XRMath;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2020
@@ -217,7 +216,7 @@ public class CFW {
 	public static class HTML extends CFWHTML {}
 	public static class JSON extends CFWJson {}
 	public static class Localization extends CFWLocalization {}
-	public static class Math extends CFWMath {}
+	public static class Math extends XRMath {}
 	public static class Messages extends CFWMessages {}
 	public static class Properties extends CFWProperties {}
 	public static class Random extends CFWRandom {}

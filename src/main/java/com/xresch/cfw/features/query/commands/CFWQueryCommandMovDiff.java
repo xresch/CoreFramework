@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 
-import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -20,7 +19,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.utils.math.CFWMath.CFWMathPeriodic;
+import com.xresch.xrutils.utils.XRMath.XRMathPeriodic;
 
 
 /************************************************************************************************************
@@ -38,7 +37,7 @@ public class CFWQueryCommandMovDiff extends CFWQueryCommand {
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
 	// Group name and vlaues of the group
-	private LinkedHashMap<String, CFWMathPeriodic> periodicMap = new LinkedHashMap<>();
+	private LinkedHashMap<String, XRMathPeriodic> periodicMap = new LinkedHashMap<>();
 
 
 	private String fieldname = null;
@@ -213,7 +212,7 @@ public class CFWQueryCommandMovDiff extends CFWQueryCommand {
 				periodicMap.put(groupID, CFW.Math.createPeriodic(period, precision));
 			}
 			
-			CFWMathPeriodic mathPeriodic = periodicMap.get(groupID);
+			XRMathPeriodic mathPeriodic = periodicMap.get(groupID);
 			BigDecimal big = value.getAsBigDecimal();
 
 			BigDecimal movdiff = mathPeriodic.calcMovDiff(big);

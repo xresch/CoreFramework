@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -16,7 +15,6 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.utils.math.CFWMath;
 
 /************************************************************************************************************
  * 

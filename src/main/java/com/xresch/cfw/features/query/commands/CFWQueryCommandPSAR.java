@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 
-import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -20,7 +19,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.utils.math.CFWMath.CFWMathParabolicSAR;
+import com.xresch.xrutils.utils.XRMath.XRMathParabolicSAR;
 
 
 /************************************************************************************************************
@@ -37,7 +36,7 @@ public class CFWQueryCommandPSAR extends CFWQueryCommand {
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
 	// Group name and vlaues of the group
-	private LinkedHashMap<String, CFWMathParabolicSAR> periodicMap = new LinkedHashMap<>();
+	private LinkedHashMap<String, XRMathParabolicSAR> periodicMap = new LinkedHashMap<>();
 
 	private String highFieldname = null;
 	private String lowFieldname = null;
@@ -220,7 +219,7 @@ public class CFWQueryCommandPSAR extends CFWQueryCommand {
 				periodicMap.put(groupID, CFW.Math.createParabolicSAR(acceleration, accelerationMax, precision) );
 			}
 			
-			CFWMathParabolicSAR mathPeriodic = periodicMap.get(groupID);
+			XRMathParabolicSAR mathPeriodic = periodicMap.get(groupID);
 			BigDecimal bigHigh = high.getAsBigDecimal();
 			BigDecimal bigLow = low.getAsBigDecimal();
 			if(bigHigh == null) { bigHigh = BigDecimal.ZERO; }
