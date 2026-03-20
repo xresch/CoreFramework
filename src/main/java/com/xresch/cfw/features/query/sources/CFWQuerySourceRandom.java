@@ -5,7 +5,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -17,8 +16,7 @@ import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.utils.CFWRandom;
-import com.xresch.cfw.utils.CFWRandom.RandomDataType;
+import com.xresch.xrutils.utils.XRRandom.RandomDataType;
 
 /**************************************************************************************************************
  * 

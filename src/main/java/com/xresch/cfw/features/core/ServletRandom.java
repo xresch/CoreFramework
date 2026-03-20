@@ -10,13 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.utils.CFWRandom.RandomDataType;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
-import com.xresch.cfw.utils.web.CFWModifiableHTTPRequest;
+import com.xresch.xrutils.utils.XRRandom.RandomDataType;
 
 /**************************************************************************************************************
  * This servlet is used to handle forms that have a BTFormHandler defined.
