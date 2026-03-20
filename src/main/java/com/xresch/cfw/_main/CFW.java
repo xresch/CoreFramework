@@ -113,7 +113,6 @@ import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.utils.CFWUtilsArray;
 import com.xresch.cfw.utils.CFWUtilsText;
 import com.xresch.cfw.utils.CFWXML;
-import com.xresch.cfw.utils.csv.CFWCSV;
 import com.xresch.cfw.utils.excel.CFWExcel;
 import com.xresch.cfw.utils.files.CFWFiles;
 import com.xresch.cfw.utils.json.CFWJson;
@@ -122,6 +121,7 @@ import com.xresch.cfw.utils.scriptengine.CFWScripting;
 import com.xresch.cfw.utils.web.CFWHTML;
 import com.xresch.cfw.utils.web.CFWHttp;
 import com.xresch.cfw.validation.CFWValidation;
+import com.xresch.xrutils.utils.XRCSV;
 
 /**************************************************************************************************************
  * 
@@ -209,7 +209,7 @@ public class CFW {
 		public static class Session extends CFWContextSession{};
 	}
 	
-	public static class CSV extends CFWCSV {}
+	public static class CSV extends XRCSV {}
 	public static class Dump extends CFWDump {}
 	public static class Excel extends CFWExcel {}
 	public static class Files extends CFWFiles {}

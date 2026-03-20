@@ -14,7 +14,7 @@ public class SLF4J_CFWServiceProvider implements SLF4JServiceProvider {
 	 * against. The value of this field is modified with each major release.
 	 */
 	// to avoid constant folding by the compiler, this field must *not* be final
-	public static String REQUESTED_API_VERSION = "1.8.99"; // !final
+	public static String REQUESTED_API_VERSION = "2.0.17"; // !final
 
 	private ILoggerFactory loggerFactory;
 	private IMarkerFactory markerFactory;
@@ -40,5 +40,10 @@ public class SLF4J_CFWServiceProvider implements SLF4JServiceProvider {
 		loggerFactory = new SLF4J_CFWLoggerFactory();
 		markerFactory = new BasicMarkerFactory();
 		mdcAdapter = new BasicMDCAdapter();
+	}
+
+	@Override
+	public String getRequestedApiVersion() {
+		return REQUESTED_API_VERSION;
 	}
 }

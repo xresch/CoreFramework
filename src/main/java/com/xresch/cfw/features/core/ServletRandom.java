@@ -19,7 +19,7 @@ import com.xresch.xrutils.utils.XRRandom.RandomDataType;
  * This servlet is used to handle forms that have a BTFormHandler defined.
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license MIT-License
+ * @license MIT License
  **************************************************************************************************************/
 public class ServletRandom extends HttpServlet
 {
