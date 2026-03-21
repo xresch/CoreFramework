@@ -10,7 +10,7 @@ import com.xresch.xrutils.utils.XRText;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWUtilsText extends XRText{
+public class CFWText extends XRText{
 		
 	/*******************************************************************
 	 * 

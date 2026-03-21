@@ -111,7 +111,7 @@ import com.xresch.cfw.utils.CFWState;
 import com.xresch.cfw.utils.CFWTime;
 import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.utils.CFWUtilsArray;
-import com.xresch.cfw.utils.CFWUtilsText;
+import com.xresch.cfw.utils.CFWText;
 import com.xresch.cfw.utils.CFWXML;
 import com.xresch.cfw.utils.excel.CFWExcel;
 import com.xresch.cfw.utils.files.CFWFiles;
@@ -238,7 +238,7 @@ public class CFW {
 	public static class Schedule extends CFWTaskScheduler {}
 	public static class Scripting extends CFWScripting {}
 	public static class Security extends CFWSecurity {}
-	public static class Text extends CFWUtilsText {}
+	public static class Text extends CFWText {}
 	public static class Utils {
 		public static class Analysis extends CFWUtilsAnalysis {}
 		public static class Array extends CFWUtilsArray {}
