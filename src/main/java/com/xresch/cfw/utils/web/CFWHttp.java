@@ -94,7 +94,7 @@ import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWState.CFWStateOption;
 import com.xresch.cfw.utils.scriptengine.CFWScriptingContext;
-import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
+import com.xresch.xrutils.utils.XRTimeUnit;
 
 import io.prometheus.client.Counter;
 

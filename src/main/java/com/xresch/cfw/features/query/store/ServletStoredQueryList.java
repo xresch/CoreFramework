@@ -27,7 +27,7 @@ import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
-import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
+import com.xresch.xrutils.utils.XRTimeUnit;
 
 /**************************************************************************************************************
  * 

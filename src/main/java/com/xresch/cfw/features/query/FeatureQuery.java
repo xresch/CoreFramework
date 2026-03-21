@@ -98,7 +98,7 @@ import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
-import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
+import com.xresch.xrutils.utils.XRTimeUnit;
 
 /************************************************************************************************************
  * 

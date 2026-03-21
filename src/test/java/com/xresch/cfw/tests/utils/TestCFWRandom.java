@@ -13,7 +13,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
+import com.xresch.xrutils.utils.XRTimeUnit;
 
 public class TestCFWRandom {
 	

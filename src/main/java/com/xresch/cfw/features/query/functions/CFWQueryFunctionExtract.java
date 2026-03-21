@@ -2,11 +2,8 @@ package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -142,7 +139,7 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 		
 		//-------------------------
 		// Extract
-		String extracted = CFW.Text.extractRegex(regex.getAsString(), groupIndex, valueToSearch.getAsString());
+		String extracted = CFW.Text.extractRegexFirst(regex.getAsString(), groupIndex, valueToSearch.getAsString());
 		
 		if(extracted == null) {
 			this.getContext().addMessage(MessageType.WARNING, FUNCTION_NAME+": could not match group with index: "+groupIndex);

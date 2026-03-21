@@ -19,7 +19,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
+import com.xresch.xrutils.utils.XRTimeUnit;
 
 
 /************************************************************************************************************

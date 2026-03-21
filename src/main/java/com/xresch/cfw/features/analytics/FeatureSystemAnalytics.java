@@ -14,7 +14,7 @@ import com.xresch.cfw.response.bootstrap.CFWHTMLItem;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemDynamic;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
-import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
+import com.xresch.xrutils.utils.XRTimeUnit;
 
 import io.prometheus.client.exporter.MetricsServlet;
 import io.prometheus.client.hotspot.BufferPoolsExports;

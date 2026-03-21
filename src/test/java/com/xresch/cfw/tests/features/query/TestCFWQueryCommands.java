@@ -18,7 +18,7 @@ import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.tests._master.DBTestMaster;
-import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
+import com.xresch.xrutils.utils.XRTimeUnit;
 
 public class TestCFWQueryCommands extends DBTestMaster{
 	

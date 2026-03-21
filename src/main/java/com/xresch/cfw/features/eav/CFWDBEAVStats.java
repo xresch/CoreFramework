@@ -27,7 +27,7 @@ import com.xresch.cfw.features.datetime.CFWDate;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsFields;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsType;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
+import com.xresch.xrutils.utils.XRTimeUnit;
 
 /**************************************************************************************************************
  * 

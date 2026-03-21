@@ -10,7 +10,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
+import com.xresch.xrutils.utils.XRTimeUnit;
 
 /************************************************************************************************************
  * 

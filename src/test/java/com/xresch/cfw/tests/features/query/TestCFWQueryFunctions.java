@@ -20,7 +20,7 @@ import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw.tests.assets.CFWTestUtils;
-import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
+import com.xresch.xrutils.utils.XRTimeUnit;
 
 public class TestCFWQueryFunctions extends DBTestMaster{
 	
