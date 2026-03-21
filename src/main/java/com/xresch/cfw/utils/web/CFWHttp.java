@@ -93,8 +93,8 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWState.CFWStateOption;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 import com.xresch.cfw.utils.scriptengine.CFWScriptingContext;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 import io.prometheus.client.Counter;
 
@@ -1000,7 +1000,7 @@ public class CFWHttp {
 		String requestBody = null;
 		String requestBodyContentType = "plain/text; charset=UTF-8";
 		private boolean autoCloseClient = true;
-		long responseTimeoutMillis = CFWTimeUnit.m.toMillis(10); //default timeout of  10 minutes
+		long responseTimeoutMillis = XRTimeUnit.m.toMillis(10); //default timeout of  10 minutes
 
 		private HashMap<String, String> params = new HashMap<>();
 		private HashMap<String, String> headers = new HashMap<>();

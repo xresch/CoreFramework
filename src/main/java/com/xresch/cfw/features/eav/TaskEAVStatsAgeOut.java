@@ -1,17 +1,12 @@
 package com.xresch.cfw.features.eav;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import org.h2.expression.ArrayElementReference;
-
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.config.Configuration;
-import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.schedule.CFWScheduledTask;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 public class TaskEAVStatsAgeOut extends CFWScheduledTask {
 	
@@ -79,12 +74,12 @@ public class TaskEAVStatsAgeOut extends CFWScheduledTask {
 		// offset from present time by the duration you want to keep the specific granularity
 		long ageOutOffset;
 		
-		if		(granularityMinutes <= CFW.Time.MINUTES_OF_15) 		{ ageOutOffset = CFWTimeUnit.h.offset(null, hours15Min); }
-		else if	(granularityMinutes <= CFW.Time.MINUTES_OF_HOUR) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, days1Hour); }
-		else if (granularityMinutes <= CFW.Time.MINUTES_OF_6HOURS) { ageOutOffset = CFWTimeUnit.d.offset(null, days6Hours); }
-		else if (granularityMinutes <= CFW.Time.MINUTES_OF_DAY) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, days24Hours); }
-		else if (granularityMinutes <= CFW.Time.MINUTES_OF_WEEK) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, days1Week); }
-		else  														{ ageOutOffset = CFWTimeUnit.d.offset(null, days1Week); }
+		if		(granularityMinutes <= CFW.Time.MINUTES_OF_15) 		{ ageOutOffset = XRTimeUnit.h.offset(null, hours15Min); }
+		else if	(granularityMinutes <= CFW.Time.MINUTES_OF_HOUR) 	{ ageOutOffset = XRTimeUnit.d.offset(null, days1Hour); }
+		else if (granularityMinutes <= CFW.Time.MINUTES_OF_6HOURS) { ageOutOffset = XRTimeUnit.d.offset(null, days6Hours); }
+		else if (granularityMinutes <= CFW.Time.MINUTES_OF_DAY) 	{ ageOutOffset = XRTimeUnit.d.offset(null, days24Hours); }
+		else if (granularityMinutes <= CFW.Time.MINUTES_OF_WEEK) 	{ ageOutOffset = XRTimeUnit.d.offset(null, days1Week); }
+		else  														{ ageOutOffset = XRTimeUnit.d.offset(null, days1Week); }
 
 		return new Timestamp(ageOutOffset);
 	}

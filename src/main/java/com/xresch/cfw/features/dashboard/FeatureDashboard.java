@@ -44,11 +44,11 @@ import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemDynamic;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItem;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemDynamic;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /**************************************************************************************************************
  * 
@@ -414,7 +414,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		boolean doAutoVersions = CFW.DB.Config.getConfigAsBoolean(FeatureDashboard.CONFIG_CATEGORY, FeatureDashboard.CONFIG_AUTO_VERSIONS);
 		
 		if(doAutoVersions) {
-			int millis = (int) CFWTimeUnit.m.toMillis(67); // take uneven minutes 
+			int millis = (int) XRTimeUnit.m.toMillis(67); // take uneven minutes 
 			// millis = 5000;
 			taskCreateVersions = CFW.Schedule.runPeriodicallyMillis(millis, millis, new TaskDashboardCreateVersions());
 		}

@@ -10,13 +10,11 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfig;
-import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItem;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemCustom;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemDynamic;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 import io.prometheus.client.exporter.MetricsServlet;
 import io.prometheus.client.hotspot.BufferPoolsExports;
@@ -304,7 +302,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		
 		int minutes = CFW.DB.Config.getConfigAsInt(CATEGORY_STATUS_MONITOR, CONFIG_INTERVAL_MINUTES);
 		
-		int millisOf5min = (int)CFWTimeUnit.m.toMillis(minutes);
+		int millisOf5min = (int)XRTimeUnit.m.toMillis(minutes);
 		taskStatusMonitorUpdate = CFW.Schedule.runPeriodicallyMillis(0, millisOf5min, new TaskStatusMonitorUpdate());
 		
 		//-----------------------------

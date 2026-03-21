@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.schedule.CFWScheduledTask;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 public class TaskDashboardCreateVersions extends CFWScheduledTask {
 	
@@ -21,7 +21,7 @@ public class TaskDashboardCreateVersions extends CFWScheduledTask {
 			
 			new CFWLog(logger).info("Dashboard: Create Automatic Versions");
 			int hours = CFW.DB.Config.getConfigAsInt(FeatureDashboard.CONFIG_CATEGORY, FeatureDashboard.CONFIG_AUTO_VERSIONS_AGE);
-			long millis = CFWTimeUnit.h.offset(null, -1 * hours);
+			long millis = XRTimeUnit.h.offset(null, -1 * hours);
 			
 			CFW.DB.Dashboards.createAutomaticVersions(millis);
 			

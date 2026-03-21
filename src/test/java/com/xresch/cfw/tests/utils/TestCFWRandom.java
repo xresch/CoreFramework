@@ -13,7 +13,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 public class TestCFWRandom {
 	
@@ -45,8 +45,8 @@ public class TestCFWRandom {
 		map.put("bar", "efoot");
 		map.put("italian", "desserts");
 		
-		long latest = CFWTimeUnit.d.offset(null, 0);
-		long earliest = CFWTimeUnit.d.offset(null, -1);
+		long latest = XRTimeUnit.d.offset(null, 0);
+		long earliest = XRTimeUnit.d.offset(null, -1);
 		
 		//------------------------------------
 		// Generate Data

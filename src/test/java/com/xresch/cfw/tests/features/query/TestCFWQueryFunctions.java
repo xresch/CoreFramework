@@ -20,7 +20,7 @@ import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw.tests.assets.CFWTestUtils;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 public class TestCFWQueryFunctions extends DBTestMaster{
 	
@@ -2876,8 +2876,8 @@ source json data=`
 				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
 		
 		// truncate to minutes to make this test work, except in cases when the minute changes.
-		long presentTime = CFWTimeUnit.m.truncate(new Date().getTime());
-		long presentTimeOffset = CFWTimeUnit.h.offset(presentTime, -1);
+		long presentTime = XRTimeUnit.m.truncate(new Date().getTime());
+		long presentTimeOffset = XRTimeUnit.h.offset(presentTime, -1);
 		
 		ZonedDateTime zonedTime = CFW.Time.zonedTimeFromEpoch(presentTime);
 
@@ -2892,8 +2892,8 @@ source json data=`
 		String message = "If the assertion failed, the test might have executed exactly on the minute.";
 		
 		JsonObject record = queryResults.getRecordAsObject(0);
-		Assertions.assertEquals(presentTime, CFWTimeUnit.m.truncate( record.get("NOW").getAsLong()), message );
-		Assertions.assertEquals(presentTimeOffset, CFWTimeUnit.m.truncate( record.get("NOW_OFFSET").getAsLong()), message);
+		Assertions.assertEquals(presentTime, XRTimeUnit.m.truncate( record.get("NOW").getAsLong()), message );
+		Assertions.assertEquals(presentTimeOffset, XRTimeUnit.m.truncate( record.get("NOW_OFFSET").getAsLong()), message);
 		Assertions.assertEquals(dateFormatted, record.get("NOW_FORMAT").getAsString(), message);
 		
 	}
@@ -3756,7 +3756,7 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 		CFWQueryResult offsetQueryResults = resultArray.get(1);
 		long offsetMillis = offsetQueryResults.getQueryContext().getEarliestMillis();
 		
-		float diffDays = CFWTimeUnit.d.difference(offsetMillis, noOffsetMillis);
+		float diffDays = XRTimeUnit.d.difference(offsetMillis, noOffsetMillis);
 		float diffRounded = Math.round(diffDays);
 
 		//-----------------------------

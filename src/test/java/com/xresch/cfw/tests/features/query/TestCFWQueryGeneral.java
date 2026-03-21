@@ -1,24 +1,19 @@
 package com.xresch.cfw.tests.features.query;
 
 import java.io.IOException;
-import java.util.Calendar;
 
 import org.joda.time.Instant;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.CFWQueryResultList;
-import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.tests._master.DBTestMaster;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 public class TestCFWQueryGeneral extends DBTestMaster{
 	

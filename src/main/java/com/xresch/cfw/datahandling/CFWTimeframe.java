@@ -1,28 +1,13 @@
 package com.xresch.cfw.datahandling;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Logger;
-
-import org.quartz.CalendarIntervalScheduleBuilder;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.DailyTimeIntervalScheduleBuilder;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
-import com.xresch.cfw.validation.AbstractValidatable;
-import com.xresch.cfw.validation.ScheduleValidator;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 public class CFWTimeframe {
 
@@ -90,7 +75,7 @@ public class CFWTimeframe {
 	private void setToDefaults() {
 		
 		timeframeData = new JsonObject();
-		setOffset(30, CFWTimeUnit.m);
+		setOffset(30, XRTimeUnit.m);
 		timeframeData.add(MEMBER_EARLIEST, JsonNull.INSTANCE);
 		timeframeData.add(MEMBER_LATEST, JsonNull.INSTANCE);
 		timeframeData.addProperty(MEMBER_CLIENT_TIMEZONE_OFFSET, 0);
@@ -100,7 +85,7 @@ public class CFWTimeframe {
 	/***************************************************************************************
 	 * This will reset earliest and latest time set previously.
 	 ***************************************************************************************/
-	public CFWTimeframe setOffset(int amount, CFWTimeUnit unit) {
+	public CFWTimeframe setOffset(int amount, XRTimeUnit unit) {
 		
 		String offset = amount + "-" + unit.toString();
 		timeframeData.addProperty(MEMBER_OFFSET, offset);
@@ -182,11 +167,11 @@ public class CFWTimeframe {
 			int offsetCount = -1 * Integer.parseInt(splitted[0]);
 			String unit = splitted[1];
 			
-			if(CFWTimeUnit.has(unit)) {
-				return CFWTimeUnit.valueOf(unit).offset(System.currentTimeMillis(), offsetCount);
+			if(XRTimeUnit.has(unit)) {
+				return XRTimeUnit.valueOf(unit).offset(System.currentTimeMillis(), offsetCount);
 			}else {
 				CFW.Messages.addWarningMessage("Unrecognized timeframe preset '"+offsetString.getAsString()+"', use last 30 minutes.");
-				return CFWTimeUnit.m.offset(System.currentTimeMillis(), -30);
+				return XRTimeUnit.m.offset(System.currentTimeMillis(), -30);
 			}
 			
 		}else if( timeframeData.get(MEMBER_EARLIEST) != null) {

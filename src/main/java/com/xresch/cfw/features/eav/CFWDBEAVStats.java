@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.eav;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -28,7 +27,7 @@ import com.xresch.cfw.features.datetime.CFWDate;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsFields;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsType;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /**************************************************************************************************************
  * 
@@ -523,7 +522,7 @@ public class CFWDBEAVStats {
 	 ********************************************************************************************/
 	protected static void storeStatsToDB(int granularityMinutes) {
 				
-		long currentTimeRounded = CFWTimeUnit.m.round(System.currentTimeMillis(), granularityMinutes);
+		long currentTimeRounded = XRTimeUnit.m.round(System.currentTimeMillis(), granularityMinutes);
 		synchronized (eavStatsToBeStored) {
 			
 			for(Entry<String, EAVStats> current : eavStatsToBeStored.entrySet()) {

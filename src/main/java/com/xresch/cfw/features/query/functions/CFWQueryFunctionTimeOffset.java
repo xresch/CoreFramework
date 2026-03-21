@@ -10,7 +10,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /************************************************************************************************************
  * 
@@ -70,7 +70,7 @@ public class CFWQueryFunctionTimeOffset extends CFWQueryFunction {
 				  +"<li><b>timeInMillis:&nbsp;</b>(Optional) The time in epoch milliseconds. If null, present time is used.</li>"
 				  +"<li><b>offsetAmount:&nbsp;</b>(Optional) The amount to offset from present time.(Default: 0)</li>"
 				  +"<li><b>offsetUnit:&nbsp;</b>(Optional) The unit used to offset the time. One of the following(Default: 'm'):"
-				  + CFWTimeUnit.getOptionsHTMLList()
+				  + XRTimeUnit.getOptionsHTMLList()
 				  + "</li>"
 			  + "</ul>"
 			;
@@ -147,8 +147,8 @@ public class CFWQueryFunctionTimeOffset extends CFWQueryFunction {
 
 		//----------------------------------
 		// Offset an set Latest
-		if(offsetAmount != 0 && CFWTimeUnit.has(offsetUnit)) {
-			epochMillis = CFWTimeUnit
+		if(offsetAmount != 0 && XRTimeUnit.has(offsetUnit)) {
+			epochMillis = XRTimeUnit
 							.valueOf(offsetUnit)
 							.offset(epochMillis, offsetAmount);
 		}

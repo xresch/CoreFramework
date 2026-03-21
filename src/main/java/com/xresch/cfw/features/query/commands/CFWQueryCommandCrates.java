@@ -19,7 +19,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 
 /************************************************************************************************************
@@ -107,7 +107,7 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 				  +"</li>"
 			  +"<li><b>multiplier:&nbsp;</b>(Optional) When type is number, the end of the range will be multiplied for each successive crate. E.g. step&eq;10 and multiplier&eq;2 will result in creates: 0-10 / 11-20 / 21 - 40 / 41 -80 / ... .</li>"
 			  +"<li><b>timeunit:&nbsp;</b>(Optional) The time unit used for type 'time'. Defines the unit for the steps parameter, one of the following(Default: 'm'):"
-			  	+ CFWTimeUnit.getOptionsHTMLList()
+			  	+ XRTimeUnit.getOptionsHTMLList()
 			  + "</li>"
 			  +"<li><b>name:&nbsp;</b>The name of the target field to put the crate value(Default: 'CRATE').</li>"
 			  +"<li><b>maxgroups:&nbsp;</b>The Maximum number of crates for the type 'number'(Default: 1000).</li>"
@@ -199,7 +199,7 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 		if(name == null) { name = "CRATE";}
 		if(step == null || step.compareTo(BigDecimal.ZERO) == 0 ) { step = BigDecimal.TEN; }
 		if(multiplier == null) { multiplier = BigDecimal.ZERO;}
-		if(timeunit == null || !CFWTimeUnit.has(timeunit)) { timeunit = "m";}
+		if(timeunit == null || !XRTimeUnit.has(timeunit)) { timeunit = "m";}
 		
 		//------------------------------------------
 		// Add Detected Fields
@@ -342,7 +342,7 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 
 			long timeMillis = value.getAsLong();
 			
-			crateValue = CFWTimeUnit.valueOf(timeunit).round(timeMillis, step.intValue());
+			crateValue = XRTimeUnit.valueOf(timeunit).round(timeMillis, step.intValue());
 		}
 		
 		return crateValue;

@@ -12,8 +12,8 @@ import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 import com.xresch.xrutils.utils.XRRandom.RandomDataType;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /**************************************************************************************************************
  * This servlet is used to handle forms that have a BTFormHandler defined.
@@ -84,7 +84,7 @@ public class ServletRandom extends HttpServlet
 		// Determine earliest
 		String earliestString = request.getParameter("earliest");
 		 
-		long earliest = CFWTimeUnit.h.offset(latest, -1);
+		long earliest = XRTimeUnit.h.offset(latest, -1);
 		if( ! Strings.isNullOrEmpty(earliestString) ){ 
 			earliest = Long.parseLong(earliestString); 
 		}

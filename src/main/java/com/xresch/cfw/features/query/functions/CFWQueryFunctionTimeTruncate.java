@@ -10,7 +10,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /************************************************************************************************************
  * 
@@ -67,7 +67,7 @@ public class CFWQueryFunctionTimeTruncate extends CFWQueryFunction {
 		return "<ul>"
 				  +"<li><b>timeInMillis:&nbsp;</b>(Optional) The time in epoch milliseconds. If null, current earliest time is used.</li>"
 				  +"<li><b>unit:&nbsp;</b>(Optional) The unit used to truncate the time, every smaller unit will be abandoned in the abysmal depths of eternally forgotten bytes. One of the following(Default: 'm'):"
-				  + CFWTimeUnit.getOptionsHTMLList()
+				  + XRTimeUnit.getOptionsHTMLList()
 				  + "</li>"
 			  + "</ul>"
 			;
@@ -138,8 +138,8 @@ public class CFWQueryFunctionTimeTruncate extends CFWQueryFunction {
 
 		//----------------------------------
 		// Offset an set Earliest
-		if(amount != 0 && CFWTimeUnit.has(unit)) {
-			epochMillis = CFWTimeUnit
+		if(amount != 0 && XRTimeUnit.has(unit)) {
+			epochMillis = XRTimeUnit
 							.valueOf(unit)
 							.truncate(epochMillis);
 		}

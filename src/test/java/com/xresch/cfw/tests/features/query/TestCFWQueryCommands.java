@@ -18,7 +18,7 @@ import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.tests._master.DBTestMaster;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 public class TestCFWQueryCommands extends DBTestMaster{
 	
@@ -469,7 +469,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult offsetQueryResults = resultArray.get(1);
 		long offsetMillis = offsetQueryResults.getQueryContext().getEarliestMillis();
 		
-		float diffDays = CFWTimeUnit.d.difference(offsetMillis, noOffsetMillis);
+		float diffDays = XRTimeUnit.d.difference(offsetMillis, noOffsetMillis);
 		float diffRounded = Math.round(diffDays);
 
 		//-----------------------------

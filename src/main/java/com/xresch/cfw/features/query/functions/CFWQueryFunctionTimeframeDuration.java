@@ -10,7 +10,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /************************************************************************************************************
  * 
@@ -68,7 +68,7 @@ public class CFWQueryFunctionTimeframeDuration extends CFWQueryFunction {
 	public String descriptionSyntaxDetailsHTML() {
 		return "<ul>"
 				  +"<li><b>unit:&nbsp;</b>(Optional) The unit used to represent the duration. One of the following(Default: 'm'):"
-				  + CFWTimeUnit.getOptionsHTMLList()
+				  + XRTimeUnit.getOptionsHTMLList()
 				  + "</li>"
 			  + "</ul>"  
 			;
@@ -126,8 +126,8 @@ public class CFWQueryFunctionTimeframeDuration extends CFWQueryFunction {
 		
 		long duration = latest - earliest;
 		
-		if(CFWTimeUnit.has(offsetUnit)) {
-			CFWTimeUnit unit =CFWTimeUnit.valueOf(offsetUnit);
+		if(XRTimeUnit.has(offsetUnit)) {
+			XRTimeUnit unit =XRTimeUnit.valueOf(offsetUnit);
 			duration = unit.convert(duration);
 		}else {
 			CFW.Messages.addWarningMessage(FUNCTION_NAME+": Unsupported time unit: "+offsetUnit);

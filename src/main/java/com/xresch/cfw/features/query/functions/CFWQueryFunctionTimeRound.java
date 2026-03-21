@@ -10,7 +10,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /************************************************************************************************************
  * 
@@ -68,7 +68,7 @@ public class CFWQueryFunctionTimeRound extends CFWQueryFunction {
 				  +"<li><b>timeInMillis:&nbsp;</b>(Optional) The time in epoch milliseconds. If null, current earliest time is used.</li>"
 				  +"<li><b>amount:&nbsp;</b>(Optional) The amount to offset from present time.(Default: 1)</li>"
 				  +"<li><b>unit:&nbsp;</b>(Optional) The unit used to offset the time. One of the following(Default: 'm'):"
-				  + CFWTimeUnit.getOptionsHTMLList()
+				  + XRTimeUnit.getOptionsHTMLList()
 				  + "</li>"
 			  + "</ul>"
 			;
@@ -146,8 +146,8 @@ public class CFWQueryFunctionTimeRound extends CFWQueryFunction {
 
 		//----------------------------------
 		// Offset an set Earliest
-		if(amount != 0 && CFWTimeUnit.has(unit)) {
-			epochMillis = CFWTimeUnit
+		if(amount != 0 && XRTimeUnit.has(unit)) {
+			epochMillis = XRTimeUnit
 							.valueOf(unit)
 							.round(epochMillis, amount);
 		}

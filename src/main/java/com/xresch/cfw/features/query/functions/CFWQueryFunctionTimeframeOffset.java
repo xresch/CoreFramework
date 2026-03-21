@@ -10,7 +10,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /************************************************************************************************************
  * 
@@ -70,7 +70,7 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 				  +"<li><b>shiftMultiplier:&nbsp;</b>(Optional)Shifts the timeframe N-times by this multiplier(Positive Values: into future, Negative Values: into past).</li>"
 				  +"<li><b>offsetAmount:&nbsp;</b>(Optional) The amount to offset from present time.(Default: 0)</li>"
 				  +"<li><b>offsetUnit:&nbsp;</b>(Optional) The unit used to offset the time. One of the following(Default: 'm'):"
-				  + CFWTimeUnit.getOptionsHTMLList()
+				  + XRTimeUnit.getOptionsHTMLList()
 				  + "</li>"
 			  + "</ul>"  
 			;
@@ -150,8 +150,8 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 		long newEarliest = (currentEarliest+shiftByMillis);
 		long newLatest = (currentLatest+shiftByMillis);
 		
-		if(offsetAmount != 0 && CFWTimeUnit.has(offsetUnit)) {
-			CFWTimeUnit unit =CFWTimeUnit.valueOf(offsetUnit);
+		if(offsetAmount != 0 && XRTimeUnit.has(offsetUnit)) {
+			XRTimeUnit unit =XRTimeUnit.valueOf(offsetUnit);
 			newEarliest = unit.offset(newEarliest, offsetAmount);
 			newLatest = unit.offset(newLatest, offsetAmount);
 		}

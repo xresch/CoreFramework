@@ -98,7 +98,7 @@ import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /************************************************************************************************************
  * 
@@ -504,7 +504,7 @@ public class FeatureQuery extends CFWAppFeature {
 		}
 		
 		// use an odd number to reduce number of clashes
-		int millis = (int)CFWTimeUnit.m.toMillis(144);
+		int millis = (int)XRTimeUnit.m.toMillis(144);
 		taskQueryHistoryLimit = CFW.Schedule.runPeriodicallyMillis(millis, millis, new TaskQueryHistoryLimitEntries());
 		
 	}

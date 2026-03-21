@@ -13,7 +13,6 @@ import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw._main.CFWMessages.MessageType;
-import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
@@ -21,16 +20,14 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.query.store.CFWStoredQuery.CFWStoredQueryFields;
-import com.xresch.cfw.features.query.store.FeatureStoredQuery;
 import com.xresch.cfw.features.notifications.Notification;
+import com.xresch.cfw.features.query.store.CFWStoredQuery.CFWStoredQueryFields;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /**************************************************************************************************************
  * 
@@ -350,7 +347,7 @@ public class ServletStoredQueryList extends HttpServlet
 						long diff = now - queryForVersion.lastUpdated().getTime();
 						
 						boolean newVersionCreated = false;
-						if(CFWTimeUnit.m.convert(diff) >= age) {
+						if(XRTimeUnit.m.convert(diff) >= age) {
 							CFW.DB.StoredQuery.createDuplicate(queryForVersion, true);
 							newVersionCreated = true;
 						}

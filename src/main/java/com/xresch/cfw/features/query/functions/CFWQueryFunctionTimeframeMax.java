@@ -10,7 +10,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
+import com.xresch.xrutils.utils.XRTime.XRTimeUnit;
 
 /************************************************************************************************************
  * 
@@ -68,7 +68,7 @@ public class CFWQueryFunctionTimeframeMax extends CFWQueryFunction {
 	public String descriptionSyntaxDetailsHTML() {
 		return "<ul>"
 				  +"<li><b>unit:&nbsp;</b>(Optional) The unit used to represent the duration. One of the following(Default: 'm'):"
-				  + CFWTimeUnit.getOptionsHTMLList()
+				  + XRTimeUnit.getOptionsHTMLList()
 				  + "</li>"
 			  + "</ul>"  
 			;
@@ -136,8 +136,8 @@ public class CFWQueryFunctionTimeframeMax extends CFWQueryFunction {
 		
 		long duration = latest - earliest;
 		
-		if(CFWTimeUnit.has(timeUnit)) {
-			CFWTimeUnit unit =CFWTimeUnit.valueOf(timeUnit);
+		if(XRTimeUnit.has(timeUnit)) {
+			XRTimeUnit unit =XRTimeUnit.valueOf(timeUnit);
 			long maxDuration = unit.toMillis(maxAmount);
 			
 			if(duration > maxDuration) {
