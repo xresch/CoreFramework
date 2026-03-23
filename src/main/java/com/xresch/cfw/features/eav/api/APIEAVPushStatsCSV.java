@@ -11,7 +11,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIRequestHandler;
