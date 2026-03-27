@@ -248,6 +248,18 @@ label {
 .modal-body{
 	overflow: auto;
 	max-height: 80%; 
+	padding-bottom: 0px;
+}
+
+.modal-body form .row {
+	margin-right: 0px;
+}
+
+.modal-body form > button {
+	position: sticky;
+    bottom: 0;
+    float: right !important;
+    width: auto;
 }
 
 .modal-footer {
