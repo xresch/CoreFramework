@@ -191,26 +191,41 @@ public abstract class WidgetBaseSQLQueryStatus extends WidgetDefinition {
 						
 						switch(type) {
 						
-							case Types.SMALLINT:
-							case Types.INTEGER:
-							case Types.BIGINT:
-								object.addProperty(propertyName, result.getInt(i));
-								break;
-								
-							case Types.DECIMAL:
-								object.addProperty(propertyName, result.getBigDecimal(i));
-								break;	
-								
-							case Types.DOUBLE:
-								object.addProperty(propertyName, result.getDouble(i));
-								break;	
+						case Types.SMALLINT:
+						case Types.INTEGER:
+							object.addProperty(propertyName, result.getInt(i));
+							break;
+						
+						case Types.BIGINT:
+							object.addProperty(propertyName, result.getLong(i));
+						break;
 							
-							case Types.FLOAT:
-								object.addProperty(propertyName, result.getFloat(i));
-								break;	
-								
-							default: object.addProperty(propertyName, result.getString(i));
-						}
+						case Types.DECIMAL:
+							object.addProperty(propertyName, result.getBigDecimal(i));
+							break;	
+							
+						case Types.DOUBLE:
+							object.addProperty(propertyName, result.getDouble(i));
+							break;	
+						
+						case Types.FLOAT:
+							object.addProperty(propertyName, result.getFloat(i));
+							break;	
+							
+						case Types.BOOLEAN:
+							object.addProperty(propertyName, result.getBoolean(i));
+							break;	
+							
+						case Types.DATE:
+						case Types.TIME:
+						case Types.TIME_WITH_TIMEZONE:
+						case Types.TIMESTAMP:
+						case Types.TIMESTAMP_WITH_TIMEZONE:
+							object.addProperty(propertyName, result.getTimestamp(i).getTime());
+							break;	
+							
+						default: object.addProperty(propertyName, result.getString(i));
+					}
 						
 						
 					}

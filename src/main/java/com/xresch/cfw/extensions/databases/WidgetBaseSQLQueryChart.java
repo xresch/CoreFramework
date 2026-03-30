@@ -183,9 +183,12 @@ public abstract class WidgetBaseSQLQueryChart extends WidgetDefinition {
 						
 							case Types.SMALLINT:
 							case Types.INTEGER:
-							case Types.BIGINT:
 								object.addProperty(propertyName, result.getInt(i));
 								break;
+							
+							case Types.BIGINT:
+								object.addProperty(propertyName, result.getLong(i));
+							break;
 								
 							case Types.DECIMAL:
 								object.addProperty(propertyName, result.getBigDecimal(i));
@@ -197,6 +200,10 @@ public abstract class WidgetBaseSQLQueryChart extends WidgetDefinition {
 							
 							case Types.FLOAT:
 								object.addProperty(propertyName, result.getFloat(i));
+								break;	
+								
+							case Types.BOOLEAN:
+								object.addProperty(propertyName, result.getBoolean(i));
 								break;	
 								
 							case Types.DATE:
