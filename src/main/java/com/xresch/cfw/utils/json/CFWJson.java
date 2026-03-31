@@ -22,7 +22,6 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.xrutils.json.SerializerBigDecimal;
-import com.xresch.xrutils.json.SerializerResultSet;
 import com.xresch.xrutils.utils.XRJson;
 
 /**************************************************************************************************************

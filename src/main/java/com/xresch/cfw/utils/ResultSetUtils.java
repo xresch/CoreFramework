@@ -1,13 +1,9 @@
 package com.xresch.cfw.utils;
 
 import java.sql.Clob;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,7 +13,6 @@ import org.h2.jdbc.JdbcArray;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -25,8 +20,6 @@ import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.ResultSetUtils.ResultSetAsJsonReader;
-import com.xresch.cfw.utils.json.SerializerResultSet;
 
 /**************************************************************************************************************
  * 
