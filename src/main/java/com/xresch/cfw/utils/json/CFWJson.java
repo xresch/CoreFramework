@@ -22,6 +22,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.xrutils.json.SerializerBigDecimal;
+import com.xresch.xrutils.json.TypeAdapterBigDecimal;
 import com.xresch.xrutils.utils.XRJson;
 
 /**************************************************************************************************************
@@ -73,7 +74,8 @@ public class CFWJson extends XRJson {
 	 *************************************************************************************/
 	protected static GsonBuilder createGsonBuilderBase() {
 		return new GsonBuilder()
-				.registerTypeHierarchyAdapter(BigDecimal.class, new SerializerBigDecimal())
+				.registerTypeAdapter(BigDecimal.class, new TypeAdapterBigDecimal())
+				//.registerTypeHierarchyAdapter(BigDecimal.class, new SerializerBigDecimal())
 				.registerTypeHierarchyAdapter(CFWChartSettings.class, new SerializerCFWChartSettings())
 				.registerTypeHierarchyAdapter(CFWParameter.class, new SerializerCFWParameter())
 				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
