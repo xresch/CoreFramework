@@ -656,7 +656,7 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 					var htmlString = '';
 					if(JSDATA.userid == record.FK_ID_OWNER 
 					|| CFW.hasPermission('Query Store: Admin')
-					|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
+					|| record.IS_EDITOR ){
 						htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
 							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong> and add it to your storedQuery.\', \'Do it!\', \'cfw_storedQuerylist_duplicate('+id+');\')">'
 							+ '<i class="fas fa-clone"></i>'
