@@ -1,6 +1,9 @@
 package com.xresch.cfw.utils.web;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.logging.Logger;
 
@@ -14,6 +17,7 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpException;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.io.CloseMode;
 
 import com.google.common.base.Strings;
@@ -40,14 +44,81 @@ public class CFWHttpResponse {
 	private boolean errorOccured = false;
 	private String errorMessage = null;
 	
+	CFWHttpRequestBuilder request = null;
 	CloseableHttpClient httpClient = null;
 	private HttpServletResponse response = null;
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public CFWHttpResponse(CloseableHttpClient httpClient, HttpUriRequestBase requestBase, boolean autoCloseClient) {
+	public CFWHttpResponse(HttpURLConnection conn) {
 		
+		BufferedReader in = null;
+		StringBuilder builder = new StringBuilder();
+		int responseCode = -1;
+		
+		long startMillis = System.currentTimeMillis();
+		try{
+			url = conn.getURL();
+			
+			//------------------------------
+			// connect if not already done
+			conn.connect();
+			
+			//------------------------------
+			// Read Response Body
+			status = conn.getResponseCode();
+			//headers = conn.getHeaderFields();
+
+			//------------------------------
+			// Get Response Stream
+			if (status <= 299) {
+			    in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			} else {
+			    in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+			}
+			
+			//------------------------------
+			// Read Response Body
+	        String inputLine;
+	
+	        while ((inputLine = in.readLine()) != null) {
+	        	builder.append(inputLine);
+	        	builder.append("\n");
+	        }
+	        
+	        body = builder.toString();
+
+		}catch(Exception e) {
+			new CFWLog(responseLogger)
+				.severe("Exception occured while accessing URL: Type=\""+e.getClass().getSimpleName()
+						+"\", HTTPStatus=\""+responseCode+"\""
+						+"\", Message=\""+e.getMessage()+"\""
+						, e);
+			errorOccured = true;
+		}finally {
+			
+			long endMillis = System.currentTimeMillis();
+	        duration = endMillis - startMillis;
+	        
+			if(in != null) {
+				try {
+					conn.disconnect();
+					in.close();
+				} catch (IOException e) {
+					new CFWLog(responseLogger)
+						.severe("Exception occured while closing http stream.", e);
+				}
+			}
+		}
+	}
+		
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	public CFWHttpResponse(CFWHttpRequestBuilder request, CloseableHttpClient httpClient, HttpUriRequestBase requestBase, HttpContext context) {
+		
+		this.request = request;
 		this.httpClient = httpClient;
 		
 		//----------------------------------
@@ -65,7 +136,7 @@ public class CFWHttpResponse {
 		long startMillis = System.currentTimeMillis();
 		try {
 			
-			Boolean success = httpClient.execute(requestBase, new HttpClientResponseHandler<Boolean>() {
+			Boolean success = httpClient.execute(requestBase, context, new HttpClientResponseHandler<Boolean>() {
 				@Override
 				public Boolean handleResponse(ClassicHttpResponse response) throws HttpException, IOException {
 					if(response != null) {
@@ -74,7 +145,7 @@ public class CFWHttpResponse {
 						
 						HttpEntity entity = response.getEntity();
 						if(entity != null) {
-							body = EntityUtils.toString(response.getEntity());
+							body = EntityUtils.toString(entity);
 						}
 
 					}
@@ -90,10 +161,6 @@ public class CFWHttpResponse {
 		}finally {
 			long endMillis = System.currentTimeMillis();
 			duration = endMillis - startMillis;
-			
-			if(autoCloseClient) {
-				close();
-			}
 		}
 	}
 	

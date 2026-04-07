@@ -32,19 +32,28 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.hc.client5.http.HttpRoute;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
+import org.apache.hc.client5.http.routing.HttpRoutePlanner;
 import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
 import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.HttpException;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.ssl.TrustStrategy;
+import org.apache.hc.core5.util.TimeValue;
+import org.apache.hc.core5.util.Timeout;
 import org.graalvm.polyglot.Value;
 
 import com.google.common.base.Strings;
@@ -69,10 +78,11 @@ public class CFWHttp {
 	
 	//Use Threadlocal to avoid polyglot multi thread exceptions
 	private static ThreadLocal<CFWScriptingContext> javascriptEngine = new ThreadLocal<CFWScriptingContext>();
+	private static PoolingHttpClientConnectionManager connectionManager = null;
 	
 	private static KeyStore cachedKeyStore = null;
 	
-	private static String proxyPAC = null;
+	private static String proxyPACScript = null;
 	private static Cache<String, ArrayList<CFWProxy>> resolvedProxiesCache = CFW.Caching.addCache("CFW Proxies", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(100)
@@ -281,20 +291,21 @@ public class CFWHttp {
 	private static CFWScriptingContext getScriptContext() {
 		
 		if(javascriptEngine.get() == null) {
-			javascriptEngine.set( CFW.Scripting.createJavascriptContext().putMemberWithFunctions( new CFWHttpPacScriptMethods()) );
+			javascriptEngine.set(CFW.Scripting.createJavascriptContext().putMemberWithFunctions( new CFWHttpPacScriptMethods()) );
 			
 			//------------------------------
 			// Add to engine if pac loaded
 			loadPacFile();
-			if(proxyPAC != null) {
-				//Prepend method calls with CFWHttpPacScriptMethods
-				proxyPAC = CFWHttpPacScriptMethods.preparePacScript(proxyPAC);
+			
+			//Prepend method calls with CFWHttpPacScriptMethods
+			proxyPACScript = CFWHttpPacScriptMethods.preparePacScript(proxyPACScript);
 
-				CFWScriptingContext polyglot = getScriptContext();
-
-			    polyglot.addScript("proxy.pac", proxyPAC);
-			    polyglot.executeScript("FindProxyForURL('localhost:9090/test', 'localhost');");
-
+			CFWScriptingContext polyglot = getScriptContext();
+			if(proxyPACScript != null) {
+			    polyglot.addScript("proxy.js", proxyPACScript);
+			    //polyglot.executeScript("FindProxyForURL('localhost:9090/test', 'localhost');");
+			}else {
+				new CFWLog(logger).warn("Proxy PAC file was not loaded properly.");
 			}
 		}
 		
@@ -306,7 +317,7 @@ public class CFWHttp {
 	 ******************************************************************************************************/
 	private static void loadPacFile() {
 		
-		if(CFW.Properties.PROXY_ENABLED && proxyPAC == null) {
+		if(CFW.Properties.PROXY_ENABLED && proxyPACScript == null) {
 		
 			if(CFW.Properties.PROXY_PAC.toLowerCase().startsWith("http")) {
 				//------------------------------
@@ -315,17 +326,14 @@ public class CFWHttp {
 				
 				try {	
 					
-					response = CFWHttp.newRequestBuilder(CFW.Properties.PROXY_PAC)
-							.GET()
-							.send()
-							;
-//					HttpURLConnection connection = (HttpURLConnection)new URL(CFW.Properties.PROXY_PAC).openConnection();
-//					if(connection != null) {
-//						connection.setRequestMethod("GET");
-//						connection.connect();
-//						
-//						response = instance.new CFWHttpResponse(connection);
-//					}
+					// IMPORTANT: Cannot use 
+					HttpURLConnection connection = (HttpURLConnection)new URL(CFW.Properties.PROXY_PAC).openConnection();
+					if(connection != null) {
+						connection.setRequestMethod("GET");
+						connection.connect();
+						
+						response = new CFWHttpResponse(connection);
+					}
 			    
 				} catch (Exception e) {
 					new CFWLog(logger)
@@ -335,11 +343,11 @@ public class CFWHttp {
 				//------------------------------
 				// Cache PAC Contents
 				if(response != null && response.getStatus() <= 299) {
-					proxyPAC = response.getResponseBody();
+					proxyPACScript = response.getResponseBody();
 					
-					if(proxyPAC == null || !proxyPAC.contains("FindProxyForURL")) {
+					if(proxyPACScript == null || !proxyPACScript.contains("FindProxyForURL")) {
 						CFW.Messages.addErrorMessage("The Proxy .pac-File seems not be in the expected format.");
-						proxyPAC = null;
+						proxyPACScript = null;
 					}
 				}else {
 					CFW.Messages.addErrorMessage("Error occured while retrieving .pac-File from URL. (HTTP Code: "+response.getStatus()+")");
@@ -347,11 +355,11 @@ public class CFWHttp {
 			}else {
 				//------------------------------
 				// Load from Disk
-				proxyPAC = CFW.Files.getFileContent(CFW.Context.Request.getRequest(), CFW.Properties.PROXY_PAC);
+				proxyPACScript = CFW.Files.getFileContent(CFW.Context.Request.getRequest(), CFW.Properties.PROXY_PAC);
 				
-				if(proxyPAC == null || !proxyPAC.contains("FindProxyForURL")) {
+				if(proxyPACScript == null || !proxyPACScript.contains("FindProxyForURL")) {
 					CFW.Messages.addErrorMessage("The Proxy .pac-File seems not be in the expected format.");
-					proxyPAC = null;
+					proxyPACScript = null;
 				}
 			}
 		}
@@ -379,7 +387,7 @@ public class CFWHttp {
 		
 		ArrayList<CFWProxy> proxyArray = null;
 		
-		if(CFW.Properties.PROXY_ENABLED && proxyPAC != null) {
+		if(CFW.Properties.PROXY_ENABLED && proxyPACScript != null) {
 			 URL tempURL;
 			try {
 				tempURL = new URL(urlToCall);
@@ -535,6 +543,97 @@ public class CFWHttp {
 		
 		return null;
 		
+	}
+	
+	/******************************************************************************************************
+	 * If proxy is enabled, adds a HttpHost to the client.
+	 * 
+	 * @param clientBuilder the client that should get a proxy
+	 * @param targetURL the URL that should be called over a proxy (not the url of the proxy host)
+	 * 
+	 ******************************************************************************************************/
+	public static void httpClientAddProxy(HttpClientBuilder clientBuilder) {
+		
+						
+	    clientBuilder.setRoutePlanner(new HttpRoutePlanner() {
+			
+			@Override
+			public HttpRoute determineRoute(HttpHost target, HttpContext context) throws HttpException {
+				
+
+				
+				//----------------------------------
+				// Build full target URL from HttpHost
+				String scheme = target.getSchemeName();
+				String host = target.getHostName();
+				int port = target.getPort();
+				boolean isSecure = "https".equalsIgnoreCase(scheme);
+				
+				StringBuilder urlBuilder = new StringBuilder();
+				urlBuilder.append(scheme).append("://").append(host);
+				
+				if (port > 0) {
+				    urlBuilder.append(":").append(port);
+				}
+				
+				String url = urlBuilder.toString();
+                
+				//----------------------------------
+				// Doing this because someone had the
+				// grandiose idea to throw an exception
+				// when the port is not set(-1).
+				int finalPort = port;
+				if (port <= 0) {
+					if(isSecure) {	finalPort = 443; }
+					else		 {	finalPort = 80; }
+						
+				}
+				HttpHost finalTarget = new HttpHost(scheme, host, finalPort);
+				
+				//--------------------------------
+				// Check Do nothing
+				if(CFW.Properties.PROXY_ENABLED == false
+				|| Strings.isNullOrEmpty(proxyPACScript)) {
+					return new HttpRoute(finalTarget); 
+				}
+				
+				//----------------------------------
+				// Resolve proxies for THIS request
+				ArrayList<CFWProxy> proxiesArray = getProxies(url);
+
+				//----------------------------------
+				// No proxy → DIRECT
+				if (proxiesArray == null || proxiesArray.isEmpty()) {
+				    return new HttpRoute(finalTarget);
+				}
+				
+				//--------------------------------------------------
+				// Iterate PAC Proxies until address is resolved
+				for(CFWProxy cfwProxy : proxiesArray) {
+					
+					if(cfwProxy.type.trim().toUpperCase().equals("DIRECT")) {
+						return new HttpRoute(finalTarget); // no proxy required
+					}else {
+						
+						InetSocketAddress address = new InetSocketAddress(cfwProxy.host, cfwProxy.port);
+						if(address.isUnresolved()) { 
+							continue;
+						};
+
+						HttpHost proxy = new HttpHost(cfwProxy.host, cfwProxy.port);
+
+						return new HttpRoute(finalTarget, null, proxy, isSecure);
+					}
+				}
+				
+				//-------------------------------------
+				// None of the addresses were resolved
+				new CFWLog(logger).warn("The proxy addresses couldn't be resolved.");
+				
+				return new HttpRoute(target);
+			}
+		});
+	    
 	}
 	/******************************************************************************************************
 	 * If proxy is enabled, adds a HttpHost to the client.
@@ -965,6 +1064,77 @@ public class CFWHttp {
     	return cachedKeyStore;
 	    
     }
+    
+	/******************************************************************************************************
+	 * Returns the connection manager used for all the connections.
+	 * @return 
+	 * 
+	 ******************************************************************************************************/
+	public static PoolingHttpClientConnectionManager getConnectionManager() {
+		
+		synchronized (logger) {
+			
+			if(connectionManager == null) {
+
+				try{
+					connectionManager = new PoolingHttpClientConnectionManager(getSocketFactoryRegistry());
+				}catch(Exception e) {
+					connectionManager = new PoolingHttpClientConnectionManager();
+				}
+				
+				connectionManager.setMaxTotal(2000);
+				connectionManager.setDefaultMaxPerRoute(200);
+
+				
+				connectionManager.setDefaultConnectionConfig(
+						ConnectionConfig.custom()
+					        .setConnectTimeout( Timeout.ofMilliseconds(5000) )
+					        .setSocketTimeout(Timeout.ofMilliseconds(10000) )
+					        .build()
+				        );
+				
+				connectionManager.setDefaultSocketConfig(SocketConfig.custom()
+						    .setSoKeepAlive(true)
+						    .setTcpNoDelay(true)
+						    .setSoLinger(TimeValue.ofSeconds(5))
+						    .build()
+					    );
+			}
+		}
+		return connectionManager;
+	}
+	
+	/**************************************************************************************
+	 * Set SSL Context
+	 * 
+	 **************************************************************************************/
+	private static Registry<ConnectionSocketFactory> getSocketFactoryRegistry() throws Exception {
+		
+		//=====================================================
+		// Initialize Connection Manager
+		//=====================================================
+
+			//-------------------------------
+			// Trust anything
+			final TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
+		    
+			//-------------------------------
+			// Create SSL Context Builder
+			final SSLContextBuilder sslContextBuilder = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy); 
+			addKeyStore(sslContextBuilder);
+			
+			//-------------------------------
+			// Connection Factory
+			final SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContextBuilder.build(), NoopHostnameVerifier.INSTANCE);
+			
+			final Registry<ConnectionSocketFactory> socketFactoryRegistry = 
+		        RegistryBuilder.<ConnectionSocketFactory> create()
+		        .register("https", sslsf )
+		        .register("http", new PlainConnectionSocketFactory() )
+		        .build();
+			
+			return socketFactoryRegistry;
+	}
     
 	/**************************************************************************************
 	 * Set SSL Context

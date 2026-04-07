@@ -1,10 +1,11 @@
 package com.xresch.cfw.utils.web;
 
 import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,10 +30,13 @@ import org.apache.hc.client5.http.impl.auth.NTLMSchemeFactory;
 import org.apache.hc.client5.http.impl.auth.SPNegoSchemeFactory;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpHost;
-import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.util.TimeValue;
 import org.apache.hc.core5.util.Timeout;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSManager;
@@ -51,19 +55,24 @@ public class CFWHttpRequestBuilder {
 	
 	private static Logger logger = CFWLog.getLogger(CFWHttpRequestBuilder.class.getName());
 	
-	private static final String HEADER_CONTENT_TYPE = "Content-Type";
+	private static final String SYNC_LOCK_CLIENT = "Sync Lock Client";
+	
+	private static final String HEADER_CONTENT_TYPE = "content-type";
 	private CFWHttpAuthMethod authMethod = CFWHttpAuthMethod.BASIC;
+	
+	private Charset bodyCharset 		=  StandardCharsets.UTF_8;
+	private static CloseableHttpClient httpClientSingle;
 	private String username = null;
 	private char[] pwdArray = null;
 	String method = "GET";
 	String URL = null;
-	String requestBody = null;
+	String body = null;
 	String requestBodyContentType = "plain/text; charset=UTF-8";
-	private boolean autoCloseClient = true;
+	//private boolean autoCloseClient = true;
 	long responseTimeoutMillis = XRTimeUnit.m.toMillis(10); //default timeout of  10 minutes
 
 	private HashMap<String, String> params = new HashMap<>();
-	private HashMap<String, String> headers = new HashMap<>();
+	private HashMap<String, String> lowercaseHeaders = new HashMap<>();
 	
 	public CFWHttpRequestBuilder(String urlNoParams) {
 		this.URL = urlNoParams;
@@ -82,6 +91,30 @@ public class CFWHttpRequestBuilder {
 	 ***********************************************/
 	public CFWHttpRequestBuilder POST() {
 		method = "POST";
+		return this;
+	}
+	
+	/***************************************************************************
+	 * Set request method to PUT
+	 ***************************************************************************/
+	public CFWHttpRequestBuilder PUT() {
+		method = "PUT";
+		return this;
+	}
+	
+	/***************************************************************************
+	 * Set request method to DELETE
+	 ***************************************************************************/
+	public CFWHttpRequestBuilder DELETE() {
+		method = "DELETE";
+		return this;
+	}
+	
+	/***************************************************************************
+	 * Set request method to a customized method.
+	 ***************************************************************************/
+	public CFWHttpRequestBuilder METHOD(String method) {
+		this.method = method;
 		return this;
 	}
 	
@@ -106,43 +139,36 @@ public class CFWHttpRequestBuilder {
 		
 	}
 	
-	/***********************************************
+	/***************************************************************************
 	 * Add a header
-	 ***********************************************/
+	 ***************************************************************************/
 	public CFWHttpRequestBuilder header(String name, String value) {
-		headers.put(name, value);
+		lowercaseHeaders.put(name.trim().toLowerCase(), value);
 		return this;
 	}
 	
-
-
 	
-	/***********************************************
+	/***************************************************************************
 	 * Adds a map of headers
-	 ***********************************************/
+	 ***************************************************************************/
 	public CFWHttpRequestBuilder headers(Map<String, String> headerMap) {
 		
 		if(headerMap == null) { return this; }
 		
-		this.headers.putAll(headerMap);
+		for(Entry<String, String> entry : headerMap.entrySet()) {
+			header(entry.getKey(), entry.getValue());
+		}
 		return this;
 		
 	}
 	
-	/***********************************************
-	 * Toggle autoCloseClient
-	 ***********************************************/
-	public CFWHttpRequestBuilder autoCloseClient(boolean autoCloseClient) {
-		this.autoCloseClient = autoCloseClient;
-		return this;
-	}
 	
 	/***********************************************
 	 * Get autoCloseClient
 	 ***********************************************/
-	public boolean autoCloseClient() {
-		return this.autoCloseClient;
-	}
+//	public boolean autoCloseClient() {
+//		return this.autoCloseClient;
+//	}
 	
 	/***********************************************
 	 * Set Basic Authentication
@@ -167,7 +193,7 @@ public class CFWHttpRequestBuilder {
 	 * Add a request Body
 	 ***********************************************/
 	public CFWHttpRequestBuilder body(String content) {
-		this.requestBody = content;
+		this.body = content;
 		return this;
 	}
 	
@@ -177,7 +203,7 @@ public class CFWHttpRequestBuilder {
 	public CFWHttpRequestBuilder body(String contentType, String content) {
 		this.requestBodyContentType = contentType;
 		this.header(HEADER_CONTENT_TYPE, contentType);
-		this.requestBody = content;
+		this.body = content;
 		return this;
 	}
 	
@@ -202,7 +228,38 @@ public class CFWHttpRequestBuilder {
 	public String buildURLwithParams() {
 		return  CFWHttp.buildURL(URL, params);
 	}
-	
+	/***************************************************************************
+	 * Build and send the request. Returns a 
+	 * PRFHttpResponse or null in case of errors.
+	 ***************************************************************************/
+	private static CloseableHttpClient getClient() throws Exception {
+		
+		synchronized (SYNC_LOCK_CLIENT) {
+			
+			if(httpClientSingle == null) {
+			//if(httpClient.get() == null) {
+				HttpClientBuilder clientBuilder = 
+						HttpClientBuilder.create()
+								.setConnectionManagerShared(true)
+								//.setUserAgent(CFWHttp.defaultUserAgent())
+								.setConnectionManager(CFWHttp.getConnectionManager())
+								.setKeepAliveStrategy( (response, context) -> { return TimeValue.ofSeconds(60); }) // avoid ephemeral port exhaustion
+								.setConnectionReuseStrategy(DefaultConnectionReuseStrategy.INSTANCE)
+								//.evictExpiredConnections()
+								//.evictIdleConnections(TimeValue.ofSeconds(30))
+								;
+			
+				CFWHttp.httpClientAddProxy(clientBuilder);
+				
+				httpClientSingle = clientBuilder.build();
+				// httpClient.set( clientBuilder.build());
+			}
+			
+		}
+        
+		return httpClientSingle;
+		//return httpClient.get();
+	}
 	/******************************************************************************************************
 	 * Log details about get and post request
 	 * @param requestBody TODO
@@ -235,164 +292,150 @@ public class CFWHttpRequestBuilder {
 			//---------------------------------
 			// Create URL
 			String urlWithParams = buildURLwithParams();
-			//HttpURLConnection connection = createProxiedURLConnection(urlWithParams);
-			//connection.setRequestMethod(method);
-			//connection.setInstanceFollowRedirects(true);
-			
 
-			HttpUriRequestBase requestBase = new HttpUriRequestBase(method, URI.create(urlWithParams));
 			
+			//---------------------------------
+			// Create Request Base
+			HttpUriRequestBase requestBase = new HttpUriRequestBase(method, URI.create(urlWithParams));
+			requestBase.setConfig(
+						 RequestConfig
+								.custom()
+								.setResponseTimeout(Timeout.ofMilliseconds(responseTimeoutMillis) )
+								//.setRedirectsEnabled( ! disableFollowRedirects )
+								.build()
+					);
 			if(requestBase != null) {
 				
 									
-				//-----------------------------------
-				// Handle POST Body
-				if(requestBody != null) {
+			//-----------------------------------
+			// Handle POST Body			
+			if (body != null) {
+
+			    ContentType type;
+
+			    if (!lowercaseHeaders.containsKey(HEADER_CONTENT_TYPE)) {
+			        type = ContentType.create("text/plain", bodyCharset);
+			    } else {
+			        type = ContentType.parse(lowercaseHeaders.get(HEADER_CONTENT_TYPE));
+
+			        if (type.getCharset() == null) {
+			            type = type.withCharset(bodyCharset);
+			        }
+			    }
+
+			    requestBase.setEntity( new StringEntity(body, type) );
+			}
+				
+			//----------------------------------
+	        // Create HTTP Context (per request!)
+	        HttpClientContext context = HttpClientContext.create();
+			
+	        //----------------------------------
+			// Set Auth mechanism
+			if(username != null) {
+				
+				//---------------------------------
+				// Credential Provider
+				String scheme = requestBase.getUri().getScheme();
+				String hostname = requestBase.getUri().getHost();
+				int port = requestBase.getUri().getPort();
+				HttpHost targetHost = new HttpHost(scheme, hostname, port);
+
+				CredentialsProviderBuilder credProviderBuilder = CredentialsProviderBuilder.create();
+				
+				RegistryBuilder<AuthSchemeFactory> registryBuilder = RegistryBuilder.<AuthSchemeFactory>create();
+				
+				switch(this.authMethod) {
+				
+					//------------------------------
+					// Basic 
+					case BASIC:
+						//PRFHttp.addBasicAuthorizationHeader(headers, username, new String(pwdArray));
+						AuthScope authScopeBasic = new AuthScope(targetHost, null, new BasicScheme().getName());
+						credProviderBuilder.add(authScopeBasic, username, pwdArray);
+						registryBuilder.register(StandardAuthScheme.BASIC, BasicSchemeFactory.INSTANCE);
+					break;
 					
-					StringEntity bodyEntity = new StringEntity(requestBody);
-					requestBase.setEntity(bodyEntity);
+					//------------------------------
+					// Basic 
+					case BASIC_HEADER:
+						CFWHttp.addBasicAuthorizationHeader(lowercaseHeaders, username, new String(pwdArray));
+					break;
 					
-//						if(headers.containsKey(HEADER_CONTENT_TYPE)) {
-//							connection.setRequestProperty(HEADER_CONTENT_TYPE, headers.get(HEADER_CONTENT_TYPE));
-//						}else if(!Strings.isNullOrEmpty(requestBodyContentType)) {
-//							connection.setRequestProperty(HEADER_CONTENT_TYPE, requestBodyContentType);
-//						}
-//						connection.setDoOutput(true);
-//						connection.connect();
-//						try(OutputStream outStream = connection.getOutputStream()) {
-//						    byte[] input = requestBody.getBytes("utf-8");
-//						    outStream.write(input, 0, input.length);           
-//						}
+					
+					//------------------------------
+					// Digest
+					case DIGEST:
+						AuthScope authScopeDigest = new AuthScope(targetHost, null, new DigestScheme().getName());
+						credProviderBuilder.add(authScopeDigest, username, pwdArray);
+						registryBuilder.register(StandardAuthScheme.DIGEST, DigestSchemeFactory.INSTANCE);
+					break;
+					
+					//------------------------------
+					// NTLM
+					case NTLM:
+						String ntlmUsername = username;
+						String ntlmDomain = null;
+						if(username.contains("@")) {
+							String[] splitted = username.split("@");
+							ntlmUsername = splitted[0];
+							ntlmDomain = splitted[1];
+						}
+						AuthScope authScopeNTLM = new AuthScope(targetHost, null, new NTLMScheme().getName());
+						
+						NTCredentials ntlmCreds = new NTCredentials(pwdArray, ntlmUsername, ntlmDomain, null);
+						credProviderBuilder.add(authScopeNTLM, ntlmCreds);
+						registryBuilder.register(StandardAuthScheme.NTLM, NTLMSchemeFactory.INSTANCE);
+					break;
+						
+					//------------------------------
+					// KERBEROS (experimental)
+					case KERBEROS:
+						GSSManager manager = GSSManager.getInstance();
+						GSSName name = manager.createName(username, GSSName.NT_USER_NAME);
+					    GSSCredential gssCred = manager.createCredential(name,GSSCredential.DEFAULT_LIFETIME, (Oid) null, GSSCredential.INITIATE_AND_ACCEPT);
+					    
+						AuthScope authScopeKerberos = new AuthScope(targetHost, null, new KerberosScheme().getName());
+					
+						KerberosCredentials kerbCred = new KerberosCredentials(gssCred);
+						credProviderBuilder.add(authScopeKerberos, kerbCred);
+						registryBuilder.register(StandardAuthScheme.SPNEGO, new SPNegoSchemeFactory(
+											                KerberosConfig.custom()
+									                        .setStripPort(KerberosConfig.Option.DEFAULT)
+									                        .setUseCanonicalHostname(KerberosConfig.Option.DEFAULT)
+									                        .build(),
+									                SystemDefaultDnsResolver.INSTANCE))
+									        .register(StandardAuthScheme.KERBEROS, KerberosSchemeFactory.DEFAULT);
+					break;
+					
+					default:
+					break;
+				
 				}
 				
-				
-
-				//----------------------------------
-				// Create HTTP Client
-				
-				HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-				clientBuilder.setDefaultRequestConfig(
-							 RequestConfig
-									.custom()
-									.setResponseTimeout(Timeout.of(responseTimeoutMillis, TimeUnit.MILLISECONDS) )
-									.build()
-						);
-				CFWHttp.httpClientAddProxy(clientBuilder, URL);
-				CFWHttp.setSSLContext(clientBuilder);
-
-			    //----------------------------------
-				// Set Auth mechanism
-				if(username != null) {
-					
-					//---------------------------------
-					// Credential Provider
-					String scheme = requestBase.getUri().getScheme();
-					String hostname = requestBase.getUri().getHost();
-					int port = requestBase.getUri().getPort();
-					HttpHost targetHost = new HttpHost(scheme, hostname, port);
-
-					CredentialsProviderBuilder credProviderBuilder = CredentialsProviderBuilder.create();
-					
-					RegistryBuilder<AuthSchemeFactory> registryBuilder = RegistryBuilder.<AuthSchemeFactory>create();
-					
-					switch(this.authMethod) {
-					
-						//------------------------------
-						// Basic 
-						case BASIC:
-							//CFWHttp.addBasicAuthorizationHeader(headers, username, new String(pwdArray));
-							AuthScope authScopeBasic = new AuthScope(targetHost, null, new BasicScheme().getName());
-							credProviderBuilder.add(authScopeBasic, username, pwdArray);
-							registryBuilder.register(StandardAuthScheme.BASIC, BasicSchemeFactory.INSTANCE);
-						break;
-						
-						//------------------------------
-						// Basic 
-						case BASIC_HEADER:
-							CFWHttp.addBasicAuthorizationHeader(headers, username, new String(pwdArray));
-						break;
-						
-						
-						//------------------------------
-						// Digest
-						case DIGEST:
-							AuthScope authScopeDigest = new AuthScope(targetHost, null, new DigestScheme().getName());
-							credProviderBuilder.add(authScopeDigest, username, pwdArray);
-							registryBuilder.register(StandardAuthScheme.DIGEST, DigestSchemeFactory.INSTANCE);
-						break;
-						
-						//------------------------------
-						// NTLM
-						case NTLM:
-							String ntlmUsername = username;
-							String ntlmDomain = null;
-							if(username.contains("@")) {
-								String[] splitted = username.split("@");
-								ntlmUsername = splitted[0];
-								ntlmDomain = splitted[1];
-							}
-							AuthScope authScopeNTLM = new AuthScope(targetHost, null, new NTLMScheme().getName());
-							
-							NTCredentials ntlmCreds = new NTCredentials(pwdArray, ntlmUsername, ntlmDomain, null);
-							credProviderBuilder.add(authScopeNTLM, ntlmCreds);
-							registryBuilder.register(StandardAuthScheme.NTLM, NTLMSchemeFactory.INSTANCE);
-						break;
-							
-						//------------------------------
-						// KERBEROS (experimental)
-						case KERBEROS:
-							GSSManager manager = GSSManager.getInstance();
-							GSSName name = manager.createName(username, GSSName.NT_USER_NAME);
-						    GSSCredential gssCred = manager.createCredential(name,GSSCredential.DEFAULT_LIFETIME, (Oid) null, GSSCredential.INITIATE_AND_ACCEPT);
-						    
-							AuthScope authScopeKerberos = new AuthScope(targetHost, null, new KerberosScheme().getName());
-						
-							KerberosCredentials kerbCred = new KerberosCredentials(gssCred);
-							credProviderBuilder.add(authScopeKerberos, kerbCred);
-							registryBuilder.register(StandardAuthScheme.SPNEGO, new SPNegoSchemeFactory(
-												                KerberosConfig.custom()
-										                        .setStripPort(KerberosConfig.Option.DEFAULT)
-										                        .setUseCanonicalHostname(KerberosConfig.Option.DEFAULT)
-										                        .build(),
-										                SystemDefaultDnsResolver.INSTANCE))
-										        .register(StandardAuthScheme.KERBEROS, KerberosSchemeFactory.DEFAULT);
-						break;
-						
-						default:
-						break;
-					
-					}
-
-					if (this.authMethod != CFWHttpAuthMethod.BASIC_HEADER) {
-						//---------------------------------
-						// Scheme Factory
-						Registry<AuthSchemeFactory> schemeFactoryRegistry = registryBuilder.build();
-						
-						//---------------------------------
-						// Credential Provider
-						clientBuilder
-							.setDefaultAuthSchemeRegistry(schemeFactoryRegistry)
-							.setDefaultCredentialsProvider(credProviderBuilder.build());
-					}
-					
+				//---------------------------------
+				// Credential Provider
+				if (this.authMethod != CFWHttpAuthMethod.BASIC_HEADER) {
+					context.setCredentialsProvider(credProviderBuilder.build());
+	                context.setAuthSchemeRegistry(registryBuilder.build());
 				}
+				
+			}
 				
 				//-----------------------------------
 				// Handle headers
-				if(headers != null ) {
-					for(Entry<String, String> header : headers.entrySet()) {
+				if(lowercaseHeaders != null ) {
+					for(Entry<String, String> header : lowercaseHeaders.entrySet()) {
 						requestBase.addHeader(header.getKey(), header.getValue());
 					}
 				}
 
 				//-----------------------------------
 				// Connect and create response
-				logFinerRequestInfo(method, URL, params, headers, requestBody);	
+				logFinerRequestInfo(method, URL, params, lowercaseHeaders, body);	
 				CFWHttp.outgoingHTTPCallsCounter.labels(method).inc();
 
-				CloseableHttpClient httpClient = clientBuilder.build();
-
-				CFWHttpResponse response = new CFWHttpResponse(httpClient, requestBase, autoCloseClient);
+				CFWHttpResponse response = new CFWHttpResponse(this, getClient(), requestBase, context);
 				return response;
 				
 			}
