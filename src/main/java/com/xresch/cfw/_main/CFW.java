@@ -254,6 +254,7 @@ public class CFW {
 	// GLOBALS
 	//##############################################################################
 	public static final String REQUEST_ATTR_ID = "requestID";
+	public static final String RESPONSE_HEADER_USERNAME = "cfw-username";
 	public static final String SESSION_DATA = "sessionData";	
 	
 	/***********************************************************************

@@ -90,7 +90,9 @@ public class RequestHandler extends HandlerWrapper
     	// value unchanged to not make the session
     	// Dirty and not cause store Session to DB
     	int currentInactiveInterval = session.getMaxInactiveInterval();
+
     	if(CFW.Context.Session.getSessionData().isLoggedIn()) {
+    		response.setHeader(CFW.RESPONSE_HEADER_USERNAME, CFW.Context.Request.getUser().username());
     		int sessionTimeout = CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_TIMEOUTS, FeatureConfig.CONFIG_SESSIONTIMEOUT_USERS);
     		if(sessionTimeout != currentInactiveInterval) {
     			session.setMaxInactiveInterval(sessionTimeout);
