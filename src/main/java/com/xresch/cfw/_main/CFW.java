@@ -141,6 +141,14 @@ public class CFW {
 	private CFW() {
 		// hide constructor
 	}
+	
+	//##############################################################################
+	// GLOBALS
+	//##############################################################################
+	public static final String REQUEST_ATTR_ID = "requestID";
+	public static final String RQUEST_ATTR_USERNAME = "username";
+	public static final String SESSION_DATA = "sessionData";	
+	
 	//##############################################################################
 	// Hierarchical Binding
 	//##############################################################################
@@ -250,12 +258,6 @@ public class CFW {
 	public static class XML extends CFWXML {}
 
 
-	//##############################################################################
-	// GLOBALS
-	//##############################################################################
-	public static final String REQUEST_ATTR_ID = "requestID";
-	public static final String RESPONSE_HEADER_USERNAME = "cfw-username";
-	public static final String SESSION_DATA = "sessionData";	
 	
 	/***********************************************************************
 	 * Note: This will be called by initializeApp().

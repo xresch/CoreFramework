@@ -18,6 +18,7 @@ import org.apache.hc.client5.http.auth.NTCredentials;
 import org.apache.hc.client5.http.auth.StandardAuthScheme;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.auth.BasicSchemeFactory;
 import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
@@ -329,7 +330,11 @@ public class CFWHttpRequestBuilder {
 			//----------------------------------
 	        // Create HTTP Context (per request!)
 	        HttpClientContext context = HttpClientContext.create();
-			
+	       
+	        //----------------------------------
+	        // Set Cookie Store (per request)
+	        context.setCookieStore(new BasicCookieStore());
+	        
 	        //----------------------------------
 			// Set Auth mechanism
 			if(username != null) {

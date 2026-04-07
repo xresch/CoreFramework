@@ -206,6 +206,19 @@ function cfw_http_secureDecodeURI(uri){
 }
 
 /**************************************************************************************
+ * returns the default headers
+ *************************************************************************************/
+function cfw_http_defaultHeaders(){
+	
+	let headers = {};
+	
+	if(JSDATA != null){
+		if(JSDATA.username != null){ headers.username =  JSDATA.username; }
+	}
+	
+	return headers;
+}
+/**************************************************************************************
  * Executes a get request with JQuery and retrieves a standard JSON format of the CFW
  * framework. Handles alert messages if there are any.
  * 
@@ -228,8 +241,12 @@ function cfw_http_secureDecodeURI(uri){
  *************************************************************************************/
 function cfw_http_getJSON(url, params, callbackFunc){
 
-	$.get(url, params)
-		  .done(function(response, status, xhr) {
+	$.ajax({
+	  url: url,
+	  data: params,
+	  headers: cfw_http_defaultHeaders()
+	  
+	}).done(function(response, status, xhr) {
 		    //alert( "done" );
 			  if(callbackFunc != null){
 				  callbackFunc(response, status, xhr);
@@ -272,8 +289,13 @@ function cfw_http_getJSON(url, params, callbackFunc){
  *************************************************************************************/
 function cfw_http_postJSON(url, params, callbackFunc, callbackFuncFail){
 
-	$.post(url, params)
-		  .done(function(response, status, xhr) {
+	$.ajax({
+		method: "POST", 
+		url: url,
+		data: params,
+		headers: cfw_http_defaultHeaders()
+		  
+	}).done(function(response, status, xhr) {
 		    //alert( "done" );
 			  if(callbackFunc != null) callbackFunc(response, status, xhr);
 		  })
@@ -315,12 +337,13 @@ function cfw_http_postJSON(url, params, callbackFunc, callbackFuncFail){
 function cfw_http_postFormData(url, formData, callbackFunc){
 
 	jQuery.ajax({
+	    method: 'POST',
 	    url: url,
 	    data: formData,
 	    cache: false,
 	    contentType: false,
 	    processData: false,
-	    method: 'POST'
+		headers: cfw_http_defaultHeaders()
 	    //type: 'POST', // For jQuery < 1.9
 	    //success: function(data){}
 	})
@@ -399,9 +422,13 @@ function cfw_http_postStoreJsonData(name, jsonArray) {
  * @param targetElement the element in which the form should be placed
  *************************************************************************************/
 function cfw_http_getForm(formid, targetElement){
-
-	$.get('/cfw/formhandler', {id: formid})
-		  .done(function(response) {
+	
+	$.ajax({
+		  url: '/cfw/formhandler',
+		  data: {id: formid},
+		  headers: cfw_http_defaultHeaders()
+		  
+		}).done(function(response) {
 			  if(response.payload != null){
 				  $(targetElement).html(response.payload.html);
 				  CFW.http.evaluateFormScript(targetElement);
@@ -458,8 +485,12 @@ function cfw_http_evaluateFormScript(elementContainingForm){
  *************************************************************************************/
 function cfw_http_createForm(url, params, targetElement, callback){
 
-	$.get(url, params)
-		  .done(function(response, status, xhr) {
+	$.ajax({
+			  url: url,
+			  data: params,
+			  headers: cfw_http_defaultHeaders()
+			  
+	}).done(function(response, status, xhr) {
 			  if(response.payload != null){
 			      $(targetElement).append(response.payload.html);
 			      var formID = $(targetElement).find('form').attr("id");

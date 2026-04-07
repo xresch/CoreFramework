@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
+import com.xresch.cfw.features.usermgmt.User;
 
 /**************************************************************************************************************
  * 
@@ -47,8 +48,13 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 		String requestID = (String)request.getAttribute(CFW.REQUEST_ATTR_ID);
 
 		this.addJavascriptData("localeIdentifier", CFW.Localization.getLocaleIdentifierForRequest() );
-		this.addJavascriptData(CFW.REQUEST_ATTR_ID, requestID );
 		this.addJavascriptData("time", CFW.Time.currentTimestamp());
+		this.addJavascriptData(CFW.REQUEST_ATTR_ID, requestID );
+		
+		User user = CFW.Context.Request.getUser();
+		if(user != null) {
+			this.addJavascriptData(CFW.RQUEST_ATTR_USERNAME, user.username());
+		}
 				
 	}
 	
