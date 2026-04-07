@@ -22,38 +22,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.hc.client5.http.SystemDefaultDnsResolver;
-import org.apache.hc.client5.http.auth.AuthSchemeFactory;
-import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.KerberosConfig;
-import org.apache.hc.client5.http.auth.KerberosCredentials;
-import org.apache.hc.client5.http.auth.NTCredentials;
-import org.apache.hc.client5.http.auth.StandardAuthScheme;
-import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.auth.BasicScheme;
-import org.apache.hc.client5.http.impl.auth.BasicSchemeFactory;
-import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
-import org.apache.hc.client5.http.impl.auth.DigestScheme;
-import org.apache.hc.client5.http.impl.auth.DigestSchemeFactory;
-import org.apache.hc.client5.http.impl.auth.KerberosScheme;
-import org.apache.hc.client5.http.impl.auth.KerberosSchemeFactory;
-import org.apache.hc.client5.http.impl.auth.NTLMScheme;
-import org.apache.hc.client5.http.impl.auth.NTLMSchemeFactory;
-import org.apache.hc.client5.http.impl.auth.SPNegoSchemeFactory;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
@@ -61,40 +39,22 @@ import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
 import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.Header;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpException;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.http.config.RegistryBuilder;
-import org.apache.hc.core5.http.io.HttpClientResponseHandler;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.StringEntity;
-import org.apache.hc.core5.io.CloseMode;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.ssl.TrustStrategy;
-import org.apache.hc.core5.util.Timeout;
 import org.graalvm.polyglot.Value;
-import org.ietf.jgss.GSSCredential;
-import org.ietf.jgss.GSSManager;
-import org.ietf.jgss.GSSName;
-import org.ietf.jgss.Oid;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWState.CFWStateOption;
 import com.xresch.cfw.utils.scriptengine.CFWScriptingContext;
-import com.xresch.xrutils.utils.XRTimeUnit;
 
 import io.prometheus.client.Counter;
 
@@ -134,7 +94,7 @@ public class CFWHttp {
 		, KERBEROS 
 	}
 
-	private static final Counter outgoingHTTPCallsCounter = Counter.build()
+	static final Counter outgoingHTTPCallsCounter = Counter.build()
 	         .name("cfw_http_outgoing_calls_total")
 	         .help("Number of outgoing HTTP calls executed with the CFWHTTP utils.")
 	         .labelNames("method")
@@ -638,26 +598,7 @@ public class CFWHttp {
 		return sendGETRequest(url, null, null);
 	}
 	
-	/******************************************************************************************************
-	 * Log details about get and post request
-	 * @param requestBody TODO
-	 ******************************************************************************************************/
-	private static void logFinerRequestInfo(String method, String url, HashMap<String, String> params, HashMap<String, String> headers, String requestBody) {
-		if(logger.isLoggable(Level.FINER)) {
-			
-			String paramsString = (params == null) ? "null" : Joiner.on("&").withKeyValueSeparator("=").join(params);
-			String headersString = (headers == null) ? "null" : Joiner.on(",").withKeyValueSeparator("=").join(headers);
-			
-			new CFWLog(logger)
-				.custom("CFWHttp-method", method)
-				.custom("CFWHttp-url", url)
-				.custom("CFWHttp-params", paramsString)
-				.custom("CFWHttp-headers", headersString)
-				.custom("CFWHttp-body", requestBody)
-				.finer("CFWHTTP Request Details");;
 
-		}
-	}
 	
 	/******************************************************************************************************
 	 * Send a HTTP GET request and returns the result or null in case of error.
@@ -676,7 +617,7 @@ public class CFWHttp {
 	 * @param url used for the request.
 	 ******************************************************************************************************/
 	public static CFWHttpRequestBuilder newRequestBuilder(String url) {
-		return instance.new CFWHttpRequestBuilder(url);	    	
+		return new CFWHttpRequestBuilder(url);	    	
 	}
 	
 	/******************************************************************************************************
@@ -986,345 +927,6 @@ public class CFWHttp {
 	    ;
 	}
 	
-	/******************************************************************************************************
-	 * Inner Class for HTTP Response
-	 ******************************************************************************************************/
-	public class CFWHttpRequestBuilder {
-		
-		private static final String HEADER_CONTENT_TYPE = "Content-Type";
-		private CFWHttpAuthMethod authMethod = CFWHttpAuthMethod.BASIC;
-		private String username = null;
-		private char[] pwdArray = null;
-		String method = "GET";
-		String URL = null;
-		String requestBody = null;
-		String requestBodyContentType = "plain/text; charset=UTF-8";
-		private boolean autoCloseClient = true;
-		long responseTimeoutMillis = XRTimeUnit.m.toMillis(10); //default timeout of  10 minutes
-
-		private HashMap<String, String> params = new HashMap<>();
-		private HashMap<String, String> headers = new HashMap<>();
-		
-		public CFWHttpRequestBuilder(String urlNoParams) {
-			this.URL = urlNoParams;
-		}
-		
-		/***********************************************
-		 * Set method to GET
-		 ***********************************************/
-		public CFWHttpRequestBuilder GET() {
-			method = "GET";
-			return this;
-		}
-		
-		/***********************************************
-		 * Set method to POST
-		 ***********************************************/
-		public CFWHttpRequestBuilder POST() {
-			method = "POST";
-			return this;
-		}
-		
-		/***********************************************
-		 * Add a parameter to the request.
-		 ***********************************************/
-		public CFWHttpRequestBuilder param(String name, String value) {
-			params.put(name, value);
-			return this;
-		}
-		
-		
-		/***********************************************
-		 * Adds a map of parameters
-		 ***********************************************/
-		public CFWHttpRequestBuilder params(Map<String, String> paramsMap) {
-			
-			if(paramsMap == null) { return this; }
-			
-			this.params.putAll(paramsMap);
-			return this;
-			
-		}
-		
-		/***********************************************
-		 * Add a header
-		 ***********************************************/
-		public CFWHttpRequestBuilder header(String name, String value) {
-			headers.put(name, value);
-			return this;
-		}
-		
-
-
-		
-		/***********************************************
-		 * Adds a map of headers
-		 ***********************************************/
-		public CFWHttpRequestBuilder headers(Map<String, String> headerMap) {
-			
-			if(headerMap == null) { return this; }
-			
-			this.headers.putAll(headerMap);
-			return this;
-			
-		}
-		
-		/***********************************************
-		 * Toggle autoCloseClient
-		 ***********************************************/
-		public CFWHttpRequestBuilder autoCloseClient(boolean autoCloseClient) {
-			this.autoCloseClient = autoCloseClient;
-			return this;
-		}
-		
-		/***********************************************
-		 * Get autoCloseClient
-		 ***********************************************/
-		public boolean autoCloseClient() {
-			return this.autoCloseClient;
-		}
-		
-		/***********************************************
-		 * Set Basic Authentication
-		 ***********************************************/
-		public CFWHttpRequestBuilder setAuthCredentialsBasic(String username, String password) {
-			return setAuthCredentials(CFWHttpAuthMethod.BASIC, username, password);
-		}
-		
-		/***********************************************
-		 * Set authentication credentials
-		 ***********************************************/
-		public CFWHttpRequestBuilder setAuthCredentials(CFWHttpAuthMethod authMethod, String username, String password) {
-		
-			this.authMethod = (authMethod != null ) ? authMethod : CFWHttpAuthMethod.BASIC;
-			this.username = username;
-			this.pwdArray = (password != null ) ? password.toCharArray() : "".toCharArray();
-
-			return this;
-		}
-		
-		/***********************************************
-		 * Add a request Body
-		 ***********************************************/
-		public CFWHttpRequestBuilder body(String content) {
-			this.requestBody = content;
-			return this;
-		}
-		
-		/***********************************************
-		 * Add a request Body
-		 ***********************************************/
-		public CFWHttpRequestBuilder body(String contentType, String content) {
-			this.requestBodyContentType = contentType;
-			this.header(HEADER_CONTENT_TYPE, contentType);
-			this.requestBody = content;
-			return this;
-		}
-		
-		/***********************************************
-		 * Add a request Body in JSON format UTF-8 encoding
-		 ***********************************************/
-		public CFWHttpRequestBuilder bodyJSON(String content) {
-			return this.body("application/json; charset=UTF-8", content);
-		}
-		
-		/***********************************************
-		 * Add a response timeout.
-		 ***********************************************/
-		public CFWHttpRequestBuilder timeout(long responseTimeoutMillis) {
-			this.responseTimeoutMillis = responseTimeoutMillis;
-			return this;
-		}
-		
-		/***********************************************
-		 * Add a request Body in JSON format UTF-8 encoding
-		 ***********************************************/
-		public String buildURLwithParams() {
-			return  buildURL(URL, params);
-		}
-		
-		/***********************************************
-		 * Build and send the request. Returns a 
-		 * CFWHttpResponse or null in case of errors.
-		 ***********************************************/
-		@SuppressWarnings("deprecation")
-		public CFWHttpResponse send() {
-			
-			try {
-				
-				//---------------------------------
-				// Create URL
-				String urlWithParams = buildURLwithParams();
-				//HttpURLConnection connection = createProxiedURLConnection(urlWithParams);
-				//connection.setRequestMethod(method);
-				//connection.setInstanceFollowRedirects(true);
-				
-
-				HttpUriRequestBase requestBase = new HttpUriRequestBase(method, URI.create(urlWithParams));
-				
-				if(requestBase != null) {
-					
-										
-					//-----------------------------------
-					// Handle POST Body
-					if(requestBody != null) {
-						
-						StringEntity bodyEntity = new StringEntity(requestBody);
-						requestBase.setEntity(bodyEntity);
-						
-//						if(headers.containsKey(HEADER_CONTENT_TYPE)) {
-//							connection.setRequestProperty(HEADER_CONTENT_TYPE, headers.get(HEADER_CONTENT_TYPE));
-//						}else if(!Strings.isNullOrEmpty(requestBodyContentType)) {
-//							connection.setRequestProperty(HEADER_CONTENT_TYPE, requestBodyContentType);
-//						}
-//						connection.setDoOutput(true);
-//						connection.connect();
-//						try(OutputStream outStream = connection.getOutputStream()) {
-//						    byte[] input = requestBody.getBytes("utf-8");
-//						    outStream.write(input, 0, input.length);           
-//						}
-					}
-					
-					
-
-					//----------------------------------
-					// Create HTTP Client
-					
-					HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-					clientBuilder.setDefaultRequestConfig(
-								 RequestConfig
-										.custom()
-										.setResponseTimeout(Timeout.of(responseTimeoutMillis, TimeUnit.MILLISECONDS) )
-										.build()
-							);
-					httpClientAddProxy(clientBuilder, URL);
-					setSSLContext(clientBuilder);
-
-				    //----------------------------------
-					// Set Auth mechanism
-					if(username != null) {
-						
-						//---------------------------------
-						// Credential Provider
-						String scheme = requestBase.getUri().getScheme();
-						String hostname = requestBase.getUri().getHost();
-						int port = requestBase.getUri().getPort();
-						HttpHost targetHost = new HttpHost(scheme, hostname, port);
-
-						CredentialsProviderBuilder credProviderBuilder = CredentialsProviderBuilder.create();
-						
-						RegistryBuilder<AuthSchemeFactory> registryBuilder = RegistryBuilder.<AuthSchemeFactory>create();
-						
-						switch(this.authMethod) {
-						
-							//------------------------------
-							// Basic 
-							case BASIC:
-								//CFWHttp.addBasicAuthorizationHeader(headers, username, new String(pwdArray));
-								AuthScope authScopeBasic = new AuthScope(targetHost, null, new BasicScheme().getName());
-								credProviderBuilder.add(authScopeBasic, username, pwdArray);
-								registryBuilder.register(StandardAuthScheme.BASIC, BasicSchemeFactory.INSTANCE);
-							break;
-							
-							//------------------------------
-							// Basic 
-							case BASIC_HEADER:
-								CFWHttp.addBasicAuthorizationHeader(headers, username, new String(pwdArray));
-							break;
-							
-							
-							//------------------------------
-							// Digest
-							case DIGEST:
-								AuthScope authScopeDigest = new AuthScope(targetHost, null, new DigestScheme().getName());
-								credProviderBuilder.add(authScopeDigest, username, pwdArray);
-								registryBuilder.register(StandardAuthScheme.DIGEST, DigestSchemeFactory.INSTANCE);
-							break;
-							
-							//------------------------------
-							// NTLM
-							case NTLM:
-								String ntlmUsername = username;
-								String ntlmDomain = null;
-								if(username.contains("@")) {
-									String[] splitted = username.split("@");
-									ntlmUsername = splitted[0];
-									ntlmDomain = splitted[1];
-								}
-								AuthScope authScopeNTLM = new AuthScope(targetHost, null, new NTLMScheme().getName());
-								
-								NTCredentials ntlmCreds = new NTCredentials(pwdArray, ntlmUsername, ntlmDomain, null);
-								credProviderBuilder.add(authScopeNTLM, ntlmCreds);
-								registryBuilder.register(StandardAuthScheme.NTLM, NTLMSchemeFactory.INSTANCE);
-							break;
-								
-							//------------------------------
-							// KERBEROS (experimental)
-							case KERBEROS:
-								GSSManager manager = GSSManager.getInstance();
-								GSSName name = manager.createName(username, GSSName.NT_USER_NAME);
-							    GSSCredential gssCred = manager.createCredential(name,GSSCredential.DEFAULT_LIFETIME, (Oid) null, GSSCredential.INITIATE_AND_ACCEPT);
-							    
-								AuthScope authScopeKerberos = new AuthScope(targetHost, null, new KerberosScheme().getName());
-							
-								KerberosCredentials kerbCred = new KerberosCredentials(gssCred);
-								credProviderBuilder.add(authScopeKerberos, kerbCred);
-								registryBuilder.register(StandardAuthScheme.SPNEGO, new SPNegoSchemeFactory(
-													                KerberosConfig.custom()
-											                        .setStripPort(KerberosConfig.Option.DEFAULT)
-											                        .setUseCanonicalHostname(KerberosConfig.Option.DEFAULT)
-											                        .build(),
-											                SystemDefaultDnsResolver.INSTANCE))
-											        .register(StandardAuthScheme.KERBEROS, KerberosSchemeFactory.DEFAULT);
-							break;
-							
-							default:
-							break;
-						
-						}
-
-						if (this.authMethod != CFWHttpAuthMethod.BASIC_HEADER) {
-							//---------------------------------
-							// Scheme Factory
-							Registry<AuthSchemeFactory> schemeFactoryRegistry = registryBuilder.build();
-							
-							//---------------------------------
-							// Credential Provider
-							clientBuilder
-								.setDefaultAuthSchemeRegistry(schemeFactoryRegistry)
-								.setDefaultCredentialsProvider(credProviderBuilder.build());
-						}
-						
-					}
-					
-					//-----------------------------------
-					// Handle headers
-					if(headers != null ) {
-						for(Entry<String, String> header : headers.entrySet()) {
-							requestBase.addHeader(header.getKey(), header.getValue());
-						}
-					}
-
-					//-----------------------------------
-					// Connect and create response
-					CFWHttp.logFinerRequestInfo(method, URL, params, headers, requestBody);	
-					outgoingHTTPCallsCounter.labels(method).inc();
-
-					CloseableHttpClient httpClient = clientBuilder.build();
-
-					CFWHttpResponse response = instance.new CFWHttpResponse(httpClient, requestBase, autoCloseClient);
-					return response;
-					
-				}
-			} catch (Throwable e) {
-				new CFWLog(logger)
-					.severe("Exception occured: "+e.getMessage(), e);
-			} 
-
-			return null;		
-		}
-	}
-	
 	/**************************************************************************************
 	 * Loads the keystore, caches it and then returns the cached instance.
 	 * 
@@ -1394,7 +996,7 @@ public class CFWHttp {
 	 * Set SSL Context
 	 * 
 	 **************************************************************************************/
-	private static void setSSLContext(HttpClientBuilder builder) throws Exception {
+	public static void setSSLContext(HttpClientBuilder builder) throws Exception {
 		
 		//=====================================================
 		// Initialize Connection Manager
@@ -1429,296 +1031,6 @@ public class CFWHttp {
 		//=====================================================
 	    builder.setConnectionManager(trustAllAndClientCertConnectionManager);
 
-	}
-	
-	/******************************************************************************************************
-	 * Inner Class for HTTP Response
-	 ******************************************************************************************************/
-	public class CFWHttpResponse {
-		
-		private Logger responseLogger = CFWLog.getLogger(CFWHttpResponse.class.getName());
-		
-		private URL url;
-		private String body;
-		private int status = 500;
-		private long duration = -1;
-		private Header[] headers;
-		
-		private boolean errorOccured = false;
-		private String errorMessage = null;
-		
-		CloseableHttpClient httpClient = null;
-		private HttpServletResponse response = null;
-		
-		/******************************************************************************************************
-		 * 
-		 ******************************************************************************************************/
-		public CFWHttpResponse(CloseableHttpClient httpClient, HttpUriRequestBase requestBase, boolean autoCloseClient) {
-			
-			this.httpClient = httpClient;
-			
-			//----------------------------------
-			// Get URL
-			try {
-				url = requestBase.getUri().toURL();
-			} catch (Exception e) {
-				errorOccured = true;
-				new CFWLog(responseLogger).severe("URL is malformed:"+e.getMessage(), e);
-				return ;
-			}
-			
-			//----------------------------------
-			// Send Request and Read Response
-			long startMillis = System.currentTimeMillis();
-			try {
-				
-				Boolean success = httpClient.execute(requestBase, new HttpClientResponseHandler<Boolean>() {
-					@Override
-					public Boolean handleResponse(ClassicHttpResponse response) throws HttpException, IOException {
-						if(response != null) {
-							status = response.getCode();
-							headers = response.getHeaders();
-							
-							HttpEntity entity = response.getEntity();
-							if(entity != null) {
-								body = EntityUtils.toString(response.getEntity());
-							}
-
-						}
-						return true;
-					}
-				});
-				
-			} catch (IOException e) {
-				errorOccured = true;
-				errorMessage = e.getMessage();
-				new CFWLog(responseLogger).warn("Exception occured during HTTP request:"+e.getMessage(), e);
-				
-			}finally {
-				long endMillis = System.currentTimeMillis();
-				duration = endMillis - startMillis;
-				
-				if(autoCloseClient) {
-					close();
-				}
-			}
-		}
-		
-		/******************************************************************************************************
-		 * 
-		 ******************************************************************************************************/
-		public void close() {
-			if(httpClient != null) {
-				httpClient.close(CloseMode.IMMEDIATE);
-			}
-		}
-		
-		/******************************************************************************************************
-		 * 
-		 ******************************************************************************************************/
-		public boolean errorOccured() {
-			return errorOccured;
-		}
-		
-		/******************************************************************************************************
-		 * 
-		 ******************************************************************************************************/
-		public String errorMessage() {
-			return errorMessage;
-		}
-		
-		/******************************************************************************************************
-		 * 
-		 ******************************************************************************************************/
-		public URL getURL() {
-			return url;
-		}
-		
-		/******************************************************************************************************
-		 * Get the body content of the response.
-		 * @return String or null on error
-		 ******************************************************************************************************/
-		public String getResponseBody() {
-			return body;
-		}
-		
-		/******************************************************************************************************
-		 * Get the body content of the response as a JsonObject.
-		 * @param url used for the request.
-		 * @return JsonObject or null in case of issues
-		 ******************************************************************************************************/
-		public JsonElement getResponseBodyAsJsonElement(){
-			
-			//----------------------------------
-			// Check Body
-			if(Strings.isNullOrEmpty(body)) {
-				new CFWLog(responseLogger).severe("Http Response was empty, cannot convert to a JsonElement.", new Exception());
-				return null;
-			}
-			
-			if(!body.trim().startsWith("{")
-			&& !body.trim().startsWith("[")
-			) {
-				String messagePart = (body.length() <= 100) ? body : body.substring(0, 95)+"... (truncated)";
-				new CFWLog(responseLogger).severe("Http Response was not a JsonElement: "+messagePart, new Exception());
-				return null;
-			}
-			
-			//----------------------------------
-			// Create Object
-			JsonElement jsonElement = CFW.JSON.fromJson(body);
-
-			if(jsonElement == null) {
-				new CFWLog(responseLogger).severe("Error occured while converting http response body to JSON Element.", new Exception());
-			}
-			
-			return jsonElement;
-
-		}
-		
-		/******************************************************************************************************
-		 * Get the body content of the response as a JsonObject.
-		 * @param url used for the request.
-		 * @return JsonObject or null in case of issues
-		 ******************************************************************************************************/
-		public JsonObject getResponseBodyAsJsonObject(){
-			
-			//----------------------------------
-			// Check Body
-			if(Strings.isNullOrEmpty(body)) {
-				new CFWLog(responseLogger).severe("Http Response was empty, cannot convert to a JsonElement.", new Exception());
-				return null;
-			}
-			
-			if(!body.trim().startsWith("{")) {
-				String messagePart = (body.length() <= 100) ? body : body.substring(0, 95)+"... (truncated)";
-				new CFWLog(responseLogger).severe("Http Response was not a JsonObject: "+messagePart, new Exception());
-				return null;
-			}
-			
-			//----------------------------------
-			// Create Object
-			JsonElement jsonElement = CFW.JSON.fromJson(body);
-			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			
-			if(jsonObject == null) {
-				new CFWLog(responseLogger).severe("Error occured while converting http response body to JSON Object.", new Exception());
-			}
-			
-			return jsonObject;
-
-		}
-		
-		/******************************************************************************************************
-		 * Get the body content of the response as a JsonArray.
-		 * @param url used for the request.
-		 * @return JsonArray never null, empty array on error
-		 ******************************************************************************************************/
-		public JsonArray getResponseBodyAsJsonArray(){
-			
-			//----------------------------------
-			// Check Body
-			if(Strings.isNullOrEmpty(body)) {
-				new CFWLog(responseLogger).severe("Http Response was empty, cannot convert to JSON.", new Exception());
-				return null;
-			}
-			
-			if(!body.trim().startsWith("{")
-			&& !body.trim().startsWith("[")
-			) {
-				String messagePart = (body.length() <= 100) ? body : body.substring(0, 95)+"... (truncated)";
-				new CFWLog(responseLogger).severe("Http Response was not JSON: "+messagePart, new Exception());
-				return null;
-			}
-			
-			//----------------------------------
-			// CreateArray
-			JsonArray jsonArray = new JsonArray();
-			
-			JsonElement jsonElement = CFW.JSON.fromJson(body);
-			if(jsonElement == null || jsonElement.isJsonNull()) {
-				return jsonArray;
-			}
-			
-			if(jsonElement.isJsonArray()) {
-				jsonArray = jsonElement.getAsJsonArray();
-			}else if(jsonElement.isJsonObject()) {
-				JsonObject object = jsonElement.getAsJsonObject();
-				if(object.get("error") != null) {
-					new CFWLog(responseLogger).severe("Error occured while reading http response: "+object.get("error").toString());
-					CFW.Messages.addErrorMessage("Error: ");
-					return jsonArray;
-				}else {
-					new CFWLog(responseLogger).severe("Error occured while reading http response:"+CFW.JSON.toString(jsonElement));
-				}
-			}
-			
-			return jsonArray;
-		}
-
-		/******************************************************************************************************
-		 * 
-		 ******************************************************************************************************/
-		public int getStatus() {
-			return status;
-		}
-		
-		/******************************************************************************************************
-		 * Returns a state for this response
-		 * @param checkErrorResponse toggle if HTTP Status should be checked to be below 400.
-		 ******************************************************************************************************/
-		public CFWStateOption getState(boolean checkErrorResponse) {
-			//------------------------------
-			// Check Error Occured
-			if( ! this.errorOccured() ) {
-				
-				//------------------------------
-				// Check Status Code
-				if(checkErrorResponse) {
-					if( this.getStatus() < 400 ) {
-						return CFWStateOption.GREEN;
-					}else {
-						return CFWStateOption.RED;
-					}
-				}
-				
-				return CFWStateOption.GREEN;
-			}else {
-				return CFWStateOption.RED;
-			}
-
-		}
-
-		/******************************************************************************************************
-		 * Returns the approximate duration that was needed for executing and reading the request.
-		 ******************************************************************************************************/
-		public long getDuration() {
-			return duration;
-		}
-		
-		/******************************************************************************************************
-		 * 
-		 ******************************************************************************************************/
-		public Header[] getHeaders() {
-			return headers;
-		}
-		
-		/******************************************************************************************************
-		 * 
-		 ******************************************************************************************************/
-		public JsonObject getHeadersAsJson() {
-			
-			JsonObject object = new JsonObject();
-			for(Header entry : headers) {
-				
-				if(entry.getName() != null) {
-					object.addProperty(entry.getName(), entry.getValue());
-				}
-			}
-			
-			return object;
-		}
-		
 	}
 	
 	protected class CFWProxy {

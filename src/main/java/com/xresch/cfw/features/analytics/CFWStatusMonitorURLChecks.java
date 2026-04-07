@@ -14,7 +14,7 @@ import com.xresch.cfw.extensions.databases.postgres.PostgresEnvironment;
 import com.xresch.cfw.features.analytics.CFWStatusMonitor;
 import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
 import com.xresch.cfw.utils.CFWState.CFWStateOption;
-import com.xresch.cfw.utils.web.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.utils.web.CFWHttpResponse;
 
 public class CFWStatusMonitorURLChecks implements CFWStatusMonitor {
 

@@ -28,8 +28,8 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 import com.xresch.cfw.utils.web.CFWHttp.CFWHttpAuthMethod;
-import com.xresch.cfw.utils.web.CFWHttp.CFWHttpRequestBuilder;
-import com.xresch.cfw.utils.web.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.utils.web.CFWHttpRequestBuilder;
+import com.xresch.cfw.utils.web.CFWHttpResponse;
 import com.xresch.cfw.validation.CustomValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 	

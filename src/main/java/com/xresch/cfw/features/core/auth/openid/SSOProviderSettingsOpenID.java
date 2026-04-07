@@ -37,7 +37,7 @@ import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.core.auth.SSOProviderSettings;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.web.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.utils.web.CFWHttpResponse;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 
 /**************************************************************************************************************

@@ -10,7 +10,7 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.utils.web.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.utils.web.CFWHttpResponse;
 
 /**************************************************************************************************************
  * 

@@ -57,7 +57,7 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.spi.CFWAppFeature;
 import com.xresch.cfw.spi.CFWAppInterface;
 import com.xresch.cfw.utils.HandlerChainBuilder;
-import com.xresch.cfw.utils.web.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.utils.web.CFWHttpResponse;
 
 import io.prometheus.client.jetty.JettyStatisticsCollector;
 
