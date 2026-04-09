@@ -769,7 +769,7 @@ function cfw_renderer_dataviewer_triggerPrint(dataviewerID) {
 		<label class="col-sm-3 col-form-label" for="cfw-print-description">Description:</label>   
 		<div class="col-sm-9 d-flex">
 			<div class="cfw-field-wrapper">
-				<input type="text" class="form-control" placeholder="Description(Optional)" id="cfw-print-description" onkeydown="return event.key != 'Enter';" value="Data exported from EMP." >
+				<input type="text" class="form-control" placeholder="Description(Optional)" id="cfw-print-description" onkeydown="return event.key != 'Enter';" value="" >
 			</div>
 		</div>
 	</div>
