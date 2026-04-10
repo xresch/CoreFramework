@@ -84,6 +84,15 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				if(headjs.hasFiles()) {
 					buildedPage.append("<script src=\""+headjs.assembleAndCache().getAssemblyServletPath()+"\"></script>");
 				}
+				
+				String customHeaders = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_CUSTOM_HTML_HEADERS);
+				if( ! Strings.isNullOrEmpty(customHeaders) ) {
+					// do not include this on the config page to make sure it could be reverted
+					if( ! CFW.Context.Request.getRequest().getRequestURI().contains("/app/configuration") ) {
+						buildedPage.append(customHeaders);
+					}
+				}
+				
 			buildedPage.append("</head>\n");
 			
 			buildedPage.append("<body id=\"cfw-body\">\n");

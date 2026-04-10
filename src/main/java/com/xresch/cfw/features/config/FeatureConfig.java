@@ -35,6 +35,7 @@ public class FeatureConfig extends CFWAppFeature {
 	public static final String CONFIG_FILE_CACHING = "Cache Files";
 	public static final String CONFIG_CPU_SAMPLING_SECONDS = "CPU Sampling Seconds";
 	public static final String CONFIG_CPU_SAMPLING_AGGREGATION = "CPU Sampling Aggregation";
+	public static final String CONFIG_CUSTOM_HTML_HEADERS = "Custom HTML Headers";
 
 	//---------------------------------
 	// Look & Feel
@@ -204,6 +205,16 @@ public class FeatureConfig extends CFWAppFeature {
 				.type(FormFieldType.SELECT)
 				.options(new Integer[]{3, 15, 60, 240, 720, 1440})
 				.value("3")
+		);
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration(CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_CUSTOM_HTML_HEADERS)
+				.description("Configure custom HTML headers that will be added to all pages except this configuration page. Can be used to add custom javascripts like monitoring agents.")
+				.type(FormFieldType.TEXTAREA)
+				.value("")
 		);
 		
 		//-----------------------------------------
