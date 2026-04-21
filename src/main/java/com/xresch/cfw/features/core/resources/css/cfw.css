@@ -260,6 +260,7 @@ label {
     bottom: 0;
     float: right !important;
     width: auto;
+    z-index: 999;
 }
 
 .modal-footer {
