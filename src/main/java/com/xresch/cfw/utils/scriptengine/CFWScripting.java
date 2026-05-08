@@ -71,6 +71,10 @@ public class CFWScripting {
 	 ******************************************************************************************************/
 	public static CFWScriptingContext createJavascriptContext() {
 		
+		// disable warnings
+		// interpreter only mode is slower but we don't need special JVM
+		System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
+		
 		return createContext("js");
 		
 	}

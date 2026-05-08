@@ -392,8 +392,9 @@ public class CFWHttp {
 			try {
 				tempURL = new URL(urlToCall);
 				String hostname = tempURL.getHost();
+				String cacheID = hostname + tempURL.getPath();
 				
-				proxyArray = resolvedProxiesCache.get(hostname, new Callable<ArrayList<CFWProxy>>() {
+				proxyArray = resolvedProxiesCache.get(cacheID, new Callable<ArrayList<CFWProxy>>() {
 					@Override
 					public ArrayList<CFWProxy> call() throws Exception {
 						
