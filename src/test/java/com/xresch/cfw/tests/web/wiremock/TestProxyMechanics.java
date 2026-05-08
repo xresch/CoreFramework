@@ -94,7 +94,7 @@ public class TestProxyMechanics {
 			        .withStatus(200)
 			        .withBody("""
 			        	function FindProxyForURL(url, host) {
-			        	  console.log("Javascript - FindProxyForURL: "+ url+" "+host);
+			        	  console.log("Javascript - FindProxyForURL: "+ url + " " + host);
 						  // our local URLs from the domains below example.com don't need a proxy:
 						  if (shExpMatch(url, "*reflectorProxied*")) return "PROXY localhost:%d";
 						
