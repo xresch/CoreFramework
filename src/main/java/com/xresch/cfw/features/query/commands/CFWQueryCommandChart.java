@@ -80,7 +80,10 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 		+"</ul>"
 	+"<p><b>ymin:&nbsp;</b>Suggest a minimum value for the y-axis.</p>"	
 	+"<p><b>ymax:&nbsp;</b>Suggest a maximum value for the y-axis.</p>"	
-	+"<p><b>height:&nbsp;</b> The minimum height of the chart(e.g. 200px, 20vh etc..).</p>"	
+	+"<p><b>xcolor:&nbsp;</b>The color used for the x-axis. (e.g. 'rgba(0 ,0 ,255, 0.3)')</p>"	
+	+"<p><b>ycolor:&nbsp;</b>The color used for the y-axis. (e.g. 'rgba(0 ,0 ,255, 0.3)')</p>"	
+	
+	+"<p><b>height:&nbsp;</b> The minimum height of the chart(e.g. 200px, 20vh etc..).</p>"
 	+"<p><b>stacked:&nbsp;</b>Toogle if the series should be stacked. (Default:false)</p>"	
 	+"<p><b>showaxes:&nbsp;</b>Toogle if the axes should be displayed. (Default:true)</p>"	
 	+"<p><b>swapaxes:&nbsp;</b> Used for swapping x/y axes, e.g. for bar charts. (Default:false)</p>"	

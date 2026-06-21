@@ -184,11 +184,17 @@ function cfw_colors_colorToRGBA(color, alpha = 1) {
 	//----------------------------
 	// RGBA
 	
-	if(color.startsWith("rgba")){ rgba = color; }
+	if(color.startsWith("rgba")){ 
+		// adjust alpha
+		rgba = color.replace(/[\d.]+\s*\)$/, alpha + ")"); 
+	}
 	
 	//----------------------------
 	// HSLA
-	else if(color.startsWith("hsla")){ rgba = color; }
+	else if(color.startsWith("hsla")){	
+		// adjust alpha
+		rgba = color.replace(/[\d.]+\s*\)$/, alpha + ")"); 
+	}
 	
 	//----------------------------
 	// Hex Color

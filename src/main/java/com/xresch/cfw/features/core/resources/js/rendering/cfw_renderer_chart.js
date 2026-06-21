@@ -281,9 +281,9 @@ function cfw_renderer_chart(renderDef) {
 		// the minimum height of the chart(s), as percent or pixel value like 100px, 50% etc... (default: 100%)
 		height: '100%',
 		// the color of the x-axes grid lines
-		xaxescolor: null,
+		xcolor: null,
 		// the color of the y-axes grid lines
-		yaxescolor: 'rgba(190,190,190, 0.2)',
+		ycolor: 'rgba(190,190,190, 0.2)',
 		// the minimum unit used to display time: millisecond|second|minute|hour|day|week|month|quarter|year
 		xminunit: 'millisecond',
 		// the momentjs format used to parse the time, or a function(value) that returns a value that can be parsed by moment
@@ -320,12 +320,12 @@ function cfw_renderer_chart(renderDef) {
 	
 	//========================================
 	// Colors
-	if(settings.xaxescolor == null){
-		settings.xaxescolor = Chart.defaults.color.replace('1.0)', '0.1)');
+	if(settings.xcolor == null){
+		settings.xcolor = Chart.defaults.color.replace('1.0)', '0.1)');
 	}
 	
-	if(settings.yaxescolor == null){
-		settings.yaxescolor = Chart.defaults.color.replace('1.0)', '0.2)');
+	if(settings.ycolor == null){
+		settings.ycolor = Chart.defaults.color.replace('1.0)', '0.2)');
 	}
 	
 	//========================================
@@ -840,15 +840,16 @@ function cfw_renderer_chart_createChartOptions(settings) {
 					},
 					grid: {
 						display: true,
-						color: settings.xaxescolor
+						color: settings.xcolor
 					},
 					border: {
 						display: false,
-						color: settings.xaxescolor
+						color: settings.xcolor
 					},
 					title: {
 						display: (!CFW.utils.isNullOrEmpty(settings.xlabel)),
 						text: settings.xlabel,
+						color: CFW.colors.colorToRGBA(settings.xcolor, 1.0),
 					},
 					ticks: {
 						min: 0,
@@ -859,6 +860,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 						//source: 'data', // this corrupts horizontal charts
 						autoSkip: true,
 						autoSkipPadding: 15,
+						color: CFW.colors.colorToRGBA(settings.xcolor, 1.0),
 						//maxRotation: 0,
 						//sampleSize: 1000
 					},
@@ -872,21 +874,23 @@ function cfw_renderer_chart_createChartOptions(settings) {
 					suggestedMax: ymaxFinal,
 					grid: {
 						display: true,
-						color: settings.yaxescolor
+						color: settings.ycolor
 					},
 					border: {
 						display: false,
-						color: settings.yaxescolor
+						color: settings.ycolor
 					},
 					title: {
 						display: (!CFW.utils.isNullOrEmpty(settings.ylabel)),
 						text: settings.ylabel,
+						color: CFW.colors.colorToRGBA(settings.ycolor, 1.0),
 					},
 					ticks: {
 						min: 0,
 						//source: 'data',
 						autoSkip: ( ! settings.ytype == "category") ? true : false,
 						autoSkipPadding: 15,
+						color: CFW.colors.colorToRGBA(settings.ycolor, 1.0),
 						//sampleSize: 1000,
 						major: {
 							enabled: true,
@@ -959,8 +963,8 @@ function cfw_renderer_chart_createChartOptions(settings) {
 		chartOptions.scales.r = { 
 			suggestedMin: yminFinal,
 			suggestedMax: ymaxFinal,
-			grid: { color: settings.xaxescolor },
-			angleLines: { color: settings.yaxescolor },
+			grid: { color: settings.xcolor },
+			angleLines: { color: settings.ycolor },
 	        ticks: {
 	        	beginAtZero: true,
 	        	showLabelBackdrop: false
