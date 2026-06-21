@@ -83,6 +83,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	+"<p><b>height:&nbsp;</b> The minimum height of the chart(e.g. 200px, 20vh etc..).</p>"	
 	+"<p><b>stacked:&nbsp;</b>Toogle if the series should be stacked. (Default:false)</p>"	
 	+"<p><b>showaxes:&nbsp;</b>Toogle if the axes should be displayed. (Default:true)</p>"	
+	+"<p><b>swapaxes:&nbsp;</b> Used for swapping x/y axes, e.g. for bar charts. (Default:false)</p>"	
 	+"<p><b>showlegend:&nbsp;</b>Toogle if the legend should be displayed. (Default:false)</p>"	
 	+"<p><b>legendpos:&nbsp;</b>Define where the legend should be displayed: auto, top, bottom, left right. (Default: auto)</p>"	
 	+"<p><b>legendalign:&nbsp;</b>Define how the legend should be aligned: start, center, end. (Default: center)</p>"	

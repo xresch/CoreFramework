@@ -173,6 +173,38 @@ One important thing is to wrap them with the tojson()-function to make it work: 
 </code></pre>
 
 
+<h2>Vertical Colored Bar Chart</h2>
+<p>You can create a vertical bar chart that uses specific colors, e.g. for displaying statuses:</p>	
+<pre><code class="language-cfwquery">
+| source random seriesCount = 22 type = batchjobs 
+| set # add statuses
+	"TEMP" = randomFrom(
+				 [ {"index": 0, Status: "Passed"}
+				, {"index": 1, Status: "Failed"}
+				, {"index": 2, Status: "Blocked"}
+				, {"index": 3, Status: "NotExecuted"}]
+			)
+| unbox "TEMP"
+| remove "TEMP"
+
+| sort index # used to make sure order of labels and colors are matching
+| stats 
+	by = ["SERVICE", "Status"]
+	"Count" = avg("RESULTS")
+| chart 
+	by = ["Status"] 
+    type = bar
+    y = "SERVICE" # use servive name as category
+    ytype = category
+    x = "Count"
+    xtype=linear
+    multichart = false
+    stacked = true
+    swapaxes = true
+    colors = ["cfw-green", "cfw-red", "cfw-yellow", "cfw-gray"]
+</code></pre>
+
+
 <h2>Gantt Chart</h2>
 <p><b>Note:</b> Using the chart-command for creating Gantt Charts is not recommended if you don't know how much data you have to display. 
 Use the <a href="#" onclick="cfw_manual_loadPage('Query|Commands|formatboxplot')">formatboxplot</a> command instead to create a gantt-chart-like view inside of a table.  </p>

@@ -248,6 +248,8 @@ function cfw_renderer_chart(renderDef) {
 		legendalign: "center", 
 		// show or hide the axes, useful to create sparkline like charts
 		showaxes: true,
+		// swap the axes, e.g. to make a bar chart horizontal
+		swapaxes: false,
 		// if true, connect lines if there is a gap in the data 
 		spangaps: false,
 		// make the chart responsive
@@ -354,9 +356,10 @@ function cfw_renderer_chart(renderDef) {
 	// Initialize
 	settings.doFill = false;
 	settings.steppedValue = false;
-	settings.indexAxis = 'x';
+
+	settings.indexAxis = (! settings.swapaxes) ? 'x' : 'y';
 	settings.isLabelBased = false;
-	settings.tooltipmode = 'index';
+	settings.tooltipmode = (!settings.swapaxes) ? 'index' : 'nearest';
 	
 	switch(settings.charttype.toLowerCase()){
 		case 'sparkarea':
@@ -882,7 +885,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 					ticks: {
 						min: 0,
 						//source: 'data',
-						autoSkip: true,
+						autoSkip: ( ! settings.ytype == "category") ? true : false,
 						autoSkipPadding: 15,
 						//sampleSize: 1000,
 						major: {
@@ -908,8 +911,8 @@ function cfw_renderer_chart_createChartOptions(settings) {
 	    	    //tickFormat: { notation: 'compact' },
 		    	title: {}, // placeholder
 				tooltip: {
-					intersect: false,
 					enabled: false,
+					intersect: (settings.tooltipmode == 'index') ? false : true,
 					mode: settings.tooltipmode,
 					external: cfw_renderer_chart_customTooltip,
 				},
@@ -1142,7 +1145,7 @@ function cfw_renderer_chart_customTooltip(context) {
     // Set Text
     if (tooltipModel.body) {
         
-
+		let areAxesSwapped = context.chart.options.indexAxis === 'y';
 
     	var titleLines = tooltipModel.title || [];
         var bodyLines = tooltipModel.body.map(getBody);
@@ -1164,7 +1167,13 @@ function cfw_renderer_chart_customTooltip(context) {
     		
     		//-----------------------------
     		// The ultimate Value handling
-    		let value = tooltipModel.dataPoints[i].parsed.y;
+			if (areAxesSwapped) {
+			    value = tooltipModel.dataPoints[i].parsed.x;
+			} else {
+			    value = tooltipModel.dataPoints[i].parsed.y;
+			}
+			
+    		//let value = tooltipModel.dataPoints[i].parsed.y;
     		if(value == undefined){ // needed e.g. for Pie Charts
     			
     			if(tooltipModel.dataPoints[i].parsed.r == undefined){
@@ -1267,6 +1276,7 @@ function cfw_renderer_chart_createDatasetObject(settings, label, index) {
 
 	return {
 			label: label, 
+			//axis: settings.indexAxis,
 			data: [], //data used by chartjs
 			originalData: [], // original data used for table
 			backgroundColor: colors.bg,
