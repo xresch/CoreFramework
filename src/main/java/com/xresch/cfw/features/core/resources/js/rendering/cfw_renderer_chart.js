@@ -888,7 +888,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 					ticks: {
 						min: 0,
 						//source: 'data',
-						autoSkip: ( ! settings.ytype == "category") ? true : false,
+						autoSkip: (settings.ytype != "category") ? true : false,
 						autoSkipPadding: 15,
 						color: CFW.colors.colorToRGBA(settings.ycolor, 1.0),
 						//sampleSize: 1000,
