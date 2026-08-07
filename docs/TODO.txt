@@ -208,6 +208,7 @@ DONE
 	- arrayDedup
 	- distinctStream
 	- fieldsMatching
+	- objectLookup
 	- separators
 	
 	
