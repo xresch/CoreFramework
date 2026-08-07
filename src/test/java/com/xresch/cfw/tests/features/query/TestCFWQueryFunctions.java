@@ -381,6 +381,12 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				) # returns 88 as first condition is non-zero (interpreted as boolean true)
 							
 	VALUE_IS_CONDITION=case(true, (99 >= 50)) # returns true
+	
+	ARRAY = [] # should be size = 1
+	VALUE_IS_FUNCTION = case(
+						  false, arrayAdd(ARRAY, "no") 
+						, false, arrayAdd(ARRAY, "no") 
+						, true, arrayAdd(ARRAY, "YES!") ) # executes only the function that is true
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
@@ -407,6 +413,8 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals(42, record.get("BOOLEAN_NUMBER_A").getAsInt());
 		Assertions.assertEquals(88, record.get("BOOLEAN_NUMBER_B").getAsInt());
 		Assertions.assertEquals(true, record.get("VALUE_IS_CONDITION").getAsBoolean());
+		
+		Assertions.assertEquals(true, record.get("ARRAY").getAsJsonArray().size() == 1);
 		
 	}
 	

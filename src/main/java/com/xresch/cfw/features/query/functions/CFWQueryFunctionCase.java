@@ -96,7 +96,15 @@ public class CFWQueryFunctionCase extends CFWQueryFunction {
 	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
 		// not supported
 	}
-
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public boolean doPreEvaluate() {
+		return false;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -106,17 +114,30 @@ public class CFWQueryFunctionCase extends CFWQueryFunction {
 		//----------------------------------
 		// Return same value if not second param
 		
-		if(parameters.size() >= 2) { 
+		if(unevalParams.size() >= 2) { 
 			
-			for(int i = 0; i < parameters.size(); i++) {
+			for(int i = 0; i < unevalParams.size(); i++) {
 				
-				QueryPartValue condition = parameters.get(i); 
-
-				if(condition.getAsBoolean()) {
+				//----------------------------------
+				// Condition
+				
+				QueryPart condition = unevalParams.get(i); 
+				
+				if(condition instanceof QueryPartValue) {
+					condition = ((QueryPartValue)condition).convertFieldnameToFieldvalue(object);
+				}
+				
+				if(condition.determineValue(object).getAsBoolean()) {
 					
-					if(i++ < parameters.size()) {
-						// return next param as value
-						return parameters.get(i);
+					if(i++ < unevalParams.size()) {
+						//---------------------
+						// Return True Value
+						QueryPart trueValue = unevalParams.get(i); 
+						if(trueValue instanceof QueryPartValue) {
+							trueValue = trueValue.convertFieldnameToFieldvalue(object);
+						}
+						return trueValue.determineValue(object);
+						
 					}else {
 						break; //not enough parameters
 					}

@@ -199,6 +199,7 @@ DONE
 - Query: Command resultcompare - keeps column order even if first row contains null values
 - Query: Function records() - now takes a condition as an argument to filter and group records
 - Query: Function if() - will only execute contained functions if they match the respective true and false conditions
+- Query: Function case() - will only execute contained functions if they match the respective true condition
 
 - Query: Added Commands:
 	- topN
