@@ -1765,6 +1765,13 @@ source json data=`
 	ZERO_IS_FALSE=if(0, true, false) # returns false
 	ONE_IS_TRUE=if(1, true, false) # returns true
 	OTHERNUM_IS_TRUE=if(2, true, false) # returns true
+	
+	ARRAY_FALSE = [] # should be empty
+	FUNCTION_FALSE = if(false, arrayAdd(ARRAY_FALSE, "nothing"), false) # returns false
+	
+	ARRAY_TRUE = [] # should be size 1
+	FUNCTION_TRUE = if(true, arrayAdd(ARRAY_TRUE, "something"), false) # returns the array
+	
 				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
@@ -1789,6 +1796,9 @@ source json data=`
 		Assertions.assertEquals(false, record.get("ZERO_IS_FALSE").getAsBoolean());
 		Assertions.assertEquals(true, record.get("ONE_IS_TRUE").getAsBoolean());
 		Assertions.assertEquals(true, record.get("OTHERNUM_IS_TRUE").getAsBoolean());
+		
+		Assertions.assertEquals(true, record.get("ARRAY_FALSE").getAsJsonArray().size() == 0);
+		Assertions.assertEquals(true, record.get("ARRAY_TRUE").getAsJsonArray().size() == 1);
 		
 	}
 	

@@ -10,6 +10,7 @@ import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query._CFWQueryCommon;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
+import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
@@ -97,7 +98,7 @@ public class CFWQueryFunctionSourceWebResponse extends CFWQueryFunction {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
+	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters, ArrayList<QueryPart> unevalParams) {
 		
 		if(this.parent instanceof CFWQueryCommandSource) {
 			CFWQuerySource source = ((CFWQueryCommandSource)this.parent).getSource();

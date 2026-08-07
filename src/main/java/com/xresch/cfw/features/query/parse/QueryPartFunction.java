@@ -243,11 +243,16 @@ public class QueryPartFunction extends QueryPart {
 	private QueryPartValue executeFunctionInstance(CFWQueryFunction functionInstance, EnhancedJsonObject object) {
 		
 		
-		ArrayList<QueryPartValue> parameterValues = prepareParameters(object, functionInstance.receiveStringParamsLiteral() );
+		
+		ArrayList<QueryPartValue> parameterValues = new ArrayList<>();
+		
+		if(functionInstance.doPreEvaluate()) {
+			parameterValues = prepareParameters(object, functionInstance.receiveStringParamsLiteral() );
+		}
 		
 		//------------------------------------
 		//execute Function 
-		return functionInstance.execute(object, parameterValues);
+		return functionInstance.execute(object, parameterValues, functionParameters);
 	}
 
 	/******************************************************************************************************

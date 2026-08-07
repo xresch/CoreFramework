@@ -97,14 +97,29 @@ public abstract class CFWQueryFunction{
 	public boolean receiveStringParamsLiteral() {
 		return false;
 	}
+	
+	/*************************************************************************
+	 * Override this method and return false to not pre-evaluate the Query
+	 * parameters, but receive the parameters as QueryParts instead.
+	 * This is needed in case of conditional executions like with the if()
+	 * or case() function.
+	 *************************************************************************/
+	public boolean doPreEvaluate() {
+		return true;
+	}
 	/***********************************************************************************************
 	 * Execute the function and return the result as a QueryPartValue.
 	 * If the implementation of this class stores any internal values(e.g. for aggregation), the call
 	 * to this function has to reset all internally stored values. Else the resulting values might
 	 * be incorrect.
 	 * 
+	 * @param object every object that is passed through the pipeline
+	 * @param parameters the already evaluated QueryParts as QueryPartValues. To receive strings that
+	 *                   match fieldnames as literal fieldnames, override the method receiveStringParamsLiteral()
+	 *                   and return true;
+	 * @param unevalParams the unevaluated parameters as QueryParts
 	 ***********************************************************************************************/
-	public abstract QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters);
+	public abstract QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters, ArrayList<QueryPart> unevalParams);
 	
 	
 	/***********************************************************************************************

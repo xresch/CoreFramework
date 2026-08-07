@@ -9,6 +9,7 @@ import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
+import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
@@ -121,7 +122,7 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 	 * Returns the current count and increases it by 1;
 	 ***********************************************************************************************/
 	@Override
-	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
+	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters, ArrayList<QueryPart> unevalParams) {
 		
 		QueryPartValue result = QueryPartValue.newNull();
 		if(isAggregated || parameters.size() == 0) {

@@ -165,7 +165,7 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
+	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters, ArrayList<QueryPart> unevalParams) {
 		
 		//-----------------------------------
 		// Check Has Params

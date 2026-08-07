@@ -7,6 +7,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
@@ -119,9 +120,9 @@ public class CFWQueryFunctionMedian extends CFWQueryFunctionPerc {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public QueryPartValue execute(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
+	public QueryPartValue execute(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters, ArrayList<QueryPart> unevalParams) {
 		
-		return super.execute(object, createPercParams(parameters));
+		return super.execute(object, createPercParams(parameters), unevalParams);
 	
 	}
 

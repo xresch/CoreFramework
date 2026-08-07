@@ -10,6 +10,7 @@ import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
+import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.features.usermgmt.User;
 
@@ -98,7 +99,7 @@ public class CFWQueryFunctionUserdata extends CFWQueryFunction {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
+	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters, ArrayList<QueryPart> unevalParams) {
 		
 		JsonObject userdata = new JsonObject();
 		

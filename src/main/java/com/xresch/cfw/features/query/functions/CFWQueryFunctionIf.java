@@ -9,6 +9,7 @@ import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query._CFWQueryCommon;
+import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /************************************************************************************************************
@@ -96,25 +97,53 @@ public class CFWQueryFunctionIf extends CFWQueryFunction {
 	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
 		// not supported
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public boolean doPreEvaluate() {
+		return false;
+	}
 
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
-		
+	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters, ArrayList<QueryPart> unevalParams) {
+
 		//----------------------------------
 		// Return same value if not second param
-		if(parameters.size() >= 2) { 
+		if(unevalParams.size() >= 2) { 
 			
-			QueryPartValue condition = parameters.get(0); 
-			QueryPartValue trueValue = parameters.get(1); 
-			QueryPartValue falseValue = (parameters.size() >= 3) ? parameters.get(2) : QueryPartValue.newString(""); 
+			//----------------------------
+			// Condition
+			QueryPart condition = unevalParams.get(0); 
+
+			if(condition instanceof QueryPartValue) {
+				condition = ((QueryPartValue)condition).convertFieldnameToFieldvalue(object);
+			}
+
+			//----------------------------
+			// True False Parts
+			QueryPart trueValue = unevalParams.get(1); 
+			QueryPart falseValue = (unevalParams.size() >= 3) ? unevalParams.get(2) : QueryPartValue.newString(""); 
 			
-			if(condition.getAsBoolean()) {
-				return trueValue;
+			if(condition.determineValue(object).getAsBoolean()) {
+				
+				//---------------------
+				// Return True Value
+				if(trueValue instanceof QueryPartValue) {
+					trueValue = trueValue.convertFieldnameToFieldvalue(object);
+				}
+				return trueValue.determineValue(object);
 			}else {
-				return falseValue;
+				//---------------------
+				// Return False Value
+				if(falseValue instanceof QueryPartValue) {
+					falseValue = falseValue.convertFieldnameToFieldvalue(object);
+				}
+				return falseValue.determineValue(object);
 			}
 		}
 		
