@@ -2961,6 +2961,58 @@ STAYS_NULL = null
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testObjectLookup() throws IOException {
+		
+		String queryString = """
+| meta
+	list = {
+		  "A": "aaa"
+		, "B": "bbb"
+		, "C": "ccc"
+		, "1": "111"
+		, true: "trueTrue"
+		, "[1,2,3]": "arrayArray"
+		, "{\\"x\\":\\"y\\"}": "objectObject"
+	}
+| source empty records = 1
+| set
+	testA = objectLookup(m(list), "A")		# returns "aaa"
+	testB = objectLookup(m(list), "B")		# returns "bbb"
+	testD = objectLookup(m(list), "D")		# returns null
+	testNull = objectLookup(m(list), null)	# returns null
+	testOne = objectLookup(m(list), 1)		# returns "111"
+	testBool = objectLookup(m(list), true)		# returns "trueTrue"
+	testArray = objectLookup(m(list), [1, 2, 3])	# returns "arrayArray"
+	testObject = objectLookup(m(list), {"x": "y"} )	# returns "objectObject"
+""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		System.out.println( CFW.JSON.toJSONPretty(queryResults.getRecordsAsJsonArray()) );
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		
+		Assertions.assertEquals("aaa", record.get("testA").getAsString());
+		Assertions.assertEquals("bbb", record.get("testB").getAsString());
+		Assertions.assertEquals(true, record.get("testD").isJsonNull());
+		Assertions.assertEquals(true, record.get("testNull").isJsonNull());
+		Assertions.assertEquals("111", record.get("testOne").getAsString());
+		Assertions.assertEquals("trueTrue", record.get("testBool").getAsString());
+		Assertions.assertEquals("arrayArray", record.get("testArray").getAsString());
+		Assertions.assertEquals("objectObject", record.get("testObject").getAsString());
+		
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testParam() throws IOException {
 		
 		//---------------------------------
