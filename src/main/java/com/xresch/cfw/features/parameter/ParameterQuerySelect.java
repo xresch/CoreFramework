@@ -55,6 +55,15 @@ public class ParameterQuerySelect extends ParameterDefinition {
 	public String descriptionHTML() {
 		return CFW.Files.readPackageResource(FeatureParameter.PACKAGE_MANUAL, "parameter_"+UNIQUE_NAME.toLowerCase().replace(" ", "_")+".html");
 	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public boolean isDynamic() {
+		return true;
+	}
+	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
@@ -161,14 +170,6 @@ public class ParameterQuerySelect extends ParameterDefinition {
 		}			
 
 		return settingsField;
-	}
-	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	@Override
-	public boolean isDynamic() {
-		return true;
 	}
 	
 }
