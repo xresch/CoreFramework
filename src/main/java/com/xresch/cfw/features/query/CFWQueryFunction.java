@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import com.xresch.cfw._main.CFWMessages.MessageType;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
@@ -121,6 +122,14 @@ public abstract class CFWQueryFunction{
 	 ***********************************************************************************************/
 	public abstract QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters, ArrayList<QueryPart> unevalParams);
 	
+	
+	/***********************************************************************************************
+	 * Can be overridden to add additional information to the autocomplete result.
+	 * Do nothing if not needed.
+	 ***********************************************************************************************/
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		return;
+	}
 	
 	/***********************************************************************************************
 	 * 

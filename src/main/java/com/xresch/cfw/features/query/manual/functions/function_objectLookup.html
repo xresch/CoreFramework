@@ -25,3 +25,40 @@ This function is case-sensitive.</p>
 	testArray = objectLookup(m(list), [1, 2, 3])	# returns "arrayArray"
 	testObject = objectLookup(m(list), {"x": "y"} )	# returns "objectObject"</code></pre>
 
+
+
+<p>This function is very useful in combination with the function fileJson() to load lookup values from the file manager. 
+Let's say the file "myList.json" contains the following data:</p>
+<pre><code class="language-cfwquery">{
+	  "a": "apple"
+	, "b": "berry"
+	, "c": "cherry"
+}</code></pre>
+
+<p>The following query would read the file content globally as an object, and will lookup the value for key &quot;b&quot;, which is &quot;berry&quot;:</p>
+<pre><code class="language-cfwquery">| globals
+	myList = fileJson({"id":429,"name":"myList.json"})
+| source empty
+| set
+	lookup = objectLookup( g(myList), "b")</code></pre>
+	
+	
+<p>You can also do lookups of nested data. For example. the file "lookupCountries.json" contains the following data:</p>
+<pre><code class="language-cfwquery">{
+	  "CH": { "name": "Switzerland", "capital": "Bern" }
+	, "UK": { "name": "United Kingdom", "capital": "London" }
+	, "US": { "name": "United States", "capital": "Washington DC" }
+}</code></pre>
+
+<p>The following query would read the name and capital of the country from the nested object:</p>
+<pre><code class="language-cfwquery">| globals
+	countries = fileJson({"id":461,"name":"lookupCountries.json"})
+| record # create example records
+	[country]
+	["CH"]
+	["US"]
+	["UK"]
+| set
+	input = g(countries)
+	name = objectLookup( g(countries), country).name
+	capital = objectLookup( g(countries), country).capital</code></pre>

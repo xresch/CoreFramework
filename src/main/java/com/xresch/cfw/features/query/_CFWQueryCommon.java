@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
@@ -31,6 +32,7 @@ public class _CFWQueryCommon {
 	public static final String TAG_ARRAYS = "arrays";
 	public static final String TAG_CODING = "coding";
 	public static final String TAG_FORMAT = "format";
+	public static final String TAG_FILE = "file";
 	public static final String TAG_FILTER = "filter";
 	public static final String TAG_GENERAL = "general";
 	public static final String TAG_MATH = "math";
@@ -130,6 +132,59 @@ public class _CFWQueryCommon {
 		
 	}
 	
+	/******************************************************************
+	 * Retrieves an ID from a QueryPartValue. Either by reading a 
+	 * number value as an integer, or reading the ID field from
+	 * an object value.
+	 * 
+	 * @return id or null of not found
+	 ******************************************************************/
+	public static Integer getIDFromValue(QueryPartValue fileValue) {
+		
+		Integer id = null; 
+		
+		//-----------------------------
+		// As Null
+		if(fileValue == null || fileValue.isNull() ) 	{ 
+			return null;
+		}
+				
+		//-----------------------------
+		// As Number
+		if(fileValue.isNumberOrNumberString()) 	{ 
+			id = fileValue.getAsInteger(); 
+		}
+		
+		//-----------------------------
+		// As Object
+		else if(fileValue.isJsonObject()) { 
+			
+			JsonObject settingsObject = fileValue.getAsJsonObject();
+			
+			if(settingsObject.get("id") != null) {
+				id = settingsObject.get("id").getAsInt();
+			}
+		}
+		
+		//-----------------------------
+		// As Json Object String
+		else if(fileValue.isString()) {
+			String fileString = fileValue.getAsString();
+			
+			if(fileString.startsWith("{")) {
+				JsonObject settingsObject = CFW.JSON.fromJson(fileString).getAsJsonObject();
+				
+				if(settingsObject.get("id") != null) {
+					id = settingsObject.get("id").getAsInt();
+				}
+			}
+		}
+		
+		//-----------------------------
+		// Return value or null
+		return id;
+	}
+		
 	/******************************************************************
 	 *
 	 ******************************************************************/

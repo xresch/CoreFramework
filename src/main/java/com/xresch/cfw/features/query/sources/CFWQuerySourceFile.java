@@ -139,7 +139,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		CFW.DB.StoredFile.autocompleteFileForQuery(result, helper);
+		CFW.DB.StoredFile.autocompleteFileForQuery(result, helper, "file = ");
 	}
 	
 	/******************************************************************

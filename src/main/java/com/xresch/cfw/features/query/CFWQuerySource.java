@@ -105,9 +105,8 @@ public abstract class CFWQuerySource{
 	public abstract boolean hasPermission(User user);
 	
 	/***********************************************************************************************
-	 * Return the description for the manual page.
-	 * This description will be shown on the manual under the header " <h2>Usage</h2>".
-	 * If you add headers to your description it is recommended to use <h3> or lower headers.
+	 * Adds additional information to the autocomplete result.
+	 * Do nothing if not needed.
 	 ***********************************************************************************************/
 	public abstract void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper);
 	

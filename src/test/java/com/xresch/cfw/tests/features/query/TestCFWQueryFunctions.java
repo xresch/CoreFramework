@@ -1,6 +1,8 @@
 package com.xresch.cfw.tests.features.query;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.filemanager.CFWStoredFile;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
@@ -1672,6 +1675,69 @@ source json data=`
 		Assertions.assertEquals("[\"A\",\"B\",\"C\",\"ALL_FIELDS\",\"FILTERED_FIELDS\"]", record.get("ALL_FIELDS").toString());
 		Assertions.assertEquals("[\"A\",\"C\"]", record.get("FILTERED_FIELDS").toString());
 
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testFileJSON() throws IOException {
+		
+		
+		CFWStoredFile file = new CFWStoredFile();
+		file.id(123456789);
+		file.name("testdataCountries.data");
+		InputStream data = new StringBufferInputStream("""
+				{
+				  "CH": { "name": "Switzerland", "capital": "Bern" }
+				, "UK": { "name": "United Kingdom", "capital": "London" }
+				, "US": { "name": "United States", "capital": "Washington DC" }
+			}
+		""");
+		CFW.DB.StoredFile.createAndStoreData(file, data);
+		
+		String queryString = """
+| globals
+	countries = fileJson(""" + file.id() + """
+			)
+| record
+	[country]
+	["CH"]
+	["US"]
+	["UK"]
+| set
+	input = g(countries)
+	name = objectLookup( g(countries), country).name
+	capital = objectLookup( g(countries), country).capital
+""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(3, queryResults.getRecordCount());
+		
+		//------------------------------
+		// First Record
+		JsonObject record = queryResults.getRecordAsObject(0);
+		
+		Assertions.assertEquals("CH", record.get("country").getAsString());
+		Assertions.assertEquals("Switzerland", record.get("name").getAsString());
+		Assertions.assertEquals("Bern", record.get("capital").getAsString());
+		
+		//------------------------------
+		// Second Record
+		record = queryResults.getRecordAsObject(1);
+		
+		Assertions.assertEquals("US", record.get("country").getAsString());
+		Assertions.assertEquals("United States", record.get("name").getAsString());
+		Assertions.assertEquals("Washington DC", record.get("capital").getAsString());
+		
 	}
 	
 	/****************************************************************

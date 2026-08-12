@@ -32,6 +32,7 @@ import com.xresch.cfw.features.eav.CFWDBEAVStats;
 import com.xresch.cfw.features.filemanager.CFWStoredFile.CFWStoredFileFields;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
+import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
@@ -742,11 +743,31 @@ public class CFWDBStoredFile {
 	
 	/***************************************************************
 	 * 
+	 * @param prefix to be added before the object string, e.g. "file = "
 	 ***************************************************************/
-	public static void autocompleteFileForQuery(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+	public static void autocompleteFileForQuery(AutocompleteResult result, CFWQueryAutocompleteHelper helper, String prefix) {
+		
 		
 		if( helper.getCommandTokenCount() < 2 ) {
 			return;
+		}
+		
+		if(prefix == null) {
+			prefix = "";
+		}
+		
+		//-----------------------------
+		// Replace "file:" prefix
+		String filePrefix = "";
+		CFWQueryToken checkIsColonFile = helper.getTokenBeforeCursor(-1);
+		CFWQueryToken checkIsStringFile = helper.getTokenBeforeCursor(-2);
+		
+		if( helper.isBeforeCursor("file:")
+		|| (   checkIsColonFile != null && checkIsColonFile.type() == CFWQueryTokenType.SIGN_COLON
+		    && checkIsStringFile != null && checkIsStringFile.value().equalsIgnoreCase("file") 
+		   )
+		) {
+			filePrefix = "file:";
 		}
 		
 		//-----------------------------
@@ -796,7 +817,7 @@ public class CFWDBStoredFile {
 					json.addProperty("id", id);
 					json.addProperty("name", name);
 					
-					String fileJsonString = "file = "+CFW.JSON.toJSON(json)+" ";
+					String fileJsonString = prefix + CFW.JSON.toJSON(json)+" ";
 					
 					
 					//---------------------
@@ -813,7 +834,7 @@ public class CFWDBStoredFile {
 							+ "<span>"
 							);
 					
-					item.setMethodReplaceBeforeCursor(searchValue);
+					item.setMethodReplaceBeforeCursor(filePrefix + searchValue);
 					
 					
 					list.addItem(item);

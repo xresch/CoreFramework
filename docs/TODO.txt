@@ -181,6 +181,7 @@ DONE
 - UI: Timeframe Pickers are now showing a time range instead of "Custom Time" if such time is selected
 - Charts: Improved display of charts types: pie, doughnut, radar, polar
 - Dashboard Widget: New Standard Settings "Button Popup" and "Button Label" to display any widget as a button. Widget content will be loaded in a popup window on button click.
+- Query: Autocomplete: Files can now be autocompleted using "file:..."
 - Query: Command chart - chart series can now have custom colors using option "colors"
 - Query: Command chart - chart axes can now have custom colors using options "xcolor" and "xcolor"
 - Query: Command chart - chart axes can now be swapped using "swapaxes" (e.g. for horizontal bar chart)
@@ -208,6 +209,7 @@ DONE
 	- arrayDedup
 	- distinctStream
 	- fieldsMatching
+	- fileJson
 	- objectLookup
 	- separators
 	

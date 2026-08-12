@@ -101,6 +101,7 @@ public final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 			return result;
 		}
 		
+		
 		//----------------------------------------
 		// Handle Function "f:xxx"
 		CFWQueryToken checkIsColon = helper.getTokenBeforeCursor(-1);
@@ -132,12 +133,34 @@ public final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 							+ "<br><b>Syntax:&nbsp</b>"+CFW.Security.escapeHTMLEntities(function.descriptionSyntax())
 							+ function.descriptionSyntaxDetailsHTML()
 						);
+					
+					function.autocomplete(result, helper);
+					
 					return result;
 				}else {
 					// do nothing, not a function, so try other autocompletes below
 				}
 			}
 
+		}
+		
+		//----------------------------------------
+		// Handle File Autocomplete "file:"
+		if( helper.isBeforeCursor("file:") ) {
+			CFW.DB.StoredFile.autocompleteFileForQuery(result, helper, null);
+			return result;
+		}
+		
+		
+		//----------------------------------------
+		// Handle File with search "file:xxx"
+		CFWQueryToken checkIsColonFile = helper.getTokenBeforeCursor(-1);
+		CFWQueryToken checkIsStringFile = helper.getTokenBeforeCursor(-2);
+
+		if( checkIsColonFile != null && checkIsColonFile.type() == CFWQueryTokenType.SIGN_COLON
+		&& checkIsStringFile != null && checkIsStringFile.value().equalsIgnoreCase("file") ) {
+			CFW.DB.StoredFile.autocompleteFileForQuery(result, helper, null);
+			return result;
 		}
 		
 		//----------------------------------------
