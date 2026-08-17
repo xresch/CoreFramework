@@ -148,9 +148,9 @@ public class CFWSpace extends CFWObject {
 					.setDescription("Defines if the space is archived.")
 					.setValue(false);
 	
-	private CFWField<LinkedHashMap<String,String>> shareWithUsers = this.createSelectorFieldAssignedUsers(null);
+	private CFWField<LinkedHashMap<String,String>> assignedUsers = this.createSelectorFieldAssignedUsers(null);
 	
-	private CFWField<LinkedHashMap<String,String>> shareWithGroups = this.createSelectorFieldUserGroups(null);
+	private CFWField<LinkedHashMap<String,String>> assignedGroups = this.createSelectorFieldUserGroups(null);
 		
 	private CFWField<LinkedHashMap<String,String>> editors = this.createSelectorFieldAdmins(null);
 		
@@ -213,8 +213,8 @@ public class CFWSpace extends CFWObject {
 				, email
 				, isEnabled
 				, isDisablable
-				, shareWithUsers
-				, shareWithGroups
+				, assignedUsers
+				, assignedGroups
 				, editors
 				, editorGroups
 				);
@@ -323,17 +323,17 @@ public class CFWSpace extends CFWObject {
 	private void updateSelectorFields(Integer spaceID) {
 		//--------------------------------------
 		// Shared Users
-		CFWField<LinkedHashMap<String, String>> sharedUserSelector = this.createSelectorFieldAssignedUsers(spaceID);
+		CFWField<LinkedHashMap<String, String>> assignedUserSelector = this.createSelectorFieldAssignedUsers(spaceID);
 		this.removeField(FIELDNAME_USERS);
-		shareWithUsers = sharedUserSelector;
-		this.addFieldAfter(sharedUserSelector, CFWSpaceFields.IS_ENABLED);
+		assignedUsers = assignedUserSelector;
+		this.addFieldAfter(assignedUserSelector, CFWSpaceFields.IS_ENABLED);
 		
 		//--------------------------------------
 		// Shared Groups
-		CFWField<LinkedHashMap<String, String>> sharedGroupsSelector = this.createSelectorFieldUserGroups(spaceID);
-		this.removeField(FIELDNAME_ADMINS);
-		shareWithGroups = sharedGroupsSelector;
-		this.addFieldAfter(sharedGroupsSelector, FIELDNAME_USERS);
+		CFWField<LinkedHashMap<String, String>> assignedGroupsSelector = this.createSelectorFieldUserGroups(spaceID);
+		this.removeField(FIELDNAME_USER_GROUPS);
+		assignedGroups = assignedGroupsSelector;
+		this.addFieldAfter(assignedGroupsSelector, FIELDNAME_USERS);
 		
 		//--------------------------------------
 		// Editors 
@@ -346,7 +346,7 @@ public class CFWSpace extends CFWObject {
 		// Editor Groups
 		CFWField<LinkedHashMap<String, String>> editorGroupsSelector = this.createSelectorFieldAdminGroups(spaceID);
 		this.removeField(FIELDNAME_ADMIN_GROUPS);
-		editors = editorGroupsSelector;
+		editorGroups = editorGroupsSelector;
 		this.addFieldAfter(editorGroupsSelector, FIELDNAME_ADMINS);
 		
 	}
@@ -367,7 +367,7 @@ public class CFWSpace extends CFWObject {
 		//--------------------------------------
 		// Create Field
 		return CFWField.newTagsSelector(FIELDNAME_USERS)
-						.setDescription("\"Select the users that are assigned to this space. Start typing to get suggestions.")
+						.setDescription("The users that are assigned to this space and have access to it. Start typing to get suggestions.")
 						.setLabel("Assigned Users")
 						.addAttribute("maxTags", "256")
 						.setValue(selectedValue)
@@ -397,8 +397,8 @@ public class CFWSpace extends CFWObject {
 		//--------------------------------------
 		// Create Field
 		return CFWField.newTagsSelector(FIELDNAME_USER_GROUPS)
-				.setLabel("Share with Groups")
-				.setDescription("Share this Space with specific groups.")
+				.setLabel("Assigned Groups")
+				.setDescription("The groups whose usershave access to this space. Start typing to get suggestions.")
 				.addAttribute("maxTags", "256")
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
@@ -427,7 +427,7 @@ public class CFWSpace extends CFWObject {
 		// Create Field
 		return CFWField.newTagsSelector(FIELDNAME_ADMINS)
 				.setLabel("Admins")
-				.setDescription("Select the users that are allowed to cfw_spaces this space.")
+				.setDescription("The users that are allowed to add more spaces to this space and change space settings.")
 				.addAttribute("maxTags", "256")
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
@@ -454,8 +454,8 @@ public class CFWSpace extends CFWObject {
 		//--------------------------------------
 		// Create Field
 		return CFWField.newTagsSelector(FIELDNAME_ADMIN_GROUPS)
-				.setLabel("Editor Groups")
-				.setDescription("Allow users having at least one of the specified groups to view and edit the Space, even when the Space is not shared.")
+				.setLabel("Admin Groups")
+				.setDescription("The groups that are allowed to add more spaces to this space and change space settings.")
 				.addAttribute("maxTags", "256")
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
@@ -485,12 +485,13 @@ public class CFWSpace extends CFWObject {
 	/******************************************************************
 	 *
 	 ******************************************************************/
+	@SuppressWarnings("unchecked")
 	private boolean saveSelectorField(CFWSpaceFields fieldname) {
 		boolean success = true;
 				
 		//--------------------------
 		// Update Selected Users
-		if(this.getFields().containsKey(fieldname)) {
+		if(this.getFields().containsKey(fieldname.toString())) {
 			CFWField<LinkedHashMap<String,String>> selector = this.getField(fieldname);
 			
 			LinkedHashMap<String,String> selectedValues = selector.getValue();

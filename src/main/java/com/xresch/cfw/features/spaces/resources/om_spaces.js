@@ -225,8 +225,8 @@ function om_spaces_printList(data){
 	//--------------------------------
 	// Button
 	if(JSDATA.canCreateSpaces){
-		var createSpaceButton = $('<button class="btn btn-sm btn-primary mb-2" onclick="om_spaces_addSpace(\'ORG\')">'
-							+ '<i class="mr-1 fas fa-sitemap"></i>Create Space</button>');
+		var createSpaceButton = $('<button class="btn btn-sm btn-primary mb-2" onclick="om_spaces_addSpace(\'ROOT_SPACE\')">'
+							+ '<i class="mr-1 fas fa-sitemap"></i>Create Root Space</button>');
 	
 		parent.append(createSpaceButton);
 	}

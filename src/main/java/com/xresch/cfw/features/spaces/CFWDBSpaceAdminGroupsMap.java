@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
-import com.xresch.cfw.features.spaces.CFWSpaceUserGroupsMap.CFWSpaceUserGroupsMapFields;
+import com.xresch.cfw.features.spaces.CFWSpaceAdminGroupsMap.CFWSpaceAdminGroupsMapFields;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -57,8 +57,8 @@ public class CFWDBSpaceAdminGroupsMap {
 		}
 		
 		String insertRoleSQL = "INSERT INTO "+TABLE_NAME+" ("
-				  + CFWSpaceUserGroupsMapFields.FK_ID_ROLE +", "
-				  + CFWSpaceUserGroupsMapFields.FK_ID_SPACE
+				  + CFWSpaceAdminGroupsMapFields.FK_ID_ROLE +", "
+				  + CFWSpaceAdminGroupsMapFields.FK_ID_SPACE
 				  + ") VALUES (?,?);";
 		
 		boolean success = CFWDB.preparedExecute(insertRoleSQL, 
@@ -67,7 +67,7 @@ public class CFWDBSpaceAdminGroupsMap {
 				);
 		
 		if(success) {
-			new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceUserGroupsMap.class, "Add Role to CFWSpace: "+space.name()+", Role: "+role.name());
+			new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceAdminGroupsMap.class, "Add Role to CFWSpace: "+space.name()+", Role: "+role.name());
 		}
 
 		return success;
@@ -124,13 +124,13 @@ public class CFWDBSpaceAdminGroupsMap {
 			// Clean all and Add all New
 		
 			// only returns true if anything was updated. Therefore cannot include in check.
-			boolean hasCleared = new CFWSQL(new CFWSpaceUserGroupsMap())
+			boolean hasCleared = new CFWSQL(new CFWSpaceAdminGroupsMap())
 						.delete()
-						.where(CFWSpaceUserGroupsMapFields.FK_ID_SPACE, space.id())
+						.where(CFWSpaceAdminGroupsMapFields.FK_ID_SPACE, space.id())
 						.executeDelete();
 			
 			if(hasCleared) {
-				new CFWLog(logger).audit(CFWAuditLogAction.CLEAR, CFWSpaceUserGroupsMap.class, "Update Shared Role Assignments: "+space.name());
+				new CFWLog(logger).audit(CFWAuditLogAction.CLEAR, CFWSpaceAdminGroupsMap.class, "Update Shared Role Assignments: "+space.name());
 			}
 		
 			if(rolesKeyLabel != null) {
@@ -174,12 +174,12 @@ public class CFWDBSpaceAdminGroupsMap {
 		
 		String removeRoleFromCFWSpaceSQL = "DELETE FROM "+TABLE_NAME
 				+" WHERE "
-				  + CFWSpaceUserGroupsMapFields.FK_ID_ROLE +" = ? "
+				  + CFWSpaceAdminGroupsMapFields.FK_ID_ROLE +" = ? "
 				  + " AND "
-				  + CFWSpaceUserGroupsMapFields.FK_ID_SPACE +" = ? "
+				  + CFWSpaceAdminGroupsMapFields.FK_ID_SPACE +" = ? "
 				  + ";";
 		
-		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceUserGroupsMap.class, "Remove Role from CFWSpace: "+space.name()+", Role: "+role.name());
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceAdminGroupsMap.class, "Remove Role from CFWSpace: "+space.name()+", Role: "+role.name());
 		
 		return CFWDB.preparedExecute(removeRoleFromCFWSpaceSQL, 
 				role.id(),
@@ -234,11 +234,11 @@ public class CFWDBSpaceAdminGroupsMap {
 	 ****************************************************************/
 	public static boolean checkIsGroupAssignedToSpace(int roleid, int spaceid) {
 		
-		return 0 != new CFWSQL(new CFWSpaceUserGroupsMap())
+		return 0 != new CFWSQL(new CFWSpaceAdminGroupsMap())
 			.queryCache()
 			.selectCount()
-			.where(CFWSpaceUserGroupsMapFields.FK_ID_ROLE.toString(), roleid)
-			.and(CFWSpaceUserGroupsMapFields.FK_ID_SPACE.toString(), spaceid)
+			.where(CFWSpaceAdminGroupsMapFields.FK_ID_ROLE.toString(), roleid)
+			.and(CFWSpaceAdminGroupsMapFields.FK_ID_SPACE.toString(), spaceid)
 			.executeCount();
 
 	}
@@ -258,7 +258,7 @@ public class CFWDBSpaceAdminGroupsMap {
 		String query = 
 				"SELECT U.PK_ID, U.NAME"  
 				+ " FROM "+Role.TABLE_NAME+" U " 
-				+ " LEFT JOIN "+CFWSpaceUserGroupsMap.TABLE_NAME+" M ON M.FK_ID_ROLE = U.PK_ID\r\n"
+				+ " LEFT JOIN "+CFWSpaceAdminGroupsMap.TABLE_NAME+" M ON M.FK_ID_ROLE = U.PK_ID\r\n"
 				+ " WHERE M.FK_ID_SPACE = ? " 
 				+ " ORDER BY LOWER(U.NAME) "
 				;

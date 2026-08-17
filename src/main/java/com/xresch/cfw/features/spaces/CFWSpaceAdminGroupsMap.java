@@ -22,25 +22,25 @@ public class CFWSpaceAdminGroupsMap extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_SPACES_ADMINGROUPS_MAP";
 	
-	enum CFWSpaceUserGroupsMapFields{
+	enum CFWSpaceAdminGroupsMapFields{
 		  PK_ID 
 		, FK_ID_ROLE
 		, FK_ID_SPACE
 	}
 
-	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceUserGroupsMapFields.PK_ID)
+	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceAdminGroupsMapFields.PK_ID)
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the mapping.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 		
-	private CFWField<Integer> foreignKeySpace = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceUserGroupsMapFields.FK_ID_SPACE)
+	private CFWField<Integer> foreignKeySpace = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceAdminGroupsMapFields.FK_ID_SPACE)
 			.setForeignKeyCascade(this, CFWSpace.class, CFWSpaceFields.PK_ID)
 			.setDescription("The id of the space.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
-	private CFWField<Integer> foreignKeyRole = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceUserGroupsMapFields.FK_ID_ROLE)
+	private CFWField<Integer> foreignKeyRole = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceAdminGroupsMapFields.FK_ID_ROLE)
 			.setForeignKeyCascade(this, Role.class, RoleFields.PK_ID)
 			.setDescription("The id of the role.")
 			.apiFieldType(FormFieldType.NUMBER)
@@ -70,16 +70,16 @@ public class CFWSpaceAdminGroupsMap extends CFWObject {
 				
 		String[] inputFields = 
 				new String[] {
-						CFWSpaceUserGroupsMapFields.PK_ID.toString(), 
-						CFWSpaceUserGroupsMapFields.FK_ID_ROLE.toString(),
-						CFWSpaceUserGroupsMapFields.FK_ID_SPACE.toString(),
+						CFWSpaceAdminGroupsMapFields.PK_ID.toString(), 
+						CFWSpaceAdminGroupsMapFields.FK_ID_ROLE.toString(),
+						CFWSpaceAdminGroupsMapFields.FK_ID_SPACE.toString(),
 				};
 		
 		String[] outputFields = 
 				new String[] {
-						CFWSpaceUserGroupsMapFields.PK_ID.toString(), 
-						CFWSpaceUserGroupsMapFields.FK_ID_ROLE.toString(),
-						CFWSpaceUserGroupsMapFields.FK_ID_SPACE.toString(),
+						CFWSpaceAdminGroupsMapFields.PK_ID.toString(), 
+						CFWSpaceAdminGroupsMapFields.FK_ID_ROLE.toString(),
+						CFWSpaceAdminGroupsMapFields.FK_ID_SPACE.toString(),
 				};
 
 		//----------------------------------

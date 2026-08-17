@@ -401,7 +401,7 @@ public class Dashboard extends CFWObject {
 		//--------------------------------------
 		// Shared Groups
 		CFWField<LinkedHashMap<String, String>> sharedGroupsSelector = this.createSelectorFieldSharedGroups(boardID);
-		this.removeField(FIELDNAME_EDITORS);
+		this.removeField(FIELDNAME_SHARE_WITH_GROUPS);
 		shareWithGroups = sharedGroupsSelector;
 		this.addFieldAfter(sharedGroupsSelector, FIELDNAME_SHARE_WITH_USERS);
 		
@@ -416,7 +416,7 @@ public class Dashboard extends CFWObject {
 		// Editor Groups
 		CFWField<LinkedHashMap<String, String>> editorGroupsSelector = this.createSelectorFieldEditorGroups(boardID);
 		this.removeField(FIELDNAME_EDITOR_GROUPS);
-		editors = editorGroupsSelector;
+		editorGroups = editorGroupsSelector;
 		this.addFieldAfter(editorGroupsSelector, FIELDNAME_EDITORS);
 		
 	}
