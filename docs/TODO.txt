@@ -172,7 +172,7 @@ DONE
 - BREAKING CHANGE: Query Command Source: stopped "each" parameter from being added to metadata, use function sourceEach() to retrieve value 
 - BREAKING CHANGE: Refactoring of CFW.Utils.Text to CFW.Text
 - BUGFIX: Query resultcompare - fixed issue where id-columns where displayed as null values
-- BUGFIX: Query NOT-operator - fixed issue wher the NOT operator caused strange filtering results
+- BUGFIX: Query NOT-operator - fixed issue where the NOT operator caused strange filtering results
 - BUGFIX: Query Parameter Type "Query" can now be inserted using parameter placeholders like "$query$" (existing ones need to be deleted and recreated)
 - BUGFIX: Number separators are properly shown for negative numbers
 - BUGFIX: Fixing that chartfields command did not evaluate records (e.g. could not adjust chart colors based on field value)
