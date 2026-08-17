@@ -53,8 +53,8 @@ public class ServletSpaces extends HttpServlet
     {
 		HTMLResponse html = new HTMLResponse("Spaces");
 		
-		if(CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_VIEWER)
-		|| CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_ADMIN)
+		if(CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_VIEWER)
+		|| CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)
 		) {
 			
 			//createForms();
@@ -63,17 +63,17 @@ public class ServletSpaces extends HttpServlet
 			
 			if(action == null) {
 
-				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSpace.PACKAGE_RESOURCE, "om_spaces.js");
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSpaces.PACKAGE_RESOURCE, "om_spaces.js");
 				html.addJavascriptCode("om_spaces_initialDraw();");
 				
 				//--------------------
 				// Add Data
 				boolean canCreateSpaces =
-					   CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_ADMIN)
-					|| CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_CREATE);
+					   CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)
+					|| CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_CREATE);
 				
 				html.addJavascriptData("canCreateSpaces", canCreateSpaces);
-				html.addJavascriptData("isSpacesAdmin", CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_ADMIN) );
+				html.addJavascriptData("isSpacesAdmin", CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN) );
 				
 				//--------------------
 				// Add Types
@@ -418,8 +418,8 @@ public class ServletSpaces extends HttpServlet
 	 ******************************************************************/
 	private boolean checkCanCreateSpaces() {
 				
-		return CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_ADMIN)
-		|| CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_CREATE);
+		return CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)
+		|| CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_CREATE);
 	}
 	
 	/******************************************************************
@@ -463,8 +463,8 @@ public class ServletSpaces extends HttpServlet
 						//--------------------------
 						// Check Can Create Spaces
 						if(space.type() == CFWSpaceType.ORG
-						&& !(CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_ADMIN)
-						|| CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_CREATE))) {
+						&& !(CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)
+						|| CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_CREATE))) {
 							CFW.Messages.noPermission();
 							return;
 						}

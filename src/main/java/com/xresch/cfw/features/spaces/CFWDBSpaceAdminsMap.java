@@ -252,7 +252,7 @@ public class CFWDBSpaceAdminsMap {
 	 ******************************************************************/
 	public static boolean checkIsCurrentUserAdminOfSelectedSpace(int orgid) {
 		
-		if( CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_ADMIN)) {
+		if( CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)) {
 			return true;
 		}
 		
@@ -274,7 +274,7 @@ public class CFWDBSpaceAdminsMap {
 		
 		ArrayList<CFWObject> userList =  new CFWSQL(new User())
 				.queryCache()
-				.loadSQLResource(FeatureSpace.PACKAGE_RESOURCE
+				.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE
 						, "sql_selectAdminsForSpaceKeyLabel.sql"
 						, spaceID)
 				.getAsObjectList();

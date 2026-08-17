@@ -16,6 +16,10 @@ import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.contextsettings.ContextSettings;
 import com.xresch.cfw.features.contextsettings.ContextSettings.ContextSettingsFields;
+import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
+import com.xresch.cfw.features.spaces.CFWSpaceAdminsMap.CFWSpaceUserMapFields;
+import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpaceDefaults;
 import com.xresch.cfw.validation.EmailValidator;
 import com.xresch.cfw.validation.ExcludeStringsValidator;
 import com.xresch.cfw.validation.LengthValidator;
@@ -54,7 +58,7 @@ public class CFWSpace extends CFWObject {
 		ADMIN,
 		PRODUCTION
 	}
-	
+		
 	
 	public static final CFWHierarchyConfig hierarchyConfig = 
 		new CFWHierarchyConfig(
@@ -379,5 +383,36 @@ public class CFWSpace extends CFWObject {
 		this.foreignKeyCtxSettingsJuniorSystem.setValue(value);
 		return this;
 	}
+	
+	/**********************************************************************************
+	 * If the spaces feature is active, returns a selector field that is a foreign key
+	 * of the CFWSpace object. If it is inactive, this method returns nothing.
+	 * @param parent object this field should be assigned too
+	 * @param isHidden if the field is hidden.
+	 * @return 
+	 **********************************************************************************/
+	public static CFWField<Integer> createSpaceSelectorField(CFWObject parent, boolean isHidden) {
+		
+		if( ! FeatureCore.isFeatureActive(FeatureSpaces.FEATURE_NAME) ) {
+			return null;
+		}
+		
+		CFWField<Integer> field;
+		
+		if(isHidden) {
+			field = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceUserMapFields.FK_ID_SPACE);
+		}else {
+			field = CFWField.newInteger(FormFieldType.SELECT, CFWSpaceUserMapFields.FK_ID_SPACE);
+		}
+		
+		field.setColumnDefinition("INT DEFAULT "+ FeatureSpaceDefaults.DEFAULT.id() )
+			.setForeignKeyCascade(parent, CFWSpace.class, CFWSpaceFields.PK_ID)
+			.setDescription("The space this entity belongs to.")
+			.setOptions(CFW.DB.Spaces.getSpaceListForUserOptions())
+			.apiFieldType(FormFieldType.SELECT);
+		
+		return field;
+	}
+	
 	
 }

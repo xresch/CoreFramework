@@ -16,14 +16,62 @@ import com.xresch.cfw.utils.CFWRandom;
  * @author Reto Scheiwiller, (c) Copyright 2026
  * @license MIT
  **************************************************************************************************************/
-public class FeatureSpace extends CFWAppFeature {
+public class FeatureSpaces extends CFWAppFeature {
 	
+	
+	
+	public static final String FEATURE_NAME = "Spaces";
 	
 	public static final String PACKAGE_RESOURCE = "com.xresch.cfw.features.spaces.resources";
 	
 	public static final String PERMISSION_SPACES_VIEWER = "Space: Viewer";
 	public static final String PERMISSION_SPACES_ADMIN = "Space: Admin All";
 	public static final String PERMISSION_SPACES_CREATE = "Space: Create Spaces";
+	
+	
+	// Default spaces created when activating the feature
+	public enum FeatureSpaceDefaults{
+		EVERYTHING(0, "Everything", "This space contains everything. Useful for admin purposes."),
+		DEFAULT(1, "Default Space", "Default Space. Will contain everything that existed before the feature was activated." )
+		;
+		
+		private int id;
+		private String label;
+		private String description;
+		
+		private FeatureSpaceDefaults(int id, String label, String description){
+			this.id = id;
+			this.label = label;
+			this.description = description;
+		}
+		
+		public int id() { return id; }
+		public String label() { return label; }
+		public String description() { return description; }
+	}
+	/************************************************************************************
+	 * Return the unique name of this feature for the feature management.
+	 * If this method returns null(default), the feature will not be visible in the 
+	 * Feature Management.
+	 * 
+	 ************************************************************************************/
+	public String getNameForFeatureManagement() {
+		return FEATURE_NAME;
+	};
+	
+	/************************************************************************************
+	 * Register a description for the feature management.
+	 ************************************************************************************/
+	public String getDescriptionForFeatureManagement() {
+		return "Enables space management for multi-client capabilities. ";
+	};
+	
+	/************************************************************************************
+	 * Return if the managed feature is active by default or if an admin has to enable it.
+	 ************************************************************************************/
+	public boolean activeByDefault() {
+		return false;
+	};
 	
 	/***********************************************************************
 	 * 

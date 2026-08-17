@@ -13,10 +13,9 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
+import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
@@ -140,31 +139,56 @@ public class CFWDBSpaces {
 		
 	}
 	
+	
+	/*****************************************************************************
+	 *  Returns a list of spaces with type "ORG".
+	 *****************************************************************************/
+	public static LinkedHashMap<Integer,String> getSpaceListForUserOptions() {
+		
+		LinkedHashMap<Integer,String> result = new LinkedHashMap<>();
+		
+		ArrayList<CFWSpace> spaceList = getSpaceListForUserSQL().getAsObjectListConvert(CFWSpace.class);
+		
+		for(CFWSpace space : spaceList) {
+			result.put(space.id(), "["+ space.abbreviation()+"] "+space.name());
+		}
+		
+		return result;		
+	}
 	/*****************************************************************************
 	 *  Returns a list of spaces with type "ORG".
 	 *****************************************************************************/
 	public static JsonArray getSpaceListForUser() {
 
+		return getSpaceListForUserSQL().getAsJSONArray();
+
+	}
+	
+	/*****************************************************************************
+	 *  Returns a list of spaces with type "ORG".
+	 *****************************************************************************/
+	public static CFWSQL getSpaceListForUserSQL() {
+
 		
-		if(CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_ADMIN)) {
+		if(CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)) {
 			//--------------------------------
 			// Return All Spaces for Admins
 			return new CFWSQL(new CFWSpace())
 					.queryCache() 
 					.select(CFWSpaceFields.PK_ID, CFWSpaceFields.ABBREVIATION, CFWSpaceFields.NAME)
 					.where(CFWSpaceFields.TYPE, CFWSpaceType.ORG)
-					.getAsJSONArray();
+					;
 		}else {
 			//--------------------------------
 			// Return Specific Spaces for User
 			return new CFWSQL(new CFWSpace())
 					.queryCache()   
-					.loadSQLResource(FeatureSpace.PACKAGE_RESOURCE
+					.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE
 							, "sql_getSpaceListForUser.sql"
 							, CFW.Context.Request.getUserID()
 							, CFW.Context.Request.getUserID()
 							)
-					.getAsJSONArray();
+					;
 		}
 		
 	}
@@ -174,7 +198,7 @@ public class CFWDBSpaces {
 	 *****************************************************************************/
 	public static JsonArray getSpaceListForUserOrganizeView() {
 		
-		if( CFW.Context.Request.hasPermission(FeatureSpace.PERMISSION_SPACES_ADMIN) ) {
+		if( CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN) ) {
 			return new CFWSQL(new CFWSpace())
 					.queryCache() 
 					.select(CFWSpaceFields.PK_ID, CFWSpaceFields.ABBREVIATION, CFWSpaceFields.NAME)

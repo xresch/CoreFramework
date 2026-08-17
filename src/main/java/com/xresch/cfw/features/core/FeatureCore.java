@@ -27,6 +27,7 @@ import com.xresch.cfw.features.core.auth.saml.SSOProviderSettingsSAML;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2AssertionConsumerService;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2Login;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2Metadata;
+import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWAuditLog;
@@ -320,7 +321,62 @@ public class FeatureCore extends CFWAppFeature {
 		// nothing to do
 	}
 	
+	/************************************************************************************
+	 * Toggles a Feature to be active or inactive. Server restart required to take effect.
+	 *
+	 * @param feature to be toggles
+	 * 
+	 * @return true if successful, false otherwise
+	 ************************************************************************************/
+	public static boolean toggleFeatureActive(CFWAppFeature feature) {
+		return  toggleFeatureActive(feature.getNameForFeatureManagement() );
+	}
 	
+	/************************************************************************************
+	 * Toggles a Feature to be active or inactive. Server restart required to take effect.
+	 *
+	 * @param managedName value from CFWAppFeature.getNameForFeatureManagement() 
+	 * 
+	 * @return true if successful, false otherwise
+	 ************************************************************************************/
+	public static boolean toggleFeatureActive(String managedName) {
+		
+		boolean oldStatus = isFeatureActive(managedName);
+		
+		KeyValuePair dbEntry = CFW.DB.KeyValuePairs.selectByKey(CFWAppFeature.KEY_VALUE_PREFIX+managedName);
+		dbEntry.value(!oldStatus+"");
+		
+		if(CFW.DB.KeyValuePairs.update(dbEntry)) {
+			CFW.Messages.addInfoMessage("Changes will only take effect after application restart.");
+			return true;
+		}else {
+			return false;
+		}
+		
+	}
+	
+	/************************************************************************************
+	 * Returns the active or inactive status of the feature.
+	 * 
+	 * @param feature for which the status should be checked for
+	 * 
+	 * @return true if active, false if inactive
+	 ************************************************************************************/
+	public static boolean isFeatureActive(CFWAppFeature feature) {
+		return isFeatureActive(feature.getNameForFeatureManagement() );
+	}
+	
+	/************************************************************************************
+	 * Returns the active or inactive status of the feature.
+	 * 
+	 * @param managedName value from CFWAppFeature.getNameForFeatureManagement() 
+	 * 
+	 * @return true if active, false if inactive
+	 ************************************************************************************/
+	public static boolean isFeatureActive(String managedName) {
+		return CFW.DB.KeyValuePairs.getValueAsBoolean( CFWAppFeature.KEY_VALUE_PREFIX + managedName );
+	}
+
 	/************************************************************************************
 	 * Returns a map of keys and labels for the available chart types.
 	 * 

@@ -245,7 +245,7 @@ public class CFWDBSpaceUserMap {
 		
 		ArrayList<CFWObject> userList =  new CFWSQL(new User())
 				.queryCache()
-				.loadSQLResource(FeatureSpace.PACKAGE_RESOURCE
+				.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE
 						, "sql_selectSpacesForUsersKeyValue.sql"
 						, spaceID)
 				.getAsObjectList();

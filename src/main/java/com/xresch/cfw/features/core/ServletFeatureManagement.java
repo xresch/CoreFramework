@@ -15,7 +15,6 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
-import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -93,7 +92,8 @@ public class ServletFeatureManagement extends HttpServlet
 				
 			case "update": 			
 				switch(item.toLowerCase()) {
-					case "feature": 		toggleFeatureActive(jsonResponse, managedName);
+					case "feature": 		boolean success = FeatureCore.toggleFeatureActive(managedName);
+											jsonResponse.setSuccess(success);
 	  										break;
 	  										
 					default: 				CFW.Messages.itemNotSupported(item);
@@ -120,21 +120,6 @@ public class ServletFeatureManagement extends HttpServlet
 		}
 		
 		return resultArray;
-	}
-	
-	private void toggleFeatureActive(JSONResponse jsonResponse, String managedName) {
-		
-		boolean oldStatus = CFW.DB.KeyValuePairs.getValueAsBoolean(CFWAppFeature.KEY_VALUE_PREFIX+managedName);
-		
-		KeyValuePair dbEntry = CFW.DB.KeyValuePairs.selectByKey(CFWAppFeature.KEY_VALUE_PREFIX+managedName);
-		dbEntry.value(!oldStatus+"");
-		
-		if(CFW.DB.KeyValuePairs.update(dbEntry)) {
-			CFW.Messages.addInfoMessage("Changes will only take effect after application restart.");
-		}else {
-			jsonResponse.setSuccess(false);
-		}
-		
 	}
 		
 }

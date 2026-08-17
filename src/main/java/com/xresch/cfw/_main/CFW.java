@@ -89,6 +89,7 @@ import com.xresch.cfw.features.query.store.FeatureStoredQuery;
 import com.xresch.cfw.features.spaces.CFWDBSpaceAdminsMap;
 import com.xresch.cfw.features.spaces.CFWDBSpaceUserMap;
 import com.xresch.cfw.features.spaces.CFWDBSpaces;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.CFWDBPermission;
 import com.xresch.cfw.features.usermgmt.CFWDBRole;
 import com.xresch.cfw.features.usermgmt.CFWDBRoleEditorsMap;
@@ -561,6 +562,10 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureInfluxDB.class);
 		CFW.Registry.Features.addFeature(FeatureCLIExtensions.class);
 		CFW.Registry.Features.addFeature(FeatureWebExtensions.class);
+		
+		if(CFW.AppSettings.isSpacesEnabled()) {
+			CFW.Registry.Features.addFeature(FeatureSpaces.class);	
+		}
 		
 		//---------------------------
 		// Application Register
