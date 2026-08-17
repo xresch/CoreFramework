@@ -86,11 +86,9 @@ import com.xresch.cfw.features.query.store.CFWDBStoredQueryEditorsMap;
 import com.xresch.cfw.features.query.store.CFWDBStoredQuerySharedGroupsMap;
 import com.xresch.cfw.features.query.store.CFWDBStoredQuerySharedUserMap;
 import com.xresch.cfw.features.query.store.FeatureStoredQuery;
-import com.xresch.cfw.features.spaces.CFWDBSpace;
-import com.xresch.cfw.features.spaces.CFWDBSpaceGroup;
-import com.xresch.cfw.features.spaces.FeatureSpaces;
-import com.xresch.cfw.features.spaces.Space;
-import com.xresch.cfw.features.spaces.SpaceGroup;
+import com.xresch.cfw.features.spaces.CFWDBSpaceAdminsMap;
+import com.xresch.cfw.features.spaces.CFWDBSpaceUserMap;
+import com.xresch.cfw.features.spaces.CFWDBSpaces;
 import com.xresch.cfw.features.usermgmt.CFWDBPermission;
 import com.xresch.cfw.features.usermgmt.CFWDBRole;
 import com.xresch.cfw.features.usermgmt.CFWDBRoleEditorsMap;
@@ -108,10 +106,10 @@ import com.xresch.cfw.utils.CFWDump;
 import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.utils.CFWSecurity;
 import com.xresch.cfw.utils.CFWState;
+import com.xresch.cfw.utils.CFWText;
 import com.xresch.cfw.utils.CFWTime;
 import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.utils.CFWUtilsArray;
-import com.xresch.cfw.utils.CFWText;
 import com.xresch.cfw.utils.CFWXML;
 import com.xresch.cfw.utils.excel.CFWExcel;
 import com.xresch.cfw.utils.files.CFWFiles;
@@ -202,8 +200,10 @@ public class CFW {
 		public static class RolePermissionMap extends CFWDBRolePermissionMap{};
 		public static class Users extends CFWDBUser{};
 		public static class UserRoleMap extends CFWDBUserRoleMap{};
-		public static class Spaces extends CFWDBSpace{};
-		public static class SpaceGroups extends CFWDBSpaceGroup{};
+		public static class Spaces extends CFWDBSpaces{};
+		public static class SpaceUserMap extends CFWDBSpaceUserMap{};
+		public static class SpaceAdminsMap extends CFWDBSpaceAdminsMap{};
+
 	}
 	
 	public static class Caching extends CFWCacheManagement {}
@@ -346,7 +346,6 @@ public class CFW {
 	 * them to the registry.
 	 * 
 	 ***********************************************************************/
-	@SuppressWarnings("unchecked")
 	private static void loadExtensionFeatures() {
        
        ServiceLoader<CFWAppFeature> loader = ServiceLoader.load(CFWAppFeature.class);
@@ -517,11 +516,7 @@ public class CFW {
 	 ***********************************************************************/
 	private static void doRegister(CFWAppInterface appToStart) {
 		
-		//---------------------------
-		// Register Objects 
-		CFW.Registry.Objects.addCFWObject(SpaceGroup.class);
-		CFW.Registry.Objects.addCFWObject(Space.class);
-		
+
 		//---------------------------
 		// Register Features
 		CFW.Registry.Features.addFeature(FeatureConfig.class);
@@ -554,11 +549,7 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureFilemanager.class);
 		
 		CFW.Registry.Features.addFeature(FeatureJobs.class);
-		
-		if(CFW.AppSettings.isSpacesEnabled()) {
-			CFW.Registry.Features.addFeature(FeatureSpaces.class);	
-		}
-		
+
 		//---------------------------
 		// Register Extensions
 		CFW.Registry.Features.addFeature(FeatureDBExtensions.class);
