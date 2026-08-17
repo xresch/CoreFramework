@@ -31,8 +31,8 @@ public class FeatureSpaces extends CFWAppFeature {
 	
 	// Default spaces created when activating the feature
 	public enum FeatureSpaceDefaults{
-		EVERYTHING(0, "Everything", "This space contains everything. Useful for admin purposes."),
-		DEFAULT(1, "Default Space", "Default Space. Will contain everything that existed before the feature was activated." )
+		  EVERYTHING(0, "Everything", "This space contains everything. Useful for admin purposes.")
+		, DEFAULT(1, "Default", "The default space contains things that existed before the space feature has been activated." )
 		;
 		
 		private int id;
@@ -96,7 +96,7 @@ public class FeatureSpaces extends CFWAppFeature {
 		//-------------------------------------
     	// Register Objects
 		CFW.Registry.Objects.addCFWObject(CFWSpace.class);		
-		CFW.Registry.Objects.addCFWObject(CFWSpaceAdminsMap.class);		
+		CFW.Registry.Objects.addCFWObject(CFWSpaceAdminMap.class);		
 		CFW.Registry.Objects.addCFWObject(CFWSpaceUserMap.class);		
 	}
 	
@@ -165,7 +165,7 @@ public class FeatureSpaces extends CFWAppFeature {
 				String email = name.toLowerCase().replace(" ", ".") + "@"+location.replace(" ", "-").toLowerCase() + ".com";
 				
 				CFWSpace rootSpace = new CFWSpace()
-					.type(CFWSpaceType.ORG)
+					.type(CFWSpaceType.ROOT_SPACE)
 					.name(name)
 					.abbreviation(abbrevation)
 					.email(email)
@@ -205,7 +205,7 @@ public class FeatureSpaces extends CFWAppFeature {
 			String email = name.toLowerCase().replace(" ", ".") + "@"+location.replace(" ", "-").toLowerCase() + ".com";
 			
 			CFWSpace person = new CFWSpace()
-				.type(CFWSpaceType.POST)
+				.type(CFWSpaceType.SPACE)
 				.name(name)
 				.abbreviation(abbrevation)
 				.email(email)

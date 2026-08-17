@@ -8,13 +8,10 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
-import com.xresch.cfw.features.core.AutocompleteList;
+import com.xresch.cfw.features.spaces.CFWSpaceUserMap.CFWSpaceUserMapFields;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
-import com.xresch.cfw.features.spaces.CFWSpaceUserMap.CFWSpaceUserMapFields;
 
 /**************************************************************************************************************
  * 
@@ -56,7 +53,7 @@ public class CFWDBSpaceUserMap {
 		
 		if(checkIsUserAssignedToSpace(user, space)) {
 			new CFWLog(logger)
-				.warn("The user '"+user.username()+"' is already in the favorites of the space '"+space.name()+"'.");
+				.warn("The user '"+user.username()+"' is already assigned to space '"+space.name()+"'.");
 			return false;
 		}
 		
@@ -65,15 +62,13 @@ public class CFWDBSpaceUserMap {
 				  + CFWSpaceUserMapFields.FK_ID_SPACE
 				  + ") VALUES (?,?);";
 		
-		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceUserMap.class, "Add User to CFWSpace Space: "+space.name()+", User: "+user.username());
-		
 		boolean success = CFWDB.preparedExecute(insertUserSQL, 
 				user.id(),
 				space.id()
 				);
 		
 		if(success) {
-			new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceAdminsMap.class, "Add Admin to Space: "+space.name()+", User: "+user.username());
+			new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceUserMap.class, "Add user to Space: "+space.name()+", User: "+user.username());
 		}
 
 		return success;
@@ -126,7 +121,7 @@ public class CFWDBSpaceUserMap {
 						.where(CFWSpaceUserMapFields.FK_ID_SPACE, space.id())
 						.executeDelete();
 		if(hasCleared) {
-			new CFWLog(logger).audit(CFWAuditLogAction.CLEAR, CFWSpaceAdminsMap.class, "Clear Space Admins for Space: "+space.name());
+			new CFWLog(logger).audit(CFWAuditLogAction.CLEAR, CFWSpaceUserMap.class, "Clear assigned users for Space: "+space.name());
 		}
 		
 		boolean isSuccess = true;

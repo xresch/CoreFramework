@@ -81,7 +81,7 @@ public class ServletSpaces extends HttpServlet
 				StringBuilder builder = new StringBuilder();
 				for(CFWSpaceType type : typesArray) {
 					
-					if(type == CFWSpaceType.ORG) {
+					if(type == CFWSpaceType.ROOT_SPACE) {
 						continue;
 					}
 					builder.append(type.toString()+",");
@@ -120,7 +120,7 @@ public class ServletSpaces extends HttpServlet
 		
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-					case "spaceslist": 	jsonResponse.addCustomAttribute("isAdminForSelectedSpace", CFW.DB.SpaceAdminsMap.checkIsCurrentUserAdminOfSelectedSpace(spaceID));
+					case "spaceslist": 	jsonResponse.addCustomAttribute("isAdminForSelectedSpace", CFW.DB.SpaceAdminMap.checkIsCurrentUserAdminOfSelectedSpace(spaceID));
 											jsonResponse.setPayload(CFWDBSpaces.getHierarchyForSpaceAsJson(spaceID));
 	  										break;
 	  				
@@ -210,7 +210,7 @@ public class ServletSpaces extends HttpServlet
 	 ******************************************************************/
 	private void addSeniorSelectorField(CFWSpace space, int spaceid) {
 		
-		if(space == null || space.type() == CFWSpaceType.ORG) {
+		if(space == null || space.type() == CFWSpaceType.ROOT_SPACE) {
 			return;
 		}
 		
@@ -253,91 +253,7 @@ public class ServletSpaces extends HttpServlet
 		}
 		
 	}
-	/******************************************************************
-	 *
-	 ******************************************************************/
-	private void addAdminAssignmentField(CFWSpace space) {
-		addUserSelectorField(space, "admin");
-	}
-	/******************************************************************
-	 *
-	 ******************************************************************/
-	private void addUserAssignmentField(CFWSpace space) {
-		addUserSelectorField(space, "user");
-	}
 	
-	/******************************************************************
-	 *
-	 *@param type either "user" or "admin"
-	 ******************************************************************/
-	private void addUserSelectorField(CFWSpace space, String type) {
-		
-		type = type.trim().toLowerCase();
-		
-		//--------------------------------------
-		// Check do Assign
-		if(space == null
-		|| ( type.equals("user") && space.type() != CFWSpaceType.POST)
-		|| ( type.equals("admin") && space.type() != CFWSpaceType.ORG)
-		) {
-			return;
-		}
-		
-		try {
-			
-			//--------------------------------------
-			// Initialize Variables
-			
-			String fieldname = FIELDNAME_USER_SELECTOR;
-			String description = "Select the users that are assigned to this space. Start typing to get suggestions.";
-			String label = "Assigned Users";
-			
-			if(type.equals("admin")) {
-				fieldname = FIELDNAME_ADMIN_SELECTOR;
-				description = "Select the users that are allowed to manage this space.";
-				label = "Administators";
-			}
-			
-			//--------------------------------------
-			// Create Field
-			CFWField<LinkedHashMap<String,String>> userSelector = 
-					CFWField.newTagsSelector(fieldname)
-							.setDescription(description)
-							.setLabel(label)
-							.addAttribute("maxTags", "256")
-							.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
-								
-								public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-									return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
-								}
-							});
-			
-			//--------------------------------------
-			// Set Selected Values
-			LinkedHashMap<String,String> selectedValue = new LinkedHashMap<>();
-			if(space != null && space.id() != null) {
-				switch(type){
-					case "user": selectedValue = CFW.DB.SpaceUserMap.selectUsersForSpaceAsKeyLabel(space.id());
-								 break;
-								 
-					case "admin": selectedValue = CFW.DB.SpaceAdminsMap.selectAdminsForSpaceAsKeyLabel(space.id());
-								break;
-					default:	// do nothing;
-								break;
-				}
-			}
-			
-			userSelector.setValue(selectedValue);
-			
-			//--------------------------------------
-			// Prepend before all other fields
-			space.addField(userSelector);
-			
-		}catch(IllegalArgumentException e) {
-			new CFWLog(logger).severe(e);
-		}
-		
-	}
 	
 	/******************************************************************
 	 * Return senior ID if selected, or null if not selected or 
@@ -371,7 +287,7 @@ public class ServletSpaces extends HttpServlet
 	private boolean isSeniorValid(CFWSpace space, Integer seniorID) {
 		//--------------------------
 		// Validate Parent Selected
-		if(space.type() != CFWSpaceType.ORG
+		if(space.type() != CFWSpaceType.ROOT_SPACE
 		&& seniorID == null) {
 			CFW.Messages.addErrorMessage("Please select a Senior Space.");
 			return false;
@@ -379,38 +295,38 @@ public class ServletSpaces extends HttpServlet
 		
 		return true;
 	}
-	/******************************************************************
-	 *
-	 ******************************************************************/
-	private boolean updateUsersAndAdmins(CFWSpace space, CFWObject origin) {
-		boolean success = true;
-				
-		//--------------------------
-		// Update Selected Users
-		if(origin.getFields().containsKey(FIELDNAME_USER_SELECTOR)) {
-			CFWField<LinkedHashMap<String,String>> usersSelector = origin.getField(FIELDNAME_USER_SELECTOR);
-			LinkedHashMap<String,String> selectedUsers= usersSelector.getValue();
-			
-			if( !CFW.DB.SpaceUserMap.updateUserSpaceAssignments(space, selectedUsers) ){
-				success = false;
-				CFW.Messages.addErrorMessage("Error while updating user assignments.");
-			}
-		}
-		
-		//--------------------------
-		// Update Selected Admins
-		if(origin.getFields().containsKey(FIELDNAME_ADMIN_SELECTOR)) {
-			CFWField<LinkedHashMap<String,String>> adminsSelector = origin.getField(FIELDNAME_ADMIN_SELECTOR);
-			LinkedHashMap<String,String> selectedAdmins = adminsSelector.getValue();
-			
-			if( !CFW.DB.SpaceAdminsMap.updateUserSpacesAdminAssignments(space, selectedAdmins) ){
-				success = false;
-				CFW.Messages.addErrorMessage("Error while updating user assignments.");
-			}
-		}
-		
-		return success;
-	}
+//	/******************************************************************
+//	 *
+//	 ******************************************************************/
+//	private boolean updateUsersAndAdmins(CFWSpace space, CFWObject origin) {
+//		boolean success = true;
+//				
+//		//--------------------------
+//		// Update Selected Users
+//		if(origin.getFields().containsKey(FIELDNAME_USER_SELECTOR)) {
+//			CFWField<LinkedHashMap<String,String>> usersSelector = origin.getField(FIELDNAME_USER_SELECTOR);
+//			LinkedHashMap<String,String> selectedUsers= usersSelector.getValue();
+//			
+//			if( !CFW.DB.SpaceUserMap.updateUserSpaceAssignments(space, selectedUsers) ){
+//				success = false;
+//				CFW.Messages.addErrorMessage("Error while updating user assignments.");
+//			}
+//		}
+//		
+//		//--------------------------
+//		// Update Selected Admins
+//		if(origin.getFields().containsKey(FIELDNAME_ADMIN_SELECTOR)) {
+//			CFWField<LinkedHashMap<String,String>> adminsSelector = origin.getField(FIELDNAME_ADMIN_SELECTOR);
+//			LinkedHashMap<String,String> selectedAdmins = adminsSelector.getValue();
+//			
+//			if( !CFW.DB.SpaceAdminMap.updateAdminSpacesAssignments(space, selectedAdmins) ){
+//				success = false;
+//				CFW.Messages.addErrorMessage("Error while updating user assignments.");
+//			}
+//		}
+//		
+//		return success;
+//	}
 	
 	
 	/******************************************************************
@@ -430,8 +346,8 @@ public class ServletSpaces extends HttpServlet
 		//--------------------------------------
 		// Create ContextSettings Form
 		if(
-			  ( spaceType == CFWSpaceType.ORG && checkCanCreateSpaces() )
-			|| CFW.DB.SpaceAdminsMap.checkIsCurrentUserAdminOfSelectedSpace(spaceid)
+			  ( spaceType == CFWSpaceType.ROOT_SPACE && checkCanCreateSpaces() )
+			|| CFW.DB.SpaceAdminMap.checkIsCurrentUserAdminOfSelectedSpace(spaceid)
 		) {
 			
 			//--------------------------------
@@ -442,9 +358,8 @@ public class ServletSpaces extends HttpServlet
 			//--------------------------------
 			// Add Fields
 			addSeniorSelectorField(space, Integer.parseInt(spaceid));	
-			addUserAssignmentField(space);
-			addAdminAssignmentField(space);
-				
+			space.updateSelectorFields();
+			
 			//--------------------------------
 			// Create Form
 			CFWForm form = space.toForm("cfwCreateSpaceForm"+CFWRandom.stringAlphaNumSpecial(12),
@@ -462,7 +377,7 @@ public class ServletSpaces extends HttpServlet
 						
 						//--------------------------
 						// Check Can Create Spaces
-						if(space.type() == CFWSpaceType.ORG
+						if(space.type() == CFWSpaceType.ROOT_SPACE
 						&& !(CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)
 						|| CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_CREATE))) {
 							CFW.Messages.noPermission();
@@ -501,7 +416,7 @@ public class ServletSpaces extends HttpServlet
 														
 							//----------------------------------------
 							// Update Seniors and Users
-							updateUsersAndAdmins(space, origin);
+							space.saveSelectorFields();
 							
 						}
 
@@ -525,8 +440,7 @@ public class ServletSpaces extends HttpServlet
 		Integer currentSeniorID = CFWHierarchy.getParentID(space);
 		
 		addSeniorSelectorField(space, rootid);
-		addUserAssignmentField(space);
-		addAdminAssignmentField(space);
+		space.updateSelectorFields();
 		
 		if(space != null) {
 			
@@ -573,7 +487,7 @@ public class ServletSpaces extends HttpServlet
 
 						//--------------------------
 						// Update Users And Admins
-						success &= updateUsersAndAdmins(space, origin);
+						success &= space.saveSelectorFields();
 
 						if(success) {
 							CFW.Messages.addSuccessMessage("Saved!");

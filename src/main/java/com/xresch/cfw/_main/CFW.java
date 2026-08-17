@@ -86,7 +86,9 @@ import com.xresch.cfw.features.query.store.CFWDBStoredQueryEditorsMap;
 import com.xresch.cfw.features.query.store.CFWDBStoredQuerySharedGroupsMap;
 import com.xresch.cfw.features.query.store.CFWDBStoredQuerySharedUserMap;
 import com.xresch.cfw.features.query.store.FeatureStoredQuery;
-import com.xresch.cfw.features.spaces.CFWDBSpaceAdminsMap;
+import com.xresch.cfw.features.spaces.CFWDBSpaceAdminGroupsMap;
+import com.xresch.cfw.features.spaces.CFWDBSpaceAdminMap;
+import com.xresch.cfw.features.spaces.CFWDBSpaceUserGroupsMap;
 import com.xresch.cfw.features.spaces.CFWDBSpaceUserMap;
 import com.xresch.cfw.features.spaces.CFWDBSpaces;
 import com.xresch.cfw.features.spaces.FeatureSpaces;
@@ -203,7 +205,9 @@ public class CFW {
 		public static class UserRoleMap extends CFWDBUserRoleMap{};
 		public static class Spaces extends CFWDBSpaces{};
 		public static class SpaceUserMap extends CFWDBSpaceUserMap{};
-		public static class SpaceAdminsMap extends CFWDBSpaceAdminsMap{};
+		public static class SpaceUserGroupsMap extends CFWDBSpaceUserGroupsMap{};
+		public static class SpaceAdminMap extends CFWDBSpaceAdminMap{};
+		public static class SpaceAdminGroupsMap extends CFWDBSpaceAdminGroupsMap{};
 
 	}
 	

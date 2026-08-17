@@ -423,7 +423,7 @@ public class Dashboard extends CFWObject {
 	
 	/******************************************************************
 	 *
-	 *@param fieldname is either of the FIELDNAME_* constants
+	 *@param boardID the id of the dashboard
 	 ******************************************************************/
 	private CFWField<LinkedHashMap<String,String>> createSelectorFieldSharedUser(Integer boardID) {
 			
@@ -452,7 +452,7 @@ public class Dashboard extends CFWObject {
 	
 	/******************************************************************
 	 *
-	 *@param fieldname is either of the FIELDNAME_* constants
+	 *@param boardID the id of the dashboard
 	 ******************************************************************/
 	private CFWField<LinkedHashMap<String,String>> createSelectorFieldSharedGroups(Integer boardID) {
 		
@@ -482,7 +482,7 @@ public class Dashboard extends CFWObject {
 	
 	/******************************************************************
 	 *
-	 *@param fieldname is either of the FIELDNAME_* constants
+	 *@param boardID the id of the dashboard
 	 ******************************************************************/
 	private CFWField<LinkedHashMap<String,String>> createSelectorFieldEditors(Integer boardID) {
 			
@@ -511,7 +511,7 @@ public class Dashboard extends CFWObject {
 	
 	/******************************************************************
 	 *
-	 *@param fieldname is either of the FIELDNAME_* constants
+	 *@param boardID the id of the dashboard
 	 ******************************************************************/
 	private CFWField<LinkedHashMap<String,String>> createSelectorFieldEditorGroups(Integer boardID) {
 		

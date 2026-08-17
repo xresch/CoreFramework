@@ -150,7 +150,7 @@ public class CFWDBSpaces {
 		ArrayList<CFWSpace> spaceList = getSpaceListForUserSQL().getAsObjectListConvert(CFWSpace.class);
 		
 		for(CFWSpace space : spaceList) {
-			result.put(space.id(), "["+ space.abbreviation()+"] "+space.name());
+			result.put(space.id(), space.createSpaceLabel() );
 		}
 		
 		return result;		
@@ -176,7 +176,7 @@ public class CFWDBSpaces {
 			return new CFWSQL(new CFWSpace())
 					.queryCache() 
 					.select(CFWSpaceFields.PK_ID, CFWSpaceFields.ABBREVIATION, CFWSpaceFields.NAME)
-					.where(CFWSpaceFields.TYPE, CFWSpaceType.ORG)
+					.where(CFWSpaceFields.TYPE, CFWSpaceType.ROOT_SPACE)
 					;
 		}else {
 			//--------------------------------
@@ -202,7 +202,7 @@ public class CFWDBSpaces {
 			return new CFWSQL(new CFWSpace())
 					.queryCache() 
 					.select(CFWSpaceFields.PK_ID, CFWSpaceFields.ABBREVIATION, CFWSpaceFields.NAME)
-					.where(CFWSpaceFields.TYPE, CFWSpaceType.ORG)
+					.where(CFWSpaceFields.TYPE, CFWSpaceType.ROOT_SPACE)
 					.getAsJSONArray();
 		}else {
 			return getSpaceListForUser();
@@ -279,7 +279,7 @@ public class CFWDBSpaces {
 	 *  
 	 *****************************************************************************/
 	public static AutocompleteResult autocompletePostForRootSpace(String searchString, int spaceid, int limit) {
-		return autocompleteSpaceForRootSpace(searchString, CFWSpaceType.POST, spaceid, limit);
+		return autocompleteSpaceForRootSpace(searchString, CFWSpaceType.SPACE, spaceid, limit);
 	}
 	
 	/*****************************************************************************
@@ -335,7 +335,7 @@ public class CFWDBSpaces {
 	 *  
 	 *****************************************************************************/
 	public static AutocompleteResult autocompletePost(String searchString, int limit) {
-		return autocompleteSpace(searchString, CFWSpaceType.POST, limit);
+		return autocompleteSpace(searchString, CFWSpaceType.SPACE, limit);
 	}
 	
 	/*****************************************************************************
