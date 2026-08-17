@@ -50,7 +50,7 @@ public class FeatureSpaces extends CFWAppFeature {
 		public String description() { return description; }
 	}
 	/************************************************************************************
-	 * Return the unique name of this feature for the feature management.
+	 * Return the unique name of this feature for the feature cfw_spacesment.
 	 * If this method returns null(default), the feature will not be visible in the 
 	 * Feature Management.
 	 * 
@@ -60,14 +60,14 @@ public class FeatureSpaces extends CFWAppFeature {
 	};
 	
 	/************************************************************************************
-	 * Register a description for the feature management.
+	 * Register a description for the feature cfw_spacesment.
 	 ************************************************************************************/
 	public String getDescriptionForFeatureManagement() {
-		return "Enables space management for multi-client capabilities. ";
+		return "Enables space cfw_spacesment for multi-client capabilities. ";
 	};
 	
 	/************************************************************************************
-	 * Return if the managed feature is active by default or if an admin has to enable it.
+	 * Return if the cfw_spacesd feature is active by default or if an admin has to enable it.
 	 ************************************************************************************/
 	public boolean activeByDefault() {
 		return false;
@@ -96,8 +96,10 @@ public class FeatureSpaces extends CFWAppFeature {
 		//-------------------------------------
     	// Register Objects
 		CFW.Registry.Objects.addCFWObject(CFWSpace.class);		
-		CFW.Registry.Objects.addCFWObject(CFWSpaceAdminMap.class);		
 		CFW.Registry.Objects.addCFWObject(CFWSpaceUserMap.class);		
+		CFW.Registry.Objects.addCFWObject(CFWSpaceUserGroupsMap.class);		
+		CFW.Registry.Objects.addCFWObject(CFWSpaceAdminMap.class);		
+		CFW.Registry.Objects.addCFWObject(CFWSpaceAdminGroupsMap.class);		
 	}
 	
 	/***********************************************************************
@@ -120,7 +122,7 @@ public class FeatureSpaces extends CFWAppFeature {
 		//-----------------------------------------
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_SPACES_ADMIN, FeatureUserManagement.CATEGORY_USER)
-					.description("The user can create, view and manage all root spaces."),
+					.description("The user can create, view and cfw_spaces all root spaces."),
 				true,
 				false);
 		

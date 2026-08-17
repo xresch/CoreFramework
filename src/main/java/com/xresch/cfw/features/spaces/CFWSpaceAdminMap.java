@@ -43,7 +43,7 @@ public class CFWSpaceAdminMap extends CFWObject {
 	
 	private CFWField<Integer> foreignKeyUser = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceAdminMapFields.FK_ID_USER)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
-			.setDescription("The id of the user that is allowed to manage the space.")
+			.setDescription("The id of the user that is allowed to cfw_spaces the space.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 

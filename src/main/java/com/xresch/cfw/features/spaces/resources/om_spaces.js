@@ -5,12 +5,110 @@
  **************************************************************************************************************/
 
 var URL_HIERARCHY = "/app/hierarchy";
-var URL_OMSPACES = "/app/spaces";
+var URL_CFWSPACES = "/app/spaces";
 var URL_PARAMS=CFW.http.getURLParams();
 
-var OM_SPACES_CONFIG_ID = "omspace";
+var CFW_SPACES_CONFIG_ID = "cfwspace";
 
-var OM_SPACES_LAST_OPTIONS = null;
+var CFW_SPACES_LAST_OPTIONS = null;
+var CFW_LAST_SELECTED_SPACE = "om-last-selected-space";
+var CFW_SPACE_SELECT_ID = 'om-global-space-selector';
+
+
+/******************************************************************
+ * Creates a select field containing the orgs the user can select.
+ *
+ * @param callbackFunction callback function that will be called with the
+ * last selected org id, or null if the user has no org.
+ * 
+ * @param isForOrganize set to true if the selector is for the org unit 
+ * organize view
+ ******************************************************************/
+function cfw_spaces_createSpaceSelector(callbackFunction){
+	
+	//-------------------------------
+	// Reset if exists
+	var existingSelector = $('#'+CFW_SPACE_SELECT_ID);
+	if(existingSelector.length > 0){
+		existingSelector.parent().remove();
+	}
+	
+	//-------------------------------
+	// Create Selector
+	var params = {action: "fetch", item: "spacesforuser"};
+	CFW.http.getJSON(URL_CFWSPACES, params, 
+		function(data) {
+			
+			var lastSelectedSpace = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE);
+
+			if(data.success 
+			&& data.payload != null
+			&& data.payload.length > 0){
+				
+				var select = $('<select id="'+CFW_SPACE_SELECT_ID+'" onchange="cfw_spaces_onSpaceSelectorChange()">');
+				select.data('callbackFunction', callbackFunction)
+				
+				var lastSelectedSpaceExists = false;
+				for(var index in data.payload){
+					currentOrg = data.payload[index];
+					select.append('<option value="'+currentOrg.PK_ID+'">'+currentOrg.NAME+'</option>')
+					
+					if(currentOrg.PK_ID == lastSelectedSpace){
+						lastSelectedSpaceExists = true;
+					}
+				}
+				
+				var navitem = $('<li class="dropdown-item" style="width: auto">');
+				navitem.append(select);
+				$('#cfw-navbar-right').prepend(navitem);
+				
+				if(lastSelectedSpace != null && lastSelectedSpaceExists){
+					select.val(lastSelectedSpace);
+				}
+
+				CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, select.val());
+
+			}
+			
+			callbackFunction(lastSelectedSpace);
+	});
+}
+
+/******************************************************************
+ *
+ ******************************************************************/
+function cfw_spaces_onSpaceSelectorChange(){
+	var select = $('#'+CFW_SPACE_SELECT_ID);
+	
+	var callbackFunction = select.data('callbackFunction');
+	var selectedOrg = select.val();
+	CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, selectedOrg);
+	
+	callbackFunction(selectedOrg);
+	
+}
+
+/******************************************************************
+ *
+ ******************************************************************/
+function cfw_spaces_getSpaceSelector(){
+	 return $('#'+CFW_SPACE_SELECT_ID);
+}
+
+/******************************************************************
+ * Returns the id of the selected org
+ ******************************************************************/
+function cfw_spaces_getSelectedSpace(){
+	 return $('#'+CFW_SPACE_SELECT_ID).val();
+}
+
+/******************************************************************
+ *
+ ******************************************************************/
+function cfw_spaces_setSelectedSpace(orgid){
+	 $('#'+CFW_SPACE_SELECT_ID).val(orgid);
+	 cfw_spaces_onSpaceSelectorChange();
+}
 
 /******************************************************************
  * Reset the view.
@@ -64,8 +162,8 @@ function om_spaces_addSpace(type){
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	var selectedSpace = om_common_getSelectedSpace();
-	CFW.http.createForm(URL_OMSPACES, {action: "getform", item: "createspace", type: type, spaceid: selectedSpace}, detailsDiv);
+	var selectedSpace = cfw_spaces_getSelectedSpace();
+	CFW.http.createForm(URL_CFWSPACES, {action: "getform", item: "createspace", type: type, spaceid: selectedSpace}, detailsDiv);
 	
 }
 
@@ -87,13 +185,13 @@ function om_spaces_edit(id){
 	CFW.ui.showModalMedium(
 			"Edit Space", 
 			allDiv, 
-			"om_spaces_draw(OM_SPACES_LAST_OPTIONS)"
+			"om_spaces_draw(CFW_SPACES_LAST_OPTIONS)"
 	);
 	
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	CFW.http.createForm(URL_OMSPACES, {action: "getform", item: "editspace", id: id}, detailsDiv);
+	CFW.http.createForm(URL_CFWSPACES, {action: "getform", item: "editspace", id: id}, detailsDiv);
 	
 }
 
@@ -104,7 +202,7 @@ function om_spaces_edit(id){
 function om_spaces_delete(id){
 	
 	var params = {action: "delete", item: "space", id: id};
-	CFW.http.getJSON(URL_OMSPACES, params, 
+	CFW.http.getJSON(URL_CFWSPACES, params, 
 		function(data) {
 			if(data.success){
 				om_spaces_makeSpaceSelector();
@@ -391,7 +489,7 @@ function om_spaces_printSortableHierarchy(data){
 			 		}
 			 	},				
 				rendererSettings: {
-					hierarchy_sorter: {configid: OM_SPACES_CONFIG_ID}
+					hierarchy_sorter: {configid: CFW_SPACES_CONFIG_ID}
 				},
 			};
 				
@@ -408,7 +506,7 @@ function om_spaces_printSortableHierarchy(data){
  * 
  ******************************************************************/
 function om_spaces_makeSpaceSelector(){
-	om_common_createSpaceSelector(function(spaceid){
+	cfw_spaces_createSpaceSelector(function(spaceid){
 		om_spaces_draw(null);
 	}, true);
 }
@@ -437,7 +535,7 @@ function om_spaces_initialDraw(){
 	
 	$('#tab-'+tabToDisplay).addClass('active');
 	
-	OM_SPACES_LAST_OPTIONS = {tab: tabToDisplay};
+	CFW_SPACES_LAST_OPTIONS = {tab: tabToDisplay};
 	om_spaces_makeSpaceSelector();
 	
 }
@@ -448,12 +546,12 @@ function om_spaces_initialDraw(){
 function om_spaces_draw(options){
 	
 	if(options == null){
-		options = OM_SPACES_LAST_OPTIONS;
+		options = CFW_SPACES_LAST_OPTIONS;
 	}
 	
-	OM_SPACES_LAST_OPTIONS = options;
+	CFW_SPACES_LAST_OPTIONS = options;
 	
-	var selectedSpace = om_common_getSelectedSpace();
+	var selectedSpace = cfw_spaces_getSelectedSpace();
 	
 	CFW.cache.storeValueForPage("om-spaces-lasttab", options.tab);
 	
@@ -465,10 +563,10 @@ function om_spaces_draw(options){
 	function(){
 		
 		switch(options.tab){
-			case "spaces-list":		CFW.http.getJSON(URL_OMSPACES, {configid: OM_SPACES_CONFIG_ID, action: "fetch", item: "spaceslist", spaceid: selectedSpace}, om_spaces_printList);
+			case "spaces-list":		CFW.http.getJSON(URL_CFWSPACES, {configid: CFW_SPACES_CONFIG_ID, action: "fetch", item: "spaceslist", spaceid: selectedSpace}, om_spaces_printList);
 										break;	
 										
-			case "spaces-hierarchy":	CFW.http.getJSON(URL_HIERARCHY, {configid: OM_SPACES_CONFIG_ID, action: "fetch", item: "hierarchy", rootid: selectedSpace}, om_spaces_printSortableHierarchy);
+			case "spaces-hierarchy":	CFW.http.getJSON(URL_HIERARCHY, {configid: CFW_SPACES_CONFIG_ID, action: "fetch", item: "hierarchy", rootid: selectedSpace}, om_spaces_printSortableHierarchy);
 										break;
 					
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);

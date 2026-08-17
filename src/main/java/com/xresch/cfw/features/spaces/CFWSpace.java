@@ -176,7 +176,7 @@ public class CFWSpace extends CFWObject {
 //	 ******************************************************************/
 //	private CFWField<LinkedHashMap<String,String>> adminSelector = 
 //					CFWField.newTagsSelector(CFWSpaceFields.JSON_ADMINS)
-//							.setDescription("Select the users that are allowed to manage this space.")
+//							.setDescription("Select the users that are allowed to cfw_spaces this space.")
 //							.setLabel("Administators")
 //							.addAttribute("maxTags", "256")
 //							.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
@@ -427,7 +427,7 @@ public class CFWSpace extends CFWObject {
 		// Create Field
 		return CFWField.newTagsSelector(FIELDNAME_ADMINS)
 				.setLabel("Admins")
-				.setDescription("Select the users that are allowed to manage this space.")
+				.setDescription("Select the users that are allowed to cfw_spaces this space.")
 				.addAttribute("maxTags", "256")
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
