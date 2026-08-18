@@ -89,7 +89,6 @@ function cfw_spaces_createSpaceSelector(callbackFunction){
 					  .removeClass()
 					  .addClass("dropdown-toggle");
 				
-				inputField.parent().find("button")
 				CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, inputField.val());
 
 			}
@@ -180,7 +179,7 @@ function om_spaces_addSpace(type){
 	CFW.ui.showModalMedium(
 			"Create Space", 
 			allDiv, 
-			"om_spaces_makeSpaceSelector()"
+			"om_spaces_reloadSpaceSelectorAndDraw()"
 	);
 	
 	//-----------------------------------
@@ -229,7 +228,7 @@ function om_spaces_delete(id){
 	CFW.http.getJSON(URL_CFWSPACES, params, 
 		function(data) {
 			if(data.success){
-				om_spaces_makeSpaceSelector();
+				om_spaces_reloadSpaceSelectorAndDraw();
 			}else{
 				CFW.ui.showModalSmall("Error!", '<span>The selected space could <b style="color: red">NOT</b> be deleted.</span>');
 			}
@@ -529,7 +528,7 @@ function om_spaces_printSortableHierarchy(data){
 /******************************************************************
  * 
  ******************************************************************/
-function om_spaces_makeSpaceSelector(){
+function om_spaces_reloadSpaceSelectorAndDraw(){
 	cfw_spaces_createSpaceSelector(function(spaceid){
 		om_spaces_draw(null);
 	}, true);
@@ -560,7 +559,7 @@ function om_spaces_initialDraw(){
 	$('#tab-'+tabToDisplay).addClass('active');
 	
 	CFW_SPACES_LAST_OPTIONS = {tab: tabToDisplay};
-	om_spaces_makeSpaceSelector();
+	om_spaces_reloadSpaceSelectorAndDraw();
 	
 }
 

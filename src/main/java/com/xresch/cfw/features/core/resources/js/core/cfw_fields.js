@@ -216,7 +216,6 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable, callbackFu
 	// Create Wrapper
 	let wrapper = $('<div id="'+fieldID+'-cfw-select" class="cfw-select w-100">');
 	wrapper.data('options', valueLabelOptions);
-	wrapper.data('callbackFunction', callbackFunction);
 	originalField.before(wrapper);
 	wrapper.append(originalField);	
 		
@@ -269,6 +268,9 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable, callbackFu
 
 	cfw_setSelectValue(fieldID, selectedValue);
 	
+	//--------------------------------
+	// Do this here to not trigger callback on setup 
+	wrapper.data('callbackFunction', callbackFunction);
 	//--------------------------------
 	// Add Filter
 	let menu = wrapper.find('.dropdown-menu');
@@ -351,7 +353,9 @@ function cfw_setSelectValue(fieldID, valueToSelect){
 					button.html("&nbsp;");
 				}
 				
-				callbackFunction(currentOption.value, currentOption.label);
+				if(callbackFunction != null){
+					callbackFunction(currentOption.value, currentOption.label);
+				}
 				
 			}
 			
