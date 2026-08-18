@@ -457,6 +457,9 @@ public class ServletSpaces extends HttpServlet
 							// Update Seniors and Users
 							space.saveSelectorFields();
 							
+							//----------------------------------------
+							// Reset Caches
+							CFW.DB.Spaces.resetCaches();
 						}
 
 					}
@@ -533,6 +536,10 @@ public class ServletSpaces extends HttpServlet
 						}else {
 							CFW.Messages.addErrorMessage("Error while updating.");
 						}
+						
+						//----------------------------------------
+						// Reset Caches
+						CFW.DB.Spaces.resetCaches();
 					}
 				}
 			});

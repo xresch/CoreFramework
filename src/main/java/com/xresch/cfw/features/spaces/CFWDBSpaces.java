@@ -50,9 +50,9 @@ public class CFWDBSpaces {
 	//####################################################################################################
 	public static void resetCaches(){
 		
+		userSpacelistCache.invalidateAll();
 		allSpacesCache = getSpaceListAsArrayList();
 		
-		userSpacelistCache.invalidateAll();
 	}
 	
 	/**************************************************************
