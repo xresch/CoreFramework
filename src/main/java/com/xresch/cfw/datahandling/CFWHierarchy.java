@@ -992,7 +992,14 @@ public class CFWHierarchy<T extends CFWObject> {
 			//------------------------------------------------
 			// Get Parent of current item and add as child
 			if(currentParentID != null) {
-				objectListFlat.get(currentParentID).childObjects.put(currentID, currentItem);
+				// if parent is in list, add as child
+				if(objectListFlat.get(currentParentID) != null) {
+					objectListFlat.get(currentParentID).childObjects.put(currentID, currentItem);
+				}else {
+					// if parent is not in list, add as top level
+					objectHierarchy.put(currentID, currentItem);
+				}
+				
 			}
 		
 		}

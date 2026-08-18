@@ -175,8 +175,8 @@ public class CFWDBSpaces {
 			// Return All Spaces for Admins
 			return new CFWSQL(new CFWSpace())
 					.queryCache() 
-					.select(CFWSpaceFields.PK_ID, CFWSpaceFields.ABBREVIATION, CFWSpaceFields.NAME)
-					.where(CFWSpaceFields.TYPE, CFWSpaceType.ROOT_SPACE)
+					.select(CFWSpaceFields.PK_ID, CFWHierarchy.H_DEPTH, CFWSpaceFields.ABBREVIATION, CFWSpaceFields.NAME)
+					//.where(CFWSpaceFields.TYPE, CFWSpaceType.ROOT_SPACE)
 					;
 		}else {
 			//--------------------------------

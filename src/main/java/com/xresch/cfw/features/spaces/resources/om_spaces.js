@@ -28,45 +28,69 @@ function cfw_spaces_createSpaceSelector(callbackFunction){
 	
 	//-------------------------------
 	// Reset if exists
-	var existingSelector = $('#'+CFW_SPACE_SELECT_ID);
+	let existingSelector = $('#'+CFW_SPACE_SELECT_ID);
 	if(existingSelector.length > 0){
 		existingSelector.parent().remove();
 	}
 	
 	//-------------------------------
 	// Create Selector
-	var params = {action: "fetch", item: "spacesforuser"};
+	let params = {action: "fetch", item: "spacesforuser"};
 	CFW.http.getJSON(URL_CFWSPACES, params, 
 		function(data) {
 			
-			var lastSelectedSpace = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE);
+			let lastSelectedSpace = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE);
 
 			if(data.success 
 			&& data.payload != null
 			&& data.payload.length > 0){
 				
-				var select = $('<select id="'+CFW_SPACE_SELECT_ID+'" onchange="cfw_spaces_onSpaceSelectorChange()">');
-				select.data('callbackFunction', callbackFunction)
+				let inputField = $('<input id="'+CFW_SPACE_SELECT_ID+'" >');
+				inputField.data('callbackFunction', callbackFunction)
 				
-				var lastSelectedSpaceExists = false;
+				let lastSelectedSpaceExists = false;
+				
+				//------------------------------
+				// Create Select Options
+				let valueLabelOptions = [];
 				for(var index in data.payload){
 					currentOrg = data.payload[index];
-					select.append('<option value="'+currentOrg.PK_ID+'">'+currentOrg.NAME+'</option>')
+					
+					let indendation = "";
+					for(let i = 0; i < currentOrg.H_DEPTH; i++){ indendation += "&nbsp;&nbsp;&nbsp;"; }
+					
+					valueLabelOptions.push( { 
+						  "value": ""+currentOrg.PK_ID
+						, "label": indendation 
+									+ "[" + currentOrg.ABBREVIATION + "] " 
+									+ currentOrg.NAME
+					});
+					//select.append('<option value="'+currentOrg.PK_ID+'">'+ indendation + currentOrg.NAME + '</option>')
 					
 					if(currentOrg.PK_ID == lastSelectedSpace){
 						lastSelectedSpaceExists = true;
+						inputField.attr('value', lastSelectedSpace);
 					}
 				}
 				
-				var navitem = $('<li class="dropdown-item" style="width: auto">');
-				navitem.append(select);
+				if(!lastSelectedSpaceExists){
+					inputField.attr('value', "");
+				}
+				
+				let navitem = $('<li class="dropdown-item" style="width: auto">');
+				navitem.append(inputField);
 				$('#cfw-navbar-right').prepend(navitem);
 				
-				if(lastSelectedSpace != null && lastSelectedSpaceExists){
-					select.val(lastSelectedSpace);
-				}
-
-				CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, select.val());
+				cfw_initializeSelect(CFW_SPACE_SELECT_ID, valueLabelOptions, true, function(){
+					cfw_spaces_onSpaceSelectorChange();
+				});
+				
+				inputField.parent().find("button") // remove classes added by initialize Select
+					  .removeClass()
+					  .addClass("dropdown-toggle");
+				
+				inputField.parent().find("button")
+				CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, inputField.val());
 
 			}
 			

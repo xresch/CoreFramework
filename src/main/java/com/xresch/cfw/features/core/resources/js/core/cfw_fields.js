@@ -200,9 +200,10 @@ function cfw_initializeExpandableTextareaField(fieldID){
  * @param valueLabelOptions an object of objects containing values and
  *        labels, e.g. [ { value: 1, label: MyLabel}, ... ]
  * @param filterable true if a the select should have a filter, false otherwise
+ * @param callbackFunction function to callback when value was changed: callbackFunction(value, label);
  * 
  *************************************************************************************/
-function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
+function cfw_initializeSelect(fieldID, valueLabelOptions, filterable, callbackFunction){
 	
 	let id = '#'+fieldID;
 
@@ -215,6 +216,7 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
 	// Create Wrapper
 	let wrapper = $('<div id="'+fieldID+'-cfw-select" class="cfw-select w-100">');
 	wrapper.data('options', valueLabelOptions);
+	wrapper.data('callbackFunction', callbackFunction);
 	originalField.before(wrapper);
 	wrapper.append(originalField);	
 		
@@ -240,7 +242,7 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable){
 			
 			let label = '&nbsp;';
 			if( !CFW.utils.isNullOrEmpty(currentOption.label) ) {
-					label = currentOption.label
+					label = currentOption.label;
 			}
 			let noApostrophe = currentOption.value
 										.replaceAll('"', '&quot;')
@@ -329,6 +331,7 @@ function cfw_setSelectValue(fieldID, valueToSelect){
 	var inputField = $('#'+fieldID);
 	var wrapper = inputField.closest('.cfw-select');
 	var options = wrapper.data('options');
+	var callbackFunction = wrapper.data('callbackFunction');
 	
 	var button = wrapper.find('button');
 	
@@ -338,14 +341,17 @@ function cfw_setSelectValue(fieldID, valueToSelect){
 			var currentOption = options[i];
 
 			if(currentOption.value == valueToSelect){
-
+		
 				inputField.val(currentOption.value);
 				
-				if( !CFW.utils.isNullOrEmpty(currentOption.label) ) {
-					button.html(currentOption.label);
+				let trimmedLabel = currentOption.label.replaceAll("&nbsp;", " ").trim();
+				if( !CFW.utils.isNullOrEmpty(trimmedLabel) ) {
+					button.html(trimmedLabel);
 				}else{
 					button.html("&nbsp;");
 				}
+				
+				callbackFunction(currentOption.value, currentOption.label);
 				
 			}
 			

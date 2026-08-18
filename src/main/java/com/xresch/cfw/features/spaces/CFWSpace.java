@@ -118,8 +118,8 @@ public class CFWSpace extends CFWObject {
 			;
 	
 	private CFWField<String> abbreviation = CFWField.newString(FormFieldType.TEXT, CFWSpaceFields.ABBREVIATION)
-			.setDescription("(Optional) The abbreviation used for this space.")
-			.addValidator(new LengthValidator(-1, 16))
+			.setDescription("The abbreviation used for this space.")
+			.addValidator(new LengthValidator(1, 16))
 			.addValidator(new ExcludeStringsValidator(new String[] {",", "\""}))
 			;
 	
