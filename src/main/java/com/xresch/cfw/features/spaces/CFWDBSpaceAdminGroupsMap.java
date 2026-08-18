@@ -242,6 +242,28 @@ public class CFWDBSpaceAdminGroupsMap {
 			.executeCount();
 
 	}
+	
+	/****************************************************************
+	 * Returns true if the user is admin .
+	 * 
+	 * @param role to check
+	 * @return true if exists, false otherwise or in case of exception.
+	 ****************************************************************/
+	public static boolean checkIsCurrentUserAdminByGroupOfSelectedSpace(Integer spaceid) {
+		
+		if(spaceid == null) { return false; }
+		
+		return 0 != new CFWSQL(new CFWSpace())
+				.queryCache()   
+				.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE
+						, "sql_checkIsAdminByGroupAssignedToSpace.sql"
+						, spaceid
+						, CFW.Context.Request.getUserID()
+						)
+				.executeCount()
+				;
+
+	}
 
 //	/***************************************************************
 //	 * Retrieve the spaces for a role as key/labels.

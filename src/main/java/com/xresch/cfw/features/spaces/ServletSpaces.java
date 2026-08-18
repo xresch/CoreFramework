@@ -52,22 +52,47 @@ public class ServletSpaces extends HttpServlet
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
 		HTMLResponse html = new HTMLResponse("Spaces");
+		String spaceID = request.getParameter("spaceid"); //id of the root space
+		String action = request.getParameter("action");
+		String item = request.getParameter("item");
 		
+		//--------------------------------
+		// Can be done without Permissions
+		if(action != null) {
+
+			if( action.equals("fetch")
+			&& item.equals("spacesforuser")){
+				JSONResponse jsonResponse = new JSONResponse();		
+				jsonResponse.setPayload(CFW.DB.Spaces.getSpaceListForUserAsJsonWithBreadcrumbs());
+				return;
+			}
+
+			if( action.equals("update") 
+			&& item.equals("selectedspaceid")
+			&& spaceID != null){
+				CFW.Context.Request.getSessionData().setSpaceID(Integer.parseInt(spaceID) );
+				return;
+			}
+			
+		}
+		
+		//--------------------------------
+		// Needs Permissions
 		if(CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_VIEWER)
 		|| CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)
 		) {
 			
 			//createForms();
-			
-			String action = request.getParameter("action");
-			
+
 			if(action == null) {
 
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSpaces.PACKAGE_RESOURCE, "om_spaces_common.js");
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSpaces.PACKAGE_RESOURCE, "om_spaces.js");
 				html.addJavascriptCode("om_spaces_initialDraw();");
 				
 				//--------------------
 				// Add Data
+				
 				boolean canCreateSpaces =
 					   CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)
 					|| CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_CREATE);
@@ -108,6 +133,8 @@ public class ServletSpaces extends HttpServlet
 	 ******************************************************************/
 	private void handleDataRequest(HttpServletRequest request, HttpServletResponse response) {
 		
+		//-----------------------------
+		// Prepare Variables
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
 	
@@ -116,15 +143,24 @@ public class ServletSpaces extends HttpServlet
 			
 		JSONResponse jsonResponse = new JSONResponse();		
 
+		//-----------------------------
+		// Check is Admin
+		Integer selectedSpaceID = CFW.Context.Request.getSelectedSpaceID();
+		
+		boolean isAdminForSelectedSpace = 
+				   CFW.DB.SpaceAdminMap.checkIsCurrentUserAdminOfSelectedSpace(selectedSpaceID)
+				|| CFW.DB.SpaceAdminGroupsMap.checkIsCurrentUserAdminByGroupOfSelectedSpace(selectedSpaceID);
+		
+		jsonResponse.addCustomAttribute("isAdminForSelectedSpace", isAdminForSelectedSpace);
+		
+		//-----------------------------
+		// Handle Request
 		switch(action.toLowerCase()) {
 		
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-				    case "spacesforuser":  jsonResponse.setPayload(CFW.DB.Spaces.getSpaceListForUserAsJsonWithBreadcrumbs());
-											break;
-											
-					case "spaceslist": 		jsonResponse.addCustomAttribute("isAdminForSelectedSpace", CFW.DB.SpaceAdminMap.checkIsCurrentUserAdminOfSelectedSpace(spaceID));
-											jsonResponse.setPayload(CFWDBSpaces.getHierarchyForSpaceAsJson(spaceID));
+					
+					case "spaceslist": 		jsonResponse.setPayload(CFWDBSpaces.getHierarchyForSpaceAsJson(spaceID));
 	  										break;
 	  				
 					default: 				CFW.Messages.itemNotSupported(item);

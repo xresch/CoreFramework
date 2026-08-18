@@ -92,7 +92,7 @@ public class CFWDBSpaceAdminMap {
 			return false;
 		}
 		
-		if(checkIsUserAssignedToSpace(userID, spaceID)) {
+		if(checkIsAdminAssignedToSpace(userID, spaceID)) {
 			new CFWLog(logger)
 				.warn("The user '"+userID+"' is already part of the space '"+spaceID+"'.");
 			return false;
@@ -185,7 +185,7 @@ public class CFWDBSpaceAdminMap {
 	 ********************************************************************************************/
 	public static boolean removeUserFromSpace(int userID, int spaceID) {
 		
-		if(!checkIsUserAssignedToSpace(userID, spaceID)) {
+		if(!checkIsAdminAssignedToSpace(userID, spaceID)) {
 			new CFWLog(logger)
 				.warn("The user '"+userID+"' is not assigned to the space '"+ spaceID+"' and cannot be removed.");
 			return false;
@@ -206,7 +206,7 @@ public class CFWDBSpaceAdminMap {
 	public static boolean checkIsUserAssignedToSpace(User user, CFWSpace space) {
 		
 		if(user != null && space != null) {
-			return checkIsUserAssignedToSpace(user.id(), space.id());
+			return checkIsAdminAssignedToSpace(user.id(), space.id());
 		}else {
 			new CFWLog(logger)
 				.severe("The user and space cannot be null. User: '"+user+"', CFWSpace: '"+space+"'");
@@ -221,7 +221,11 @@ public class CFWDBSpaceAdminMap {
 	 * @param user to check
 	 * @return true if exists, false otherwise or in case of exception.
 	 ****************************************************************/
-	public static boolean checkIsUserAssignedToSpace(int userid, int spaceid) {
+	public static boolean checkIsAdminAssignedToSpace(Integer userid, Integer spaceid) {
+		
+		if(userid == null || spaceid == null) {
+			return false;
+		}
 		
 		return 0 != new CFWSQL(new CFWSpaceAdminMap())
 			.queryCache()
@@ -246,14 +250,14 @@ public class CFWDBSpaceAdminMap {
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	public static boolean checkIsCurrentUserAdminOfSelectedSpace(int orgid) {
+	public static boolean checkIsCurrentUserAdminOfSelectedSpace(Integer spaceid) {
 		
 		if( CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)) {
 			return true;
 		}
 		
 		int userid = CFW.Context.Request.getUserID();
-		if( checkIsUserAssignedToSpace(userid, orgid) ) {
+		if( checkIsAdminAssignedToSpace(userid, spaceid) ) {
 			return true;
 		}
 		
@@ -402,7 +406,7 @@ public class CFWDBSpaceAdminMap {
 	 ****************************************************************/
 	public static boolean toogleUserAssignedToSpace(int userID, int spaceID) {
 		
-		if(checkIsUserAssignedToSpace(userID, spaceID)) {
+		if(checkIsAdminAssignedToSpace(userID, spaceID)) {
 			return removeUserFromSpace(userID, spaceID);
 		}else {
 			return assignAdminToSpace(userID, spaceID);

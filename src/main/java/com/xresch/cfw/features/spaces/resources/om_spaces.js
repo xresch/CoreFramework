@@ -5,133 +5,10 @@
  **************************************************************************************************************/
 
 var URL_HIERARCHY = "/app/hierarchy";
-var URL_CFWSPACES = "/app/spaces";
-var URL_PARAMS=CFW.http.getURLParams();
 
 var CFW_SPACES_CONFIG_ID = "cfwspace";
 
 var CFW_SPACES_LAST_OPTIONS = null;
-var CFW_LAST_SELECTED_SPACE = "om-last-selected-space";
-var CFW_SPACE_SELECT_ID = 'om-global-space-selector';
-
-
-/******************************************************************
- * Creates a select field containing the orgs the user can select.
- *
- * @param callbackFunction callback function that will be called with the
- * last selected org id, or null if the user has no org.
- * 
- * @param isForOrganize set to true if the selector is for the org unit 
- * organize view
- ******************************************************************/
-function cfw_spaces_createSpaceSelector(callbackFunction){
-	
-	//-------------------------------
-	// Reset if exists
-	let existingSelector = $('#'+CFW_SPACE_SELECT_ID);
-	if(existingSelector.length > 0){
-		existingSelector.parent().remove();
-	}
-	
-	//-------------------------------
-	// Create Selector
-	let params = {action: "fetch", item: "spacesforuser"};
-	CFW.http.getJSON(URL_CFWSPACES, params, 
-		function(data) {
-			
-			let lastSelectedSpace = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE);
-
-			if(data.success 
-			&& data.payload != null
-			&& data.payload.length > 0){
-				
-				let inputField = $('<input id="'+CFW_SPACE_SELECT_ID+'" >');
-				inputField.data('callbackFunction', callbackFunction)
-				
-				let lastSelectedSpaceExists = false;
-				
-				//------------------------------
-				// Create Select Options
-				let valueLabelOptions = [];
-				for(var index in data.payload){
-					currentSpace = data.payload[index];
-					
-
-					valueLabelOptions.push( { 
-						  "value": ""+currentSpace.PK_ID
-						, "label": currentSpace.BREADCRUMBS
-					});
-					//select.append('<option value="'+currentSpace.PK_ID+'">'+ indendation + currentSpace.NAME + '</option>')
-					
-					if(currentSpace.PK_ID == lastSelectedSpace){
-						lastSelectedSpaceExists = true;
-						inputField.attr('value', lastSelectedSpace);
-					}
-				}
-				
-				valueLabelOptions = _.sortBy(valueLabelOptions, ['label']);
-								
-				//------------------------------
-				// Set Selection
-				if(!lastSelectedSpaceExists){
-					inputField.attr('value', "");
-				}
-				
-				let navitem = $('<li class="dropdown-item" style="width: auto">');
-				navitem.append(inputField);
-				$('#cfw-navbar-right').prepend(navitem);
-				
-				cfw_initializeSelect(CFW_SPACE_SELECT_ID, valueLabelOptions, true, function(){
-					cfw_spaces_onSpaceSelectorChange();
-				});
-				
-				inputField.parent().find("button") // remove classes added by initialize Select
-					  .removeClass()
-					  .addClass("dropdown-toggle");
-				
-				CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, inputField.val());
-
-			}
-			
-			callbackFunction(lastSelectedSpace);
-	});
-}
-
-/******************************************************************
- *
- ******************************************************************/
-function cfw_spaces_onSpaceSelectorChange(){
-	var select = $('#'+CFW_SPACE_SELECT_ID);
-	
-	var callbackFunction = select.data('callbackFunction');
-	var selectedOrg = select.val();
-	CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, selectedOrg);
-	
-	callbackFunction(selectedOrg);
-	
-}
-
-/******************************************************************
- *
- ******************************************************************/
-function cfw_spaces_getSpaceSelector(){
-	 return $('#'+CFW_SPACE_SELECT_ID);
-}
-
-/******************************************************************
- * Returns the id of the selected org
- ******************************************************************/
-function cfw_spaces_getSelectedSpace(){
-	 return $('#'+CFW_SPACE_SELECT_ID).val();
-}
-
-/******************************************************************
- *
- ******************************************************************/
-function cfw_spaces_setSelectedSpace(orgid){
-	 $('#'+CFW_SPACE_SELECT_ID).val(orgid);
-	 cfw_spaces_onSpaceSelectorChange();
-}
 
 /******************************************************************
  * Reset the view.
@@ -147,7 +24,7 @@ function om_spaces_createTabs(){
 		list.append('<li class="nav-item"><a class="nav-link" id="tab-spaces-list" data-toggle="pill" href="#" role="tab" onclick="om_spaces_draw({tab: \'spaces-list\'})"><i class="fas fa-share-alt mr-2"></i>Space List</a></li>');
 		
 		
-		if(CFW.hasPermission('Space: Admin All')){
+		if( CFW.hasPermission('Space: Admin All') ){
 			list.append(
 				'<li class="nav-item"><a class="nav-link" id="tab-spaces-hierarchy" data-toggle="pill" href="#" role="tab" onclick="om_spaces_draw({tab: \'spaces-hierarchy\'})"><i class="fas fa-sitemap mr-2"></i>Hierarchy</a></li>'
 			);

@@ -29,7 +29,7 @@ public class CFWSessionData implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	
 	private static Logger logger = CFWLog.getLogger(CFWSessionData.class.getName());
 	
@@ -38,6 +38,7 @@ public class CFWSessionData implements Serializable {
 	private User user = null;
 	private String clientIP = "";
 	private String sessionID = null;
+	private Integer spaceID = null;
 	private HashMap<Integer, Role> userRoles = new HashMap<>();
 	private HashMap<String, Permission> userPermissions = new HashMap<>();
 	
@@ -142,6 +143,7 @@ public class CFWSessionData implements Serializable {
 	public User getUser() {
 		return user;
 	}
+	
 
 	/***********************************************************************
 	 * 
@@ -151,6 +153,20 @@ public class CFWSessionData implements Serializable {
 			this.user = user;
 			loadUserPermissions();
 		}
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/	
+	public void setSpaceID(Integer spaceID) {
+		this.spaceID = spaceID;
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/	
+	public Integer getSelectedSpaceID() {
+		return spaceID;
 	}
 	
 	/***********************************************************************
@@ -297,6 +313,7 @@ public class CFWSessionData implements Serializable {
 		oos.writeObject(isLoggedIn);
 		oos.writeObject(sessionID);
 		oos.writeObject(clientIP);
+		oos.writeObject(spaceID);
 		oos.writeObject(CFW.JSON.toJSON(customProperties));
 		
 		String username = null;
@@ -306,6 +323,9 @@ public class CFWSessionData implements Serializable {
 		}else {
 			oos.writeObject(null);
 		}
+		
+		
+
 		
 		new CFWLog(logger).fine("Stored session state to DB: user="+username+", sessionID="+sessionID);
 				 
@@ -321,6 +341,7 @@ public class CFWSessionData implements Serializable {
        this.isLoggedIn 		= (boolean) ois.readObject();
        this.sessionID 		= (String) ois.readObject();
        this.clientIP 		= (String) ois.readObject();
+       this.spaceID 		= (Integer) ois.readObject();
        this.customProperties = CFW.JSON.fromJsonLinkedHashMap((String)ois.readObject());
        
        String username		= (String) ois.readObject();
@@ -328,6 +349,8 @@ public class CFWSessionData implements Serializable {
     	   this.setUser(CFW.DB.Users.selectByUsernameOrMail(username));
     	   this.triggerLogin();
        }
+       
+       
 
        initializeFormCache();
        

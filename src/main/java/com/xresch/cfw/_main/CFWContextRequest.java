@@ -158,6 +158,15 @@ public class CFWContextRequest {
 	}
 	
 	/**************************************************************************
+	 * Returns null if there is no space selected.
+	 **************************************************************************/
+	public static Integer getSelectedSpaceID() {
+		if(getContext().sessionData != null) {
+			return getContext().sessionData.getSelectedSpaceID();
+		}
+		return null;
+	}
+	/**************************************************************************
 	 * 
 	 **************************************************************************/
 	public static HashMap<Integer, Role> getUserRoles() {
