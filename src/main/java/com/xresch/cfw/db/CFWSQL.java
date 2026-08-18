@@ -1987,6 +1987,22 @@ public class CFWSQL {
 	
 	/***************************************************************
 	 * Execute the Query and gets the result as a map of primary
+	 * keys and objects. Converts the objects to the defined class.
+	 ****************************************************************/
+	public <T extends CFWObject> LinkedHashMap<Integer, T> getAsKeyObjectMap(Class<T> clazz) {
+		
+		LinkedHashMap<Integer, T> objectMap = new LinkedHashMap<>();
+		
+		if(this.execute(true)) {
+			objectMap = ResultSetUtils.toKeyObjectMapConvert(result, clazz);
+		}
+		
+		return objectMap;
+		
+	}
+	
+	/***************************************************************
+	 * Execute the Query and gets the result as a map of primary
 	 * keys and objects.
 	 ****************************************************************/
 	public LinkedHashMap<Integer, CFWObject> getAsKeyObjectMap() {

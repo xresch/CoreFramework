@@ -54,25 +54,25 @@ function cfw_spaces_createSpaceSelector(callbackFunction){
 				// Create Select Options
 				let valueLabelOptions = [];
 				for(var index in data.payload){
-					currentOrg = data.payload[index];
+					currentSpace = data.payload[index];
 					
-					let indendation = "";
-					for(let i = 0; i < currentOrg.H_DEPTH; i++){ indendation += "&nbsp;&nbsp;&nbsp;"; }
-					
+
 					valueLabelOptions.push( { 
-						  "value": ""+currentOrg.PK_ID
-						, "label": indendation 
-									+ "[" + currentOrg.ABBREVIATION + "] " 
-									+ currentOrg.NAME
+						  "value": ""+currentSpace.PK_ID
+						, "label": currentSpace.BREADCRUMBS
 					});
-					//select.append('<option value="'+currentOrg.PK_ID+'">'+ indendation + currentOrg.NAME + '</option>')
+					//select.append('<option value="'+currentSpace.PK_ID+'">'+ indendation + currentSpace.NAME + '</option>')
 					
-					if(currentOrg.PK_ID == lastSelectedSpace){
+					if(currentSpace.PK_ID == lastSelectedSpace){
 						lastSelectedSpaceExists = true;
 						inputField.attr('value', lastSelectedSpace);
 					}
 				}
 				
+				valueLabelOptions = _.sortBy(valueLabelOptions, ['label']);
+								
+				//------------------------------
+				// Set Selection
 				if(!lastSelectedSpaceExists){
 					inputField.attr('value', "");
 				}
@@ -147,7 +147,7 @@ function om_spaces_createTabs(){
 		list.append('<li class="nav-item"><a class="nav-link" id="tab-spaces-list" data-toggle="pill" href="#" role="tab" onclick="om_spaces_draw({tab: \'spaces-list\'})"><i class="fas fa-share-alt mr-2"></i>Space List</a></li>');
 		
 		
-		if(CFW.hasPermission('Spaces: Admin')){
+		if(CFW.hasPermission('Space: Admin All')){
 			list.append(
 				'<li class="nav-item"><a class="nav-link" id="tab-spaces-hierarchy" data-toggle="pill" href="#" role="tab" onclick="om_spaces_draw({tab: \'spaces-hierarchy\'})"><i class="fas fa-sitemap mr-2"></i>Hierarchy</a></li>'
 			);
@@ -222,7 +222,7 @@ function om_spaces_edit(id){
 /******************************************************************
  * Delete
  ******************************************************************/
-function om_spaces_delete(id){
+/*function om_spaces_delete(id){
 	
 	var params = {action: "delete", item: "space", id: id};
 	CFW.http.getJSON(URL_CFWSPACES, params, 
@@ -233,7 +233,7 @@ function om_spaces_delete(id){
 				CFW.ui.showModalSmall("Error!", '<span>The selected space could <b style="color: red">NOT</b> be deleted.</span>');
 			}
 	});
-}
+}*/
 
 
 /******************************************************************
@@ -312,7 +312,7 @@ function om_spaces_printList(data){
 		
 		//-------------------------
 		// Delete Button
-		actionButtons.push(
+/*		actionButtons.push(
 			function (record, id){
 				if(record.TYPE == 'ORG' && !JSDATA.isSpacesAdmin){
 					return '&nbsp;';
@@ -325,7 +325,7 @@ function om_spaces_printList(data){
 					}
 				return '&nbsp;';
 				
-			});
+			});*/
 		
 		//-------------------------
 		// Formatter

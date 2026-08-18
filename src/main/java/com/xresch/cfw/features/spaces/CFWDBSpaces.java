@@ -2,9 +2,15 @@ package com.xresch.cfw.features.spaces;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -27,6 +33,41 @@ public class CFWDBSpaces {
 	private static Class<CFWSpace> cfwObjectClass = CFWSpace.class;
 	
 	public static Logger logger = CFWLog.getLogger(CFWDBSpaces.class.getName());
+	
+	// userID and SpaceList
+	private static LinkedHashMap<Integer, CFWSpace> allSpacesCache = null;
+	
+	// userID and SpaceList
+	private static Cache<Integer, ArrayList<CFWSpace>> userSpacelistCache = CFW.Caching.addCache("CFWSpace for User", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(100)
+				.maximumSize(10000)
+				.expireAfterAccess(65, TimeUnit.MINUTES)
+			);
+	
+	//####################################################################################################
+	// Cache Management
+	//####################################################################################################
+	public static void resetCaches(){
+		
+		allSpacesCache = getSpaceListAsArrayList();
+		
+		userSpacelistCache.invalidateAll();
+	}
+	
+	/**************************************************************
+	 * Returns a space from cache.
+	 * @param id
+	 * @return space or null if not found
+	 **************************************************************/
+	public static CFWSpace getFromCache(Integer id){
+		
+		if(allSpacesCache != null) {
+			return allSpacesCache.get(id);
+		}
+		
+		return null;
+	}
 		
 	//####################################################################################################
 	// Preckeck Initialization
@@ -46,35 +87,58 @@ public class CFWDBSpaces {
 		}
 	};
 	
-		
+	
+	
 		
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(CFWSpace... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, items); }
-	public static boolean 	create(CFWSpace item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, item);}
-	public static Integer 	createGetPrimaryKey(CFWSpace item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);}
+	public static boolean	create(CFWSpace... items) 	{
+			boolean success = CFWDBDefaultOperations.create(prechecksCreateUpdate, items);
+			resetCaches();
+			return success;
+	}
+	public static boolean 	create(CFWSpace item) { 
+		boolean success = CFWDBDefaultOperations.create(prechecksCreateUpdate, item);
+		resetCaches();
+		return success;
+	}
+	public static Integer createGetPrimaryKey(CFWSpace item) { 
+		Integer primaryKey = CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);
+		resetCaches();
+		return primaryKey;
+	}
 	public static CFWSpace createGetObject(CFWSpace item) { 
-		return CFWDBSpaces.selectByID(
+		CFWSpace newObject =CFWDBSpaces.selectByID(
 				CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item)
 			);
+		resetCaches();
+		return newObject;
 	}
 		
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(CFWSpace... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, items); }
-	public static boolean 	update(CFWSpace item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, item); }
+	public static boolean 	update(CFWSpace... items) { 
+		boolean success =  CFWDBDefaultOperations.update(prechecksCreateUpdate, items); 
+		resetCaches();
+		return success;
+	}
+	public static boolean 	update(CFWSpace item) { 
+		boolean success =  CFWDBDefaultOperations.update(prechecksCreateUpdate, item); 
+		resetCaches();
+		return success;
+	}
 	
 
 	//####################################################################################################
 	// DUPLICATE
 	//####################################################################################################
 	public static boolean duplicateByID(String id ) {
-		CFWSpace person = selectByID(id);
-		if(person != null) {
-			person.id(null);
-			return create(person);
+		CFWSpace space = selectByID(id);
+		if(space != null) {
+			space.id(null);
+			return create(space);
 		}
 		
 		return false;
@@ -130,6 +194,17 @@ public class CFWDBSpaces {
 	/*****************************************************************************
 	 *  Returns a list of all Spaces.
 	 *****************************************************************************/
+	public static LinkedHashMap<Integer, CFWSpace> getSpaceListAsArrayList() {
+		
+		return new CFWSQL(new CFWSpace())
+				.queryCache()
+				.select()
+				.getAsKeyObjectMap(CFWSpace.class);
+		
+	}
+	/*****************************************************************************
+	 *  Returns a list of all Spaces.
+	 *****************************************************************************/
 	public static String getSpaceListAsJSON() {
 		
 		return new CFWSQL(new CFWSpace())
@@ -155,12 +230,53 @@ public class CFWDBSpaces {
 		
 		return result;		
 	}
+	
 	/*****************************************************************************
 	 *  Returns a list of spaces with type "ORG".
 	 *****************************************************************************/
-	public static JsonArray getSpaceListForUser() {
+	public static JsonArray getSpaceListForUserAsJsonWithBreadcrumbs() {
+		ArrayList<CFWSpace> spaces = getSpaceListForUser();
+		
+		JsonArray breadcrumbed = new JsonArray();
+		for(CFWSpace space : spaces) {
+			JsonObject object = new JsonObject();
+			object.addProperty(CFWSpaceFields.PK_ID.toString(), space.id());
+			object.addProperty(CFWSpaceFields.ABBREVIATION.toString(), space.abbreviation());
+			object.addProperty(CFWSpaceFields.NAME.toString(), space.name());
+			object.addProperty(CFWHierarchy.H_DEPTH, (Integer)space.getField(CFWHierarchy.H_DEPTH).getValue());
+			object.addProperty(CFWHierarchy.H_PARENT, (Integer)space.getField(CFWHierarchy.H_PARENT).getValue());
+			
+			object.addProperty("BREADCRUMBS", space.createBreadcrumbsString());
+			
+			breadcrumbed.add(object);
+		}
+		
+		return breadcrumbed;
+	}
+		
+	/*****************************************************************************
+	 *  Returns a list of spaces with type "ORG".
+	 *****************************************************************************/
+	public static ArrayList<CFWSpace> getSpaceListForUser() {
+		ArrayList<CFWSpace> spaceList = null;
+		int userID = CFW.Context.Request.getUserID();
+		try {
+			// cache to avoid overloading backend systems.
+			spaceList = userSpacelistCache.get(userID, new Callable<ArrayList<CFWSpace>>() {
+				@Override
+				public ArrayList<CFWSpace> call() throws Exception {
+					return getSpaceListForUserSQL(userID)
+								.getAsObjectListConvert(CFWSpace.class);
+				}
+			});
 
-		return getSpaceListForUserSQL().getAsJSONArray();
+			
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while loading widget from DB or Cache: "+e.getMessage(), e);
+		}
+		
+		return spaceList;
+		
 
 	}
 	
@@ -168,47 +284,46 @@ public class CFWDBSpaces {
 	 *  Returns a list of spaces with type "ORG".
 	 *****************************************************************************/
 	public static CFWSQL getSpaceListForUserSQL() {
+		return getSpaceListForUserSQL(CFW.Context.Request.getUserID());
+	}
+	
+	/*****************************************************************************
+	 *  Returns a list of spaces with type "ORG".
+	 *****************************************************************************/
+	public static CFWSQL getSpaceListForUserSQL(int userID) {
 
-		
 		if(CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)) {
 			//--------------------------------
 			// Return All Spaces for Admins
 			return new CFWSQL(new CFWSpace())
 					.queryCache() 
-					.select(CFWSpaceFields.PK_ID, CFWHierarchy.H_DEPTH, CFWSpaceFields.ABBREVIATION, CFWSpaceFields.NAME)
+					.select(CFWSpaceFields.PK_ID
+							, CFWSpaceFields.ABBREVIATION
+							, CFWSpaceFields.NAME
+							, CFWHierarchy.H_DEPTH
+							, CFWHierarchy.H_PARENT
+							, CFWHierarchy.H_LINEAGE
+						)
 					//.where(CFWSpaceFields.TYPE, CFWSpaceType.ROOT_SPACE)
 					;
 		}else {
 			//--------------------------------
 			// Return Specific Spaces for User
+			
 			return new CFWSQL(new CFWSpace())
 					.queryCache()   
 					.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE
 							, "sql_getSpaceListForUser.sql"
-							, CFW.Context.Request.getUserID()
-							, CFW.Context.Request.getUserID()
+							, userID
+							, userID
+							, userID
+							, userID
 							)
 					;
 		}
 		
 	}
 	
-	/*****************************************************************************
-	 *  Returns a list of spaces with type "ORG".
-	 *****************************************************************************/
-	public static JsonArray getSpaceListForUserOrganizeView() {
-		
-		if( CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN) ) {
-			return new CFWSQL(new CFWSpace())
-					.queryCache() 
-					.select(CFWSpaceFields.PK_ID, CFWSpaceFields.ABBREVIATION, CFWSpaceFields.NAME)
-					.where(CFWSpaceFields.TYPE, CFWSpaceType.ROOT_SPACE)
-					.getAsJSONArray();
-		}else {
-			return getSpaceListForUser();
-		}
-		
-	}
 	
 	/*****************************************************************************
 	 *  

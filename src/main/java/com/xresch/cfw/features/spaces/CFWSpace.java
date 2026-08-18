@@ -255,22 +255,14 @@ public class CFWSpace extends CFWObject {
 	 *****************************************************************************/
 	public String createBreadcrumbsString() {
 		
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder("");
 		
-		LinkedHashMap<Integer, CFWObject> parentList = CFWHierarchy.getParentsAsFlatList(this);
-		if(parentList.isEmpty()) {
-			return "";
+		for(Number id : this.hierachyLineage()) {
+			CFWSpace current = CFW.DB.Spaces.getFromCache(id.intValue());
+			builder.append( "[" + current.abbreviation() + "] ");
 		}
 		
-		
-		CFWSpace current = null;
-		
-		for(CFWObject object : parentList.values()) {
-			current = (CFWSpace)object;
-			builder.append(current.abbreviation()+" / ");
-		}
-		
-		return builder.substring(0, builder.length()-2) + current.name();
+		return builder.toString() + "[" + this.abbreviation() + "] " + this.name();
 
 	}
 	
@@ -592,6 +584,19 @@ public class CFWSpace extends CFWObject {
 	public CFWSpace adminGroups(LinkedHashMap<String,String> value) {
 		this.adminGroups.setValue(value);
 		return this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ArrayList<Number> hierachyLineage() {
+		return (ArrayList<Number>)this.getField(CFWHierarchy.H_LINEAGE).getValue();
+	}
+	
+	public Integer hierachyDepth() {
+		return (Integer)this.getField(CFWHierarchy.H_DEPTH).getValue();
+	}
+	
+	public Integer hierachyParent() {
+		return (Integer)this.getField(CFWHierarchy.H_PARENT).getValue();
 	}
 	
 	/**********************************************************************************

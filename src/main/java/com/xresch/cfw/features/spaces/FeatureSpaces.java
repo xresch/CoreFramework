@@ -151,6 +151,8 @@ public class FeatureSpaces extends CFWAppFeature {
 		createDefaultSpaces();
 		
 		createTestdata();
+		
+		CFW.DB.Spaces.resetCaches();
 
 	}
 

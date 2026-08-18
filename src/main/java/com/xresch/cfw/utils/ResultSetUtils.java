@@ -1,5 +1,6 @@
 package com.xresch.cfw.utils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -148,6 +149,34 @@ public class ResultSetUtils {
 		
 		return objectArray;
 		
+	}
+	
+	/***************************************************************************
+	 * Converts a ResultSet into a map of Primary Keys and CFWObjects.
+	 * @return list of object, empty if results set is null or an error occurs.
+	 ***************************************************************************/
+	public static <T extends CFWObject> LinkedHashMap<Integer, T> toKeyObjectMapConvert(ResultSet result, Class<T> clazz) {
+		LinkedHashMap<Integer, T> objectMap = new LinkedHashMap<>();
+		
+		if(result == null) {
+			return objectMap;
+		}
+		
+		try {
+			while(result.next()) {
+				T current = clazz.getDeclaredConstructor().newInstance();
+				current.mapResultSet(result);
+				objectMap.put(current.getPrimaryKeyValue(), current);
+			}
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Error reading objects from database.", e);
+			
+		}finally {
+			CFWDB.close(result);
+		}
+					
+		return objectMap;
 	}
 	
 	/***************************************************************************

@@ -120,10 +120,10 @@ public class ServletSpaces extends HttpServlet
 		
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-				    case "spacesforuser":  jsonResponse.setPayload(CFW.DB.Spaces.getSpaceListForUser());
+				    case "spacesforuser":  jsonResponse.setPayload(CFW.DB.Spaces.getSpaceListForUserAsJsonWithBreadcrumbs());
 											break;
 											
-					case "spaceslist": 	jsonResponse.addCustomAttribute("isAdminForSelectedSpace", CFW.DB.SpaceAdminMap.checkIsCurrentUserAdminOfSelectedSpace(spaceID));
+					case "spaceslist": 		jsonResponse.addCustomAttribute("isAdminForSelectedSpace", CFW.DB.SpaceAdminMap.checkIsCurrentUserAdminOfSelectedSpace(spaceID));
 											jsonResponse.setPayload(CFWDBSpaces.getHierarchyForSpaceAsJson(spaceID));
 	  										break;
 	  				

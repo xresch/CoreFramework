@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
@@ -235,7 +236,9 @@ public class CFWDBSpaceAdminMap {
 	 *
 	 ******************************************************************/
 	public static boolean checkIsCurrentUserAdminOfSelectedSpace(String orgid) {
-
+		
+		if(Strings.isNullOrEmpty(orgid)) { return false;}
+		
 		return checkIsCurrentUserAdminOfSelectedSpace(Integer.parseInt(orgid));
 		
 	}
