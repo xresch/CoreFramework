@@ -8,7 +8,6 @@
 var CFW_CREDENTIALSLIST_URL = "/app/credentials";
 var CFW_CREDENTIALSLIST_LAST_OPTIONS = null;
 
-
 /******************************************************************
  * Reset the view.
  ******************************************************************/
@@ -642,13 +641,7 @@ function cfw_credentialslist_printCredentials(data, type){
 }
 
 /******************************************************************
- * Main method for building the different views.
- * 
- * @param options Array with arguments:
- * 	{
- * 		tab: 'mycredentials|sharedcredentials|admincredentials', 
- *  }
- * @return 
+ * Initial draw method
  ******************************************************************/
 
 function cfw_credentialslist_initialDraw(){
@@ -657,33 +650,79 @@ function cfw_credentialslist_initialDraw(){
 	// Increase Width
 	$('#cfw-container').css('max-width', '100%');
 	
+	
+
 	//-------------------------------------------
 	// Create Tabs
 	cfw_credentialslist_createTabs();
+
+
+	//-------------------------------------------
+	// Draw Tab
+	cfw_spaces_createSpaceSelector(function(spaceid){
+			cfw_credentialslist_draw(null);
+		}, true);
+		
+	//-------------------------------------------
+	// Draw Tab
+	//cfw_credentialslist_draw();
 	
+}
+
+/******************************************************************
+ *
+ ******************************************************************/
+function cfw_credentialslist_sanitizeCurrentOptions(options){
 	
-	var tabToDisplay = CFW.cache.retrieveValueForPage("credentialslist-lasttab", "mycredentials");
+	//-----------------------
+	// Options is Set
+	if(options != null){ return options; }
+	
+	//-----------------------
+	// Last Options Available
+	if(CFW_CREDENTIALSLIST_LAST_OPTIONS != null ){
+		return CFW_CREDENTIALSLIST_LAST_OPTIONS;
+	}
+	
+	//-----------------------
+	// Last Options From Cache
+	// or Default
+	let tabToDisplay = CFW.cache.retrieveValueForPage("credentialslist-lasttab", "mycredentials");
 	
 	if(CFW.hasPermission('Credentials: Viewer') 
 	&& !CFW.hasPermission('Credentials: Creator') 
 	&& !CFW.hasPermission('Credentials: Admin')){
 		tabToDisplay = "sharedcredentials";
 	}
-	
+
 	$('#tab-'+tabToDisplay).addClass('active');
 	
-	//-------------------------------------------
-	// Draw Tab
-	cfw_credentialslist_draw({tab: tabToDisplay});
-	
+	return {tab: tabToDisplay};
 }
 
+/******************************************************************
+ * Main method for building the different views.
+ * 
+ * @param options Array with arguments:
+ * 	{
+ * 		tab: 'mycredentials|sharedcredentials|admincredentials', 
+ *  }
+ * @return 
+ ******************************************************************/
 function cfw_credentialslist_draw(options){
-	CFW_CREDENTIALSLIST_LAST_OPTIONS = options;
 	
+	//-------------------------
+	// Options
+	options = cfw_credentialslist_sanitizeCurrentOptions(options); 
+	CFW_CREDENTIALSLIST_LAST_OPTIONS = options;
 	CFW.cache.storeValueForPage("credentialslist-lasttab", options.tab);
+	
+	//-------------------------
+	// Clear Tab
 	$("#tab-content").html("");
 	
+	//-------------------------
+	// Draw Tab
 	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 

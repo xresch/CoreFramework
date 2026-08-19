@@ -86,7 +86,7 @@ public class ServletSpaces extends HttpServlet
 
 			if(action == null) {
 
-				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSpaces.PACKAGE_RESOURCE, "om_spaces_common.js");
+				FeatureSpaces.addSpacesCommonJS(html);
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSpaces.PACKAGE_RESOURCE, "om_spaces.js");
 				html.addJavascriptCode("om_spaces_initialDraw();");
 				

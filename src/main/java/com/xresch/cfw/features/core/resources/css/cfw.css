@@ -261,6 +261,8 @@ label {
     float: right !important;
     width: auto;
     z-index: 999;
+    padding: 0.25rem 0.5rem;
+    height: auto;
 }
 
 .modal-footer {

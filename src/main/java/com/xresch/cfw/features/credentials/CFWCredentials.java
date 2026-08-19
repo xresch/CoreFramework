@@ -20,6 +20,7 @@ import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
@@ -45,14 +46,15 @@ public class CFWCredentials extends CFWObject {
 	public static final String FIELDNAME_EDITOR_GROUPS = "JSON_EDITOR_GROUPS";
 	
 	public static final String[] SELECTOR_FIELDS = new String[] {
-			FIELDNAME_SHARE_WITH_USERS
+			  FIELDNAME_SHARE_WITH_USERS
 			, FIELDNAME_SHARE_WITH_GROUPS
 			, FIELDNAME_EDITORS
 			, FIELDNAME_EDITOR_GROUPS
 		};
 	
 	public enum CFWCredentialsFields{
-		PK_ID
+		  FK_ID_SPACE  // from FeatureSpaces.FK_ID_SPACE
+		, PK_ID
 		, FK_ID_OWNER
 		, NAME
 		, DESCRIPTION
@@ -83,6 +85,8 @@ public class CFWCredentials extends CFWObject {
 	}
 
 	private static Logger logger = CFWLog.getLogger(CFWCredentials.class.getName());
+	
+	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false);
 	
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsFields.PK_ID)
 			.setPrimaryKeyAutoIncrement(this)
@@ -212,7 +216,8 @@ public class CFWCredentials extends CFWObject {
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
 		this.addFields(
-				  id
+				  fkidSpace
+				, id
 				, foreignKeyOwner
 				, name
 				, description
@@ -247,6 +252,7 @@ public class CFWCredentials extends CFWObject {
 		
 		String[] inputFields = 
 				new String[] {
+						CFWCredentialsFields.FK_ID_SPACE.toString(), 
 						CFWCredentialsFields.PK_ID.toString(), 
 						CFWCredentialsFields.NAME.toString(),
 						CFWCredentialsFields.IS_ARCHIVED.toString(),
@@ -525,6 +531,15 @@ public class CFWCredentials extends CFWObject {
 	}
 	
 	
+	
+	public Integer fkidSpace() {
+		return fkidSpace.getValue();
+	}
+	
+	public CFWCredentials fkidSpace(Integer id) {
+		this.fkidSpace.setValue(id);
+		return this;
+	}
 
 	public Integer id() {
 		return id.getValue();

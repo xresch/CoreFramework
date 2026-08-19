@@ -24,6 +24,7 @@ import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.credentials.CFWCredentials.CFWCredentialsFields;
 import com.xresch.cfw.features.credentials.FeatureCredentials;
 import com.xresch.cfw.features.notifications.Notification;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -67,6 +68,7 @@ public class ServletCredentialsList extends HttpServlet
 
 				//html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureSpaces.RESOURCE_PACKAGE, "cfw_credentials.css");
 				
+				FeatureSpaces.addSpacesCommonJS(html);
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureCredentials.PACKAGE_RESOURCES, "cfw_credentials_list.js");
 				
 				//content.append(CFW.Files.readPackageResource(FeatureSpaces.RESOURCE_PACKAGE, "cfw_credentials.html"));

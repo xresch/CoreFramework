@@ -58,7 +58,7 @@ public class CFWSpace extends CFWObject {
 		DESCRIPTION,
 		SHARED_EMAIL, 
 		IS_ENABLED,
-		IS_DISABLABLE,
+		IS_GLOBAL,
 		JSON_USERS,
 		JSON_USER_GROUPS,
 		JSON_ADMINS,
@@ -144,6 +144,12 @@ public class CFWSpace extends CFWObject {
 					.setDescription("Defines if the space is enabled or disabled. Disabled spaces will be hidden in the UI.")
 					.setValue(true);
 	
+	private CFWField<Boolean> isGlobal = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWSpaceFields.IS_GLOBAL)
+				.setDescription("Defines if the entities in this space are available globally."
+						+ " If the space is a Root Space, every space can access the items in this space."
+						+ " If the space is a Regular Space, all spaces with the same Root Space can access it's items.")
+				.setValue(false);
+	
 	private CFWField<LinkedHashMap<String,String>> assignedUsers = this.createSelectorFieldAssignedUsers(null);
 	
 	private CFWField<LinkedHashMap<String,String>> assignedGroups = this.createSelectorFieldUserGroups(null);
@@ -179,6 +185,7 @@ public class CFWSpace extends CFWObject {
 				, description
 				, email
 				, isEnabled
+				, isGlobal
 				, assignedUsers
 				, assignedGroups
 				, admins
@@ -208,7 +215,9 @@ public class CFWSpace extends CFWObject {
 						CFWSpaceFields.NAME.toString(),
 						CFWSpaceFields.ABBREVIATION.toString(),
 						CFWSpaceFields.DESCRIPTION.toString(),
-						CFWSpaceFields.IS_ENABLED.toString(),				};
+						CFWSpaceFields.IS_ENABLED.toString(),				
+						CFWSpaceFields.IS_GLOBAL.toString()				
+						};
 		
 		String[] outputFields = 
 				new String[] {
@@ -220,7 +229,7 @@ public class CFWSpace extends CFWObject {
 						CFWSpaceFields.ABBREVIATION.toString(),
 						CFWSpaceFields.DESCRIPTION.toString(),
 						CFWSpaceFields.IS_ENABLED.toString(),
-						CFWSpaceFields.IS_DISABLABLE.toString(),
+						CFWSpaceFields.IS_GLOBAL.toString(),
 						CFWSpaceFields.JSON_USERS.toString(),
 						CFWSpaceFields.JSON_USER_GROUPS.toString(),
 						CFWSpaceFields.JSON_ADMINS.toString(),
@@ -547,6 +556,15 @@ public class CFWSpace extends CFWObject {
 		return this;
 	}
 	
+	public boolean isGlobal() {
+		return isGlobal.getValue();
+	}
+	
+	public CFWSpace isGlobal(boolean value) {
+		this.isGlobal.setValue(value);
+		return this;
+	}
+	
 	public LinkedHashMap<String,String> sharedWithUsers() {
 		if(assignedUsers.getValue() == null) { return new LinkedHashMap<>(); }
 		return assignedUsers.getValue();
@@ -598,36 +616,6 @@ public class CFWSpace extends CFWObject {
 	public Integer hierachyParent() {
 		return (Integer)this.getField(CFWHierarchy.H_PARENT).getValue();
 	}
-	
-	/**********************************************************************************
-	 * If the spaces feature is active, returns a selector field that is a foreign key
-	 * of the CFWSpace object. If it is inactive, this method returns nothing.
-	 * @param parent object this field should be assigned too
-	 * @param isHidden if the field is hidden.
-	 * @return 
-	 **********************************************************************************/
-	public static CFWField<Integer> createSpaceSelectorField(CFWObject parent, boolean isHidden) {
 		
-		if( ! FeatureCore.isFeatureActive(FeatureSpaces.FEATURE_NAME) ) {
-			return null;
-		}
-		
-		CFWField<Integer> field;
-		
-		if(isHidden) {
-			field = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceAdminMapFields.FK_ID_SPACE);
-		}else {
-			field = CFWField.newInteger(FormFieldType.SELECT, CFWSpaceAdminMapFields.FK_ID_SPACE);
-		}
-		
-		field.setColumnDefinition("INT DEFAULT "+ FeatureSpaceDefaults.DEFAULT.id() )
-			.setForeignKeyCascade(parent, CFWSpace.class, CFWSpaceFields.PK_ID)
-			.setDescription("The space this entity belongs to.")
-			.setOptions(CFW.DB.Spaces.getSpaceListForUserOptions())
-			.apiFieldType(FormFieldType.SELECT);
-		
-		return field;
-	}
-	
 	
 }

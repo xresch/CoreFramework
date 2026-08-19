@@ -222,10 +222,13 @@ public class CFWDBSpaces {
 		
 		LinkedHashMap<Integer,String> result = new LinkedHashMap<>();
 		
-		ArrayList<CFWSpace> spaceList = getSpaceListForUserSQL().getAsObjectListConvert(CFWSpace.class);
+		Integer id = CFW.Context.Request.getUserID();
 		
-		for(CFWSpace space : spaceList) {
-			result.put(space.id(), space.createSpaceLabel() );
+		if(id != null) {
+			ArrayList<CFWSpace> spaceList = getSpaceListForUserSQL(id).getAsObjectListConvert(CFWSpace.class);
+			for(CFWSpace space : spaceList) {
+				result.put(space.id(), space.createBreadcrumbsString() );
+			}
 		}
 		
 		return result;		
@@ -281,7 +284,7 @@ public class CFWDBSpaces {
 	}
 	
 	/*****************************************************************************
-	 *  Returns a list of spaces with type "ORG".
+	 *  Returns a list of spaces for the current user.
 	 *****************************************************************************/
 	public static CFWSQL getSpaceListForUserSQL() {
 		return getSpaceListForUserSQL(CFW.Context.Request.getUserID());
@@ -304,7 +307,7 @@ public class CFWDBSpaces {
 							, CFWHierarchy.H_PARENT
 							, CFWHierarchy.H_LINEAGE
 						)
-					//.where(CFWSpaceFields.TYPE, CFWSpaceType.ROOT_SPACE)
+					.where(CFWSpaceFields.IS_ENABLED, true)
 					;
 		}else {
 			//--------------------------------

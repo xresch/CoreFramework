@@ -225,13 +225,14 @@ function om_spaces_printList(data){
 			 	textstylefield: null,
 			 	titlefields: ['ABBREVIATION', 'NAME'],
 			 	titleformat: '[{0}] - {1}',
-			 	visiblefields: ["PK_ID", "TYPE", "ABBREVIATION", "NAME", "DESCRIPTION", "IS_ENABLED", "SHARED_EMAIL"],
+			 	visiblefields: ["PK_ID", "TYPE", "ABBREVIATION", "NAME", "DESCRIPTION", "IS_ENABLED", "IS_GLOBAL", "SHARED_EMAIL"],
 			 	labels: {
 			 		PK_ID: "ID",
 					IS_ENABLED: "Enabled",
 			 	},
 			 	customizers: {
 			 		IS_ENABLED: trueFalseFormatter,
+			 		IS_GLOBAL: trueFalseFormatter,
 					DESCRIPTION: function(record, value) { 
 			 			if( CFW.utils.isNullOrEmpty(value) ){
 								return '&nbsp;';

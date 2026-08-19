@@ -4,16 +4,23 @@ import java.util.LinkedHashMap;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWHierarchy;
+import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
+import com.xresch.cfw.features.spaces.CFWSpaceAdminMap.CFWSpaceAdminMapFields;
+import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpaceDefaults;
 import com.xresch.cfw.features.usermgmt.CFWPermissionChangeListener;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
-import com.xresch.cfw.utils.CFWRandom;
 
 /**************************************************************************************************************
  * 
@@ -23,6 +30,8 @@ import com.xresch.cfw.utils.CFWRandom;
 public class FeatureSpaces extends CFWAppFeature {
 	
 	
+	
+	public static final String FK_ID_SPACE = "FK_ID_SPACE";
 	
 	public static final String FEATURE_NAME = "Spaces";
 	
@@ -160,7 +169,7 @@ public class FeatureSpaces extends CFWAppFeature {
 		
 		createDefaultSpaces();
 		
-		createTestdata();
+		//createTestdata();
 		
 		CFW.DB.Spaces.resetCaches();
 
@@ -220,101 +229,101 @@ public class FeatureSpaces extends CFWAppFeature {
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/
-	public void createTestdata() {
-		//-------------------------------------
-		// Create Testdata
-		if(CFWDBSpaces.getCount() == 0) {
-		
-			//----------------------------------
-			// Create hierarchy root elements
-			for(int i = 0; i < 1; i++) {
-				String name = CFWRandom.colorName() + " "+ CFWRandom.fruitName() + " Space";
-				String abbrevation = CFWRandom.stringAlphaNum(3).toUpperCase();
-				String description = CFWRandom.issueResolvedMessage();
-				String location = CFWRandom.mythicalLocation();
-				String email = name.toLowerCase().replace(" ", ".") + "@"+location.replace(" ", "-").toLowerCase() + ".com";
-				
-				CFWSpace rootSpace = new CFWSpace()
-					.type(CFWSpaceType.ROOT_SPACE)
-					.name(name)
-					.abbreviation(abbrevation)
-					.email(email)
-					.description(description)
-					.isEnabled(CFWRandom.bool());
-				
-				Integer rootID = CFWHierarchy.create(null, rootSpace);
-				
-				if(rootID == null) {
-					return; // error
-				}
-				
-				//-----------------------------
-				// Create Subordinates
-				createSubordinates(rootID, rootID, 3, 3, 0, 2);
-			}
-					
-		}
-	}
+//	public void createTestdata() {
+//		//-------------------------------------
+//		// Create Testdata
+//		if(CFWDBSpaces.getCount() == 0) {
+//		
+//			//----------------------------------
+//			// Create hierarchy root elements
+//			for(int i = 0; i < 1; i++) {
+//				String name = CFWRandom.colorName() + " "+ CFWRandom.fruitName() + " Space";
+//				String abbrevation = CFWRandom.stringAlphaNum(3).toUpperCase();
+//				String description = CFWRandom.issueResolvedMessage();
+//				String location = CFWRandom.mythicalLocation();
+//				String email = name.toLowerCase().replace(" ", ".") + "@"+location.replace(" ", "-").toLowerCase() + ".com";
+//				
+//				CFWSpace rootSpace = new CFWSpace()
+//					.type(CFWSpaceType.ROOT_SPACE)
+//					.name(name)
+//					.abbreviation(abbrevation)
+//					.email(email)
+//					.description(description)
+//					.isEnabled(CFWRandom.bool());
+//				
+//				Integer rootID = CFWHierarchy.create(null, rootSpace);
+//				
+//				if(rootID == null) {
+//					return; // error
+//				}
+//				
+//				//-----------------------------
+//				// Create Subordinates
+//				createSubordinates(rootID, rootID, 3, 3, 0, 2);
+//			}
+//					
+//		}
+//	}
 	
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/
-	private void createSubordinates(int rootID, int parentID, int minSubordinates, int maxSubordinates, int currentDepth, int maxDepth) {
-		
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		int max = CFWRandom.integer(minSubordinates, maxSubordinates);
-	
-		for(int i = 0; i < max; i++) {
-	
-			String name = CFWRandom.jobTitle();
-			String abbrevation = CFWRandom.stringAlphaNum(3).toUpperCase();
-			String description = CFWRandom.issueResolvedMessage();
-			String location = CFWRandom.mythicalLocation();
-			String email = name.toLowerCase().replace(" ", ".") + "@"+location.replace(" ", "-").toLowerCase() + ".com";
-			
-			CFWSpace person = new CFWSpace()
-				.type(CFWSpaceType.SPACE)
-				.name(name)
-				.abbreviation(abbrevation)
-				.email(email)
-				.description(description)
-				.isEnabled(CFWRandom.bool());
-			
-			Integer newPostID = CFWHierarchy.create(parentID, person);
-			
-			if(newPostID == null) {
-				return; // error
-			}
-			
-			//-----------------------------
-			// Create User
-			String firstname = CFW.Random.firstnameOfGod();
-			String lastname = CFW.Random.lastnameSweden();
-			String username = firstname+"_"+CFW.Random.stringAlphaNum(4);
-			String userLocation = CFW.Random.mythicalLocation().replace(" ", "-").toLowerCase();
-			String userEmail = username.toLowerCase() + "@" + userLocation + ".com";
-			
-			User user = new User(username)
-					.firstname(firstname)
-					.lastname(lastname)
-					.email(userEmail)
-					.setNewPassword(username, username);
-			
-			Integer userID = CFW.DB.Users.createGetPrimaryKey(user);
-			CFW.DB.SpaceUserMap.assignUserToSpace(userID, newPostID);
-			
-					
-			//-----------------------------
-			// Create Subordinates
-			if(currentDepth < maxDepth) {
-				int newMin = (minSubordinates-2 > 0) ? minSubordinates-2 : 0;
-				createSubordinates(rootID, newPostID, newMin, maxSubordinates-1, currentDepth+1, maxDepth);
-			}
-	
-		}
-	}
+//	private void createSubordinates(int rootID, int parentID, int minSubordinates, int maxSubordinates, int currentDepth, int maxDepth) {
+//		
+//		//-----------------------------------------
+//		// 
+//		//-----------------------------------------
+//		int max = CFWRandom.integer(minSubordinates, maxSubordinates);
+//	
+//		for(int i = 0; i < max; i++) {
+//	
+//			String name = CFWRandom.jobTitle();
+//			String abbrevation = CFWRandom.stringAlphaNum(3).toUpperCase();
+//			String description = CFWRandom.issueResolvedMessage();
+//			String location = CFWRandom.mythicalLocation();
+//			String email = name.toLowerCase().replace(" ", ".") + "@"+location.replace(" ", "-").toLowerCase() + ".com";
+//			
+//			CFWSpace person = new CFWSpace()
+//				.type(CFWSpaceType.SPACE)
+//				.name(name)
+//				.abbreviation(abbrevation)
+//				.email(email)
+//				.description(description)
+//				.isEnabled(CFWRandom.bool());
+//			
+//			Integer newPostID = CFWHierarchy.create(parentID, person);
+//			
+//			if(newPostID == null) {
+//				return; // error
+//			}
+//			
+//			//-----------------------------
+//			// Create User
+//			String firstname = CFW.Random.firstnameOfGod();
+//			String lastname = CFW.Random.lastnameSweden();
+//			String username = firstname+"_"+CFW.Random.stringAlphaNum(4);
+//			String userLocation = CFW.Random.mythicalLocation().replace(" ", "-").toLowerCase();
+//			String userEmail = username.toLowerCase() + "@" + userLocation + ".com";
+//			
+//			User user = new User(username)
+//					.firstname(firstname)
+//					.lastname(lastname)
+//					.email(userEmail)
+//					.setNewPassword(username, username);
+//			
+//			Integer userID = CFW.DB.Users.createGetPrimaryKey(user);
+//			CFW.DB.SpaceUserMap.assignUserToSpace(userID, newPostID);
+//			
+//					
+//			//-----------------------------
+//			// Create Subordinates
+//			if(currentDepth < maxDepth) {
+//				int newMin = (minSubordinates-2 > 0) ? minSubordinates-2 : 0;
+//				createSubordinates(rootID, newPostID, newMin, maxSubordinates-1, currentDepth+1, maxDepth);
+//			}
+//	
+//		}
+//	}
 	
 	/***********************************************************************
 	 * 
@@ -331,7 +340,56 @@ public class FeatureSpaces extends CFWAppFeature {
 	@Override
 	public void stopFeature() {
 		// TODO Auto-generated method stub
-
+	}
+	
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	public static void addSpacesCommonJS(HTMLResponse html) {
+		html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSpaces.PACKAGE_RESOURCE, "om_spaces_common.js");
+	}
+	
+	/**********************************************************************************
+	 * If the spaces feature is active, returns a selector field that is a foreign key
+	 * of the CFWSpace object. If it is inactive, this method returns nothing.
+	 * @param parent object this field should be assigned too
+	 * @param isHidden if the field is hidden.
+	 * @return field with the name FeatureSpaces.FK_ID_SPACE
+	 **********************************************************************************/
+	public static CFWField<Integer> createSpaceSelectorField(CFWObject parent, boolean isHidden) {
+		
+		if( ! FeatureCore.isFeatureActive(FeatureSpaces.FEATURE_NAME) ) {
+			return null;
+		}
+		
+		CFWField<Integer> field;
+		
+		if(isHidden) {
+			field = CFWField.newInteger(FormFieldType.HIDDEN, FK_ID_SPACE);
+		}else {
+			field = CFWField.newInteger(FormFieldType.SELECT, FK_ID_SPACE);
+		}
+		
+		field.setColumnDefinition("INT DEFAULT "+ FeatureSpaceDefaults.DEFAULT.id() )
+			.setForeignKeyCascade(parent, CFWSpace.class, CFWSpaceFields.PK_ID)
+			.setLabel("Space")
+			.setDescription("The space this entity belongs to.")
+			.setOptions(CFW.DB.Spaces.getSpaceListForUserOptions())
+			.apiFieldType(FormFieldType.SELECT);
+		
+		Integer selectedSpace = CFW.Context.Request.getSelectedSpaceID();
+		if(selectedSpace != null) {
+			field.setValue(selectedSpace);
+		}
+		return field;
+	}
+	
+	/**********************************************************************************
+	 * 
+	 **********************************************************************************/
+	public static String getSQLFilter() {
+		return "";
 	}
 
 }

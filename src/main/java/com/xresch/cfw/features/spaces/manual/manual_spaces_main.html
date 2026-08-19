@@ -1,0 +1,32 @@
+
+<p>
+Spaces have been introduced to allow for multi-client capabilities and separation of projects.
+There are currently two types of spaces:
+</p>
+<ul>
+	<li><b>Root Space:&nbsp;</b>A top level space that can contain other spaces, but itself cannot be moved below another space. </li>
+	<li><b>Space:&nbsp;</b>A regular space that can be part of a Root Space or any other Space. </li>
+</ul>
+
+For Example, you could create a Root Space for every company and use regular Spaces to define projects.
+
+<h2>Behavior</h2>
+Spaces have the following characteristics, which will determine their behaviour:
+<ul>
+	<li><b>Assigned Users / User Groups:&nbsp;</b> Allows defined Users or Groups if a user can see and select a space and work in the specified space. 
+	       What they can do inside the space depends on the other permissions granted to the users by it's Roles and Group assignments.  </li>
+	       
+	<li><b>Assigned Admins / Admin Groups:&nbsp;</b> Allows a user to change the space, add subspaces, add users and groups.
+		  There is no other rights this assignment grants. Any other admin privileges inside the space have to be granted by roles or groups. </li>
+	
+	<li><b>Is Enabled:&nbsp;</b>Enables or disables a space. If a space is disabled, 
+	       the Space and anything in it will not show up in select dropdowns nor other places like autocomplete.
+	       Projects below it can still be enabled and will be visible if not explicitely </li>
+	
+	<li><b>Is Global:&nbsp;</b>. </li>
+	
+	<li><b>Position in the Hierarchy:&nbsp;</b>. </li>
+</ul>
+
+
+
