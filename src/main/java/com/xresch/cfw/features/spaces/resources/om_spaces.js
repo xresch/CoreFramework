@@ -225,17 +225,19 @@ function om_spaces_printList(data){
 			 	textstylefield: null,
 			 	titlefields: ['ABBREVIATION', 'NAME'],
 			 	titleformat: '[{0}] - {1}',
-			 	visiblefields: ["PK_ID", "TYPE", "CLASSIFICATION", "ABBREVIATION", "NAME", "DESCRIPTION", "IS_ENABLED", "IS_FOREIGN_SPACE", "SHARED_EMAIL"],
+			 	visiblefields: ["PK_ID", "TYPE", "ABBREVIATION", "NAME", "DESCRIPTION", "IS_ENABLED", "SHARED_EMAIL"],
 			 	labels: {
 			 		PK_ID: "ID",
 					IS_ENABLED: "Enabled",
-					IS_FOREIGN_SPACE: "Foreign Space",
 			 	},
 			 	customizers: {
 			 		IS_ENABLED: trueFalseFormatter,
-			 		IS_FOREIGN_SPACE: trueFalseFormatter,
-			 		CHARACTER: function(record, value) { 
-				 		return CFW.format.badgesFromArray(value.split(','));			 			 
+					DESCRIPTION: function(record, value) { 
+			 			if( CFW.utils.isNullOrEmpty(value) ){
+								return '&nbsp;';
+						}else{
+							return '<div class="maxvw-25">'+value+'</div>';
+						} 
 			 		}
 			 	},
 				actions: actionButtons,
@@ -254,8 +256,9 @@ function om_spaces_printList(data){
 						renderers: [
 							{	label: 'Hierarchical Table',
 								name: 'table',
+								
 								renderdef: {
-									visiblefields: ["PK_ID", "TYPE","CLASSIFICATION", "ABBREVIATION", "NAME", "IS_ENABLED", "IS_FOREIGN_SPACE", "SHARED_EMAIL"],
+									merge: false,
 									titlefields: ['NAME'],
 									rendererSettings: {
 										table: {filterable: false, narrow: true},
