@@ -15,7 +15,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -25,6 +24,7 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.credentials.CFWCredentials.CFWCredentialsFields;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
@@ -245,6 +245,7 @@ public class CFWDBCredentials {
 				.queryCache(CFWDBCredentials.class, "getUserCredentialsList")
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
+				.and().append(FeatureSpaces.getSQLFilterInclusive())
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getResultSet();
 		
@@ -263,6 +264,7 @@ public class CFWDBCredentials {
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, false)
+				.and().append(FeatureSpaces.getSQLFilterInclusive())
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
 	}
@@ -279,6 +281,7 @@ public class CFWDBCredentials {
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, true)
+				.and().append(FeatureSpaces.getSQLFilterInclusive())
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
 	}

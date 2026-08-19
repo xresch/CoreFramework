@@ -37,6 +37,7 @@ public class CFWDBCustomH2Functions {
 				  "COUNT_ROWS"
 				, "CFW_ARRAY_DISTINCT"
 				, "CFW_ARRAY_CONTAINS_ANY_INT"
+				, "CFW_ARRAY_CONTAINS_ALL_INT"
 				, "CFW_BIGDEC_DIVIDE"
 			};
 		
@@ -84,7 +85,9 @@ public class CFWDBCustomH2Functions {
 	}
 	
 	/************************************************************************
-	 * 
+	 * Checks if the Array first array contains any of the integers 
+	 * contained in the seconds array.
+	 * Useful to check if a Hierarchy item has at least one similar parent.
 	 ************************************************************************/
 	public static boolean CFW_ARRAY_CONTAINS_ANY_INT(Connection conn, Array arrayToSearchIn, Array arrayWithValues) throws SQLException {
 		
@@ -117,6 +120,76 @@ public class CFWDBCustomH2Functions {
 		}
 		
 		return false; 
+	}
+	
+	/************************************************************************
+	 * Checks if the Array second array matches all of the integers 
+	 * contained in the first array.
+	 * This is a partial match, not an equals match. 
+	 * Useful to check if a Hierarchy item is in the same parental line.
+	 * </br></br>
+	 * For Example:
+	 * </br>- arrayToMatch    = [1,2,3,4]
+	 * </br>- arrayWithValues = [1,2,3]
+	 * </br>- Result: true, as it matches fully or partially
+	 * </br></br>
+	 * For Example:
+	 * </br>- arrayToMatch    = [1,2,3]
+	 * </br>- arrayWithValues = [1,2,3,4]
+	 * </br>- Result: false, as it has additional values
+	 * 
+	 * @param arrayToMatch the potentially bigger array
+	 * @param arrayWithValues the array <= in size of arrayToMatch
+	 * 
+	 * @return true if partial match, false if not or if arrayWithValues is empty
+	 ************************************************************************/
+	public static boolean CFW_ARRAY_CONTAINS_ALL_INT(Connection conn, Array arrayToMatch, Array arrayWithValues) throws SQLException {
+		
+		//----------------------------
+		// Variables
+		ResultSet resultToMatch = arrayToMatch.getResultSet();
+		ResultSet resultWithValues = arrayWithValues.getResultSet();
+		
+		//----------------------------
+		// Check Empty
+		if( ! resultWithValues.isBeforeFirst() ) {
+			return false;
+		}
+		
+		//----------------------------
+		// Check Match
+		boolean isPartialMatch = true;
+
+		while(resultWithValues.next()) {
+			
+			Integer currentInt = resultWithValues.getInt("VALUE");
+			resultToMatch.beforeFirst();
+			boolean found = false;
+			while(resultToMatch.next()) {
+				Integer currentValue = resultToMatch.getInt("VALUE");
+				//---------------------------
+				// Handle Null Values
+				if(currentInt == null || currentValue == null ) {
+					if(currentInt == currentValue) {
+						found = true;
+						break;
+					}else {
+						continue;
+					}
+				}
+				
+				//---------------------------
+				// Handle Int Values
+				if(currentInt.intValue() == currentValue.intValue()) {
+					found = true;
+					break;
+				}
+			}
+			
+			isPartialMatch &= found;
+		}
+		
+		return isPartialMatch; 
 	}
 	
 	/************************************************************************

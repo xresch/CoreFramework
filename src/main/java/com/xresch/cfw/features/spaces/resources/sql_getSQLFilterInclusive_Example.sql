@@ -1,3 +1,6 @@
+/***********************************************
+ * 
+ ***********************************************/
 SELECT NAME, FK_ID_SPACE 
 FROM CFW_CREDENTIALS
 WHERE (
@@ -7,7 +10,6 @@ WHERE (
 		OR ( 
 			SELECT DISTINCT TRUE  
 			FROM CFW_SPACES CS 
-			JOIN CFW_SPACES ZZ -- SELF Join
 			WHERE 
 			   -- Everything contained in parent spaces of selected space
 				  ( CS.PK_ID = 385 -- selectedSpace
@@ -18,18 +20,26 @@ WHERE (
 			        AND CS."TYPE" = 'ROOT_SPACE' 
 			        AND CS.IS_GLOBAL IS TRUE 
 			      )
-			   -- Everything Contained in Global Spaces which are in the same Root Space
-			   OR ( CS.PK_ID = FK_ID_SPACE -- selectedSpace
-			        AND CS."TYPE" = 'SPACE' 
-			        AND CS.H_ROOT = ZZ.H_ROOT
-			        AND CS.IS_GLOBAL IS TRUE 
-			      )
+		)
+		-- Everything Contained in Global Spaces which are in the same Parent Space
+		OR ( 
+			SELECT DISTINCT TRUE  
+			FROM CFW_SPACES CS 
+			JOIN CFW_SPACES ZZ -- SELF JOIN
+			  ON ZZ.PK_ID = 385
+			WHERE CS.PK_ID = FK_ID_SPACE -- selectedSpace
+			  AND CS.H_ROOT = ZZ.H_ROOT
+			  AND CS.H_DEPTH <= ZZ.H_DEPTH
+			  AND ZZ.PK_ID != FK_ID_SPACE
+			 -- AND CS."TYPE" = ZZ."TYPE"
+			  AND CFW_ARRAY_CONTAINS_ALL_INT(ZZ.H_LINEAGE, CS.H_LINEAGE)
+			  AND CS.IS_GLOBAL IS TRUE       
 		)
 	) 
 	-- only from spaces that are enabled
 	AND ( 
-		SELECT CS99.IS_ENABLED 
-		FROM CFW_SPACES CS99 
-		WHERE CS99.PK_ID = FK_ID_SPACE 
+		SELECT CS.IS_ENABLED 
+		FROM CFW_SPACES CS 
+		WHERE CS.PK_ID = FK_ID_SPACE 
 	)
 );
