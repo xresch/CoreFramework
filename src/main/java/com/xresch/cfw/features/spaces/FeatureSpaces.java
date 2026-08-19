@@ -6,6 +6,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
+import com.xresch.cfw.features.usermgmt.CFWPermissionChangeListener;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
@@ -103,6 +104,15 @@ public class FeatureSpaces extends CFWAppFeature {
 		CFW.Registry.Objects.addCFWObject(CFWSpaceUserGroupsMap.class);		
 		CFW.Registry.Objects.addCFWObject(CFWSpaceAdminMap.class);		
 		CFW.Registry.Objects.addCFWObject(CFWSpaceAdminGroupsMap.class);		
+		
+		//-------------------------------------
+    	// Register Change Listener
+		FeatureUserManagement.registerChangeListener(new CFWPermissionChangeListener() {
+			@Override
+			public void onChange() {
+				CFW.DB.Spaces.resetCaches();
+			}
+		});
 	}
 	
 	/***********************************************************************

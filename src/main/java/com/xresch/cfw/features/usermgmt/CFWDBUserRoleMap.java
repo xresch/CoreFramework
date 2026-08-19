@@ -50,6 +50,7 @@ public class CFWDBUserRoleMap {
 		CFW.DB.RolePermissionMap.invalidateCache(userID);
 	}
 	
+	
 	/********************************************************************************************
 	 * Adds the user to the specified role.
 	 * @param user

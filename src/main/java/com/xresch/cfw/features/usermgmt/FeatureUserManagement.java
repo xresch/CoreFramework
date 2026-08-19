@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.usermgmt;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import com.xresch.cfw._main.CFW;
@@ -9,7 +10,6 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfig;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
@@ -42,6 +42,11 @@ public class FeatureUserManagement extends CFWAppFeature {
 	public static final String PERMISSION_USER_MANAGEMENT = "User Management";
 	public static final String PERMISSION_GROUPS_USER = "Groups: User";
 	
+	private static ArrayList<CFWPermissionChangeListener> changeListeners = new ArrayList();
+	
+	/********************************************************************
+	 * 
+	 ********************************************************************/
 	@Override
 	public void register() {
 		//----------------------------------
@@ -93,7 +98,10 @@ public class FeatureUserManagement extends CFWAppFeature {
 				, null);
 		
 	}
-
+	
+	/********************************************************************
+	 * 
+	 ********************************************************************/
 	@Override
 	public void initializeDB() {
     	//----------------------------------
@@ -198,7 +206,10 @@ public class FeatureUserManagement extends CFWAppFeature {
 				);
 		
 	}
-
+	
+	/********************************************************************
+	 * 
+	 ********************************************************************/
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
 		
@@ -216,11 +227,42 @@ public class FeatureUserManagement extends CFWAppFeature {
 		  + "WHERE DATEADD(SECOND, EXPIRY_TIME / 1000, DATE '1970-01-01') < CURRENT_TIMESTAMP()" 
 		);
 	}
-
+	
+	/********************************************************************
+	 * 
+	 ********************************************************************/
 	@Override
 	public void startTasks() { /* nothing to do */ }
 
+	/********************************************************************
+	 * 
+	 ********************************************************************/
 	@Override
 	public void stopFeature() { /* nothing to do */ }
+	
+
+	/********************************************************************
+	 * 
+	 ********************************************************************/
+	public static void registerChangeListener(CFWPermissionChangeListener listener) { 
+		changeListeners.add(listener);
+	}
+	
+	/********************************************************************
+	 * 
+	 ********************************************************************/
+	public static void removeChangeListener(CFWPermissionChangeListener listener) { 
+		changeListeners.remove(listener);
+	}
+	
+	/********************************************************************
+	 * 
+	 ********************************************************************/
+	protected static void triggerChangeListeners() { 
+		for(CFWPermissionChangeListener listener : changeListeners) {
+			listener.onChange();
+		}
+	}
+	
 
 }

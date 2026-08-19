@@ -47,13 +47,15 @@ public class CFWDBRolePermissionMap {
 	 ********************************************************************************************/
 	public static void invalidateCache(Integer userID) {
 		userPermissionsCache.invalidate(userID);
+		FeatureUserManagement.triggerChangeListeners();
 	}
 	
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
-	private static void invalidateCacheAll() {
+	public static void invalidateCacheAll() {
 		userPermissionsCache.invalidateAll();
+		FeatureUserManagement.triggerChangeListeners();
 	}
 	
 	/********************************************************************************************
@@ -95,14 +97,18 @@ public class CFWDBRolePermissionMap {
 				  + RolePermissionMapFields.IS_DELETABLE +" "
 				  + ") VALUES (?,?,?);";
 		
-		invalidateCacheAll();
+		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Role.class, "Add Permission to Role: "+role.name()+", Permission: "+permission.name());
 		
-		return CFWDB.preparedExecute(insertPermissionSQL, 
+		boolean success = CFWDB.preparedExecute(insertPermissionSQL, 
 				permission.id(),
 				role.id(),
 				isDeletable
 				);
+		
+		invalidateCacheAll();
+		
+		return success;
 		
 	}
 	/********************************************************************************************
@@ -113,7 +119,6 @@ public class CFWDBRolePermissionMap {
 	 * 
 	 ********************************************************************************************/
 	public static boolean addPermissionToRole(int permissionID, int roleID, boolean isDeletable) {
-		
 		
 		if(permissionID < 0 || roleID < 0) {
 			new CFWLog(logger)
@@ -191,13 +196,17 @@ public class CFWDBRolePermissionMap {
 				  + RolePermissionMapFields.IS_DELETABLE +" = TRUE "
 				  + ";";
 		
-		invalidateCacheAll();
+		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Role.class, "Remove Permission from Role: "+role.name()+", Permission: "+permission.name());
 		
-		return CFWDB.preparedExecute(removePermissionFromRoleSQL, 
+		boolean success = CFWDB.preparedExecute(removePermissionFromRoleSQL, 
 				permission.id(),
 				role.id()
 				);
+		
+		invalidateCacheAll();
+		
+		return success;
 	}
 	/********************************************************************************************
 	 * Remove a permission from the role.

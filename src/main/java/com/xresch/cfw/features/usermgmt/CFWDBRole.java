@@ -89,7 +89,14 @@ public class CFWDBRole {
 			return true;
 		}
 	};
-		
+	
+	//####################################################################################################
+	// CREATE
+	//####################################################################################################
+	public static void onChange() { 
+		FeatureUserManagement.triggerChangeListeners();
+	}
+	
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
@@ -100,10 +107,12 @@ public class CFWDBRole {
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(Role item) 		{ 
+	public static boolean update(Role item) 		{ 
 		//Do not use CFWDBDefaultOperations as this cannot be cached
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, item, auditLogFieldnames);
-		return item.update();
+		boolean success = item.update();
+		onChange();
+		return success;
 	}
 		
 	//####################################################################################################
@@ -112,7 +121,9 @@ public class CFWDBRole {
 	public static boolean 	deleteByID(int id) 	{ 
 		Role role = selectByID(id);
 		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, "Role", "Role: "+role.name());
-		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, RoleFields.PK_ID.toString(), id); 
+		boolean success = CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, RoleFields.PK_ID.toString(), id); 
+		onChange();
+		return success;
 	}
 	
 	public static boolean 	deleteMultipleByID(String IDs) 	{ 
@@ -133,7 +144,9 @@ public class CFWDBRole {
 	
 	public static boolean 	deleteByName(String name) 		{ 
 		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, "Role", "Role: "+name);
-		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, RoleFields.NAME.toString(), name); 
+		boolean success = CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, RoleFields.NAME.toString(), name); 
+		onChange();
+		return success;
 	}
 	
 	//####################################################################################################

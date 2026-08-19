@@ -25,6 +25,13 @@ public class CFWDBRoleEditorsMap {
 	
 	
 	/********************************************************************************************
+	 *
+	 ********************************************************************************************/
+	public static void onChange() { 
+		FeatureUserManagement.triggerChangeListeners();
+	}
+	
+	/********************************************************************************************
 	 * Adds the user to the specified role.
 	 * @param user
 	 * @param role
@@ -71,6 +78,7 @@ public class CFWDBRoleEditorsMap {
 		
 		if(success) {
 			new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, RoleEditorsMap.class, "Add User to Role: "+role.name()+", User: "+user.username());
+			onChange();
 		}
 
 		return success;
@@ -107,7 +115,7 @@ public class CFWDBRoleEditorsMap {
 	
 	
 	/********************************************************************************************
-	 * Adds the user to the specified role.
+	 * Adds the users to the specified role.
 	 * @param user
 	 * @param role
 	 * @return return true if role was added, false otherwise
@@ -137,7 +145,9 @@ public class CFWDBRoleEditorsMap {
 			}
 		
 		if(!wasStarted) { CFW.DB.transactionEnd(isSuccess); }
-
+		
+		onChange();
+		
 		return isSuccess;
 	}
 	
@@ -178,10 +188,14 @@ public class CFWDBRoleEditorsMap {
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, RoleEditorsMap.class, "Remove User from Role: "+role.name()+", User: "+user.username());
 		
-		return CFWDB.preparedExecute(removeUserFromRoleSQL, 
+		boolean success =  CFWDB.preparedExecute(removeUserFromRoleSQL, 
 				user.id(),
 				role.id()
 				);
+		
+		onChange();
+		
+		return success;
 	}
 	
 
