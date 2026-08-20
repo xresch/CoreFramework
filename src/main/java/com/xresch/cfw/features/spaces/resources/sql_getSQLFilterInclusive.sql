@@ -16,7 +16,7 @@
 			        AND CS.IS_GLOBAL IS TRUE 
 			      )
 		)
-		-- Everything Contained in Global Spaces which are in the same Parent Space
+		-- Everything Contained in Global Spaces which are in the same Parent Chain
 		OR ( 
 			SELECT DISTINCT TRUE  
 			FROM CFW_SPACES CS 
