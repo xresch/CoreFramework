@@ -904,40 +904,6 @@ public class CFWDBCredentials {
 				
 	}
 	
-	/********************************************************************************************
-	 * Fetch cachedTags from the database that are visible to the user.
-	 * 
-	 ********************************************************************************************/
-	public static String getTagsForUserAsJSON(int userID) {
-		
-		TreeSet<String> tags = new TreeSet<String>();
-		
-		ResultSet resultSet = new CFWSQL(new CFWCredentials())
-			.queryCache()
-			.select(CFWCredentialsFields.TAGS.toString())
-			.where(CFWCredentialsFields.FK_ID_OWNER.toString(), userID)
-			.or(CFWCredentialsFields.IS_SHARED.toString(), true)
-			.getResultSet();
-		
-		try {
-			while(resultSet.next()) {
-				Object[] tagsArray = (Object[])resultSet.getObject(1);
-				
-				if(tagsArray != null) {
-					for(int i = 0 ; i < tagsArray.length; i++) {
-						tags.add(tagsArray[i].toString());
-					}
-				}
-			}
-		} catch (SQLException e) {
-			new CFWLog(logger)
-			.severe("Tags could not be fetched because an error occured.", e);
-		} finally {
-			CFWDB.close(resultSet);
-		}
-		
-		return CFW.JSON.toJSON(tags.toArray(new String[] {}));
-	}
 
 	/*****************************************************************
 	 *
