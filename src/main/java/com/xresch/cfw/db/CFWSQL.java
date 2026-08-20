@@ -202,6 +202,42 @@ public class CFWSQL {
 		return this;
 	}
 	
+	
+	/****************************************************************
+	 * Caches the query using the signature of the calling method.
+	 * Slightly less performant than the other method but error
+	 * prone to copy & paste mistakes.
+	 * 
+	 * @param suffix add a custom suffix if you have multiple queries
+	 * in the same method
+	 * return CFWSQL for chaining
+	 ****************************************************************/
+	public CFWSQL queryCache(String suffix) {
+		
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		StackTraceElement cfwQueryInstantiatingMethod = stacktrace[2];
+		this.queryName = cfwQueryInstantiatingMethod.toString() + suffix;
+		return this;
+	}
+	
+	/****************************************************************
+	 * Caches the query using the signature of the calling method and
+	 * the state of CFW.Context.Request.getFilterSpaceInclusive().
+	 * 
+	 * Slightly less performant than the other method but error
+	 * prone to copy & paste mistakes.
+	 * 
+	 * return CFWSQL for chaining
+	 ****************************************************************/
+	public CFWSQL queryCacheSpaced() {
+		
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		StackTraceElement cfwQueryInstantiatingMethod = stacktrace[2];
+		this.queryName = cfwQueryInstantiatingMethod.toString() 
+				+ CFW.Context.Request.getFilterSpaceInclusive();
+		return this;
+	}
+	
 
 	
 	/****************************************************************

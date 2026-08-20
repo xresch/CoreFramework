@@ -39,7 +39,8 @@ public class CFWSessionData implements Serializable {
 	private User user = null;
 	private String clientIP = "";
 	private String sessionID = null;
-	private Integer spaceID = FeatureSpacesDefaults.DEFAULT.id();
+	private int spaceID = FeatureSpacesDefaults.DEFAULT.id();
+	private boolean filterSpaceInclusive = true;
 	private HashMap<Integer, Role> userRoles = new HashMap<>();
 	private HashMap<String, Permission> userPermissions = new HashMap<>();
 	
@@ -159,15 +160,28 @@ public class CFWSessionData implements Serializable {
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/	
-	public void setSpaceID(Integer spaceID) {
+	public void setSpaceID(int spaceID) {
 		this.spaceID = spaceID;
 	}
 	
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/	
-	public Integer getSelectedSpaceID() {
+	public int getSelectedSpaceID() {
 		return spaceID;
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/	
+	public void setFilterSpaceInclusive(boolean filterSpaceInclusive) {
+		this.filterSpaceInclusive = filterSpaceInclusive;
+	}
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/	
+	public boolean getFilterSpaceInclusive() {
+		return filterSpaceInclusive;
 	}
 	
 	/***********************************************************************
@@ -315,6 +329,7 @@ public class CFWSessionData implements Serializable {
 		oos.writeObject(sessionID);
 		oos.writeObject(clientIP);
 		oos.writeObject(spaceID);
+		oos.writeObject(filterSpaceInclusive);
 		oos.writeObject(CFW.JSON.toJSON(customProperties));
 		
 		String username = null;
@@ -339,11 +354,12 @@ public class CFWSessionData implements Serializable {
     	
     	//ois.defaultReadObject();
        
-       this.isLoggedIn 		= (boolean) ois.readObject();
-       this.sessionID 		= (String) ois.readObject();
-       this.clientIP 		= (String) ois.readObject();
-       this.spaceID 		= (Integer) ois.readObject();
-       this.customProperties = CFW.JSON.fromJsonLinkedHashMap((String)ois.readObject());
+       this.isLoggedIn 			 = (boolean) ois.readObject();
+       this.sessionID 			 = (String) ois.readObject();
+       this.clientIP 			 = (String) ois.readObject();
+       this.spaceID 			 = (int) ois.readObject();
+       this.filterSpaceInclusive = (boolean) ois.readObject();
+       this.customProperties 	 = CFW.JSON.fromJsonLinkedHashMap((String)ois.readObject());
        
        String username		= (String) ois.readObject();
        if(isLoggedIn && username != null) {
@@ -351,8 +367,6 @@ public class CFWSessionData implements Serializable {
     	   this.triggerLogin();
        }
        
-       
-
        initializeFormCache();
        
        new CFWLog(logger).fine("Loaded session state from DB: user="+username+", sessionID="+sessionID);

@@ -69,7 +69,9 @@ function cfw_spaces_createSpaceSelector(callbackFunction){
 					inputField.attr('value', "");
 				}
 				
-				let navitem = $('<li class="dropdown-item" style="width: auto">');
+				//------------------------------
+				// Create Dropdown Menu
+				let navitem = $('<li class="dropdown-item pl-0" style="width: auto">');
 				navitem.append(inputField);
 				$('#cfw-navbar-right').prepend(navitem);
 				
@@ -82,7 +84,20 @@ function cfw_spaces_createSpaceSelector(callbackFunction){
 					  .addClass("dropdown-toggle");
 				
 				CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, inputField.val());
-
+				
+				//------------------------------
+				// Create filter button
+				let filterInclusive = JSDATA.filterSpaceInclusive;
+				let icon = cfw_spaces_getFilterIcon(filterInclusive);
+				
+				let filterButton = $('<li class="cfw-button-menuitem" title="Toggle if you want to see only items in this space, or all items accessible from this space.">'
+						+ '<a class="dropdown-item" id="cfwMenuButtons-filterSpace" onclick="cfw_spaces_toogleFilter(this)">'
+						    + '<div class="cfw-fa-box"><i class="fas '+icon+'"></i></div>'
+							+ '<span class="cfw-menuitem-label">Space Filter</span>'
+						+ '</a>'
+					+ '</li>');
+						
+				$('#cfw-navbar-right').prepend(filterButton);
 			}
 			
 			cfw_spaces_onSpaceSelectorChange();
@@ -127,4 +142,41 @@ function cfw_spaces_getSelectedSpace(){
 function cfw_spaces_setSelectedSpace(orgid){
 	 $('#'+CFW_SPACE_SELECT_ID).val(orgid);
 	 cfw_spaces_onSpaceSelectorChange();
+}
+
+/******************************************************************
+ *
+ ******************************************************************/
+function cfw_spaces_getFilterIcon(filterInclusive){
+
+	return (filterInclusive) 
+		? 'fa-filter-circle-xmark'
+		: 'fa-filter  text-cfw-yellow' 
+		;
+
+}
+/******************************************************************
+ *
+ ******************************************************************/
+function cfw_spaces_toogleFilter(eventSource){
+	
+	//---------------------------
+	// Reverse Filtering
+	let select = $('#'+CFW_SPACE_SELECT_ID);
+	let callbackFunction = select.data('callbackFunction');
+	let selectedSpace = select.val();
+	let filterInclusiveToggled = ! JSDATA.filterSpaceInclusive;
+	//---------------------------
+	// Reverse Filtering
+	let icon = cfw_spaces_getFilterIcon( filterInclusiveToggled );
+	$(eventSource).find('i')
+			.removeClass()
+			.addClass('fas '+icon);
+	
+	JSDATA.filterSpaceInclusive = filterInclusiveToggled;
+	
+	CFW.http.getJSON(URL_CFWSPACES, { action: "update", item: "filterSpaceInclusive", filterSpaceInclusive: filterInclusiveToggled});
+	
+	callbackFunction(selectedSpace);
+	
 }

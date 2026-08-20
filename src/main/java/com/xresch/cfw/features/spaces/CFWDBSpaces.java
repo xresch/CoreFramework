@@ -2,6 +2,7 @@ package com.xresch.cfw.features.spaces;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -10,6 +11,7 @@ import java.util.logging.Logger;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
@@ -30,6 +32,8 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWDBSpaces {
 	
+	private static final String BREADCRUMBS = "BREADCRUMBS";
+
 	private static Class<CFWSpace> cfwObjectClass = CFWSpace.class;
 	
 	public static Logger logger = CFWLog.getLogger(CFWDBSpaces.class.getName());
@@ -38,7 +42,15 @@ public class CFWDBSpaces {
 	private static LinkedHashMap<Integer, CFWSpace> allSpacesCache = null;
 	
 	// userID and SpaceList
-	private static Cache<Integer, ArrayList<CFWSpace>> userSpacelistCache = CFW.Caching.addCache("CFWSpace for User", 
+	private static Cache<Integer, ArrayList<CFWSpace>> userSpacelistCache = CFW.Caching.addCache("CFW SpaceList for User", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(100)
+				.maximumSize(10000)
+				.expireAfterAccess(65, TimeUnit.MINUTES)
+			);
+	
+	// userID and SpaceList with 
+	private static Cache<Integer, JsonArray> userBreadcrumbedSpacelistCache = CFW.Caching.addCache("CFW SpaceList(Breadcrumbed) for User", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(100)
 				.maximumSize(10000)
@@ -51,6 +63,8 @@ public class CFWDBSpaces {
 	public static void resetCaches(){
 		
 		userSpacelistCache.invalidateAll();
+		userBreadcrumbedSpacelistCache.invalidateAll();
+		
 		allSpacesCache = getSpaceListAsArrayList();
 		
 	}
@@ -222,12 +236,15 @@ public class CFWDBSpaces {
 		
 		LinkedHashMap<Integer,String> result = new LinkedHashMap<>();
 		
-		Integer id = CFW.Context.Request.getUserID();
+		Integer userID = CFW.Context.Request.getUserID();
 		
-		if(id != null) {
-			ArrayList<CFWSpace> spaceList = getSpaceListForUserSQL(id).getAsObjectListConvert(CFWSpace.class);
-			for(CFWSpace space : spaceList) {
-				result.put(space.id(), space.createBreadcrumbsString() );
+		if(userID != null) {
+			JsonArray spaceList = getSpaceListForUserAsJsonWithBreadcrumbs();
+			for(JsonElement element : spaceList) {
+				JsonObject space = (JsonObject)element;
+				Integer id = space.get(CFWSpaceFields.PK_ID.toString()).getAsInt();
+				String  breadcrumbs = space.get(BREADCRUMBS).getAsString();
+				result.put(id, breadcrumbs );
 			}
 		}
 		
@@ -238,23 +255,54 @@ public class CFWDBSpaces {
 	 *  Returns a list of spaces with type "ORG".
 	 *****************************************************************************/
 	public static JsonArray getSpaceListForUserAsJsonWithBreadcrumbs() {
-		ArrayList<CFWSpace> spaces = getSpaceListForUser();
 		
-		JsonArray breadcrumbed = new JsonArray();
-		for(CFWSpace space : spaces) {
-			JsonObject object = new JsonObject();
-			object.addProperty(CFWSpaceFields.PK_ID.toString(), space.id());
-			object.addProperty(CFWSpaceFields.ABBREVIATION.toString(), space.abbreviation());
-			object.addProperty(CFWSpaceFields.NAME.toString(), space.name());
-			object.addProperty(CFWHierarchy.H_DEPTH, (Integer)space.getField(CFWHierarchy.H_DEPTH).getValue());
-			object.addProperty(CFWHierarchy.H_PARENT, (Integer)space.getField(CFWHierarchy.H_PARENT).getValue());
+		JsonArray spaceList = null;
+		int userID = CFW.Context.Request.getUserID();
+		try {
+			// cache to avoid overloading backend systems.
+			spaceList = userBreadcrumbedSpacelistCache.get(userID, new Callable<JsonArray>() {
+				@Override
+				public JsonArray call() throws Exception {
+					ArrayList<CFWSpace> spaces = getSpaceListForUser();
+					
+					//-----------------------------
+					// Add Breadcrumbs and Sort
+					TreeMap<String, JsonObject> sortedByBreadcrumbs = new TreeMap<>();
+					for(CFWSpace space : spaces) {
+						JsonObject object = new JsonObject();
+						object.addProperty(CFWSpaceFields.PK_ID.toString(), space.id());
+						object.addProperty(CFWSpaceFields.ABBREVIATION.toString(), space.abbreviation());
+						object.addProperty(CFWSpaceFields.NAME.toString(), space.name());
+						object.addProperty(CFWHierarchy.H_DEPTH, (Integer)space.getField(CFWHierarchy.H_DEPTH).getValue());
+						object.addProperty(CFWHierarchy.H_PARENT, (Integer)space.getField(CFWHierarchy.H_PARENT).getValue());
+						
+						String breadcrumbs = space.createBreadcrumbsString();
+						object.addProperty(BREADCRUMBS, breadcrumbs);
+						
+						sortedByBreadcrumbs.put(breadcrumbs, object);
+						
+					}
+					
+					//-----------------------------
+					// Create Array
+					JsonArray breadcrumbedArray = new JsonArray();
+					for(JsonObject object : sortedByBreadcrumbs.values()) {
+						breadcrumbedArray.add(object);
+					}
+							
+					return breadcrumbedArray;
+				}
+			});
+
 			
-			object.addProperty("BREADCRUMBS", space.createBreadcrumbsString());
-			
-			breadcrumbed.add(object);
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while loading widget from DB or Cache: "+e.getMessage(), e);
 		}
 		
-		return breadcrumbed;
+		return spaceList;
+		
+		
+		
 	}
 		
 	/*****************************************************************************

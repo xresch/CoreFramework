@@ -213,7 +213,6 @@ public class CFWDBCredentials {
 	}
 
 	
-	
 	public static boolean deleteByIDForCurrentUser(String id)	{ 
 		
 		if(isCredentialsOfCurrentUser(id)) {
@@ -248,8 +247,8 @@ public class CFWDBCredentials {
 	 ****************************************************************/
 	public static ResultSet getUserCredentialsList() {
 		
-		return new CFWCredentials()
-				.queryCache(CFWDBCredentials.class, "getUserCredentialsList")
+		return new CFWSQL(new CFWCredentials())
+				.queryCacheSpaced()
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and().append(FeatureSpaces.getSQLFilter())
@@ -266,8 +265,8 @@ public class CFWDBCredentials {
 	 ****************************************************************/
 	public static String getUserCredentialsListAsJSON() {
 		
-		return new CFWCredentials()
-				.queryCache(CFWDBCredentials.class, "getUserCredentialsListAsJSON")
+		return new CFWSQL(new CFWCredentials())
+				.queryCacheSpaced()
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, false)
@@ -284,7 +283,7 @@ public class CFWDBCredentials {
 	public static String getUserArchivedListAsJSON() {
 		
 		return new CFWSQL(new CFWCredentials())
-				.queryCache()
+				.queryCacheSpaced()
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, true)
@@ -303,7 +302,7 @@ public class CFWDBCredentials {
 		
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
 			return new CFWSQL(new CFWCredentials())
-				.queryCache()
+				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select()
 				.where(CFWCredentialsFields.IS_ARCHIVED, false)
@@ -325,7 +324,7 @@ public class CFWDBCredentials {
 		
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
 			return new CFWSQL(new CFWCredentials())
-				.queryCache()
+				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select()
 				.where(CFWCredentialsFields.IS_ARCHIVED, true)
@@ -490,6 +489,7 @@ public class CFWDBCredentials {
 						, userID
 						, likeID
 						, likeID)
+				.and().append(FeatureSpaces.getSQLFilterInclusive())
 				.executeCount();
 
 		if (count > 0) {
@@ -589,8 +589,8 @@ public class CFWDBCredentials {
 			return new AutocompleteResult();
 		}
 		
-		ResultSet resultSet = new CFWCredentials()
-			.queryCache(CFWDBCredentials.class, "autocompleteCredentials")
+		ResultSet resultSet = new CFWSQL(new CFWCredentials())
+			.queryCacheSpaced()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWCredentialsFields.PK_ID,
 					CFWCredentialsFields.NAME)
@@ -665,7 +665,7 @@ public class CFWDBCredentials {
 		}
 		
 		ResultSet resultSet = new CFWSQL(new CFWCredentials())
-				.queryCache()
+				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select(
 						  CFWCredentialsFields.PK_ID

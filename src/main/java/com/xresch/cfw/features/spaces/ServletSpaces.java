@@ -67,11 +67,20 @@ public class ServletSpaces extends HttpServlet
 				return;
 			}
 
-			if( action.equals("update") 
-			&& item.equals("selectedspaceid")
-			&& spaceID != null){
-				CFW.Context.Request.getSessionData().setSpaceID(Integer.parseInt(spaceID) );
-				return;
+			if( action.equals("update") ) {
+			
+				if(item.equals("selectedspaceid")
+				&& spaceID != null){
+					CFW.Context.Request.getSessionData().setSpaceID(Integer.parseInt(spaceID) );
+					return;
+				}
+				
+				String filterSpaceInclusive = request.getParameter("filterSpaceInclusive");
+				if(item.equals("filterSpaceInclusive")
+				&& filterSpaceInclusive != null){
+					CFW.Context.Request.getSessionData().setFilterSpaceInclusive( Boolean.parseBoolean(filterSpaceInclusive) );
+					return;
+				}
 			}
 			
 		}

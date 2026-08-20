@@ -50,6 +50,7 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 		this.addJavascriptData("localeIdentifier", CFW.Localization.getLocaleIdentifierForRequest() );
 		this.addJavascriptData("time", CFW.Time.currentTimestamp());
 		this.addJavascriptData(CFW.REQUEST_ATTR_ID, requestID );
+		this.addJavascriptData("filterSpaceInclusive", CFW.Context.Request.getFilterSpaceInclusive() );
 		
 		User user = CFW.Context.Request.getUser();
 		if(user != null) {

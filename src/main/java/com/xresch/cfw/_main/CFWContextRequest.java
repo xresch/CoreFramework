@@ -161,7 +161,17 @@ public class CFWContextRequest {
 	/**************************************************************************
 	 * Returns null if there is no space selected.
 	 **************************************************************************/
-	public static Integer getSelectedSpaceID() {
+	public static boolean getFilterSpaceInclusive() {
+		if(getContext().sessionData != null) {
+			return getContext().sessionData.getFilterSpaceInclusive();
+		}
+		return true;
+	}
+	
+	/**************************************************************************
+	 * Returns null if there is no space selected.
+	 **************************************************************************/
+	public static int getSelectedSpaceID() {
 		if(getContext().sessionData != null) {
 			return getContext().sessionData.getSelectedSpaceID();
 		}

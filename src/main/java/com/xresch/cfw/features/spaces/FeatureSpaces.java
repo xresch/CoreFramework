@@ -18,7 +18,6 @@ import com.xresch.cfw.features.usermgmt.CFWPermissionChangeListener;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
@@ -42,7 +41,6 @@ public class FeatureSpaces extends CFWAppFeature {
 	public static final String PERMISSION_SPACES_VIEWER = "Space: Viewer";
 	public static final String PERMISSION_SPACES_ADMIN = "Space: Admin All";
 	public static final String PERMISSION_SPACES_CREATE = "Space: Create Spaces";
-	
 	
 	// Default spaces created when activating the feature
 	public enum FeatureSpacesDefaults{
@@ -548,17 +546,84 @@ public class FeatureSpaces extends CFWAppFeature {
 	 * </ul>  
 	 **********************************************************************************/
 	public static CFWSQL getSQLFilter() {
-		Integer spaceID = CFW.Context.Request.getSelectedSpaceID();
+		boolean filterInclusive = CFW.Context.Request.getFilterSpaceInclusive();
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
+		
+		//--------------------------
+		// Filter Inclusive
+		if(filterInclusive) {
+			return getSQLFilterInclusive(spaceID);
+		}else {
+			return getSQLFilterExclusive(spaceID);
+		}
+	}
+	
+	/**********************************************************************************
+	 * Returns a partial query which will filter by the column "FK_ID_SPACE" and returns
+	 * entities:
+	 * <ul>
+	 *   <li>Directly in the selected space.</li>
+	 *   <li>In parent spaces of selected space.</li>
+	 *   <li>In global spaces of Type ROOT_SPACE.</li>
+	 *   <li>In global spaces of Type SPACE within the same parent chain.</li>
+	 * </ul>  
+	 * 
+	 * @return  CFWSQL partial SQL 
+	 **********************************************************************************/
+	public static CFWSQL getSQLFilterInclusive() {
+		return getSQLFilterInclusive( CFW.Context.Request.getSelectedSpaceID() );
+	}
+	
+	/**********************************************************************************
+	 * Returns a partial query which will filter by the column "FK_ID_SPACE" and returns
+	 * entities:
+	 * <ul>
+	 *   <li>Directly in the selected space.</li>
+	 *   <li>In parent spaces of selected space.</li>
+	 *   <li>In global spaces of Type ROOT_SPACE.</li>
+	 *   <li>In global spaces of Type SPACE within the same parent chain.</li>
+	 * </ul>  
+	 * 
+	 * @param spaceID to filter by
+	 * 
+	 * @return  CFWSQL partial SQL 
+	 **********************************************************************************/
+	public static CFWSQL getSQLFilterInclusive(int spaceID) {
+		
+			return new CFWSQL(null)
+					.queryCache()   
+					.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE
+							, "sql_getSQLFilterInclusive.sql"
+							, spaceID
+							, spaceID
+							, spaceID
+							, spaceID
+							);
+	}
+	
+	/**********************************************************************************
+	 * Returns a partial query which will filter by the column "FK_ID_SPACE" and returns
+	 * entities belonging to the given space id. 
+	 * 
+	 * @return  CFWSQL partial SQL 
+	 **********************************************************************************/
+	public static CFWSQL getSQLFilterExclusive() {
+		return getSQLFilterExclusive( CFW.Context.Request.getSelectedSpaceID() );
+	}
+	
+	/**********************************************************************************
+	 * Returns a partial query which will filter by the column "FK_ID_SPACE" and returns
+	 * entities belonging to the given space id. 
+	 * 
+	 * @param spaceID to filter by
+	 * 
+	 * @return  CFWSQL partial SQL 
+	 **********************************************************************************/
+	public static CFWSQL getSQLFilterExclusive(int spaceID) {
 		
 		return new CFWSQL(null)
-				.queryCache()   
-				.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE
-						, "sql_getSQLFilterInclusive.sql"
-						, spaceID
-						, spaceID
-						, spaceID
-						, spaceID
-						);
+				.custom(" ( FK_ID_SPACE = ?) ", spaceID);
 	}
+		
 
 }
