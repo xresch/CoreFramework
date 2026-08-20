@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFWMessages.MessageType;
+import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
@@ -164,7 +165,7 @@ public class CFWContextRequest {
 		if(getContext().sessionData != null) {
 			return getContext().sessionData.getSelectedSpaceID();
 		}
-		return null;
+		return FeatureSpacesDefaults.DEFAULT.id();
 	}
 	/**************************************************************************
 	 * 

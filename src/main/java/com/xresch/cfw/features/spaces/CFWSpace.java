@@ -20,7 +20,7 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.spaces.CFWSpaceAdminMap.CFWSpaceAdminMapFields;
-import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpaceDefaults;
+import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.EmailValidator;
 import com.xresch.cfw.validation.ExcludeStringsValidator;

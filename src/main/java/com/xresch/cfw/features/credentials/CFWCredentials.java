@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
@@ -623,6 +624,13 @@ public class CFWCredentials extends CFWObject {
 	
 	public CFWCredentials tags(ArrayList<String> tags) {
 		this.tags.setValue(tags);
+		return this;
+	}
+	
+	public CFWCredentials tags(String... tags) {
+		ArrayList<String> tagsArray = new ArrayList<>();
+		tagsArray.addAll(Arrays.asList(tags));
+		this.tags.setValue(tagsArray);
 		return this;
 	}
 	

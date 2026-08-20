@@ -11,6 +11,7 @@ import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.credentials.CFWCredentials;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
 import com.xresch.cfw.features.usermgmt.CFWPermissionChangeListener;
@@ -44,16 +45,17 @@ public class FeatureSpaces extends CFWAppFeature {
 	
 	
 	// Default spaces created when activating the feature
-	public enum FeatureSpaceDefaults{
-		  ALL(0, "All", "This space contains everything. Useful for admin purposes.")
-		, DEFAULT(1, "Default", "The default space. Contains things that existed before the space feature has been activated." )
+	public enum FeatureSpacesDefaults{
+		  ALL(0, "All", "This is a special space that can display everything in every space. Useful for admin purposes.")
+		, DEFAULT(1, "Default", "The default space. Contains all things that existed before the space feature has been activated." )
+		, GLOBAL(2, "Global", "A default global root space. Everything in this space can be selected by everyone.")
 		;
 		
 		private int id;
 		private String label;
 		private String description;
 		
-		private FeatureSpaceDefaults(int id, String label, String description){
+		private FeatureSpacesDefaults(int id, String label, String description){
 			this.id = id;
 			this.label = label;
 			this.description = description;
@@ -170,7 +172,10 @@ public class FeatureSpaces extends CFWAppFeature {
 		
 		createDefaultSpaces();
 		
-		//createTestdata();
+		if(CFWDBSpaces.getCount() == 3) {
+			//createTestdataLarge();
+			createTestdataHierarchy(0);
+		}
 		
 		CFW.DB.Spaces.resetCaches();
 
@@ -199,9 +204,9 @@ public class FeatureSpaces extends CFWAppFeature {
 			CFWSpace spaceAll = new CFWSpace()
 					.type(CFWSpaceType.ROOT_SPACE)
 					.abbreviation("ALL")
-					.id(FeatureSpaceDefaults.ALL.id())
-					.name(FeatureSpaceDefaults.ALL.label())
-					.description(FeatureSpaceDefaults.ALL.description())
+					.id(FeatureSpacesDefaults.ALL.id())
+					.name(FeatureSpacesDefaults.ALL.label())
+					.description(FeatureSpacesDefaults.ALL.description())
 					.adminGroups(superuserGroup)
 					;
 			
@@ -214,9 +219,9 @@ public class FeatureSpaces extends CFWAppFeature {
 			CFWSpace spaceDefault = new CFWSpace()
 					.type(CFWSpaceType.ROOT_SPACE)
 					.abbreviation("DEF")
-					.id(FeatureSpaceDefaults.DEFAULT.id())
-					.name(FeatureSpaceDefaults.DEFAULT.label())
-					.description(FeatureSpaceDefaults.DEFAULT.description())
+					.id(FeatureSpacesDefaults.DEFAULT.id())
+					.name(FeatureSpacesDefaults.DEFAULT.label())
+					.description(FeatureSpacesDefaults.DEFAULT.description())
 					.assignedGroups(userGroup)
 					;
 			
@@ -224,13 +229,159 @@ public class FeatureSpaces extends CFWAppFeature {
 			
 			spaceDefault.saveSelectorFields();
 			
+			//-------------------------------------
+			// DEFAULT
+			CFWSpace spaceGlobal = new CFWSpace()
+					.type(CFWSpaceType.ROOT_SPACE)
+					.abbreviation("GLB")
+					.id(FeatureSpacesDefaults.GLOBAL.id())
+					.name(FeatureSpacesDefaults.GLOBAL.label())
+					.description(FeatureSpacesDefaults.GLOBAL.description())
+					.adminGroups(superuserGroup)
+					.isGlobal(true)
+					;
+			
+			Integer globalID = CFWHierarchy.create(null, spaceGlobal);
+			
+			spaceGlobal.saveSelectorFields();
+			
 		}
 		
 	}
+	
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/
-	public void createTestdata() {
+	public void createTestdataHierarchy(int index) {
+		
+		String[] characters = new String[] {"A", "B", "C", "D"};
+		
+		//----------------------------------
+		// Is Done
+		if(index > characters.length - 2) {
+			return;
+		}
+		
+		//----------------------------------
+		// Create root space
+		String char1 = characters[index];
+		String char2 = characters[index+1];
+		String rootName = char1 + char2;
+		
+		CFWSpace rootSpace = new CFWSpace()
+			.type(CFWSpaceType.ROOT_SPACE)
+			.name("Root " + rootName)
+			.abbreviation("R" + rootName);
+		
+		Integer rootID = CFWHierarchy.create(null, rootSpace);
+		
+		if(rootID == null) {
+			return; // error
+		}
+		
+		//-----------------------------
+		// Create Credentials
+		CFWCredentials credentialsRoot = new CFWCredentials()
+				.fkidSpace(rootID)
+				.foreignKeyOwner(1)
+				.name("CREDS Root "+rootName)
+				.isShared(true)
+				.tags("tag_R"+rootName)
+				;
+		
+		Integer credsRootID = CFW.DB.Credentials.createGetPrimaryKey(credentialsRoot);
+				
+		//-----------------------------
+		// Create Subordinate Trees
+		createSubordinatesHierarchy(rootID, rootID, char1, 0, 2);
+		createSubordinatesHierarchy(rootID, rootID, char2, 0, 2);
+		
+		//----------------------------------
+		// Create next Root
+		createTestdataHierarchy(index+2);
+					
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	private void createSubordinatesHierarchy(int rootID, int parentID, String character, int currentDepth, int maxDepth) {
+		
+		//#########################################################
+		// Regular Space 
+		//#########################################################
+		
+		//-----------------------------
+		// Make Space
+		String label = character + "L" + currentDepth;
+		CFWSpace space = new CFWSpace()
+			.type(CFWSpaceType.SPACE)
+			.name("Space "+label)
+			.abbreviation(label);
+		
+		Integer newSpaceID = CFWHierarchy.create(parentID, space);
+		
+		if(newSpaceID == null) {
+			return; // error
+		}
+		
+		//-----------------------------
+		// Create Credentials
+		CFWCredentials credentials = new CFWCredentials()
+				.fkidSpace(newSpaceID)
+				.foreignKeyOwner(1)
+				.name("CREDS "+label)
+				.isShared(true)
+				.tags("tag_"+label)
+				;
+		
+		Integer credsID = CFW.DB.Credentials.createGetPrimaryKey(credentials);
+		
+		//#########################################################
+		// Global Space 
+		//#########################################################
+		
+		//-----------------------------
+		// Make Space
+		String labelGlobal = label+"G";
+		CFWSpace globalSpace = new CFWSpace()
+			.type(CFWSpaceType.SPACE)
+			.name("Global " + labelGlobal)
+			.abbreviation(labelGlobal)
+			.isGlobal(true);
+		
+		Integer newGlobalSpaceID = CFWHierarchy.create(parentID, globalSpace);
+		
+		if(newGlobalSpaceID == null) {
+			return; // error
+		}
+		
+		//-----------------------------
+		// Create Credentials
+		CFWCredentials credentialsGlobals = new CFWCredentials()
+				.fkidSpace(newGlobalSpaceID)
+				.foreignKeyOwner(1)
+				.name("CREDS Global "+labelGlobal)
+				.isShared(true)
+				.tags("tag_"+labelGlobal)
+				;
+		
+		Integer credsGlobalID = CFW.DB.Credentials.createGetPrimaryKey(credentialsGlobals);
+				
+		//#########################################################
+		// Subordinates
+		//#########################################################
+		if(currentDepth < maxDepth) {
+			createSubordinatesHierarchy(rootID, newSpaceID, character, currentDepth+1, maxDepth);
+		}
+	
+		
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	public void createTestdataLarge() {
 		//-------------------------------------
 		// Create Testdata
 		if(CFWDBSpaces.getCount() == 0) {
@@ -260,7 +411,7 @@ public class FeatureSpaces extends CFWAppFeature {
 				
 				//-----------------------------
 				// Create Subordinates
-				createSubordinates(rootID, rootID, 3, 3, 0, 2);
+				createSubordinatesLarge(rootID, rootID, 3, 3, 0, 2);
 			}
 					
 		}
@@ -269,7 +420,7 @@ public class FeatureSpaces extends CFWAppFeature {
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/
-	private void createSubordinates(int rootID, int parentID, int minSubordinates, int maxSubordinates, int currentDepth, int maxDepth) {
+	private void createSubordinatesLarge(int rootID, int parentID, int minSubordinates, int maxSubordinates, int currentDepth, int maxDepth) {
 		
 		//-----------------------------------------
 		// 
@@ -320,7 +471,7 @@ public class FeatureSpaces extends CFWAppFeature {
 			// Create Subordinates
 			if(currentDepth < maxDepth) {
 				int newMin = (minSubordinates-2 > 0) ? minSubordinates-2 : 0;
-				createSubordinates(rootID, newPostID, newMin, maxSubordinates-1, currentDepth+1, maxDepth);
+				createSubordinatesLarge(rootID, newPostID, newMin, maxSubordinates-1, currentDepth+1, maxDepth);
 			}
 	
 		}
@@ -372,7 +523,7 @@ public class FeatureSpaces extends CFWAppFeature {
 			field = CFWField.newInteger(FormFieldType.SELECT, FK_ID_SPACE);
 		}
 		
-		field.setColumnDefinition("INT DEFAULT "+ FeatureSpaceDefaults.DEFAULT.id() )
+		field.setColumnDefinition("INT DEFAULT "+ FeatureSpacesDefaults.DEFAULT.id() )
 			.setForeignKeyCascade(parent, CFWSpace.class, CFWSpaceFields.PK_ID)
 			.setLabel("Space")
 			.setDescription("The space this entity belongs to.")
@@ -396,7 +547,7 @@ public class FeatureSpaces extends CFWAppFeature {
 	 *   <li>In global spaces of Type SPACE with the same ROOT_SPACE.</li>
 	 * </ul>  
 	 **********************************************************************************/
-	public static CFWSQL getSQLFilterInclusive() {
+	public static CFWSQL getSQLFilter() {
 		Integer spaceID = CFW.Context.Request.getSelectedSpaceID();
 		
 		return new CFWSQL(null)

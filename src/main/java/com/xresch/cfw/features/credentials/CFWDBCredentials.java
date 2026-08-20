@@ -20,10 +20,16 @@ import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.core.AutocompleteItem;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.credentials.CFWCredentials.CFWCredentialsFields;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
+import com.xresch.cfw.features.filemanager.CFWStoredFile;
+import com.xresch.cfw.features.filemanager.CFWStoredFile.CFWStoredFileFields;
+import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
+import com.xresch.cfw.features.query.parse.CFWQueryToken;
+import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
@@ -50,7 +56,8 @@ public class CFWDBCredentials {
 		  , CFWCredentialsFields.NAME.toString()
 		};
 	
-	public static TreeSet<String> cachedTags = null;
+	// SpaceID and List of Tags
+	public static HashMap<Integer, TreeSet<String>> cachedTags = new HashMap<>();
 	
 	//####################################################################################################
 	// Precheck Initialization
@@ -245,7 +252,7 @@ public class CFWDBCredentials {
 				.queryCache(CFWDBCredentials.class, "getUserCredentialsList")
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
-				.and().append(FeatureSpaces.getSQLFilterInclusive())
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getResultSet();
 		
@@ -264,7 +271,7 @@ public class CFWDBCredentials {
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, false)
-				.and().append(FeatureSpaces.getSQLFilterInclusive())
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
 	}
@@ -281,7 +288,7 @@ public class CFWDBCredentials {
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, true)
-				.and().append(FeatureSpaces.getSQLFilterInclusive())
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
 	}
@@ -300,6 +307,7 @@ public class CFWDBCredentials {
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select()
 				.where(CFWCredentialsFields.IS_ARCHIVED, false)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
 		}else {
@@ -321,6 +329,7 @@ public class CFWDBCredentials {
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select()
 				.where(CFWCredentialsFields.IS_ARCHIVED, true)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
 				.getAsJSON();
 		}else {
@@ -347,7 +356,9 @@ public class CFWDBCredentials {
 					userID,
 					userID,
 					sharedUserslikeID,
-					sharedUserslikeID);
+					sharedUserslikeID)
+			.and().append(FeatureSpaces.getSQLFilter())
+			;
 			
 		
 		//-------------------------
@@ -362,6 +373,7 @@ public class CFWDBCredentials {
 				  )
 			.where(CFWCredentialsFields.IS_SHARED, true)
 			.and(CFWCredentialsFields.IS_ARCHIVED, false)
+			.and().append(FeatureSpaces.getSQLFilter())
 			.and().custom("(");
 		
 		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
@@ -386,6 +398,7 @@ public class CFWDBCredentials {
 					, CFWCredentialsFields.TAGS
 					)
 			.where(CFWCredentialsFields.IS_ARCHIVED, false)
+			.and().append(FeatureSpaces.getSQLFilter())
 			.and().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {
@@ -583,6 +596,7 @@ public class CFWDBCredentials {
 					CFWCredentialsFields.NAME)
 			.whereLike(CFWCredentialsFields.NAME, "%"+searchValue+"%")
 				.and(CFWCredentialsFields.IS_ARCHIVED, false)
+				.and().append(FeatureSpaces.getSQLFilter())
 			.limit(maxResults)
 			.getResultSet();
 		
@@ -607,6 +621,122 @@ public class CFWDBCredentials {
 
 		
 		return new AutocompleteResult(list);
+		
+	}
+	
+	/***************************************************************
+	 * 
+	 * @param prefix to be added before the object string, e.g. "file = "
+	 ***************************************************************/
+	public static void autocompleteCredentialsForQuery(AutocompleteResult result, CFWQueryAutocompleteHelper helper, String prefix) {
+		
+		if( helper.getCommandTokenCount() < 2 ) {
+			return;
+		}
+		
+		if(prefix == null) {
+			prefix = "";
+		}
+		
+		//-----------------------------
+		// Replace "creds:" prefix
+		String credsPrefix = "";
+		CFWQueryToken checkIsColonFile = helper.getTokenBeforeCursor(-1);
+		CFWQueryToken checkIsStringFile = helper.getTokenBeforeCursor(-2);
+		
+		if( helper.isBeforeCursor("creds:")
+		|| (   checkIsColonFile != null && checkIsColonFile.type() == CFWQueryTokenType.SIGN_COLON
+		    && checkIsStringFile != null && checkIsStringFile.value().equalsIgnoreCase("file") 
+		   )
+		) {
+			credsPrefix = "creds:";
+		}
+		
+		//-----------------------------
+		// Get Search
+		String searchValue = "";
+		
+		if(helper.getCommandTokenCount() > 2) {
+			CFWQueryToken token = helper.getTokenBeforeCursor(0);
+			
+			if(token.isStringOrText()) {
+				searchValue = token.value();
+			};
+		}
+		
+		ResultSet resultSet = new CFWSQL(new CFWCredentials())
+				.queryCache()
+				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+				.select(
+						  CFWCredentialsFields.PK_ID
+						, CFWCredentialsFields.FK_ID_SPACE
+						, CFWCredentialsFields.NAME
+						)
+				.whereLike(CFWCredentialsFields.NAME, "%"+searchValue+"%")
+					.and(CFWCredentialsFields.IS_ARCHIVED, false)
+					.and().append(FeatureSpaces.getSQLFilter())
+				.getResultSet();
+		
+		
+		//------------------------------------
+		// Filter by Access
+		AutocompleteList list = new AutocompleteList();
+		result.addList(list);
+		int i = 0;
+		try {
+			while(resultSet != null && resultSet.next()) {
+
+				int id = resultSet.getInt("PK_ID");
+				if(hasUserAccessToCredentials(id)) {
+
+					String name = resultSet.getString("NAME");
+					String owner = resultSet.getString("OWNER");
+					Integer spaceID = resultSet.getInt("FK_ID_SPACE");
+					String spaceBreadcrumbs = CFW.DB.Spaces.getFromCache(spaceID).createBreadcrumbsString();
+					
+					JsonObject json = new JsonObject();
+					json.addProperty("id", id);
+					json.addProperty("name", name);
+					
+					String fileJsonString = prefix + CFW.JSON.toJSON(json)+" ";
+					
+					
+					//---------------------
+					// Make Item
+					AutocompleteItem item = new AutocompleteItem();
+					item.value(fileJsonString);
+					item.label(name);
+					item.description(
+							  "<span>"
+								+ "<b>ID:&nbsp;</b>" + id 
+								+ "&emsp;<b>Owner:&nbsp;</b>" + owner 
+								+ "&emsp;<b>Space:&nbsp;</b>" + spaceBreadcrumbs
+							+ "<span>"
+							);
+					
+					item.setMethodReplaceBeforeCursor(credsPrefix + searchValue);
+					
+					
+					list.addItem(item);
+					
+					
+					//---------------------
+					// Make Columns
+					i++;
+					
+					if((i % 10) == 0) {
+						list = new AutocompleteList();
+						result.addList(list);
+					}
+					if(i == 50) { break; }
+				}
+			}
+		} catch (SQLException e) {
+			new CFWLog(logger)
+				.severe("Error while autocomplete credentials.", new Throwable());
+		} finally {
+			CFW.DB.close(resultSet);
+		}
 		
 	}
 	
@@ -683,11 +813,13 @@ public class CFWDBCredentials {
 	 ********************************************************************************************/
 	public static TreeSet<String> getTags() {
 		
-		if(cachedTags == null) {
-			fetchAndCacheTags();
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
+		if(! cachedTags.containsKey(spaceID) ) {
+			fetchAndCacheTags(spaceID);
 		}
 		
-		return cachedTags;
+		
+		return cachedTags.get(spaceID);
 	}
 	
 	/********************************************************************************************
@@ -723,13 +855,15 @@ public class CFWDBCredentials {
 	 ********************************************************************************************/
 	public static void updateTags(CFWCredentials credentials) {
 		
-		if(cachedTags == null) {
-			fetchAndCacheTags();
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
+		if(! cachedTags.containsKey(spaceID) ) {
+			fetchAndCacheTags(spaceID);
 		}
 		
 		if(credentials.tags() != null) {
+			TreeSet<String> tagsForSpace = cachedTags.get(spaceID);
 			for(Object tag : credentials.tags()) {
-				cachedTags.add(tag.toString());
+				tagsForSpace.add(tag.toString());
 			}
 		}
 	}
@@ -738,13 +872,14 @@ public class CFWDBCredentials {
 	 * Fetch cachedTags from the database and stores them into the cache.
 	 * 
 	 ********************************************************************************************/
-	public static void fetchAndCacheTags() {
+	public static void fetchAndCacheTags(int spaceID) {
 		
-		cachedTags = new TreeSet<String>();
+		TreeSet<String> tagsForSpace = new TreeSet<String>();
 		
 		ResultSet resultSet = new CFWSQL(new CFWCredentials())
 			.queryCache()
 			.select(CFWCredentialsFields.TAGS.toString())
+			.where().append(FeatureSpaces.getSQLFilter())
 			.getResultSet();
 		
 		try {
@@ -755,7 +890,7 @@ public class CFWDBCredentials {
 				if(tagsArray != null) {
 					Object[] objectArray = (Object[])tagsArray.getArray();
 					for(int i = 0 ; i < objectArray.length; i++) {
-						cachedTags.add(objectArray[i].toString());
+						tagsForSpace.add(objectArray[i].toString());
 					}
 				}
 			}
@@ -764,6 +899,7 @@ public class CFWDBCredentials {
 			.severe("Tags could not be fetched because an error occured.", e);
 		} finally {
 			CFWDB.close(resultSet);
+			cachedTags.put(spaceID, tagsForSpace);
 		}
 				
 	}

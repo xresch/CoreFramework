@@ -15,6 +15,7 @@ import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemFooter;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenu;
@@ -38,7 +39,7 @@ public class CFWSessionData implements Serializable {
 	private User user = null;
 	private String clientIP = "";
 	private String sessionID = null;
-	private Integer spaceID = null;
+	private Integer spaceID = FeatureSpacesDefaults.DEFAULT.id();
 	private HashMap<Integer, Role> userRoles = new HashMap<>();
 	private HashMap<String, Permission> userPermissions = new HashMap<>();
 	
