@@ -183,6 +183,7 @@ DONE
 - Charts: Improved display of charts types: pie, doughnut, radar, polar
 - Dashboard Widget: New Standard Settings "Button Popup" and "Button Label" to display any widget as a button. Widget content will be loaded in a popup window on button click.
 - Query: Autocomplete: Files can now be autocompleted using "file:..."
+- Query: Autocomplete: Credentials can now be autocompleted using "creds:..."
 - Query: Command chart - chart series can now have custom colors using option "colors"
 - Query: Command chart - chart axes can now have custom colors using options "xcolor" and "xcolor"
 - Query: Command chart - chart axes can now be swapped using "swapaxes" (e.g. for horizontal bar chart)
@@ -199,6 +200,8 @@ DONE
 - Query: Command formatfield - percent formatter does not automatically highlight boolean values
 - Query: Command globals & meta - multidisplay can display columns with variable width. See manual of the commands for example queries.
 - Query: Command resultcompare - keeps column order even if first row contains null values
+- Query: Function credentials() - now supports using id, name or Json object {id: 123, ...} to select credentials
+- Query: Function credentials() - now lists available credentials in autocomplete
 - Query: Function records() - now takes a condition as an argument to filter and group records
 - Query: Function if() - will only execute contained functions if they match the respective true and false conditions
 - Query: Function case() - will only execute contained functions if they match the respective true condition

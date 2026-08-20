@@ -229,15 +229,15 @@ public class CFWDBCredentials {
 	// SELECT
 	//####################################################################################################
 	public static CFWCredentials selectByID(String id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWCredentialsFields.PK_ID.toString(), id);
+		return CFWDBDefaultOperations.selectFirstBySpaced(cfwObjectClass, CFWCredentialsFields.PK_ID.toString(), id);
 	}
 	
 	public static CFWCredentials selectByID(int id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWCredentialsFields.PK_ID.toString(), id);
+		return CFWDBDefaultOperations.selectFirstBySpaced(cfwObjectClass, CFWCredentialsFields.PK_ID.toString(), id);
 	}
 	
 	public static CFWCredentials selectFirstByName(String name) { 
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWCredentialsFields.NAME.toString(), name);
+		return CFWDBDefaultOperations.selectFirstBySpaced(cfwObjectClass, CFWCredentialsFields.NAME.toString(), name);
 	}
 	
 	

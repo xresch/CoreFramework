@@ -164,6 +164,25 @@ public final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 		}
 		
 		//----------------------------------------
+		// Handle File Autocomplete "creds:"
+		if( helper.isBeforeCursor("creds:") ) {
+			CFW.DB.Credentials.autocompleteCredentialsForQuery(result, helper, null);
+			return result;
+		}
+		
+		
+		//----------------------------------------
+		// Handle File with search "creds:xxx"
+		CFWQueryToken checkIsColonCreds = helper.getTokenBeforeCursor(-1);
+		CFWQueryToken checkIsStringCreds = helper.getTokenBeforeCursor(-2);
+
+		if( checkIsColonCreds != null && checkIsColonCreds.type() == CFWQueryTokenType.SIGN_COLON
+		&& checkIsStringCreds != null && checkIsStringCreds.value().equalsIgnoreCase("creds") ) {
+			CFW.DB.Credentials.autocompleteCredentialsForQuery(result, helper, null);
+			return result;
+		}
+		
+		//----------------------------------------
 		// Handle Command with or without params
 		if( helper.getCommandTokenCount() >= 1 ) {
 			CFWQueryToken commandNameToken = helper.getToken(0);

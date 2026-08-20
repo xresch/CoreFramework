@@ -4,9 +4,11 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-import com.google.common.base.Strings;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.credentials.CFWCredentials;
+import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -132,19 +134,22 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 			
 			if(partsArray.size() > 0){
 				QueryPart first = partsArray.get(0);
-				QueryPartValue value = first.determineValue(null);
-				String name = value.getAsString();
+				QueryPartValue credsValue = first.determineValue(null);
+				String name = credsValue.getAsString();
 				
 				//----------------------------------
 				// Check Exists
-				if(CFW.DB.Credentials.checkExistsByName(name)) {
-					CFWCredentials credentials = CFW.DB.Credentials.selectFirstByName(name);
-					if( !CFW.DB.Credentials.hasUserAccessToCredentials(credentials.id()) ){
-						throw new ParseException("function credentials(): You do not have permission to use the credentials '"+name+"'.", first.position());
-					}
-				}else {
-					throw new ParseException("function credentials(): The credentials '"+name+"' do not exist.", first.position());
+				CFWCredentials credentials = fetchCredentialsFromDB(credsValue);
+				
+				if(credentials == null) {
+					 credentials = new CFWCredentials();
+					 this.getContext().addMessageWarning("Credentials '" + credsValue.getAsString() + "' could not be found.");
 				}
+				
+				if( !CFW.DB.Credentials.hasUserAccessToCredentials(credentials.id()) ){
+					throw new ParseException("function credentials(): You do not have permission to use the credentials '"+name+"'.", first.position());
+				}
+				
 				
 	
 			}
@@ -160,6 +165,14 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 	public boolean receiveStringParamsLiteral() {
 		return true;
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		CFW.DB.Credentials.autocompleteCredentialsForQuery(result, helper, null);
+	}
 
 	/***********************************************************************************************
 	 * 
@@ -174,28 +187,48 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 		}
 		
 		//-----------------------------------
-		// Get Credentials Name
-		QueryPartValue literalCredentialsName = parameters.get(0);
-		String name = literalCredentialsName.getAsString();
+		// Get Credentials 
+		QueryPartValue credsValue = parameters.get(0);
 		
-		if(Strings.isNullOrEmpty(name)) {
+		if(credsValue.isNullOrEmptyString()) {
 			 return QueryPartValue.newNull();
 		}
 		
+		CFWCredentials credentials = fetchCredentialsFromDB(credsValue);
+
 		//-----------------------------------
 		// Fetch & Create Result
-		CFWCredentials credentials = CFW.DB.Credentials.selectFirstByName(name);
-		
 		
 		if(credentials == null) {
 			 credentials = new CFWCredentials();
-			 this.getContext().addMessageWarning("Credentials with name '"+name+"' could not be found.");
+			 this.getContext().addMessageWarning("Credentials '" + credsValue.getAsString() + "' could not be found.");
 		}
 		
 		return QueryPartValue.newFromJsonElement(
 					credentials.createJsonObject()
 				);
 
+	}
+
+	private CFWCredentials fetchCredentialsFromDB(QueryPartValue credsValue) {
+		CFWCredentials credentials = null;
+		
+		System.out.println(credsValue.type());
+		System.out.println(credsValue);
+		if(credsValue.isString()) {
+			String credsName = credsValue.getAsString();
+			credentials = CFW.DB.Credentials.selectFirstByName(credsName);
+		}else if(credsValue.isInteger()) {
+			Integer credsID = credsValue.getAsInteger();
+			credentials = CFW.DB.Credentials.selectByID(credsID);
+		}else if(credsValue.isJsonObject()) {
+			JsonObject credsObject = credsValue.getAsJsonObject();
+			if(credsObject.has("id")) {
+				Integer credsID = credsObject.get("id").getAsInt();
+				credentials = CFW.DB.Credentials.selectByID(credsID);
+			}
+		}
+		return credentials;
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 
@@ -499,6 +500,35 @@ public  class CFWDBDefaultOperations {
 		
 		return null;
 
+	}
+	
+	/***************************************************************
+	 * Select first by a certain column and value for the spaces 
+	 * that are available from the current space.
+	 * 
+	 * @param cfwObjectClass the CFWObject class
+	 * @param column the name of the column
+	 * @param value the value to match against
+	 * 
+	 * @return Returns a single object
+	 ****************************************************************/
+	@SuppressWarnings("unchecked")
+	public static <O extends CFWObject> O selectFirstBySpaced(Class<? extends CFWObject> cfwObjectClass, String column, Object value ) {
+		
+		try {
+			return (O)cfwObjectClass.newInstance()
+					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.selectFirstBy"+column)
+					.select()
+					.where(column, value)
+					.and().append(FeatureSpaces.getSQLFilter())
+					.getFirstAsObject();
+		} catch (Exception e) {
+			new CFWLog(logger)
+			.warn("Error while instanciating object.", e);
+		} 
+		
+		return null;
+		
 	}
 	
 	/***************************************************************
