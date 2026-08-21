@@ -522,6 +522,7 @@ public class CFW {
 	private static void doRegister(CFWAppInterface appToStart) {
 		
 
+		
 		//---------------------------
 		// Register Features
 		CFW.Registry.Features.addFeature(FeatureConfig.class);
@@ -529,8 +530,10 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureCore.class);	
 		CFW.Registry.Features.addFeature(FeatureDateTime.class);	
 		CFW.Registry.Features.addFeature(FeatureEAV.class);
-				
-		CFW.Registry.Features.addFeature(FeatureUserManagement.class);	
+		
+		CFW.Registry.Features.addFeature(FeatureSpaces.class);	// First we need Spaces to create other Objects
+
+		CFW.Registry.Features.addFeature(FeatureUserManagement.class);	// then we need the users
 		
 		if(CFW.AppSettings.isContextSettingsEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureContextSettings.class);	
@@ -567,9 +570,6 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureCLIExtensions.class);
 		CFW.Registry.Features.addFeature(FeatureWebExtensions.class);
 		
-		if(CFW.AppSettings.isSpacesEnabled()) {
-			CFW.Registry.Features.addFeature(FeatureSpaces.class);	
-		}
 		
 		//---------------------------
 		// Application Register

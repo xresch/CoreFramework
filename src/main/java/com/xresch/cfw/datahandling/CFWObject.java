@@ -188,6 +188,8 @@ public class CFWObject {
 	 ****************************************************************/
 	public CFWObject addField(CFWField<?> field) {
 		
+		if(field == null) { return this; } // do nothing if field is null
+		
 		if(!fields.containsKey(field.getName())) {
 			fields.put(field.getName(), field);
 			field.setRelatedCFWObject(this);

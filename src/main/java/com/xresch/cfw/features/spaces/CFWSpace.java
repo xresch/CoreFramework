@@ -19,8 +19,10 @@ import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
 import com.xresch.cfw.features.spaces.CFWSpaceAdminMap.CFWSpaceAdminMapFields;
 import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
+import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.EmailValidator;
 import com.xresch.cfw.validation.ExcludeStringsValidator;
@@ -51,7 +53,6 @@ public class CFWSpace extends CFWObject {
 	
 	public enum CFWSpaceFields{
 		PK_ID, 
-		UUID,
 		TYPE, 
 		NAME, 
 		ABBREVIATION, 
@@ -198,6 +199,55 @@ public class CFWSpace extends CFWObject {
 	 **************************************************************************************/
 	public void initDB() {
 
+		//-------------------------------------
+		// Create Default Spaces
+		if(CFWDBSpaces.getCount() == 0) {
+			
+			//-------------------------------------
+			// ALL
+			CFWSpace spaceAll = new CFWSpace()
+					.type(CFWSpaceType.ROOT_SPACE)
+					.abbreviation("ALL")
+					.id(FeatureSpacesDefaults.ALL.id())
+					.name(FeatureSpacesDefaults.ALL.label())
+					.description(FeatureSpacesDefaults.ALL.description())
+					;
+			
+			Integer allID = CFWHierarchy.create(null, spaceAll);
+			
+			//spaceAll.saveSelectorFields();
+			
+			//-------------------------------------
+			// DEFAULT
+			CFWSpace spaceDefault = new CFWSpace()
+					.type(CFWSpaceType.ROOT_SPACE)
+					.abbreviation("DEF")
+					.id(FeatureSpacesDefaults.DEFAULT.id())
+					.name(FeatureSpacesDefaults.DEFAULT.label())
+					.description(FeatureSpacesDefaults.DEFAULT.description())
+					;
+			
+			Integer defaultID = CFWHierarchy.create(null, spaceDefault);
+			
+			//spaceDefault.saveSelectorFields();
+			
+			//-------------------------------------
+			// GLOBAL
+			CFWSpace spaceGlobal = new CFWSpace()
+					.type(CFWSpaceType.ROOT_SPACE)
+					.abbreviation("GLB")
+					.id(FeatureSpacesDefaults.GLOBAL.id())
+					.name(FeatureSpacesDefaults.GLOBAL.label())
+					.description(FeatureSpacesDefaults.GLOBAL.description())
+					.isGlobal(true)
+					;
+			
+			Integer globalID = CFWHierarchy.create(null, spaceGlobal);
+			
+			//spaceGlobal.saveSelectorFields();
+			
+		}
+		
 	}
 	
 	/**************************************************************************************
@@ -209,7 +259,6 @@ public class CFWSpace extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						CFWSpaceFields.PK_ID.toString(), 
-						CFWSpaceFields.UUID.toString(), 
 						CFWSpaceFields.TYPE.toString(), 
 						CFWSpaceFields.SHARED_EMAIL.toString(),
 						CFWSpaceFields.NAME.toString(),
@@ -222,7 +271,6 @@ public class CFWSpace extends CFWObject {
 		String[] outputFields = 
 				new String[] {
 						CFWSpaceFields.PK_ID.toString(), 
-						CFWSpaceFields.UUID.toString(), 
 						CFWSpaceFields.TYPE.toString(), 
 						CFWSpaceFields.SHARED_EMAIL.toString(),
 						CFWSpaceFields.NAME.toString(),

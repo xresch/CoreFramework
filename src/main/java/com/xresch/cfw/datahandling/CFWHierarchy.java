@@ -214,10 +214,8 @@ public class CFWHierarchy<T extends CFWObject> {
 			((CFWField<Integer>)elementToCreate.getField(H_ROOT)).setValue(createdElementID);
 			boolean setRootSuccess = elementToCreate.update(H_ROOT);
 			if(setRootSuccess) {
-				System.out.println("success!");
 				CFW.DB.transactionCommit();
 			}else {
-				System.out.println("rollback!");
 				CFW.DB.transactionRollback();
 			}
 			return createdElementID;

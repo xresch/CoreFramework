@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.spaces;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import com.google.gson.JsonArray;
@@ -13,9 +14,9 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
-import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
+import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
 import com.xresch.cfw.features.usermgmt.CFWPermissionChangeListener;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
@@ -64,29 +65,6 @@ public class FeatureSpaces extends CFWAppFeature {
 		public String label() { return label; }
 		public String description() { return description; }
 	}
-	/************************************************************************************
-	 * Return the unique name of this feature for the feature cfw_spacesment.
-	 * If this method returns null(default), the feature will not be visible in the 
-	 * Feature Management.
-	 * 
-	 ************************************************************************************/
-	public String getNameForFeatureManagement() {
-		return FEATURE_NAME;
-	};
-	
-	/************************************************************************************
-	 * Register a description for the feature cfw_spacesment.
-	 ************************************************************************************/
-	public String getDescriptionForFeatureManagement() {
-		return "Enables space cfw_spacesment for multi-client capabilities. ";
-	};
-	
-	/************************************************************************************
-	 * Return if the cfw_spacesd feature is active by default or if an admin has to enable it.
-	 ************************************************************************************/
-	public boolean activeByDefault() {
-		return false;
-	};
 	
 	/***********************************************************************
 	 * 
@@ -111,10 +89,12 @@ public class FeatureSpaces extends CFWAppFeature {
 		//-------------------------------------
     	// Register Objects
 		CFW.Registry.Objects.addCFWObject(CFWSpace.class);		
-		CFW.Registry.Objects.addCFWObject(CFWSpaceUserMap.class);		
-		CFW.Registry.Objects.addCFWObject(CFWSpaceUserGroupsMap.class);		
-		CFW.Registry.Objects.addCFWObject(CFWSpaceAdminMap.class);		
-		CFW.Registry.Objects.addCFWObject(CFWSpaceAdminGroupsMap.class);		
+		
+		// These need special handling, as Spaces are registered before User Tables have been created, see initializeDB()
+		//CFW.Registry.Objects.addCFWObject(CFWSpaceUserMap.class);		
+		//CFW.Registry.Objects.addCFWObject(CFWSpaceUserGroupsMap.class);		
+		//CFW.Registry.Objects.addCFWObject(CFWSpaceAdminMap.class);		
+		//CFW.Registry.Objects.addCFWObject(CFWSpaceAdminGroupsMap.class);		
 		
 		//-------------------------------------
     	// Register Change Listener
@@ -131,7 +111,41 @@ public class FeatureSpaces extends CFWAppFeature {
 	 ***********************************************************************/
 	@Override
 	public void initializeDB() {
-			
+		
+		//-----------------------------------------
+		// Special handling of User And Role Tables
+		//-----------------------------------------
+		ArrayList<CFWObject> objectArray = new ArrayList<>();
+		objectArray.add(new CFWSpaceUserMap());
+		objectArray.add(new CFWSpaceUserGroupsMap());
+		objectArray.add(new CFWSpaceAdminMap());
+		objectArray.add(new CFWSpaceAdminGroupsMap());
+		
+    	for(CFWObject object : objectArray) {
+    		if(object.getTableName() != null) {
+    			object.migrateTable();
+    			object.createTable();
+    			object.updateTable();
+    			object.initDB();
+    			object.initDBSecond();
+    			object.initDBThird();
+    			
+    		}
+    	}
+    	
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+    	addRolesToDefaultSpaces();
+    			
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		if(CFWDBSpaces.getCount() == 3) {
+			//createTestdataLarge();
+			new CFWSpacesTestdataGenerator(true).generateHierarchy();
+		}
+    			
 		//-----------------------------------------
 		// 
 		//-----------------------------------------
@@ -161,93 +175,67 @@ public class FeatureSpaces extends CFWAppFeature {
 						
 	}
 	
+	/**************************************************************************************
+	 *                          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 *                          !!!!!!!!!!! IMPORTANT !!!!!!!!!!!!
+	 *                          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * This method can only be executed after:
+	 *   - CFWSpace.initDB()
+	 *   - FeatureSpaces.initializeDB() has registered the remaining Spaces objects
+	 *   
+	 * Reason for this is that Spaces Tables need User Tables and Vice versa.
+	 * Therefore we have to execute things a bit special here to not get errors during the
+	 * initial setup of the database.
+	 **************************************************************************************/
+	private void addRolesToDefaultSpaces() {
+		//-------------------------------------
+		// Admin Role
+		Role superuserRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_SUPERUSER);
+		LinkedHashMap<String, String> superuserGroup = new LinkedHashMap<>();
+		superuserGroup.put(superuserRole.id()+"", superuserRole.name());
+		
+		//-------------------------------------
+		// User Role
+		Role userRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_USER);
+		LinkedHashMap<String, String> userGroup = new LinkedHashMap<>();
+		userGroup.put(userRole.id()+"", userRole.name());
+		
+		//-------------------------------------
+		// All
+		CFWSpace spaceAll = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.ALL.id() );
+		spaceAll.adminGroups(superuserGroup);
+		CFW.DB.Spaces.update(spaceAll);
+		spaceAll.saveSelectorFields();
+		
+		//-------------------------------------
+		// Default
+		CFWSpace spacedDefault = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.DEFAULT.id() );
+		spacedDefault.assignedGroups(userGroup);
+		spacedDefault.adminGroups(superuserGroup);
+		CFW.DB.Spaces.update(spacedDefault);
+		spacedDefault.saveSelectorFields();
+		
+		//-------------------------------------
+		// Global
+		CFWSpace spaceGlobal = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.GLOBAL.id() );
+		spaceGlobal.adminGroups(superuserGroup);
+		CFW.DB.Spaces.update(spaceGlobal);
+		spaceGlobal.saveSelectorFields();
+	}
+	
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/
 	@Override
 	public void addFeature(CFWApplicationExecutor executor) {
 		
+		
 		executor.addAppServlet(ServletSpaces.class, "/spaces");
 		
-		createDefaultSpaces();
-		
-		if(CFWDBSpaces.getCount() == 3) {
-			//createTestdataLarge();
-			new CFWSpacesTestdataGenerator(true).generateHierarchy();
-		}
 		
 		CFW.DB.Spaces.resetCaches();
 
 	}
-
-	/***********************************************************************
-	 * 
-	 ***********************************************************************/
-	public void createDefaultSpaces() {
-		//-------------------------------------
-		// Create Default Spaces
-		if(CFWDBSpaces.getCount() == 0) {
-			
-			//-------------------------------------
-			// Admin
-			Role superuserRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_SUPERUSER);
-			LinkedHashMap<String, String> superuserGroup = new LinkedHashMap<>();
-			superuserGroup.put(superuserRole.id()+"", superuserRole.name());
-			
-			Role userRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_USER);
-			LinkedHashMap<String, String> userGroup = new LinkedHashMap<>();
-			userGroup.put(userRole.id()+"", userRole.name());
-			
-			//-------------------------------------
-			// ALL
-			CFWSpace spaceAll = new CFWSpace()
-					.type(CFWSpaceType.ROOT_SPACE)
-					.abbreviation("ALL")
-					.id(FeatureSpacesDefaults.ALL.id())
-					.name(FeatureSpacesDefaults.ALL.label())
-					.description(FeatureSpacesDefaults.ALL.description())
-					.adminGroups(superuserGroup)
-					;
-			
-			Integer allID = CFWHierarchy.create(null, spaceAll);
-			
-			spaceAll.saveSelectorFields();
-			
-			//-------------------------------------
-			// DEFAULT
-			CFWSpace spaceDefault = new CFWSpace()
-					.type(CFWSpaceType.ROOT_SPACE)
-					.abbreviation("DEF")
-					.id(FeatureSpacesDefaults.DEFAULT.id())
-					.name(FeatureSpacesDefaults.DEFAULT.label())
-					.description(FeatureSpacesDefaults.DEFAULT.description())
-					.assignedGroups(userGroup)
-					;
-			
-			Integer defaultID = CFWHierarchy.create(null, spaceDefault);
-			
-			spaceDefault.saveSelectorFields();
-			
-			//-------------------------------------
-			// DEFAULT
-			CFWSpace spaceGlobal = new CFWSpace()
-					.type(CFWSpaceType.ROOT_SPACE)
-					.abbreviation("GLB")
-					.id(FeatureSpacesDefaults.GLOBAL.id())
-					.name(FeatureSpacesDefaults.GLOBAL.label())
-					.description(FeatureSpacesDefaults.GLOBAL.description())
-					.adminGroups(superuserGroup)
-					.isGlobal(true)
-					;
-			
-			Integer globalID = CFWHierarchy.create(null, spaceGlobal);
-			
-			spaceGlobal.saveSelectorFields();
-			
-		}
-		
-	}
-	
 
 	
 	/***********************************************************************
@@ -255,7 +243,6 @@ public class FeatureSpaces extends CFWAppFeature {
 	 ***********************************************************************/
 	@Override
 	public void startTasks() {
-		// TODO Auto-generated method stub
 
 	}
 	
@@ -283,11 +270,7 @@ public class FeatureSpaces extends CFWAppFeature {
 	 * @return field with the name FeatureSpaces.FK_ID_SPACE
 	 **********************************************************************************/
 	public static CFWField<Integer> createSpaceSelectorField(CFWObject parent, boolean isHidden) {
-		
-		if( ! FeatureCore.isFeatureActive(FeatureSpaces.FEATURE_NAME) ) {
-			return null;
-		}
-		
+				
 		CFWField<Integer> field;
 		
 		if(isHidden) {
