@@ -234,8 +234,70 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals("[true,\"true\",1]", record.get("D").toString());
 		Assertions.assertEquals("[null,1,true,\"three\"]", record.get("E").toString());
 
-
-
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testArrayLookup() throws IOException {
+		
+		String queryString = """
+| globals
+	myArray = [
+	  { "FIRSTNAME": "Venus", "LASTNAME": "Johansson", "LIKES_TIRAMISU": false, "INDEX": 0},
+	  { "FIRSTNAME": "Victoria", "LASTNAME": "Fredriksson", "LIKES_TIRAMISU": false, "INDEX": 1},
+	  { "FIRSTNAME": "Artemis", "LASTNAME": "Eliasson", "LIKES_TIRAMISU": true, "INDEX": 1},
+	  { "FIRSTNAME": 1, "LASTNAME": "One", "LIKES_TIRAMISU": true, "INDEX": 1},
+	  { "FIRSTNAME": true, "LASTNAME": false, "LIKES_TIRAMISU": true, "INDEX": 1},
+	  { "FIRSTNAME": [1, 2, 3], "LASTNAME": ["a", "b", "c"], "LIKES_TIRAMISU": true, "INDEX": 1},
+	  { "FIRSTNAME": {"x": "y"}, "LASTNAME": {"zZz": "ZzZ"}, "LIKES_TIRAMISU": true, "INDEX": 1},
+	]
+| source empty
+| set
+	testA = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LASTNAME" )		# returns "Johansson"
+	testB = arrayLookup( g(myArray), "FIRSTNAME", "Victoria", "LASTNAME" )		# returns "Fredriksson"
+	testC = arrayLookup( g(myArray), "FIRSTNAME", "Artemis", "LASTNAME" )		# returns "Eliasson"
+	testD = arrayLookup( g(myArray), "FIRSTNAME", "NoneExistent", "LASTNAME" )		# returns null
+	
+	testNull1 = arrayLookup( null, "FIRSTNAME", "Venus", "LASTNAME" )		# returns null
+	testNull2 = arrayLookup( g(myArray), null, "Venus", "LASTNAME" )		# returns null
+	testNull3 = arrayLookup( g(myArray), "FIRSTNAME", null, "LASTNAME" )	# returns null
+	testNull4 = arrayLookup( g(myArray), "FIRSTNAME", "Venus", null )		# returns null
+	
+	testOne = arrayLookup( g(myArray), "FIRSTNAME", 1, "LASTNAME")				# returns "One"
+	testBool = arrayLookup( g(myArray), "FIRSTNAME", true, "LASTNAME")			# returns "false"
+	testArray = arrayLookup( g(myArray), "FIRSTNAME", [1, 2, 3], "LASTNAME")	# returns ["a", "b", "c"]
+	testObject = arrayLookup( g(myArray), "FIRSTNAME", {"x": "y"}, "LASTNAME")	# returns {"zZz": "ZzZ"}
+""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		System.out.println( CFW.JSON.toJSONPretty(queryResults.getRecordsAsJsonArray()) );
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecordAsObject(0);
+		
+		Assertions.assertEquals("Johansson", record.get("testA").getAsString());
+		Assertions.assertEquals("Fredriksson", record.get("testB").getAsString());
+		Assertions.assertEquals("Eliasson", record.get("testC").getAsString());
+		Assertions.assertEquals(true, record.get("testD").isJsonNull());
+		
+		Assertions.assertEquals(true, record.get("testNull1").isJsonNull());
+		Assertions.assertEquals(true, record.get("testNull2").isJsonNull());
+		Assertions.assertEquals(true, record.get("testNull3").isJsonNull());
+		Assertions.assertEquals(true, record.get("testNull4").isJsonNull());
+		
+		Assertions.assertEquals("One", record.get("testOne").getAsString());
+		Assertions.assertEquals(false, record.get("testBool").getAsBoolean());
+		Assertions.assertEquals("[\"a\",\"b\",\"c\"]", CFW.JSON.toJSON(record.get("testArray")) );
+		Assertions.assertEquals("{\"zZz\":\"ZzZ\"}", CFW.JSON.toJSON(record.get("testObject")) );
 		
 	}
 	
@@ -1682,9 +1744,71 @@ source json data=`
 	 ****************************************************************/
 	@SuppressWarnings("deprecation")
 	@Test
+	public void testFileCSV() throws IOException {
+		
+		//--------------------------------
+		// Create File 
+		CFWStoredFile file = new CFWStoredFile();
+		file.id(987654321);
+		file.name("testdataPeople.data");
+		InputStream data = new StringBufferInputStream("""
+			"FIRSTNAME","LASTNAME","LOCATION","LIKES_TIRAMISU","VALUE","INDEX"
+			"Victoria","Fredriksson","Finias","false","55","1"
+			"Artemis","Eliasson","Pandaemonium","true","73","2"
+			"Venus","Johansson","Xibalba","true","69","0"
+			"Heracles","Jonsson","Dinas Affaraon","true","54","3"
+			"Bacchus","Viklund","Garden of Eden","true","91","4"
+			"Ares","Fransson","Aztlan","false","82","5"
+		""");
+		
+		CFW.DB.transactionRollback(); // make sure no transaction is started
+			CFW.DB.StoredFile.createAndStoreData(file, data);
+		CFW.DB.transactionStart(); // make sure a transaction is started
+		
+		//--------------------------------
+		// Test Query
+		String queryString = """
+| globals
+	myArray = fileCSV(""" + file.id() + """
+			, ",")
+| source empty
+| set
+	lastname = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LASTNAME" )
+	location = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LOCATION" )
+	tiramisu = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LIKES_TIRAMISU" )
+""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		//------------------------------
+		// First Record
+		JsonObject record = queryResults.getRecordAsObject(0);
+		
+		System.out.println(queryResults.toJson());
+		Assertions.assertEquals("Johansson", record.get("lastname").getAsString());
+		Assertions.assertEquals("Xibalba", record.get("location").getAsString());
+		Assertions.assertEquals("true", record.get("tiramisu").getAsString());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@SuppressWarnings("deprecation")
+	@Test
 	public void testFileJSON() throws IOException {
 		
 		
+		//--------------------------------
+		// Create File 
 		CFWStoredFile file = new CFWStoredFile();
 		file.id(123456789);
 		file.name("testdataCountries.data");
@@ -1695,8 +1819,13 @@ source json data=`
 				, "US": { "name": "United States", "capital": "Washington DC" }
 			}
 		""");
-		CFW.DB.StoredFile.createAndStoreData(file, data);
 		
+		CFW.DB.transactionRollback(); // make sure no transaction is started
+			CFW.DB.StoredFile.createAndStoreData(file, data);
+		CFW.DB.transactionStart(); // make sure a transaction is started
+		
+		//--------------------------------
+		// Test
 		String queryString = """
 | globals
 	countries = fileJson(""" + file.id() + """

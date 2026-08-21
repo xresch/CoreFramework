@@ -231,6 +231,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionArrayAdd(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionArrayConcat(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionArrayDedup(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionArrayLookup(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionArrayReverse(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionArraySplit(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionArrayStringify(null));
@@ -260,6 +261,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionExtractBounds(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFields(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFieldsMatching(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFileCSV(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFileJson(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFirst(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFloor(null));

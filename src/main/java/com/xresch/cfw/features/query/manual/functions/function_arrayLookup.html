@@ -1,0 +1,55 @@
+
+<p>The objectLookup-function allows you to use an object as a list of key value pairs and lookup a value for keys.
+This function is case-sensitive.</p>
+
+<p>The following query creates sample records and show some uses of the objectLookup-function:</p>
+
+<pre><code class="language-cfwquery">| globals
+	myArray = [
+	  { "FIRSTNAME": "Venus", "LASTNAME": "Johansson", "LIKES_TIRAMISU": false, "INDEX": 0},
+	  { "FIRSTNAME": "Victoria", "LASTNAME": "Fredriksson", "LIKES_TIRAMISU": false, "INDEX": 1},
+	  { "FIRSTNAME": "Artemis", "LASTNAME": "Eliasson", "LIKES_TIRAMISU": true, "INDEX": 1},
+	  { "FIRSTNAME": 1, "LASTNAME": "One", "LIKES_TIRAMISU": true, "INDEX": 1},
+	  { "FIRSTNAME": true, "LASTNAME": false, "LIKES_TIRAMISU": true, "INDEX": 1},
+	  { "FIRSTNAME": [1, 2, 3], "LASTNAME": ["a", "b", "c"], "LIKES_TIRAMISU": true, "INDEX": 1},
+	  { "FIRSTNAME": {"x": "y"}, "LASTNAME": {"zZz": "ZzZ"}, "LIKES_TIRAMISU": true, "INDEX": 1},
+	]
+| source empty
+| set
+	testA = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LASTNAME" )		# returns "Johansson"
+	testB = arrayLookup( g(myArray), "FIRSTNAME", "Victoria", "LASTNAME" )		# returns "Fredriksson"
+	testC = arrayLookup( g(myArray), "FIRSTNAME", "Artemis", "LASTNAME" )		# returns "Eliasson"
+	testD = arrayLookup( g(myArray), "FIRSTNAME", "NoneExistent", "LASTNAME" )		# returns null
+	
+	testNull1 = arrayLookup( null, "FIRSTNAME", "Venus", "LASTNAME" )		# returns null
+	testNull2 = arrayLookup( g(myArray), null, "Venus", "LASTNAME" )		# returns null
+	testNull3 = arrayLookup( g(myArray), "FIRSTNAME", null, "LASTNAME" )	# returns null
+	testNull4 = arrayLookup( g(myArray), "FIRSTNAME", "Venus", null )		# returns null
+	
+	testOne = arrayLookup( g(myArray), "FIRSTNAME", 1, "LASTNAME")				# returns "One"
+	testBool = arrayLookup( g(myArray), "FIRSTNAME", true, "LASTNAME")			# returns "false"
+	testArray = arrayLookup( g(myArray), "FIRSTNAME", [1, 2, 3], "LASTNAME")	# returns ["a", "b", "c"]
+	testObject = arrayLookup( g(myArray), "FIRSTNAME", {"x": "y"}, "LASTNAME")	# returns {"zZz": "ZzZ"}</code></pre>
+
+
+
+<p>This function is very useful in combination with the function fileCSV() to load lookup values from the file manager. 
+
+<p>Let's say the file "people.csv" contains the following data:</p>
+<pre><code class="language-cfwquery">"FIRSTNAME","LASTNAME","LOCATION","LIKES_TIRAMISU","VALUE","INDEX","TIME"
+"Victoria","Fredriksson","Finias","false","55","1",""
+"Artemis","Eliasson","Pandaemonium","true","73","2",""
+"Venus","Johansson","Xibalba","true","69","0",""
+"Heracles","Jonsson","Dinas Affaraon","true","54","3",""
+"Bacchus","Viklund","Garden of Eden","true","91","4",""
+"Ares","Fransson","Aztlan","false","82","5",""</code></pre>
+
+<p>The following query would read the file content globally as an array, and will check where the field  FIRSTNAME is equals &quot;Venus&quot;, 
+and retrieves the values from the fields LASTNAME, LOCATION and LIKES_TIRAMISU:</p>
+<pre><code class="language-cfwquery">| globals
+	myArray = fileCSV({"id":197,"name":"people.csv"}, ";")
+| source empty
+| set
+	lastname = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LASTNAME" )
+	location = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LOCATION" )
+	tiramisu = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LIKES_TIRAMISU" )</code></pre>

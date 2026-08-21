@@ -210,9 +210,11 @@ DONE
 	- topN
 	
 - Query: Added Functions:
-	- arrayDedup
+	- arrayDedup 
+	- arrayLookup
 	- distinctStream
 	- fieldsMatching
+	- fileCSV
 	- fileJson
 	- objectLookup
 	- separators
