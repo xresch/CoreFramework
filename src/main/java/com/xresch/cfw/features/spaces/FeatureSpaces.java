@@ -2,6 +2,9 @@ package com.xresch.cfw.features.spaces;
 
 import java.util.LinkedHashMap;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
@@ -533,6 +536,27 @@ public class FeatureSpaces extends CFWAppFeature {
 			field.setValue(selectedSpace);
 		}
 		return field;
+	}
+	
+	/***********************************************************************
+	 * Adds information for the space to the given objects in the array.
+	 * 
+	 * @param array containing JsonObjects with field FK_ID_SPACE
+	 * @returns the array for chaining
+	 * 
+	 ***********************************************************************/
+	public static JsonArray addSpacesInfoToJSON(JsonArray array) {
+		for(JsonElement element : array) {
+			JsonObject object = element.getAsJsonObject();
+			
+			int spaceID = object.get(FK_ID_SPACE).getAsInt();
+			CFWSpace space = CFW.DB.Spaces.getFromCache(spaceID);
+			if(space != null) {
+				object.addProperty("SPACE_ABBREV", space.abbreviation());
+			}
+		}
+		
+		return array;
 	}
 	
 	/**********************************************************************************

@@ -239,24 +239,7 @@ public class CFWDBCredentials {
 		return CFWDBDefaultOperations.selectFirstBySpaced(cfwObjectClass, CFWCredentialsFields.NAME.toString(), name);
 	}
 	
-	
-	/***************************************************************
-	 * Return a list of all user credentials
-	 * 
-	 * @return Returns a resultSet with all credentials or null.
-	 ****************************************************************/
-	public static ResultSet getUserCredentialsList() {
 		
-		return new CFWSQL(new CFWCredentials())
-				.queryCacheSpaced()
-				.select()
-				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
-				.and().append(FeatureSpaces.getSQLFilter())
-				.orderby(CFWCredentialsFields.NAME.toString())
-				.getResultSet();
-		
-	}
-	
 
 	/***************************************************************
 	 * Return a list of all user credentials as json string.
@@ -265,14 +248,18 @@ public class CFWDBCredentials {
 	 ****************************************************************/
 	public static String getUserCredentialsListAsJSON() {
 		
-		return new CFWSQL(new CFWCredentials())
+		JsonArray array = new CFWSQL(new CFWCredentials())
 				.queryCacheSpaced()
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, false)
 				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+					FeatureSpaces.addSpacesInfoToJSON(array)
+				);
 	}
 	
 	/***************************************************************
@@ -282,14 +269,18 @@ public class CFWDBCredentials {
 	 ****************************************************************/
 	public static String getUserArchivedListAsJSON() {
 		
-		return new CFWSQL(new CFWCredentials())
+		JsonArray array = new CFWSQL(new CFWCredentials())
 				.queryCacheSpaced()
 				.select()
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, true)
 				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 	}
 		
 
@@ -301,14 +292,18 @@ public class CFWDBCredentials {
 	public static String getAdminCredentialsListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
-			return new CFWSQL(new CFWCredentials())
+			JsonArray array = new CFWSQL(new CFWCredentials())
 				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select()
 				.where(CFWCredentialsFields.IS_ARCHIVED, false)
 				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+			
+			return CFW.JSON.toJSON(
+					FeatureSpaces.addSpacesInfoToJSON(array)
+				);
 		}else {
 			CFW.Messages.accessDenied();
 			return "[]";
@@ -323,14 +318,18 @@ public class CFWDBCredentials {
 	public static String getAdminArchivedListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
-			return new CFWSQL(new CFWCredentials())
+			JsonArray array = new CFWSQL(new CFWCredentials())
 				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select()
 				.where(CFWCredentialsFields.IS_ARCHIVED, true)
 				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+			
+			return CFW.JSON.toJSON(
+					FeatureSpaces.addSpacesInfoToJSON(array)
+				);
 		}else {
 			CFW.Messages.accessDenied();
 			return "[]";
@@ -364,7 +363,8 @@ public class CFWDBCredentials {
 		// Union with Shared Groups
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-			.select(CFWCredentialsFields.PK_ID
+			.select(CFWCredentialsFields.FK_ID_SPACE
+				  , CFWCredentialsFields.PK_ID
 				  , CFWCredentialsFields.NAME
 				  , CFWCredentialsFields.ACCOUNT
 				  , CFWCredentialsFields.DESCRIPTION
@@ -390,7 +390,8 @@ public class CFWDBCredentials {
 		// Union with Editor Roles
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-			.select(CFWCredentialsFields.PK_ID
+			.select(CFWCredentialsFields.FK_ID_SPACE
+					, CFWCredentialsFields.PK_ID
 					, CFWCredentialsFields.NAME
 					, CFWCredentialsFields.ACCOUNT
 					, CFWCredentialsFields.DESCRIPTION
@@ -429,10 +430,12 @@ public class CFWDBCredentials {
 				);
 			
 		}
-	
+		
 		//-------------------------
 		// Return
-		return CFW.JSON.toJSON(sharedBoards);
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(sharedBoards)
+			);
 	}
 	
 				

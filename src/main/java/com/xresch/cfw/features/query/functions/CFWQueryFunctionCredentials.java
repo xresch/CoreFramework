@@ -56,7 +56,7 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(credentialsName)";
+		return FUNCTION_NAME+"(credentialsID)";
 	}
 	
 	/***********************************************************************************************
@@ -74,7 +74,7 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 	public String descriptionSyntaxDetailsHTML() {
 		return 
 			"<ul>"
-				+"<li><b>credentialsName:&nbsp;</b>The name of the credentials.</li>"
+				+"<li><b>credentialsID:&nbsp;</b>The id, name or object {&quot;id&quot;: 123, ...} to select the credentials.</li>"
 			+"</ul>"
 			;
 	}

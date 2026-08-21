@@ -296,19 +296,19 @@ function cfw_credentialslist_printCredentials(data, type){
 	// Tab Desciption
 
 	switch(type){
-		case "mycredentials":		parent.append('<p>This tab shows all credentials where you are the owner.</p>')
+		case "mycredentials":		parent.append('<p>This tab shows all credentials in the selected space where you are the owner.</p>')
 									break;	
 									
-		case "myarchived":			parent.append('<p>This tab shows all archived credentials where you are the owner.</p>')
+		case "myarchived":			parent.append('<p>This tab shows all archived credentials in the selected space where you are the owner.</p>')
 									break;	
 									
-		case "sharedcredentials":	parent.append('<p>This list contains all the credentials that are shared by others and by you.</p>')
+		case "sharedcredentials":	parent.append('<p>This list contains all the credentials in the selected space that are shared by others and by you.</p>')
 									break;
 									
-		case "adminarchived":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin archive. The list contains all archived credentials of all users.</b></p>')
+		case "adminarchived":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin archive. The list contains all archived credentials in the selected space of all users.</b></p>')
 									break;	
 									
-		case "admincredentials":	parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all credentials of all users.</b></p>')
+		case "admincredentials":	parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all credentials in the selected space of all users.</b></p>')
 									break;	
 														
 		default:					break;
@@ -340,13 +340,13 @@ function cfw_credentialslist_printCredentials(data, type){
 		var showFields = [];
 		if(type == 'mycredentials' 
 		|| type == 'myarchived'){
-			showFields = ['NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
+			showFields = ['PK_ID', 'SPACE_ABBREV', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
 		}else if ( type == 'sharedcredentials'
 				|| type == 'favedcredentials'){
-			showFields = ['OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS'];
+			showFields = ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS'];
 		}else if (type == 'admincredentials'
 				||type == 'adminarchived' ){
-			showFields = ['PK_ID', 'OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
+			showFields = ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
 		}
 		
 		//======================================
@@ -479,6 +479,7 @@ function cfw_credentialslist_printCredentials(data, type){
 					renderdef: {
 						visiblefields: [ "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
 						labels: {
+							SPACE_ABBREV: 'Space',
 					 		PK_ID: "ID",
 					 		IS_SHARED: 'Shared',
 					 		JSON_SHARE_WITH_USERS: 'Shared User', 
@@ -523,7 +524,8 @@ function cfw_credentialslist_printCredentials(data, type){
 			 	visiblefields: showFields,
 			 	labels: {
 			 		PK_ID: "ID",
-			 		IS_SHARED: 'Shared'
+			 		IS_SHARED: 'Shared',
+					SPACE_ABBREV: 'Space'
 			 	},
 			 	customizers: {
 						
