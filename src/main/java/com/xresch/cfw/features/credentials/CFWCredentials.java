@@ -359,7 +359,7 @@ public class CFWCredentials extends CFWObject {
 						.setValue(selectedValue)
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
 							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-								return CFW.DB.Users.autocompleteUserForSpace(searchValue, this.getMaxResults());					
+								return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());					
 							}
 						});
 
@@ -388,7 +388,7 @@ public class CFWCredentials extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+						return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, this.getMaxResults());					
 					}
 				});
 		
@@ -418,7 +418,7 @@ public class CFWCredentials extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Users.autocompleteUserForSpace(searchValue, this.getMaxResults());					
+						return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());					
 					}
 				});
 
@@ -447,7 +447,7 @@ public class CFWCredentials extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+						return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, this.getMaxResults());					
 					}
 				});
 		

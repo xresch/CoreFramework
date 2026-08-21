@@ -543,7 +543,7 @@ public class CFWDBUser {
 	 * @param maxResults
 	 * @return AutocompleteResult
 	 ****************************************************************/
-	public static AutocompleteResult autocompleteUserForSpace(String searchValue, int maxResults) {
+	public static AutocompleteResult autocompleteUserSpaced(String searchValue, int maxResults) {
 		
 		if(Strings.isNullOrEmpty(searchValue)) {
 			return new AutocompleteResult();
