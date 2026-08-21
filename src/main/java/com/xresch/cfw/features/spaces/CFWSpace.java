@@ -369,6 +369,8 @@ public class CFWSpace extends CFWObject {
 		
 		//--------------------------------------
 		// Create Field
+		boolean isRootSpace = this.type() == CFWSpaceType.ROOT_SPACE;
+		
 		return CFWField.newTagsSelector(FIELDNAME_USER_GROUPS)
 				.setLabel("Assigned Groups")
 				.setDescription("The groups whose usershave access to this space. Start typing to get suggestions.")
@@ -376,7 +378,13 @@ public class CFWSpace extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+						
+						if(isRootSpace) {
+							return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());	
+						}else {
+							return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, this.getMaxResults());	
+						}
+										
 					}
 				});
 		
@@ -433,6 +441,8 @@ public class CFWSpace extends CFWObject {
 		
 		//--------------------------------------
 		// Create Field
+		boolean isRootSpace = this.type() == CFWSpaceType.ROOT_SPACE;
+		
 		return CFWField.newTagsSelector(FIELDNAME_ADMIN_GROUPS)
 				.setLabel("Admin Groups")
 				.setDescription("The groups that are allowed to add more spaces to this space and change space settings.")
@@ -440,7 +450,11 @@ public class CFWSpace extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+						if(isRootSpace) {
+							return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());	
+						}else {
+							return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, this.getMaxResults());	
+						}				
 					}
 				});
 		

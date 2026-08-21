@@ -14,7 +14,6 @@ import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.credentials.CFWCredentials;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
 import com.xresch.cfw.features.usermgmt.CFWPermissionChangeListener;
@@ -24,7 +23,6 @@ import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
-import com.xresch.cfw.utils.CFWRandom;
 
 /**************************************************************************************************************
  * 
@@ -175,7 +173,7 @@ public class FeatureSpaces extends CFWAppFeature {
 		
 		if(CFWDBSpaces.getCount() == 3) {
 			//createTestdataLarge();
-			createTestdataHierarchy(0);
+			new CFWSpacesTestdataGenerator(true).generateHierarchy();
 		}
 		
 		CFW.DB.Spaces.resetCaches();
@@ -250,233 +248,7 @@ public class FeatureSpaces extends CFWAppFeature {
 		
 	}
 	
-	/***********************************************************************
-	 * 
-	 ***********************************************************************/
-	public void createTestdataHierarchy(int index) {
-		
-		String[] characters = new String[] {"A", "B", "C", "D"};
-		
-		//----------------------------------
-		// Is Done
-		if(index > characters.length - 2) {
-			return;
-		}
-		
-		//----------------------------------
-		// Create root space
-		String char1 = characters[index];
-		String char2 = characters[index+1];
-		String rootName = char1 + char2;
-		
-		CFWSpace rootSpace = new CFWSpace()
-			.type(CFWSpaceType.ROOT_SPACE)
-			.name("Root " + rootName)
-			.abbreviation("R" + rootName);
-		
-		Integer rootID = CFWHierarchy.create(null, rootSpace);
-		
-		if(rootID == null) {
-			return; // error
-		}
-		
-		//-----------------------------
-		// Create Credentials
-		CFWCredentials credentialsRoot = new CFWCredentials()
-				.fkidSpace(rootID)
-				.foreignKeyOwner(1)
-				.name("CREDS Root "+rootName)
-				.isShared(true)
-				.tags("tag_R"+rootName)
-				;
-		
-		Integer credsRootID = CFW.DB.Credentials.createGetPrimaryKey(credentialsRoot);
-				
-		//-----------------------------
-		// Create Subordinate Trees
-		createSubordinatesHierarchy(rootID, rootID, char1, 0, 2);
-		createSubordinatesHierarchy(rootID, rootID, char2, 0, 2);
-		
-		//----------------------------------
-		// Create next Root
-		createTestdataHierarchy(index+2);
-					
-	}
-	
-	/***********************************************************************
-	 * 
-	 ***********************************************************************/
-	private void createSubordinatesHierarchy(int rootID, int parentID, String character, int currentDepth, int maxDepth) {
-		
-		//#########################################################
-		// Regular Space 
-		//#########################################################
-		
-		//-----------------------------
-		// Make Space
-		String label = character + "L" + currentDepth;
-		CFWSpace space = new CFWSpace()
-			.type(CFWSpaceType.SPACE)
-			.name("Space "+label)
-			.abbreviation(label);
-		
-		Integer newSpaceID = CFWHierarchy.create(parentID, space);
-		
-		if(newSpaceID == null) {
-			return; // error
-		}
-		
-		//-----------------------------
-		// Create Credentials
-		CFWCredentials credentials = new CFWCredentials()
-				.fkidSpace(newSpaceID)
-				.foreignKeyOwner(1)
-				.name("CREDS "+label)
-				.isShared(true)
-				.tags("tag_"+label)
-				;
-		
-		Integer credsID = CFW.DB.Credentials.createGetPrimaryKey(credentials);
-		
-		//#########################################################
-		// Global Space 
-		//#########################################################
-		
-		//-----------------------------
-		// Make Space
-		String labelGlobal = label+"G";
-		CFWSpace globalSpace = new CFWSpace()
-			.type(CFWSpaceType.SPACE)
-			.name("Global " + labelGlobal)
-			.abbreviation(labelGlobal)
-			.isGlobal(true);
-		
-		Integer newGlobalSpaceID = CFWHierarchy.create(parentID, globalSpace);
-		
-		if(newGlobalSpaceID == null) {
-			return; // error
-		}
-		
-		//-----------------------------
-		// Create Credentials
-		CFWCredentials credentialsGlobals = new CFWCredentials()
-				.fkidSpace(newGlobalSpaceID)
-				.foreignKeyOwner(1)
-				.name("CREDS Global "+labelGlobal)
-				.isShared(true)
-				.tags("tag_"+labelGlobal)
-				;
-		
-		Integer credsGlobalID = CFW.DB.Credentials.createGetPrimaryKey(credentialsGlobals);
-				
-		//#########################################################
-		// Subordinates
-		//#########################################################
-		if(currentDepth < maxDepth) {
-			createSubordinatesHierarchy(rootID, newSpaceID, character, currentDepth+1, maxDepth);
-		}
-	
-		
-	}
-	
-	/***********************************************************************
-	 * 
-	 ***********************************************************************/
-	public void createTestdataLarge() {
-		//-------------------------------------
-		// Create Testdata
-		if(CFWDBSpaces.getCount() == 0) {
-		
-			//----------------------------------
-			// Create hierarchy root elements
-			for(int i = 0; i < 1; i++) {
-				String name = CFWRandom.colorName() + " "+ CFWRandom.fruitName() + " Space";
-				String abbrevation = CFWRandom.stringAlphaNum(3).toUpperCase();
-				String description = CFWRandom.issueResolvedMessage();
-				String location = CFWRandom.mythicalLocation();
-				String email = name.toLowerCase().replace(" ", ".") + "@"+location.replace(" ", "-").toLowerCase() + ".com";
-				
-				CFWSpace rootSpace = new CFWSpace()
-					.type(CFWSpaceType.ROOT_SPACE)
-					.name(name)
-					.abbreviation(abbrevation)
-					.email(email)
-					.description(description)
-					.isEnabled(CFWRandom.bool());
-				
-				Integer rootID = CFWHierarchy.create(null, rootSpace);
-				
-				if(rootID == null) {
-					return; // error
-				}
-				
-				//-----------------------------
-				// Create Subordinates
-				createSubordinatesLarge(rootID, rootID, 3, 3, 0, 2);
-			}
-					
-		}
-	}
-	
-	/***********************************************************************
-	 * 
-	 ***********************************************************************/
-	private void createSubordinatesLarge(int rootID, int parentID, int minSubordinates, int maxSubordinates, int currentDepth, int maxDepth) {
-		
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		int max = CFWRandom.integer(minSubordinates, maxSubordinates);
-	
-		for(int i = 0; i < max; i++) {
-	
-			String name = CFWRandom.jobTitle();
-			String abbrevation = CFWRandom.stringAlphaNum(3).toUpperCase();
-			String description = CFWRandom.issueResolvedMessage();
-			String location = CFWRandom.mythicalLocation();
-			String email = name.toLowerCase().replace(" ", ".") + "@"+location.replace(" ", "-").toLowerCase() + ".com";
-			
-			CFWSpace person = new CFWSpace()
-				.type(CFWSpaceType.SPACE)
-				.name(name)
-				.abbreviation(abbrevation)
-				.email(email)
-				.description(description)
-				.isEnabled(CFWRandom.bool());
-			
-			Integer newPostID = CFWHierarchy.create(parentID, person);
-			
-			if(newPostID == null) {
-				return; // error
-			}
-			
-			//-----------------------------
-			// Create User
-			/*String firstname = CFW.Random.firstnameOfGod();
-			String lastname = CFW.Random.lastnameSweden();
-			String username = firstname+"_"+CFW.Random.stringAlphaNum(4);
-			String userLocation = CFW.Random.mythicalLocation().replace(" ", "-").toLowerCase();
-			String userEmail = username.toLowerCase() + "@" + userLocation + ".com";
-			
-			User user = new User(username)
-					.firstname(firstname)
-					.lastname(lastname)
-					.email(userEmail)
-					.setNewPassword(username, username);
-			
-			Integer userID = CFW.DB.Users.createGetPrimaryKey(user);
-			CFW.DB.SpaceUserMap.assignUserToSpace(userID, newPostID);
-			*/
-					
-			//-----------------------------
-			// Create Subordinates
-			if(currentDepth < maxDepth) {
-				int newMin = (minSubordinates-2 > 0) ? minSubordinates-2 : 0;
-				createSubordinatesLarge(rootID, newPostID, newMin, maxSubordinates-1, currentDepth+1, maxDepth);
-			}
-	
-		}
-	}
+
 	
 	/***********************************************************************
 	 * 

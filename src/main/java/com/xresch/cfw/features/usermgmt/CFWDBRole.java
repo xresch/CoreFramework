@@ -12,6 +12,7 @@ import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -193,7 +194,7 @@ public class CFWDBRole {
 	}
 	
 	/****************************************************************
-	 * Returns a AutocompleteResult with roles.
+	 * Returns a AutocompleteResult with groups.
 	 * 
 	 * @param searchValue
 	 * @param maxResults
@@ -206,13 +207,40 @@ public class CFWDBRole {
 		}
 		String likeString = "%"+searchValue.toLowerCase()+"%";
 		
-		return new Role()
-			.queryCache(CFWDBRole.class, "autocompleteRole(String, int)")
+		return new CFWSQL(new Role())
+			.queryCache()
 			.select(RoleFields.PK_ID,
 					RoleFields.NAME,
 					RoleFields.DESCRIPTION)
 			.whereLike("LOWER("+RoleFields.NAME+")", likeString)
 			.and(RoleFields.IS_GROUP, true)
+			.limit(maxResults)
+			.getAsAutocompleteResult(RoleFields.PK_ID, RoleFields.NAME, RoleFields.DESCRIPTION);
+
+	}
+	/****************************************************************
+	 * Returns a AutocompleteResult with groups for the groups that 
+	 * are accessible from the selected space.
+	 * 
+	 * @param searchValue
+	 * @param maxResults
+	 * @return true if exists, false otherwise or in case of exception.
+	 ****************************************************************/
+	public static AutocompleteResult autocompleteGroupSpaced(String searchValue, int maxResults) {
+		
+		if(Strings.isNullOrEmpty(searchValue)) {
+			return new AutocompleteResult();
+		}
+		String likeString = "%"+searchValue.toLowerCase()+"%";
+		
+		return new CFWSQL(new Role())
+			.queryCache()
+			.select(RoleFields.PK_ID,
+					RoleFields.NAME,
+					RoleFields.DESCRIPTION)
+			.whereLike("LOWER("+RoleFields.NAME+")", likeString)
+			.and(RoleFields.IS_GROUP, true)
+			.and().append(FeatureSpaces.getSQLFilter())
 			.limit(maxResults)
 			.getAsAutocompleteResult(RoleFields.PK_ID, RoleFields.NAME, RoleFields.DESCRIPTION);
 

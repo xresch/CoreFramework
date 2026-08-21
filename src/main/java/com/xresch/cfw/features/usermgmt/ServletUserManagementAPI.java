@@ -274,6 +274,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 	protected static void makeCreateRoleForm() {
 		
 		Role role = new Role();
+		role.removeField(RoleFields.FK_ID_SPACE); // no editors for roles
 		role.removeField(RoleFields.JSON_EDITORS); // no editors for roles
 
 		CFWForm createRoleForm = role.toForm("cfwCreateRoleForm", "Create Role");

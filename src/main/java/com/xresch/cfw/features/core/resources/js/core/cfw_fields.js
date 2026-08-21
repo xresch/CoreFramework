@@ -205,8 +205,18 @@ function cfw_initializeExpandableTextareaField(fieldID){
  *************************************************************************************/
 function cfw_initializeSelect(fieldID, valueLabelOptions, filterable, callbackFunction){
 	
+	//-------------------------
+	// Prepare
 	let id = '#'+fieldID;
+	let wrapperID = fieldID+'-cfw-select';
 
+	// Check is already initialized
+	if($('#'+wrapperID).length > 0){
+		return;
+	}
+		
+	//-------------------------
+	// Variables
 	let originalField = $(id);
 	let selectedValue = originalField.val();
 	
@@ -214,7 +224,7 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable, callbackFu
 	
 	//--------------------------
 	// Create Wrapper
-	let wrapper = $('<div id="'+fieldID+'-cfw-select" class="cfw-select w-100">');
+	let wrapper = $('<div id="'+wrapperID+'" class="cfw-select w-100">');
 	wrapper.data('options', valueLabelOptions);
 	originalField.before(wrapper);
 	wrapper.append(originalField);	

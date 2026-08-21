@@ -217,8 +217,8 @@ public class CFWCredentials extends CFWObject {
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
 		this.addFields(
-				  fkidSpace
-				, id
+				  id
+				, fkidSpace
 				, foreignKeyOwner
 				, name
 				, description

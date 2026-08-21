@@ -19,7 +19,7 @@ import com.xresch.cfw.features.api.APIDefinitionCreate;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.LengthValidator;
@@ -37,6 +37,7 @@ public class Role extends CFWObject {
 //	public static final String FIELDNAME_ROLEMEMBERS = "JSON_ROLEMEMBERS";
 //	
 	public enum RoleFields{
+		FK_ID_SPACE, // from FeatureSpaces.FK_ID_SPACE
 		PK_ID,
 		CATEGORY,
 		NAME,
@@ -51,6 +52,8 @@ public class Role extends CFWObject {
 
 	private static Logger logger = CFWLog.getLogger(Role.class.getName());
 	
+	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false);
+	
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, RoleFields.PK_ID.toString())
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the role.")
@@ -63,7 +66,8 @@ public class Role extends CFWObject {
 			.apiFieldType(FormFieldType.SELECT)
 			.setOptions(new String[] {FeatureUserManagement.CATEGORY_USER})
 			//.setOptions(new String[] {FeatureUserManagement.CATEGORY_USER, "space"})
-			.addValidator(new LengthValidator(-1, 32));
+			.addValidator(new LengthValidator(-1, 32))
+			.setValue("user");
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, RoleFields.NAME.toString())
 			.setColumnDefinition("VARCHAR(255) UNIQUE")
@@ -143,7 +147,19 @@ public class Role extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, category, name, description, isDeletable, isRenamable, isGroup, foreignKeyGroupOwner, editors, members);
+		this.addFields(
+				  id
+				, fkidSpace
+				, category
+				, name
+				, description
+				, isDeletable
+				, isRenamable
+				, isGroup
+				, foreignKeyGroupOwner
+				, editors
+				, members
+			);
 	}
 	
 	/**************************************************************************************
@@ -261,6 +277,7 @@ public class Role extends CFWObject {
 		String[] outputFields = 
 				new String[] {
 						RoleFields.PK_ID.toString(), 
+						RoleFields.FK_ID_SPACE.toString(), 
 						RoleFields.CATEGORY.toString(),
 						RoleFields.NAME.toString(),
 						RoleFields.DESCRIPTION.toString(),
@@ -461,6 +478,15 @@ public class Role extends CFWObject {
 	
 	public Role id(Integer id) {
 		this.id.setValue(id);
+		return this;
+	}
+	
+	public Integer fkidSpace() {
+		return fkidSpace.getValue();
+	}
+	
+	public Role fkidSpace(Integer id) {
+		this.fkidSpace.setValue(id);
 		return this;
 	}
 	
