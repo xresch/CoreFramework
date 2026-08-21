@@ -333,6 +333,7 @@ public class CFWSpace extends CFWObject {
 		 
 		//--------------------------------------
 		// Create Field
+		boolean isRootSpace = this.type() == CFWSpaceType.ROOT_SPACE;
 		return CFWField.newTagsSelector(FIELDNAME_USERS)
 						.setDescription("The users that are assigned to this space and have access to it. Start typing to get suggestions.")
 						.setLabel("Assigned Users")
@@ -341,8 +342,13 @@ public class CFWSpace extends CFWObject {
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
 							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 								
-								// TODO Spaces: Filter only users that are in same root space
-								return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+								if(isRootSpace) {
+									return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());	
+								}else {
+									return CFW.DB.Users.autocompleteUserForSpace(searchValue, this.getMaxResults());	
+								}
+								
+									
 							}
 						});
 
@@ -392,6 +398,7 @@ public class CFWSpace extends CFWObject {
 		 
 		//--------------------------------------
 		// Create Field
+		boolean isRootSpace = this.type() == CFWSpaceType.ROOT_SPACE;
 		return CFWField.newTagsSelector(FIELDNAME_ADMINS)
 				.setLabel("Admins")
 				.setDescription("The users that are allowed to add more spaces to this space and change space settings.")
@@ -399,7 +406,13 @@ public class CFWSpace extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+						
+						if(isRootSpace) {
+							return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());	
+						}else {
+							return CFW.DB.Users.autocompleteUserForSpace(searchValue, this.getMaxResults());	
+						}
+						
 					}
 				});
 

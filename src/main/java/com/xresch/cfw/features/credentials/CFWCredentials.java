@@ -359,7 +359,7 @@ public class CFWCredentials extends CFWObject {
 						.setValue(selectedValue)
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
 							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-								return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+								return CFW.DB.Users.autocompleteUserForSpace(searchValue, this.getMaxResults());					
 							}
 						});
 
@@ -418,7 +418,7 @@ public class CFWCredentials extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+						return CFW.DB.Users.autocompleteUserForSpace(searchValue, this.getMaxResults());					
 					}
 				});
 

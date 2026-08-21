@@ -501,7 +501,7 @@ public class CFWDBUser {
 	 * 
 	 * @param searchValue
 	 * @param maxResults
-	 * @return true if exists, false otherwise or in case of exception.
+	 * @return AutocompleteResult
 	 ****************************************************************/
 	public static AutocompleteResult autocompleteUser(String searchValue, int maxResults) {
 		
@@ -509,8 +509,8 @@ public class CFWDBUser {
 			return new AutocompleteResult();
 		}
 		String likeString = "%"+searchValue.toLowerCase()+"%";
-		ArrayList<CFWObject> userList = new User()
-			.queryCache(CFWDBUser.class, "autocompleteUser")
+		ArrayList<CFWObject> userList = new CFWSQL(new User())
+			.queryCache()
 			.select(UserFields.PK_ID,
 					UserFields.USERNAME,
 					UserFields.FIRSTNAME,
@@ -522,6 +522,48 @@ public class CFWDBUser {
 			.and().not().is(UserFields.PK_ID, CFW.Context.Request.getUser().id())
 			.limit(maxResults)
 			.getAsObjectList();
+		
+		AutocompleteList autocompleteList = new AutocompleteList();
+		for(CFWObject userObject : userList) {
+			User user = (User) userObject;
+						
+			autocompleteList.addItem(user.id(), user.createUserLabel(), user.email());
+			
+		}
+			
+		return new AutocompleteResult(autocompleteList);
+	}
+	
+	/****************************************************************
+	 * Returns a AutocompleteResult with users that can be found in
+	 * any space that have have same Root Space as the currently 
+	 * selected space.
+	 * 
+	 * @param searchValue
+	 * @param maxResults
+	 * @return AutocompleteResult
+	 ****************************************************************/
+	public static AutocompleteResult autocompleteUserForSpace(String searchValue, int maxResults) {
+		
+		if(Strings.isNullOrEmpty(searchValue)) {
+			return new AutocompleteResult();
+		}
+		
+		int SpaceID = CFW.Context.Request.getSelectedSpaceID();
+		String likeString = "%"+searchValue.toLowerCase()+"%";
+		ArrayList<CFWObject> userList = 
+			new CFWSQL(new User())
+				.queryCache()
+				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE
+								, "sql_autocompleteUserForSpace.sql"
+								, SpaceID
+								, likeString
+								, likeString
+								, likeString
+								, CFW.Context.Request.getUser().id()
+								, maxResults
+							)
+				.getAsObjectList();
 		
 		AutocompleteList autocompleteList = new AutocompleteList();
 		for(CFWObject userObject : userList) {
