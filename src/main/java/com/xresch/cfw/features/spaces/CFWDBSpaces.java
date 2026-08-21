@@ -444,6 +444,20 @@ public class CFWDBSpaces {
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
+	public static boolean checkCurrentUserHasAccessToSpace(int spaceID) {
+				
+		for(CFWSpace space : getSpaceListForUser()) {
+			if(space.id() == spaceID) {
+				return true;
+			}
+		}
+		return false;
+		
+	}
+	
+	/*****************************************************************************
+	 *  
+	 *****************************************************************************/
 	public static AutocompleteResult autocompletePostForRootSpace(String searchString, int spaceid, int limit) {
 		return autocompleteSpaceForRootSpace(searchString, CFWSpaceType.SPACE, spaceid, limit);
 	}

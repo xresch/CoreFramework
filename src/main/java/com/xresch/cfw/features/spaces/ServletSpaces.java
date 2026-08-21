@@ -71,13 +71,27 @@ public class ServletSpaces extends HttpServlet
 			
 				if(item.equals("selectedspaceid")
 				&& spaceID != null){
-					CFW.Context.Request.getSessionData().setSpaceID(Integer.parseInt(spaceID) );
+					JSONResponse jsonResponse = new JSONResponse();	
+					int spaceInteger = Integer.parseInt(spaceID);
+					if(CFW.DB.Spaces.checkCurrentUserHasAccessToSpace(spaceInteger)) {
+						CFW.Context.Request.getSessionData().setSpaceID(spaceInteger);
+					}else {
+						CFWSpace space = CFW.DB.Spaces.getFromCache(spaceInteger);
+						if(space != null) {
+							CFW.Messages.addWarningMessage("The current user does not have access to the Space '"+space.name()+"'.");
+							jsonResponse.setSuccess(false);
+						}else {
+							CFW.Messages.addWarningMessage("The space does not exist: " + spaceInteger + "");
+							jsonResponse.setSuccess(false);
+						}
+					}
 					return;
 				}
 				
 				String filterSpaceInclusive = request.getParameter("filterSpaceInclusive");
 				if(item.equals("filterSpaceInclusive")
 				&& filterSpaceInclusive != null){
+					JSONResponse jsonResponse = new JSONResponse();	
 					CFW.Context.Request.getSessionData().setFilterSpaceInclusive( Boolean.parseBoolean(filterSpaceInclusive) );
 					return;
 				}
