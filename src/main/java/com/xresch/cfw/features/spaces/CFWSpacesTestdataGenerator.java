@@ -3,6 +3,7 @@ package com.xresch.cfw.features.spaces;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.features.credentials.CFWCredentials;
+import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.utils.CFWRandom;
@@ -15,6 +16,7 @@ import com.xresch.cfw.utils.CFWRandom;
 public class CFWSpacesTestdataGenerator {
 
 	boolean doCreateCredentials = false;
+	boolean doCreateDashboards = false;
 	boolean doCreateGroups = false;
 	
 	int ownerID = 1; // 1 is admin
@@ -26,7 +28,9 @@ public class CFWSpacesTestdataGenerator {
 	public CFWSpacesTestdataGenerator(boolean defaultForEntities) {
 		
 		doCreateCredentials = defaultForEntities;
+		doCreateDashboards = defaultForEntities;
 		doCreateGroups 		= defaultForEntities;
+		
 		
 	}
 	
@@ -36,7 +40,7 @@ public class CFWSpacesTestdataGenerator {
 	private Integer createCredentials(int spaceID, String name, boolean isShared, String... tags) {
 		
 		if(doCreateCredentials) {
-			CFWCredentials credentialsRoot = new CFWCredentials()
+			CFWCredentials object = new CFWCredentials()
 					.fkidSpace(spaceID)
 					.foreignKeyOwner(ownerID)
 					.name(name)
@@ -44,7 +48,28 @@ public class CFWSpacesTestdataGenerator {
 					.isShared(isShared)
 					;
 			
-			return CFW.DB.Credentials.createGetPrimaryKey(credentialsRoot);
+			return CFW.DB.Credentials.createGetPrimaryKey(object);
+		}
+		
+		return null;
+		
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	private Integer createDashboard(int spaceID, String name, boolean isShared, String... tags) {
+		
+		if(doCreateDashboards) {
+			Dashboard object = new Dashboard()
+					.fkidSpace(spaceID)
+					.foreignKeyOwner(ownerID)
+					.name(name)
+					.tags(tags)
+					.isShared(isShared)
+					;
+			
+			return CFW.DB.Dashboards.createGetPrimaryKey(object);
 		}
 		
 		return null;
@@ -111,6 +136,7 @@ public class CFWSpacesTestdataGenerator {
 		//-----------------------------
 		// Create Credentials
 		Integer rootIDCreds = createCredentials(rootID, "CREDS Root "+rootName, true, "tag_R"+rootName);
+		Integer rootIDDash = createDashboard(rootID, "DASH Root "+rootName, true, "tag_R"+rootName);
 		Integer rootIDGroup = createGroup(rootID, "Group Root "+rootName);
 
 		//-----------------------------
@@ -150,7 +176,9 @@ public class CFWSpacesTestdataGenerator {
 		//-----------------------------
 		// Create Credentials
 		Integer credsID = createCredentials(newSpaceID, "CREDS "+label, true, "tag_"+label);
+ 		Integer dashID = createDashboard(newSpaceID, "DASH "+label, true, "tag_"+label);
 		Integer groupID = createGroup(newSpaceID, "Group "+label);
+
 		
 		//#########################################################
 		// Global Space 
@@ -175,6 +203,7 @@ public class CFWSpacesTestdataGenerator {
 		//-----------------------------
 		// Create Credentials
 		Integer globalCredsID = createCredentials( newGlobalSpaceID, "CREDS "+labelGlobal, true, "tag_"+labelGlobal);
+		Integer globalDashID  = createDashboard( newGlobalSpaceID, "DASH "+labelGlobal, true, "tag_"+labelGlobal);
 		Integer globalGroupID = createGroup(newGlobalSpaceID, "Group "+labelGlobal);
 				
 		//#########################################################
@@ -186,6 +215,8 @@ public class CFWSpacesTestdataGenerator {
 	
 		
 	}
+	
+
 	
 	/***********************************************************************
 	 * 
@@ -225,7 +256,6 @@ public class CFWSpacesTestdataGenerator {
 					
 		}
 	}
-	
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/
@@ -285,4 +315,5 @@ public class CFWSpacesTestdataGenerator {
 	
 		}
 	}
+	
 }

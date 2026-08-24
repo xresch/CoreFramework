@@ -8,7 +8,9 @@ There are currently two types of spaces:
 	<li><b>Space:&nbsp;</b>A regular space that can be part of a Root Space or any other Space. </li>
 </ul>
 
-For Example, you could create a Root Space for every company and use regular Spaces to define projects.
+<p>
+For Example, you could create a Root Space for every company and use Regular Spaces to define projects.
+</p>
 
 <h2>Behavior</h2>
 Spaces have the following characteristics, which will determine their behaviour:
@@ -31,13 +33,44 @@ Spaces have the following characteristics, which will determine their behaviour:
 	
 	<li><b>Position in the Hierarchy:&nbsp;</b>The position in the hierarchy influences the access:
 		<ul>
-			<li><b>Editing Access:</b> Direction is top-down, editors can access any space that is below the one they are an editor for. They cannot edit spaces higher in the hierarchy. </li>
-			<li><b>Entity Access:</b> Direction is bottom-up, users can access entities(Credentials, Dashboards etc...) that are in spaces above the one they are assigned too, but not in spaces below. 
+			<li><b>Editing Access:&nbsp;</b> Direction is top-down, editors can access any space that is below the one they are an editor for. They cannot edit spaces higher in the hierarchy. </li>
+			<li><b>Entity Access:&nbsp;</b> Direction is bottom-up, users can access entities(Credentials, Dashboards etc...) that are in spaces above the one they are assigned too, but not in spaces below. 
 			This is true even if the user is not an assigned user of a parent space.
 			This allows to share entities with sub spaces, and to create sub spaces and move entities into them without breaking functionality. </li>
 		</ul>
 	 </li>
 </ul>
+
+
+
+
+<h2>Default Spaces</h2>
+<p>
+The following spaces are created by default:
+</p>
+<ul>
+	<li><b>[DEF] Default:&nbsp;</b> This is the default space, it contains everything that has existed before the Spaces Feature has been introduced.
+	Users get access to this space automatically. If you don't want this behavior, you can remove the "User" role from the space.  </li>
+	
+	<li><b>[GLB] Global:&nbsp;</b> An example global space, superusers have access to this one by default. Everything in a global Root Space can be used in any other space.</li>
+	
+	<li><b>[ALL] All:&nbsp;</b> A special space for admin purposes. It shows everything in every space so things can be found if they vanish in the depths of hierarchical complexity. </li>
+</ul>
+
+
+
+
+<h2>Selecting and Filtering</h2>
+<p>
+When a feature makes use of spaces, the Space Selector will be displayed in the navigation bar at the top right. With this you can select the 
+space you are currently working in and see data for. The Space selector contains only spaces you have been assigned to.
+Next to the Space Selector is a filter symbol, when clicking on it, you can switch between two different modes:
+</p>
+<ul>
+	<li><b>Inclusive (gray icon):&nbsp;</b> Lists of different features will show what is contained in the selected space, plus everything from other spaces you can access and make use of. </li>
+	<li><b>Exclusive (yellow icon):&nbsp;</b> Shows only what is contained in the selected space.</li>
+</ul>
+
 
 
 

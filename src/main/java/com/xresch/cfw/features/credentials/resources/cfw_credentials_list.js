@@ -660,15 +660,11 @@ function cfw_credentialslist_initialDraw(){
 
 
 	//-------------------------------------------
-	// Draw Tab
+	// Create Selector and Draw
 	cfw_spaces_createSpaceSelector(function(spaceid){
 			cfw_credentialslist_draw(null);
 		}, true);
 		
-	//-------------------------------------------
-	// Draw Tab
-	//cfw_credentialslist_draw();
-	
 }
 
 /******************************************************************

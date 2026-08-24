@@ -18,7 +18,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -32,6 +31,7 @@ import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterScope;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
@@ -59,7 +59,8 @@ public class CFWDBDashboard {
 		  , DashboardFields.NAME.toString()
 		};
 	
-	public static TreeSet<String> cachedTags = null;
+	// SpaceID and List of Tags
+	public static HashMap<Integer, TreeSet<String>> cachedTags = new HashMap<>();
 	
 	//####################################################################################################
 	// Precheck Initialization
@@ -308,25 +309,7 @@ public class CFWDBDashboard {
 	public static Dashboard selectFirstByName(String name) { 
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardFields.NAME.toString(), name);
 	}
-	
-	
-	/***************************************************************
-	 * Return a list of all user dashboards
-	 * 
-	 * @return Returns a resultSet with all dashboards or null.
-	 ****************************************************************/
-	public static ResultSet getUserDashboardList() {
 		
-		return new Dashboard()
-				.queryCache(CFWDBDashboard.class, "getUserDashboardList")
-				.select()
-				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
-				.and(DashboardFields.VERSION, 0)
-				.orderby(DashboardFields.NAME.toString())
-				.getResultSet();
-		
-	}
-	
 
 	/***************************************************************
 	 * Return a list of all user dashboards as json string.
@@ -335,15 +318,20 @@ public class CFWDBDashboard {
 	 ****************************************************************/
 	public static String getUserDashboardListAsJSON() {
 		
-		return new Dashboard()
-				.queryCache(CFWDBDashboard.class, "getUserDashboardListAsJSON")
+		JsonArray array = new CFWSQL(new Dashboard())
+				.queryCacheSpaced()
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
 				.and(DashboardFields.VERSION, 0)
 				.and(DashboardFields.IS_ARCHIVED, false)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(DashboardFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 	}
 	
 	/***************************************************************
@@ -353,15 +341,20 @@ public class CFWDBDashboard {
 	 ****************************************************************/
 	public static String getUserArchivedListAsJSON() {
 		
-		return new CFWSQL(new Dashboard())
-				.queryCache()
+		JsonArray array = new CFWSQL(new Dashboard())
+				.queryCacheSpaced()
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
 				.and(DashboardFields.VERSION, 0)
 				.and(DashboardFields.IS_ARCHIVED, true)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(DashboardFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 	}
 	
 	
@@ -373,11 +366,12 @@ public class CFWDBDashboard {
 	public static ArrayList<Dashboard> getFavedDashboardList() {
 		
 		return new CFWSQL(new Dashboard())
-				.queryCache()
+				.queryCacheSpaced()
 				.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_getFavedDashboardListAsJSON.sql", 
 						CFW.Context.Request.getUserID()
 					)
 				.getAsObjectListConvert(Dashboard.class);
+				
 	}
 	/***************************************************************
 	 * Return a list of all dashboards the user has faved.
@@ -386,12 +380,16 @@ public class CFWDBDashboard {
 	 ****************************************************************/
 	public static String getFavedDashboardListAsJSON() {
 		
-		return new CFWSQL(new Dashboard())
-				.queryCache()
+		JsonArray array = new CFWSQL(new Dashboard())
+				.queryCacheSpaced()
 				.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_getFavedDashboardListAsJSON.sql", 
 						CFW.Context.Request.getUserID()
 					)
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 				
 	}
 	
@@ -404,15 +402,20 @@ public class CFWDBDashboard {
 	public static String getAdminDashboardListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
-			return new CFWSQL(new Dashboard())
-				.queryCache()
+			JsonArray array = new CFWSQL(new Dashboard())
+				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.where(DashboardFields.VERSION, 0)
 				.and(DashboardFields.IS_ARCHIVED, false)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(DashboardFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+			
+			return CFW.JSON.toJSON(
+					FeatureSpaces.addSpacesInfoToJSON(array)
+				);
 		}else {
 			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 			return "[]";
@@ -427,15 +430,20 @@ public class CFWDBDashboard {
 	public static String getAdminArchivedListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
-			return new CFWSQL(new Dashboard())
-				.queryCache()
+			JsonArray array = new CFWSQL(new Dashboard())
+				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.where(DashboardFields.VERSION, 0)
 				.and(DashboardFields.IS_ARCHIVED, true)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(DashboardFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+			
+			return CFW.JSON.toJSON(
+					FeatureSpaces.addSpacesInfoToJSON(array)
+				);
 		}else {
 			CFW.Messages.addErrorMessage(CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 			return "[]";
@@ -461,7 +469,9 @@ public class CFWDBDashboard {
 					userID,
 					userID,
 					sharedUserslikeID,
-					sharedUserslikeID);
+					sharedUserslikeID)
+			.and().append(FeatureSpaces.getSQLFilter())
+			;
 			
 		
 		//-------------------------
@@ -470,6 +480,7 @@ public class CFWDBDashboard {
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, userID)
 			.select(DashboardFields.PK_ID
+				  , DashboardFields.FK_ID_SPACE
 				  , DashboardFields.NAME
 				  , DashboardFields.DESCRIPTION
 				  , DashboardFields.TAGS
@@ -479,6 +490,7 @@ public class CFWDBDashboard {
 			.where(DashboardFields.IS_SHARED, true)
 			.and(DashboardFields.VERSION, 0)
 			.and(DashboardFields.IS_ARCHIVED, false)
+			.and().append(FeatureSpaces.getSQLFilter())
 			.and().custom("(");
 		
 		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
@@ -498,6 +510,7 @@ public class CFWDBDashboard {
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, userID)
 			.select(DashboardFields.PK_ID
+					, DashboardFields.FK_ID_SPACE
 					, DashboardFields.NAME
 					, DashboardFields.DESCRIPTION
 					, DashboardFields.TAGS
@@ -506,6 +519,7 @@ public class CFWDBDashboard {
 					)
 			.where(DashboardFields.VERSION, 0)
 			.and(DashboardFields.IS_ARCHIVED, false)
+			.and().append(FeatureSpaces.getSQLFilter())
 			.and().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {
@@ -540,7 +554,9 @@ public class CFWDBDashboard {
 	
 		//-------------------------
 		// Return
-		return CFW.JSON.toJSON(sharedBoards);
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(sharedBoards)
+			);
 	}
 	
 	
@@ -1317,27 +1333,25 @@ public class CFWDBDashboard {
 	
 	
 	/********************************************************************************************
-	 * Creates multiple Dashboards in the DB.
-	 * @param Dashboards with the values that should be inserted. ID will be set by the Database.
-	 * @return 
-	 * @return nothing
+	 * Get the list  of cached tags for the selected space.
 	 * 
+	 * @return set of tags
 	 ********************************************************************************************/
 	public static TreeSet<String> getTags() {
 		
-		if(cachedTags == null) {
-			fetchAndCacheTags();
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
+		if(! cachedTags.containsKey(spaceID) ) {
+			fetchAndCacheTags(spaceID);
 		}
 		
-		return cachedTags;
+		
+		return cachedTags.get(spaceID);
 	}
 	
 	/********************************************************************************************
-	 * Creates multiple Dashboards in the DB.
-	 * @param Dashboards with the values that should be inserted. ID will be set by the Database.
-	 * @return 
-	 * @return nothing
+	 * Get the list  of cached tags for the selected space.
 	 * 
+	 * @return set of tags  as JSON Array string
 	 ********************************************************************************************/
 	public static String getTagsAsJSON() {
 				
@@ -1345,47 +1359,53 @@ public class CFWDBDashboard {
 	}
 	
 	/********************************************************************************************
-	 * Adds the tags to the cache for the specified dashboard.
-	 * @param Dashboards with the tags.
-	 * @return nothing
+	 * Adds the tags to the cache for the specified credentials.
+	 * @param Credentials with the tags.
 	 * 
+	 * @return nothing
 	 ********************************************************************************************/
-	public static void updateTags(Dashboard... dashboards) {
+	public static void updateTags(Dashboard... credentials) {
 		
-		for(Dashboard dashboard : dashboards) {
-			updateTags(dashboard);
+		for(Dashboard credential : credentials) {
+			updateTags(credential);
 		}
 	}
+	
 	/********************************************************************************************
-	 * Adds the tags to the cache for the specified dashboard.
-	 * @param Dashboards with the tags.
-	 * @return nothing
+	 * Adds the tags to the cache for the specified credentials.
+	 * @param Credentials with the tags.
 	 * 
+	 * @return nothing
 	 ********************************************************************************************/
-	public static void updateTags(Dashboard dashboard) {
+	public static void updateTags(Dashboard credentials) {
 		
-		if(cachedTags == null) {
-			fetchAndCacheTags();
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
+		if(! cachedTags.containsKey(spaceID) ) {
+			fetchAndCacheTags(spaceID);
 		}
 		
-		if(dashboard.tags() != null) {
-			for(Object tag : dashboard.tags()) {
-				cachedTags.add(tag.toString());
+		if(credentials.tags() != null) {
+			TreeSet<String> tagsForSpace = cachedTags.get(spaceID);
+			for(Object tag : credentials.tags()) {
+				tagsForSpace.add(tag.toString());
 			}
 		}
 	}
 	
 	/********************************************************************************************
-	 * Fetch cachedTags from the database and stores them into the cache.
+	 * Fetch tags from the database and stores them into the cache.
 	 * 
+	 * @param spaceID the spaceID for which the tags should be cached for
+	 * @return nothing
 	 ********************************************************************************************/
-	public static void fetchAndCacheTags() {
+	public static void fetchAndCacheTags(int spaceID) {
 		
-		cachedTags = new TreeSet<String>();
+		TreeSet<String> tagsForSpace = new TreeSet<String>();
 		
 		ResultSet resultSet = new CFWSQL(new Dashboard())
 			.queryCache()
 			.select(DashboardFields.TAGS.toString())
+			.where().append(FeatureSpaces.getSQLFilter())
 			.getResultSet();
 		
 		try {
@@ -1396,7 +1416,7 @@ public class CFWDBDashboard {
 				if(tagsArray != null) {
 					Object[] objectArray = (Object[])tagsArray.getArray();
 					for(int i = 0 ; i < objectArray.length; i++) {
-						cachedTags.add(objectArray[i].toString());
+						tagsForSpace.add(objectArray[i].toString());
 					}
 				}
 			}
@@ -1405,6 +1425,7 @@ public class CFWDBDashboard {
 			.severe("Tags could not be fetched because an error occured.", e);
 		} finally {
 			CFWDB.close(resultSet);
+			cachedTags.put(spaceID, tagsForSpace);
 		}
 				
 	}

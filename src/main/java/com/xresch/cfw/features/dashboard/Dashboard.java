@@ -4,9 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,13 +16,12 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
@@ -50,7 +49,8 @@ public class Dashboard extends CFWObject {
 		};
 	
 	public enum DashboardFields{
-		PK_ID
+		  PK_ID
+		, FK_ID_SPACE  // from FeatureSpaces.FK_ID_SPACE
 		, FK_ID_USER
 		, NAME
 		, DESCRIPTION
@@ -86,6 +86,8 @@ public class Dashboard extends CFWObject {
 			.setDescription("The id of the dashboard.")
 			.apiFieldType(FormFieldType.NUMBER)
 			;
+	
+	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false, true);
 	
 	private CFWField<Integer> foreignKeyOwner = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.FK_ID_USER)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
@@ -230,6 +232,7 @@ public class Dashboard extends CFWObject {
 		this.setTableName(TABLE_NAME);
 		this.addFields(
 				  id
+				, fkidSpace
 				, foreignKeyOwner
 				, name
 				, description
@@ -271,47 +274,47 @@ public class Dashboard extends CFWObject {
 	@Override
 	public void updateTable() {
 								
-		//---------------------------
-		// Change Description Data Type
-		new CFWLog(logger).off("Migration: Change type of database column CFW_DASHBOARD.NAME to VARCHAR_IGNORECASE.");
-		new CFWSQL(this)
-			.custom("ALTER TABLE IF EXISTS CFW_DASHBOARD ALTER COLUMN IF EXISTS NAME SET DATA TYPE VARCHAR_IGNORECASE;")
-			.execute();
-		
-		//----------------------------------------
-		// Migration from v7.0.0 to next version
-		String MIGRATION_KEY = "CFW-Migration-SharedEditors_isMigrated";
-		
-		Boolean isMigrated = CFW.DB.KeyValuePairs.getValueAsBoolean(MIGRATION_KEY);
-
-		if(isMigrated == null || !isMigrated) {
-		
-			new CFWLog(logger).off("Migration: CFW_DASHBOARD - Move sharing columns to separate tables.");
-			
-			ArrayList<Dashboard> dashboardList = new CFWSQL(new Dashboard())
-				.select()
-				.getAsObjectListConvert(Dashboard.class);
-		
-			CFW.DB.transactionStart();
-			
-				boolean isSuccess = true;
-				for(Dashboard board : dashboardList) {
-					isSuccess &= CFWDBDashboardSharedUserMap.migrateOldStructure(board);
-					isSuccess &= CFWDBDashboardSharedGroupsMap.migrateOldStructure(board);
-					isSuccess &= CFWDBDashboardEditorsMap.migrateOldStructure(board);
-					isSuccess &= CFWDBDashboardEditorGroupsMap.migrateOldStructure(board);
-				}
-			
-				new CFWLog(logger).off("Migration Result: "+isSuccess);
-				
-			CFW.DB.transactionEnd(isSuccess);
-			
-			CFW.DB.KeyValuePairs.setValue(
-					KeyValuePair.CATEGORY_MIGRATION
-					, MIGRATION_KEY
-					, ""+isSuccess
-				);
-		}
+//		//---------------------------
+//		// Change Description Data Type
+//		new CFWLog(logger).off("Migration: Change type of database column CFW_DASHBOARD.NAME to VARCHAR_IGNORECASE.");
+//		new CFWSQL(this)
+//			.custom("ALTER TABLE IF EXISTS CFW_DASHBOARD ALTER COLUMN IF EXISTS NAME SET DATA TYPE VARCHAR_IGNORECASE;")
+//			.execute();
+//		
+//		//----------------------------------------
+//		// Migration from v7.0.0 to next version
+//		String MIGRATION_KEY = "CFW-Migration-SharedEditors_isMigrated";
+//		
+//		Boolean isMigrated = CFW.DB.KeyValuePairs.getValueAsBoolean(MIGRATION_KEY);
+//
+//		if(isMigrated == null || !isMigrated) {
+//		
+//			new CFWLog(logger).off("Migration: CFW_DASHBOARD - Move sharing columns to separate tables.");
+//			
+//			ArrayList<Dashboard> dashboardList = new CFWSQL(new Dashboard())
+//				.select()
+//				.getAsObjectListConvert(Dashboard.class);
+//		
+//			CFW.DB.transactionStart();
+//			
+//				boolean isSuccess = true;
+//				for(Dashboard board : dashboardList) {
+//					isSuccess &= CFWDBDashboardSharedUserMap.migrateOldStructure(board);
+//					isSuccess &= CFWDBDashboardSharedGroupsMap.migrateOldStructure(board);
+//					isSuccess &= CFWDBDashboardEditorsMap.migrateOldStructure(board);
+//					isSuccess &= CFWDBDashboardEditorGroupsMap.migrateOldStructure(board);
+//				}
+//			
+//				new CFWLog(logger).off("Migration Result: "+isSuccess);
+//				
+//			CFW.DB.transactionEnd(isSuccess);
+//			
+//			CFW.DB.KeyValuePairs.setValue(
+//					KeyValuePair.CATEGORY_MIGRATION
+//					, MIGRATION_KEY
+//					, ""+isSuccess
+//				);
+//		}
 	}
 	/**************************************************************************************
 	 * 
@@ -332,6 +335,7 @@ public class Dashboard extends CFWObject {
 		String[] outputFields = 
 				new String[] {
 						DashboardFields.PK_ID.toString(), 
+						DashboardFields.FK_ID_SPACE.toString(), 
 						DashboardFields.FK_ID_USER.toString(),
 						DashboardFields.VERSION_GROUP.toString(),
 						DashboardFields.VERSION.toString(),
@@ -444,7 +448,7 @@ public class Dashboard extends CFWObject {
 						.setValue(selectedValue)
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
 							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-								return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+								return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());					
 							}
 						});
 
@@ -473,7 +477,7 @@ public class Dashboard extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+						return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, this.getMaxResults());					
 					}
 				});
 		
@@ -503,7 +507,7 @@ public class Dashboard extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+						return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());					
 					}
 				});
 
@@ -532,7 +536,7 @@ public class Dashboard extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+						return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, this.getMaxResults());					
 					}
 				});
 		
@@ -604,6 +608,15 @@ public class Dashboard extends CFWObject {
 		return this;
 	}
 	
+	public Integer fkidSpace() {
+		return fkidSpace.getValue();
+	}
+	
+	public Dashboard fkidSpace(Integer id) {
+		this.fkidSpace.setValue(id);
+		return this;
+	}
+	
 	public Integer foreignKeyOwner() {
 		return foreignKeyOwner.getValue();
 	}
@@ -637,6 +650,13 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard tags(ArrayList<String> tags) {
 		this.tags.setValue(tags);
+		return this;
+	}
+	
+	public Dashboard tags(String... tags) {
+		ArrayList<String> tagsArray = new ArrayList<>();
+		tagsArray.addAll(Arrays.asList(tags));
+		this.tags.setValue(tagsArray);
 		return this;
 	}
 	

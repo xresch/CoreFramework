@@ -808,11 +808,9 @@ public class CFWDBCredentials {
 	
 	
 	/********************************************************************************************
-	 * Creates multiple Credentials in the DB.
-	 * @param Credentials with the values that should be inserted. ID will be set by the Database.
-	 * @return 
-	 * @return nothing
+	 * Get the list  of cached tags for the selected space.
 	 * 
+	 * @return set of tags
 	 ********************************************************************************************/
 	public static TreeSet<String> getTags() {
 		
@@ -826,11 +824,9 @@ public class CFWDBCredentials {
 	}
 	
 	/********************************************************************************************
-	 * Creates multiple Credentials in the DB.
-	 * @param Credentials with the values that should be inserted. ID will be set by the Database.
-	 * @return 
-	 * @return nothing
+	 * Get the list  of cached tags for the selected space.
 	 * 
+	 * @return set of tags  as JSON Array string
 	 ********************************************************************************************/
 	public static String getTagsAsJSON() {
 				
@@ -840,8 +836,8 @@ public class CFWDBCredentials {
 	/********************************************************************************************
 	 * Adds the tags to the cache for the specified credentials.
 	 * @param Credentials with the tags.
-	 * @return nothing
 	 * 
+	 * @return nothing
 	 ********************************************************************************************/
 	public static void updateTags(CFWCredentials... credentials) {
 		
@@ -853,8 +849,8 @@ public class CFWDBCredentials {
 	/********************************************************************************************
 	 * Adds the tags to the cache for the specified credentials.
 	 * @param Credentials with the tags.
-	 * @return nothing
 	 * 
+	 * @return nothing
 	 ********************************************************************************************/
 	public static void updateTags(CFWCredentials credentials) {
 		
@@ -872,8 +868,10 @@ public class CFWDBCredentials {
 	}
 	
 	/********************************************************************************************
-	 * Fetch cachedTags from the database and stores them into the cache.
+	 * Fetch tags from the database and stores them into the cache.
 	 * 
+	 * @param spaceID the spaceID for which the tags should be cached for
+	 * @return nothing
 	 ********************************************************************************************/
 	public static void fetchAndCacheTags(int spaceID) {
 		

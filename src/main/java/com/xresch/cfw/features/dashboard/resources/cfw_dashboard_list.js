@@ -602,21 +602,22 @@ function cfw_dashboardlist_printDashboards(data, type){
 	// Tab Desciption
 
 	switch(type){
-		case "mydashboards":		parent.append('<p>This tab shows all dashboards where you are the owner.</p>')
+		case "mydashboards":		parent.append('<p>This tab shows dashboards in this space where you are the owner.</p>')
 									break;	
 									
-		case "myarchived":			parent.append('<p>This tab shows all archived dashboards where you are the owner.</p>')
+		case "myarchived":			parent.append('<p>This tab shows archived dashboards in this space where you are the owner.</p>')
 									break;	
 									
-		case "shareddashboards":	parent.append('<p>This list contains all the dashboard that are shared by others and by you.</p>')
+		case "shareddashboards":	parent.append('<p>This list contains the dashboards in this space that are shared by others and by you.</p>')
 									break;
 									
-		case "faveddashboards":		parent.append('<p>Here you can find all the dashboards you have faved. If you unfave a dashboard here it will vanish from the list the next time the tab or page gets refreshed.</p>')
+		case "faveddashboards":		parent.append('<p>Here you can find all the dashboards you have faved. If you unfave a dashboard here it will vanish from the list the next time the tab or page gets refreshed.'
+												 +' This list ignores the selected space and space filtering and always shows all your favorites.</p>')
 									break;	
 									
-		case "adminarchived":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin archive. The list contains all archived dashboards of all users.</b></p>')
+		case "adminarchived":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin archive. The list contains all archived dashboards in this space of all users.</b></p>')
 									break;	
-		case "admindashboards":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all dashboards of all users.</b></p>')
+		case "admindashboards":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all dashboards in this space of all users.</b></p>')
 									break;	
 														
 		default:					break;
@@ -654,13 +655,13 @@ function cfw_dashboardlist_printDashboards(data, type){
 		var showFields = [];
 		if(type == 'mydashboards' 
 		|| type == 'myarchived'){
-			showFields = ['IS_FAVED', 'NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
+			showFields = ['IS_FAVED', 'PK_ID', 'SPACE_ABBREV', 'NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
 		}else if ( type == 'shareddashboards'
 				|| type == 'faveddashboards'){
-			showFields = ['IS_FAVED', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
+			showFields = ['IS_FAVED', 'PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
 		}else if (type == 'admindashboards'
 				||type == 'adminarchived' ){
-			showFields = ['IS_FAVED', 'PK_ID', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
+			showFields = ['IS_FAVED', 'PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
 		}
 		
 		
@@ -839,7 +840,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 					label: 'Sharing Details',
 					name: 'table',
 					renderdef: {
-						visiblefields: ["IS_FAVED", "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
+						visiblefields: ["IS_FAVED", "SPACE_ABBREV", "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
 						labels: {
 					 		PK_ID: "ID",
 					 		IS_SHARED: 'Shared',
@@ -886,7 +887,8 @@ function cfw_dashboardlist_printDashboards(data, type){
 			 	labels: {
 			 		IS_FAVED: "Favorite",
 			 		PK_ID: "ID",
-			 		IS_SHARED: 'Shared'
+			 		IS_SHARED: 'Shared',
+					SPACE_ABBREV: 'Space',
 			 	},
 			 	customizers: {
 					IS_FAVED: function(record, value) { 
@@ -1023,6 +1025,37 @@ function cfw_dashboardlist_printDashboards(data, type){
 }
 
 /******************************************************************
+ *
+ ******************************************************************/
+function cfw_dashboardlist_sanitizeCurrentOptions(options){
+	
+	//-----------------------
+	// Options is Set
+	if(options != null){ return options; }
+	
+	//-----------------------
+	// Last Options Available
+	if(CFW_DASHBOARDLIST_LAST_OPTIONS != null ){
+		return CFW_DASHBOARDLIST_LAST_OPTIONS;
+	}
+	
+	//-----------------------
+	// Last Options From Cache
+	// or Default
+	var tabToDisplay = CFW.cache.retrieveValueForPage("dashboardlist-lasttab", "mydashboards");
+
+	if(CFW.hasPermission('Dashboard Viewer') 
+	&& !CFW.hasPermission('Dashboard Creator') 
+	&& !CFW.hasPermission('Dashboard Admin')){
+		tabToDisplay = "shareddashboards";
+	}
+
+	$('#tab-'+tabToDisplay).addClass('active');
+	
+	return {tab: tabToDisplay};
+}
+
+/******************************************************************
  * Main method for building the different views.
  * 
  * @param options Array with arguments:
@@ -1031,7 +1064,6 @@ function cfw_dashboardlist_printDashboards(data, type){
  *  }
  * @return 
  ******************************************************************/
-
 function cfw_dashboardlist_initialDraw(){
 	
 	//-------------------------------------------
@@ -1047,27 +1079,36 @@ function cfw_dashboardlist_initialDraw(){
 	cfw_dashboardlist_tutorialsRegister()
 	
 
-	
-	var tabToDisplay = CFW.cache.retrieveValueForPage("dashboardlist-lasttab", "mydashboards");
-	
-	if(CFW.hasPermission('Dashboard Viewer') 
-	&& !CFW.hasPermission('Dashboard Creator') 
-	&& !CFW.hasPermission('Dashboard Admin')){
-		tabToDisplay = "shareddashboards";
-	}
-	
-	$('#tab-'+tabToDisplay).addClass('active');
-	
 	//-------------------------------------------
-	// Draw Tab
-	cfw_dashboardlist_draw({tab: tabToDisplay});
-	
+	// Create Selector and Draw
+	cfw_spaces_createSpaceSelector(function(spaceid){
+			cfw_dashboardlist_draw(null);
+		}, true);
+			
 }
 
+
+
+/******************************************************************
+ * Main method for building the different views.
+ * 
+ * @param options Array with arguments:
+ * 	{
+ * 		tab: 'mydashboards|shareddashboards|admindashboards', 
+ *  }
+ * @return 
+ ******************************************************************/
 function cfw_dashboardlist_draw(options){
-	CFW_DASHBOARDLIST_LAST_OPTIONS = options;
 	
+	
+	//-------------------------
+	// Options
+	options = cfw_dashboardlist_sanitizeCurrentOptions(options); 
+	CFW_DASHBOARDLIST_LAST_OPTIONS = options;
 	CFW.cache.storeValueForPage("dashboardlist-lasttab", options.tab);
+
+	//-------------------------
+	// Clear Tab
 	$("#tab-content").html("");
 	
 	CFW.ui.toggleLoader(true);
