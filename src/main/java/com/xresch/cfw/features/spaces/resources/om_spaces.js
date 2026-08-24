@@ -183,7 +183,34 @@ function om_spaces_printList(data){
 
 			});
 
-		
+		//-------------------------
+		// Sharing Details View
+		sharingDetailsView = null;
+
+		if(CFW.hasPermission('Space: Admin All')
+		|| data.isAdminForSelectedSpace){
+			sharingDetailsView = 
+				{ 
+					label: 'Sharing Details',
+					name: 'table',
+					renderdef: {
+						visiblefields: ["PK_ID", "TYPE", "ABBREVIATION", "NAME", "IS_ENABLED", "IS_GLOBAL", "JSON_USERS", "JSON_USER_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
+						labels: {
+							PK_ID: "ID",
+							IS_ENABLED: "Enabled",
+					 		JSON_USERS: 'Users', 
+						 	JSON_USER_GROUPS: 'User Groups', 
+						 	JSON_EDITORS: 'Editors', 
+						 	JSON_EDITOR_GROUPS: 'Editor Groups'
+					 	},
+						rendererSettings: {
+							table: {filterable: false},
+						},
+					}
+				};
+			
+		}
+			
 		//-------------------------
 		// Duplicate Button
 		/*actionButtons.push(
@@ -193,24 +220,7 @@ function om_spaces_printList(data){
 						+ '<i class="fas fa-clone"></i>'
 						+ '</button>';
 		});*/
-		
-		//-------------------------
-		// Delete Button
-/*		actionButtons.push(
-			function (record, id){
-				if(record.TYPE == 'ORG' && !JSDATA.isSpacesAdmin){
-					return '&nbsp;';
-				}
-				if(data.isAdminForSelectedSpace){
-					return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-							+'onclick="CFW.ui.confirmExecute(\'Are you sure you want to delete the space <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong> and all related subordinate spaces?\', \'Delete\', \'om_spaces_delete('+id+');\')">'
-							+ '<i class="fa fa-trash"></i>'
-							+ '</button>';
-					}
-				return '&nbsp;';
 				
-			});*/
-		
 		//-------------------------
 		// Formatter
 		var trueFalseFormatter = 
@@ -246,7 +256,11 @@ function om_spaces_printList(data){
 						}else{
 							return '<div class="maxvw-25">'+value+'</div>';
 						} 
-			 		}
+			 		},
+					JSON_USERS: CFW.customizer.badgesFromObjectValues, 
+					JSON_USER_GROUPS: CFW.customizer.badgesFromObjectValues, 
+					JSON_EDITORS: CFW.customizer.badgesFromObjectValues, 
+					JSON_EDITOR_GROUPS: CFW.customizer.badgesFromObjectValues
 			 	},
 				actions: actionButtons,
 				hierarchy: true,
@@ -293,6 +307,7 @@ function om_spaces_printList(data){
 									},
 								}
 							},
+							sharingDetailsView,
 							{	label: 'Flat Table',
 								name: 'table',
 								renderdef: {

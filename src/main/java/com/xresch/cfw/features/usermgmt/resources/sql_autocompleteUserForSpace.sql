@@ -39,10 +39,11 @@ LEFT JOIN (
 		ON AG.FK_ID_SPACE = O.PK_ID 
 	WHERE O.H_ROOT = (SELECT H_ROOT FROM CFW_SPACES S WHERE S.PK_ID = ? ) -- selected Space
 )
-WHERE U.PK_ID = UM
+WHERE ( U.PK_ID = UM
    OR U.PK_ID = AM
    OR U.PK_ID = AG
    OR U.PK_ID = UG 
+   )
    AND (
    		  U.USERNAME LIKE ?
    	   OR U.FIRSTNAME LIKE ?

@@ -254,22 +254,26 @@ public class CFWDBRole {
 	 ****************************************************************/
 	public static AutocompleteResult autocompleteGroupSpaced(String searchValue, int maxResults) {
 		
+		
 		if(Strings.isNullOrEmpty(searchValue)) {
 			return new AutocompleteResult();
 		}
 		String likeString = "%"+searchValue.toLowerCase()+"%";
 		
-		return new CFWSQL(new Role())
+		AutocompleteResult result =  new CFWSQL(new Role())
 			.queryCache()
 			.select(RoleFields.PK_ID,
 					RoleFields.NAME,
 					RoleFields.DESCRIPTION)
 			.whereLike("LOWER("+RoleFields.NAME+")", likeString)
 			.and(RoleFields.IS_GROUP, true)
-			.and().append(FeatureSpaces.getSQLFilter())
+			.and().append(FeatureSpaces.getSQLFilterInclusive())
 			.limit(maxResults)
 			.getAsAutocompleteResult(RoleFields.PK_ID, RoleFields.NAME, RoleFields.DESCRIPTION);
 
+		result.setHTMLDescription("<b>Note: </b> These suggestions depends on the selected space, adjust it if you don't see what you want. (Spaces lower in hierarchy show more.)");
+		
+		return result;
 	}
 	
 	/***************************************************************
