@@ -14,6 +14,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.db.CFWSQL.CFWSQLReferentialAction;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
 import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
@@ -203,7 +204,7 @@ public class FeatureSpaces extends CFWAppFeature {
 		//-------------------------------------
 		// All
 		CFWSpace spaceAll = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.ALL.id() );
-		spaceAll.adminGroups(superuserGroup);
+		spaceAll.editorGroups(superuserGroup);
 		CFW.DB.Spaces.update(spaceAll);
 		spaceAll.saveSelectorFields();
 		
@@ -211,14 +212,14 @@ public class FeatureSpaces extends CFWAppFeature {
 		// Default
 		CFWSpace spacedDefault = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.DEFAULT.id() );
 		spacedDefault.assignedGroups(userGroup);
-		spacedDefault.adminGroups(superuserGroup);
+		spacedDefault.editorGroups(superuserGroup);
 		CFW.DB.Spaces.update(spacedDefault);
 		spacedDefault.saveSelectorFields();
 		
 		//-------------------------------------
 		// Global
 		CFWSpace spaceGlobal = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.GLOBAL.id() );
-		spaceGlobal.adminGroups(superuserGroup);
+		spaceGlobal.editorGroups(superuserGroup);
 		CFW.DB.Spaces.update(spaceGlobal);
 		spaceGlobal.saveSelectorFields();
 	}
@@ -267,21 +268,32 @@ public class FeatureSpaces extends CFWAppFeature {
 	 * of the CFWSpace object. If it is inactive, this method returns nothing.
 	 * @param parent object this field should be assigned too
 	 * @param isHidden if the field is hidden.
+	 * @param isCascade if the referential integrity action should cascade or do nothing.
 	 * @return field with the name FeatureSpaces.FK_ID_SPACE
 	 **********************************************************************************/
-	public static CFWField<Integer> createSpaceSelectorField(CFWObject parent, boolean isHidden) {
+	public static CFWField<Integer> createSpaceSelectorField(CFWObject parent, boolean isHidden, boolean isCascade) {
 				
 		CFWField<Integer> field;
 		
+		//------------------------------
+		// Handle isHidden
 		if(isHidden) {
 			field = CFWField.newInteger(FormFieldType.HIDDEN, FK_ID_SPACE);
 		}else {
 			field = CFWField.newInteger(FormFieldType.SELECT, FK_ID_SPACE);
 		}
 		
-		field.setColumnDefinition("INT DEFAULT "+ FeatureSpacesDefaults.DEFAULT.id() )
-			.setForeignKeyCascade(parent, CFWSpace.class, CFWSpaceFields.PK_ID)
-			.setLabel("Space")
+		//------------------------------
+		// Handle isCascade
+		field.setColumnDefinition("INT DEFAULT "+ FeatureSpacesDefaults.DEFAULT.id() );
+		
+		if(isCascade) {
+			field.setForeignKeyCascade(parent, CFWSpace.class, CFWSpaceFields.PK_ID);
+		}else {
+			field.setForeignKey(parent, CFWSpace.class, CFWSpaceFields.PK_ID, CFWSQLReferentialAction.NO_ACTION);
+		}
+		
+		field.setLabel("Space")
 			.setDescription("The space this entity belongs to.")
 			.setOptions(CFW.DB.Spaces.getSpaceListForUserOptions())
 			.apiFieldType(FormFieldType.SELECT);

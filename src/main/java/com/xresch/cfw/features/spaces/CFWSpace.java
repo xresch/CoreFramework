@@ -41,14 +41,14 @@ public class CFWSpace extends CFWObject {
 	
 	public static final String FIELDNAME_USERS 			= CFWSpaceFields.JSON_USERS.toString();
 	public static final String FIELDNAME_USER_GROUPS 	= CFWSpaceFields.JSON_USER_GROUPS.toString();
-	public static final String FIELDNAME_ADMINS 		= CFWSpaceFields.JSON_ADMINS.toString();
-	public static final String FIELDNAME_ADMIN_GROUPS 	= CFWSpaceFields.JSON_ADMIN_GROUPS.toString();
+	public static final String FIELDNAME_EDITORS 		= CFWSpaceFields.JSON_EDITORS.toString();
+	public static final String FIELDNAME_EDITOR_GROUPS 	= CFWSpaceFields.JSON_EDITOR_GROUPS.toString();
 	
 	public static final String[] SELECTOR_FIELDS = new String[] {
 			  FIELDNAME_USERS
 			, FIELDNAME_USER_GROUPS
-			, FIELDNAME_ADMINS
-			, FIELDNAME_ADMIN_GROUPS
+			, FIELDNAME_EDITORS
+			, FIELDNAME_EDITOR_GROUPS
 		};
 	
 	public enum CFWSpaceFields{
@@ -62,8 +62,8 @@ public class CFWSpace extends CFWObject {
 		IS_GLOBAL,
 		JSON_USERS,
 		JSON_USER_GROUPS,
-		JSON_ADMINS,
-		JSON_ADMIN_GROUPS,
+		JSON_EDITORS,
+		JSON_EDITOR_GROUPS,
 	}
 	
 	public enum CFWSpaceType{
@@ -155,9 +155,9 @@ public class CFWSpace extends CFWObject {
 	
 	private CFWField<LinkedHashMap<String,String>> assignedGroups = this.createSelectorFieldUserGroups(null);
 		
-	private CFWField<LinkedHashMap<String,String>> admins = this.createSelectorFieldAdmins(null);
+	private CFWField<LinkedHashMap<String,String>> editors = this.createSelectorFieldEditors(null);
 		
-	private CFWField<LinkedHashMap<String,String>> adminGroups = this.createSelectorFieldAdminGroups(null);
+	private CFWField<LinkedHashMap<String,String>> editorGroups = this.createSelectorFieldEditorGroups(null);
 	
 	
 	public CFWSpace() {
@@ -189,8 +189,8 @@ public class CFWSpace extends CFWObject {
 				, isGlobal
 				, assignedUsers
 				, assignedGroups
-				, admins
-				, adminGroups
+				, editors
+				, editorGroups
 				);
 	}
 	
@@ -280,8 +280,8 @@ public class CFWSpace extends CFWObject {
 						CFWSpaceFields.IS_GLOBAL.toString(),
 						CFWSpaceFields.JSON_USERS.toString(),
 						CFWSpaceFields.JSON_USER_GROUPS.toString(),
-						CFWSpaceFields.JSON_ADMINS.toString(),
-						CFWSpaceFields.JSON_ADMIN_GROUPS.toString(),
+						CFWSpaceFields.JSON_EDITORS.toString(),
+						CFWSpaceFields.JSON_EDITOR_GROUPS.toString(),
 				};
 
 		//----------------------------------
@@ -352,17 +352,17 @@ public class CFWSpace extends CFWObject {
 		
 		//--------------------------------------
 		// Editors 
-		CFWField<LinkedHashMap<String, String>> editorsSelector = this.createSelectorFieldAdmins(spaceID);
-		this.removeField(FIELDNAME_ADMINS);
-		admins = editorsSelector;
+		CFWField<LinkedHashMap<String, String>> editorsSelector = this.createSelectorFieldEditors(spaceID);
+		this.removeField(FIELDNAME_EDITORS);
+		editors = editorsSelector;
 		this.addFieldAfter(editorsSelector, FIELDNAME_USER_GROUPS);
 		
 		//--------------------------------------
 		// Editor Groups
-		CFWField<LinkedHashMap<String, String>> editorGroupsSelector = this.createSelectorFieldAdminGroups(spaceID);
-		this.removeField(FIELDNAME_ADMIN_GROUPS);
-		adminGroups = editorGroupsSelector;
-		this.addFieldAfter(editorGroupsSelector, FIELDNAME_ADMINS);
+		CFWField<LinkedHashMap<String, String>> editorGroupsSelector = this.createSelectorFieldEditorGroups(spaceID);
+		this.removeField(FIELDNAME_EDITOR_GROUPS);
+		editorGroups = editorGroupsSelector;
+		this.addFieldAfter(editorGroupsSelector, FIELDNAME_EDITORS);
 		
 	}
 	
@@ -426,13 +426,7 @@ public class CFWSpace extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						
-						if(isRootSpace) {
-							return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());	
-						}else {
-							return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, this.getMaxResults());	
-						}
-										
+						return autocompleteGroupsForSpace(searchValue, this.getMaxResults(), isRootSpace);				
 					}
 				});
 		
@@ -443,7 +437,7 @@ public class CFWSpace extends CFWObject {
 	 *
 	 *@param spaceID the id of the Space
 	 ******************************************************************/
-	private CFWField<LinkedHashMap<String,String>> createSelectorFieldAdmins(Integer spaceID) {
+	private CFWField<LinkedHashMap<String,String>> createSelectorFieldEditors(Integer spaceID) {
 			
 		//--------------------------------------
 		// Initialize Variables
@@ -455,8 +449,8 @@ public class CFWSpace extends CFWObject {
 		//--------------------------------------
 		// Create Field
 		boolean isRootSpace = this.type() == CFWSpaceType.ROOT_SPACE;
-		return CFWField.newTagsSelector(FIELDNAME_ADMINS)
-				.setLabel("Admins")
+		return CFWField.newTagsSelector(FIELDNAME_EDITORS)
+				.setLabel("Editors")
 				.setDescription("The users that are allowed to add more spaces to this space and change space settings. (Exception for Root Spaces: Can only be edited by users with permission 'Space: Admin All')")
 				.addAttribute("maxTags", "256")
 				.setValue(selectedValue)
@@ -478,7 +472,7 @@ public class CFWSpace extends CFWObject {
 	 *
 	 *@param spaceID the id of the Space
 	 ******************************************************************/
-	private CFWField<LinkedHashMap<String,String>> createSelectorFieldAdminGroups(Integer spaceID) {
+	private CFWField<LinkedHashMap<String,String>> createSelectorFieldEditorGroups(Integer spaceID) {
 		
 		//--------------------------------------
 		// Initialize Variables
@@ -491,22 +485,38 @@ public class CFWSpace extends CFWObject {
 		// Create Field
 		boolean isRootSpace = this.type() == CFWSpaceType.ROOT_SPACE;
 		
-		return CFWField.newTagsSelector(FIELDNAME_ADMIN_GROUPS)
-				.setLabel("Admin Groups")
+		return CFWField.newTagsSelector(FIELDNAME_EDITOR_GROUPS)
+				.setLabel("Editor Groups")
 				.setDescription("The groups that are allowed to add more spaces to this space and change space settings. (Exception for Root Spaces: Can only be edited by users with permission 'Space: Admin All')")
 				.addAttribute("maxTags", "256")
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						if(isRootSpace) {
-							return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());	
-						}else {
-							return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, this.getMaxResults());	
-						}				
+						return autocompleteGroupsForSpace(searchValue, this.getMaxResults(), isRootSpace);
 					}
 				});
 		
 	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public static AutocompleteResult autocompleteGroupsForSpace(String searchValue, int maxResults, boolean isRootSpace) {
+		
+		if(isRootSpace) {
+			if( ! CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN) ) {
+				// Groups only
+				return CFW.DB.Roles.autocompleteGroup(searchValue, maxResults);	
+			}else {
+				// Spaces Admins can select Groups or Roles
+				return CFW.DB.Roles.autocompleteGroupOrRole(searchValue, maxResults);	
+			}
+		}else {
+			// Select Groups from Space
+			return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, maxResults);	
+		}			
+	}
+	
 	
 	/******************************************************************
 	 *
@@ -517,8 +527,8 @@ public class CFWSpace extends CFWObject {
 		
 			isSuccess &= saveSelectorField(CFWSpaceFields.JSON_USERS);
 			isSuccess &= saveSelectorField(CFWSpaceFields.JSON_USER_GROUPS);
-			isSuccess &= saveSelectorField(CFWSpaceFields.JSON_ADMINS);
-			isSuccess &= saveSelectorField(CFWSpaceFields.JSON_ADMIN_GROUPS);
+			isSuccess &= saveSelectorField(CFWSpaceFields.JSON_EDITORS);
+			isSuccess &= saveSelectorField(CFWSpaceFields.JSON_EDITOR_GROUPS);
 		
 		return isSuccess;
 		
@@ -547,11 +557,11 @@ public class CFWSpace extends CFWObject {
 					success &= CFW.DB.SpaceUserGroupsMap.updateGroupSpaceAssignments(this, selectedValues);
 					break;
 					
-				case JSON_ADMINS:
+				case JSON_EDITORS:
 					success &= CFW.DB.SpaceAdminMap.updateAdminSpacesAssignments(this, selectedValues);
 					break;
 					
-				case JSON_ADMIN_GROUPS:
+				case JSON_EDITOR_GROUPS:
 					success &= CFW.DB.SpaceAdminGroupsMap.updateGroupSpaceAssignments(this, selectedValues);
 					break;
 				
@@ -659,23 +669,23 @@ public class CFWSpace extends CFWObject {
 		this.assignedGroups.setValue(value);
 		return this;
 	}
-	public LinkedHashMap<String,String> admins() {
-		if(admins.getValue() == null) { return new LinkedHashMap<>(); }
-		return admins.getValue();
+	public LinkedHashMap<String,String> editors() {
+		if(editors.getValue() == null) { return new LinkedHashMap<>(); }
+		return editors.getValue();
 	}
 	
-	public CFWSpace admins(LinkedHashMap<String,String> editors) {
-		this.admins.setValue(editors);
+	public CFWSpace editors(LinkedHashMap<String,String> editors) {
+		this.editors.setValue(editors);
 		return this;
 	}
 	
-	public LinkedHashMap<String,String> adminGroups() {
-		if(adminGroups.getValue() == null) { return new LinkedHashMap<>(); }
-		return adminGroups.getValue();
+	public LinkedHashMap<String,String> editorGroups() {
+		if(editorGroups.getValue() == null) { return new LinkedHashMap<>(); }
+		return editorGroups.getValue();
 	}
 	
-	public CFWSpace adminGroups(LinkedHashMap<String,String> value) {
-		this.adminGroups.setValue(value);
+	public CFWSpace editorGroups(LinkedHashMap<String,String> value) {
+		this.editorGroups.setValue(value);
 		return this;
 	}
 	

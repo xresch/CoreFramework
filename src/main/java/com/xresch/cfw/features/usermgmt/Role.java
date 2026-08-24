@@ -52,7 +52,7 @@ public class Role extends CFWObject {
 
 	private static Logger logger = CFWLog.getLogger(Role.class.getName());
 	
-	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false);
+	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false, true);
 	
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, RoleFields.PK_ID.toString())
 			.setPrimaryKeyAutoIncrement(this)

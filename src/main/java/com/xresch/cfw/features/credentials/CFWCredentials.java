@@ -87,7 +87,7 @@ public class CFWCredentials extends CFWObject {
 
 	private static Logger logger = CFWLog.getLogger(CFWCredentials.class.getName());
 	
-	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false);
+	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false, true);
 	
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWCredentialsFields.PK_ID)
 			.setPrimaryKeyAutoIncrement(this)
