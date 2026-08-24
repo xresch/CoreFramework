@@ -167,7 +167,14 @@ function om_spaces_printList(data){
 		// Edit Button
 		actionButtons.push(
 			function (record, id){ 
+				
 				if(data.isAdminForSelectedSpace){
+					
+					if( record.TYPE == "ROOT_SPACE"  
+					&&  ! CFW.hasPermission('Space: Admin All') 
+					){
+						return '&nbsp;';
+					}
 					return '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
 							+'onclick="om_spaces_edit('+id+');">'
 							+ '<i class="fa fa-pen"></i>'

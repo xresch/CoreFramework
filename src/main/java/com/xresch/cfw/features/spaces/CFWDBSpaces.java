@@ -347,7 +347,7 @@ public class CFWDBSpaces {
 			//--------------------------------
 			// Return All Spaces for Admins
 			return new CFWSQL(new CFWSpace())
-					.queryCache() 
+					.queryCache("-Admin") 
 					.select(CFWSpaceFields.PK_ID
 							, CFWSpaceFields.ABBREVIATION
 							, CFWSpaceFields.NAME
@@ -362,7 +362,7 @@ public class CFWDBSpaces {
 			// Return Specific Spaces for User
 			
 			return new CFWSQL(new CFWSpace())
-					.queryCache()   
+					.queryCache("-User")   
 					.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE
 							, "sql_getSpaceListForUser.sql"
 							, userID

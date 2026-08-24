@@ -457,7 +457,7 @@ public class CFWSpace extends CFWObject {
 		boolean isRootSpace = this.type() == CFWSpaceType.ROOT_SPACE;
 		return CFWField.newTagsSelector(FIELDNAME_ADMINS)
 				.setLabel("Admins")
-				.setDescription("The users that are allowed to add more spaces to this space and change space settings.")
+				.setDescription("The users that are allowed to add more spaces to this space and change space settings. (Exception for Root Spaces: Can only be edited by users with permission 'Space: Admin All')")
 				.addAttribute("maxTags", "256")
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
@@ -493,7 +493,7 @@ public class CFWSpace extends CFWObject {
 		
 		return CFWField.newTagsSelector(FIELDNAME_ADMIN_GROUPS)
 				.setLabel("Admin Groups")
-				.setDescription("The groups that are allowed to add more spaces to this space and change space settings.")
+				.setDescription("The groups that are allowed to add more spaces to this space and change space settings. (Exception for Root Spaces: Can only be edited by users with permission 'Space: Admin All')")
 				.addAttribute("maxTags", "256")
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {

@@ -504,10 +504,20 @@ public class ServletSpaces extends HttpServlet
 		Integer rootid = CFWHierarchy.getRootID(space);
 		Integer currentSeniorID = CFWHierarchy.getParentID(space);
 		
-		addSeniorSelectorField(space, rootid);
-		space.updateSelectorFields();
+		//----------------------------------
+		// Check can edit Root Space
+		if(space.type() == CFWSpaceType.ROOT_SPACE
+		&& ! CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)) {
+			CFW.Messages.addWarningMessage("Only admins with Global Space Admin permission can change Root Spaces: "+FeatureSpaces.PERMISSION_SPACES_ADMIN );
+			return;
+		}
 		
+		//----------------------------------
+		// Create Form
 		if(space != null) {
+			
+			addSeniorSelectorField(space, rootid);
+			space.updateSelectorFields();
 			
 			CFWForm editSpaceForm = space.toForm("cfwEditSpaceForm"+ID, "Update Space");
 			

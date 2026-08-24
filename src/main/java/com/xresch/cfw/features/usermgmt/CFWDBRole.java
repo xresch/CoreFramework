@@ -194,6 +194,32 @@ public class CFWDBRole {
 	}
 	
 	/****************************************************************
+	 * Returns a AutocompleteResult with groups and roles.
+	 * 
+	 * @param searchValue
+	 * @param maxResults
+	 * @return true if exists, false otherwise or in case of exception.
+	 ****************************************************************/
+	public static AutocompleteResult autocompleteGroupOrRole(String searchValue, int maxResults) {
+		
+		if(Strings.isNullOrEmpty(searchValue)) {
+			return new AutocompleteResult();
+		}
+		String likeString = "%"+searchValue.toLowerCase()+"%";
+		
+		return new CFWSQL(new Role())
+			.queryCache()
+			.select(RoleFields.PK_ID,
+					RoleFields.NAME,
+					RoleFields.DESCRIPTION)
+			.whereLike("LOWER("+RoleFields.NAME+")", likeString)
+			.limit(maxResults)
+			.getAsAutocompleteResult(RoleFields.PK_ID, RoleFields.NAME, RoleFields.DESCRIPTION);
+
+	}
+	
+	
+	/****************************************************************
 	 * Returns a AutocompleteResult with groups.
 	 * 
 	 * @param searchValue

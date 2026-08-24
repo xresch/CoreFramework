@@ -13,19 +13,30 @@ For Example, you could create a Root Space for every company and use regular Spa
 <h2>Behavior</h2>
 Spaces have the following characteristics, which will determine their behaviour:
 <ul>
-	<li><b>Assigned Users / User Groups:&nbsp;</b> Allows defined Users or Groups if a user can see and select a space and work in the specified space. 
+	<li><b>Assigned Users / User Groups:&nbsp;</b> Allows defined users or groups to see and select a space and work in the specified space. 
 	       What they can do inside the space depends on the other permissions granted to the users by it's Roles and Group assignments.  </li>
 	       
-	<li><b>Assigned Admins / Admin Groups:&nbsp;</b> Allows a user to change the space, add subspaces, add users and groups.
+	<li><b>Assigned Admins / Admin Groups:&nbsp;</b> Allows a user to change the space, add subspaces, add users and groups Exception for Root Spaces: Can only be edited by users with permission 'Space: Admin All'.
 		  There is no other rights this assignment grants. Any other admin privileges inside the space have to be granted by roles or groups. </li>
 	
 	<li><b>Is Enabled:&nbsp;</b>Enables or disables a space. If a space is disabled, 
-	       the Space and anything in it will not show up in select dropdowns nor other places like autocomplete.
-	       Projects below it can still be enabled and will be visible if not explicitely </li>
+	       the space and anything in it will not show up in select dropdowns nor other places like autocomplete.
+	       Projects below it can still be enabled and will be visible if not explicitly disabled. </li>
 	
-	<li><b>Is Global:&nbsp;</b>. </li>
+	<li><b>Is Global:&nbsp;</b>If a root space is set to global, everything stored in it can be selected and used from any space. 
+	If a regular space is set to global, things inside of it can be used by any space on the same level or below that level in that hierarchy. </li>
 	
-	<li><b>Position in the Hierarchy:&nbsp;</b>. </li>
+	<li><b>Is Enabled:&nbsp;</b>If a space is set to disabled, it will not show up in the space selector and it's entities will not show up for selection.
+	Disabling a space will not break functionality. If an entity was selected/used while the space was enabled, this entity will stay selected/used until someone changes it.</li>
+	
+	<li><b>Position in the Hierarchy:&nbsp;</b>The position in the hierarchy influences certain things:
+		<ul>
+			<li><b>Administration:</b> Direction is top-down, admins can access and administrate any space that is below the one they are assigned admin for. They cannot access spaces higher in the hierarchy. </li>
+			<li><b>Entity Access:</b> Direction is bottom-up, users can access entities(Credentials, Dashboards etc...) that are in spaces above the one they are assigned too, but not in spaces below. 
+			This is true even if the user is not an assigned user of a parent space.
+			This allows to share entities with sub spaces, and to create sub spaces and move entities into them without breaking functionality. </li>
+		</ul>
+	 </li>
 </ul>
 
 
