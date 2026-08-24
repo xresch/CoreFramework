@@ -15,6 +15,7 @@ import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.CFWSQL.CFWSQLReferentialAction;
+import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
 import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
@@ -40,6 +41,7 @@ public class FeatureSpaces extends CFWAppFeature {
 	public static final String FEATURE_NAME = "Spaces";
 	
 	public static final String PACKAGE_RESOURCE = "com.xresch.cfw.features.spaces.resources";
+	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.spaces.manual";
 	
 	public static final String PERMISSION_SPACES_VIEWER = "Space: Viewer";
 	public static final String PERMISSION_SPACES_ADMIN = "Space: Admin All";
@@ -75,6 +77,7 @@ public class FeatureSpaces extends CFWAppFeature {
 		//----------------------------------
 		// Register Package
 		CFW.Files.addAllowedPackage(PACKAGE_RESOURCE);
+		CFW.Files.addAllowedPackage(PACKAGE_MANUAL);
 				
 		//----------------------------------
     	// Register Menu			
@@ -98,7 +101,16 @@ public class FeatureSpaces extends CFWAppFeature {
 		//CFW.Registry.Objects.addCFWObject(CFWSpaceAdminGroupsMap.class);		
 		
 		//-------------------------------------
-    	// Register Change Listener
+    	// Register Manual 
+		CFW.Registry.Manual.addManualPage(null, new ManualPage("Spaces")
+				.faicon("fas fa-sitemap")
+				.addPermission(PERMISSION_SPACES_VIEWER)
+				.addPermission(PERMISSION_SPACES_CREATE)
+				.addPermission(PERMISSION_SPACES_ADMIN)
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_spaces_main.html")
+			);
+		//-------------------------------------
+    	// Register User Change Listener
 		FeatureUserManagement.registerChangeListener(new CFWPermissionChangeListener() {
 			@Override
 			public void onChange() {
