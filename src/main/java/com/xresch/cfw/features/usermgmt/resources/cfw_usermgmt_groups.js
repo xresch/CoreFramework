@@ -74,7 +74,7 @@ function cfw_usermgmt_groups_draw(options){
 			case "groups":		CFW.http.fetchAndCacheData(CFW_USERMGMT_URL, {action: "fetch", item: "mygroups"}, "groups", cfw_usermgmt_printGroupListCanEdit);
 									break;
 									
-			case "allgroups":		CFW.http.fetchAndCacheData(CFW_USERMGMT_URL, {action: "fetch", item: "groups"}, "allgroups", cfw_usermgmt_printGroupListOverview);
+			case "allgroups":		CFW.http.fetchAndCacheData(CFW_USERMGMT_URL, {action: "fetch", item: "allgroups"}, "allgroups", cfw_usermgmt_printGroupListOverview);
 									break;		
 																
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);

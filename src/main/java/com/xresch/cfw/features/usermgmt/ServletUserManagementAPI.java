@@ -105,9 +105,15 @@ public class ServletUserManagementAPI extends HttpServlet {
 							case "groups": 			if(!isManager) { CFW.Messages.noPermission(); return; }
 													content.append(CFW.DB.Roles.getGroupListAsJSON());
 													break;	
-													
+							
+							// for groups page
 							case "mygroups": 		Integer id = CFW.Context.Request.getUserID();
 													content.append(CFW.DB.Roles.getGroupsThatUserCanEditAsJSON(id));
+													break;	
+													
+							// for groups page						
+							case "allgroups": 		if(!isManager && !isGrouper ) { CFW.Messages.noPermission(); return; }
+													content.append(CFW.DB.Roles.getGroupListAsJSON());
 													break;	
 													
 							case "permissions":		if(!isManager) { CFW.Messages.noPermission(); return; }
