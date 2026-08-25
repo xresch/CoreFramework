@@ -15,6 +15,7 @@ import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -22,8 +23,8 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.filemanager.CFWStoredFile.CFWStoredFileFields;
-import com.xresch.cfw.features.notifications.FeatureNotifications;
 import com.xresch.cfw.features.notifications.Notification;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -64,7 +65,7 @@ public class ServletFilemanager extends HttpServlet
 			if(action == null) {
 
 				//html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureSpaces.RESOURCE_PACKAGE, "cfw_storedfile.css");
-				
+				FeatureSpaces.addSpacesCommonJS(html);
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureFilemanager.PACKAGE_RESOURCES, "cfw_filemanager.js");
 				
 				//content.append(CFW.Files.readPackageResource(FeatureSpaces.RESOURCE_PACKAGE, "cfw_storedfile.html"));
@@ -195,6 +196,8 @@ public class ServletFilemanager extends HttpServlet
 			case "getform": 			
 				switch(item.toLowerCase()) {
 					case "editstoredfile": 	createEditStoredFileForm(jsonResponse, ID);
+											break;
+					case "editfilecontent": createEditFileContentForm(jsonResponse, ID);
 											break;
 					case "changeowner": 	createChangeStoredFileOwnerForm(jsonResponse, ID);
 											break;
@@ -410,6 +413,73 @@ public class ServletFilemanager extends HttpServlet
 		}
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void createEditFileContentForm(JSONResponse json, String ID) {
+		
+		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_CREATOR)
+		|| CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)
+		|| CFW.DB.StoredFile.checkCanEdit(ID)) {
+			
+			//------------------------------
+			// Get File Content
+			CFWStoredFile storedfile = CFW.DB.StoredFile.selectByID(Integer.parseInt(ID));
+			String fileContent = CFW.DB.StoredFile.retrieveDataAsString(storedfile);
+			
+			//------------------------------
+			// Create Form Object
+			String FILE_CONTENT = "FILE_CONTENT";
+			CFWObject formObject = new CFWObject();
+			
+			formObject.addField(
+					CFWField.newString(FormFieldType.TEXTAREA, FILE_CONTENT)
+							.addAttribute("style", "height: 60vh")
+							.setValue(fileContent)
+					);
+			
+			//------------------------------
+			// Create Form
+			if(storedfile != null) {
+				
+				CFWForm editStoredFileForm = formObject.toForm("cfwEditFileContentForm"+ID, "Update File Content");
+
+				editStoredFileForm.setFormHandler(new CFWFormHandler() {
+					
+					@SuppressWarnings("unchecked")
+					@Override
+					public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+						
+						//----------------------------------
+						// Retrieve New Content and Size
+						origin.mapRequestParameters(request);
+						CFWField<String> fileContentField = (CFWField<String>)origin.getField(FILE_CONTENT);
+						
+						String fileContentEdited = fileContentField.getValue();
+						if(fileContentEdited == null) { fileContentEdited = ""; }
+						
+						storedfile.size((long)fileContentEdited.length());
+						
+						//----------------------------------
+						// Save to DB
+						CFW.DB.transactionStart();
+							boolean success = CFW.DB.StoredFile.update(storedfile)
+											&& CFW.DB.StoredFile.storeData(storedfile, fileContentEdited);
+							
+							if(success) { CFW.Messages.addSuccessMessage("Updated!"); }
+						CFW.DB.transactionEnd(success);
+						
+					}
+
+				});
+				
+				editStoredFileForm.appendToPayload(json);
+				json.setSuccess(true);	
+			}
+		}else {
+			CFW.Messages.addErrorMessage("Insufficient permissions to execute action.");
+		}
+	}
 	/******************************************************************
 	 *
 	 ******************************************************************/

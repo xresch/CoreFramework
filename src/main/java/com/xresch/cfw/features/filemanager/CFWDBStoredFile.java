@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.filemanager;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,6 +34,7 @@ import com.xresch.cfw.features.filemanager.CFWStoredFile.CFWStoredFileFields;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
@@ -59,7 +61,8 @@ public class CFWDBStoredFile {
 		  , CFWStoredFileFields.SIZE.toString()
 		};
 	
-	public static TreeSet<String> cachedTags = null;
+	// SpaceID and List of Tags
+	public static HashMap<Integer, TreeSet<String>> cachedTags = new HashMap<>();
 	
 	//####################################################################################################
 	// Precheck Initialization
@@ -111,6 +114,21 @@ public class CFWDBStoredFile {
 	 **********************************************************************************/
 	public static boolean storeData(CFWStoredFile item, InputStream fileData) { 
 		return new CFWSQL(item).executeStreamBytes(CFWStoredFileFields.DATA, fileData);
+	}
+	
+	/**********************************************************************************
+	 * Store file data to the DATA column
+	 * 
+	 * @param item the file the data should be stored to.
+	 * @param fileData the inputStream providing the data.
+	 **********************************************************************************/
+	public static boolean storeData(CFWStoredFile item, String fileData) { 
+		
+		if(fileData == null) { fileData = ""; }
+		
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(fileData.getBytes());
+		
+		return new CFWSQL(item).executeStreamBytes(CFWStoredFileFields.DATA, inputStream);
 	}
 	
 	/**********************************************************************************
@@ -332,24 +350,7 @@ public class CFWDBStoredFile {
 	public static CFWStoredFile selectByID(int id ) {
 		return CFWDBDefaultOperations.selectFirstByWithout(cfwObjectClass, CFWStoredFileFields.PK_ID.toString(), id, CFWStoredFileFields.DATA.toString());
 	}
-	
-	
-	/***************************************************************
-	 * Return a list of all user storedfile
-	 * 
-	 * @return Returns a resultSet with all storedfile or null.
-	 ****************************************************************/
-	public static ResultSet getUserStoredFileList() {
 		
-		return new CFWStoredFile()
-				.queryCache(CFWDBStoredFile.class, "getUserStoredFileList")
-				.selectWithout(CFWStoredFileFields.DATA.toString())
-				.where(CFWStoredFileFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
-				.orderby(CFWStoredFileFields.NAME.toString())
-				.getResultSet();
-		
-	}
-	
 
 	/***************************************************************
 	 * Return a list of all user storedfile as json string.
@@ -358,13 +359,18 @@ public class CFWDBStoredFile {
 	 ****************************************************************/
 	public static String getUserStoredFileListAsJSON() {
 		
-		return new CFWStoredFile()
-				.queryCache(CFWDBStoredFile.class, "getUserStoredFileListAsJSON")
+		JsonArray array = new CFWSQL(new CFWStoredFile())
+				.queryCacheSpaced()
 				.selectWithout(CFWStoredFileFields.DATA.toString())
 				.where(CFWStoredFileFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWStoredFileFields.IS_ARCHIVED, false)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWStoredFileFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 	}
 	
 	/***************************************************************
@@ -374,13 +380,18 @@ public class CFWDBStoredFile {
 	 ****************************************************************/
 	public static String getUserArchivedListAsJSON() {
 		
-		return new CFWSQL(new CFWStoredFile())
-				.queryCache()
+		JsonArray array = new CFWSQL(new CFWStoredFile())
+				.queryCacheSpaced()
 				.selectWithout(CFWStoredFileFields.DATA.toString())
 				.where(CFWStoredFileFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWStoredFileFields.IS_ARCHIVED, true)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWStoredFileFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 	}
 		
 
@@ -392,13 +403,18 @@ public class CFWDBStoredFile {
 	public static String getAdminStoredFileListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)) {
-			return new CFWSQL(new CFWStoredFile())
-				.queryCache()
+			JsonArray array = new CFWSQL(new CFWStoredFile())
+				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.selectWithout(CFWStoredFileFields.DATA.toString())
 				.where(CFWStoredFileFields.IS_ARCHIVED, false)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWStoredFileFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+			
+			return CFW.JSON.toJSON(
+					FeatureSpaces.addSpacesInfoToJSON(array)
+				);
 		}else {
 			CFW.Messages.accessDenied();
 			return "[]";
@@ -413,13 +429,18 @@ public class CFWDBStoredFile {
 	public static String getAdminArchivedListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN)) {
-			return new CFWSQL(new CFWStoredFile())
-				.queryCache()
+			JsonArray array = new CFWSQL(new CFWStoredFile())
+				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.selectWithout(CFWStoredFileFields.DATA.toString())
 				.where(CFWStoredFileFields.IS_ARCHIVED, true)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWStoredFileFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+			
+			return CFW.JSON.toJSON(
+					FeatureSpaces.addSpacesInfoToJSON(array)
+				);
 		}else {
 			CFW.Messages.accessDenied();
 			return "[]";
@@ -444,7 +465,8 @@ public class CFWDBStoredFile {
 					userID,
 					userID,
 					sharedUserslikeID,
-					sharedUserslikeID);
+					sharedUserslikeID)
+			.and().append(FeatureSpaces.getSQLFilter());
 			
 		
 		//-------------------------
@@ -452,6 +474,7 @@ public class CFWDBStoredFile {
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWStoredFileFields.PK_ID
+				  , CFWStoredFileFields.FK_ID_SPACE
 				  , CFWStoredFileFields.NAME
 				  , CFWStoredFileFields.SIZE
 				  , CFWStoredFileFields.DESCRIPTION
@@ -459,6 +482,7 @@ public class CFWDBStoredFile {
 				  )
 			.where(CFWStoredFileFields.IS_SHARED, true)
 			.and(CFWStoredFileFields.IS_ARCHIVED, false)
+			.and().append(FeatureSpaces.getSQLFilter())
 			.and().custom("(");
 		
 		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
@@ -477,12 +501,14 @@ public class CFWDBStoredFile {
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWStoredFileFields.PK_ID
+					, CFWStoredFileFields.FK_ID_SPACE
 					, CFWStoredFileFields.NAME
 					, CFWStoredFileFields.SIZE
 					, CFWStoredFileFields.DESCRIPTION
 					, CFWStoredFileFields.TAGS
 					)
 			.where(CFWStoredFileFields.IS_ARCHIVED, false)
+			.and().append(FeatureSpaces.getSQLFilter())
 			.and().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {
@@ -517,7 +543,10 @@ public class CFWDBStoredFile {
 	
 		//-------------------------
 		// Return
-		return CFW.JSON.toJSON(sharedBoards);
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(sharedBoards)
+			);
+
 	}
 	
 				
@@ -925,27 +954,25 @@ public class CFWDBStoredFile {
 	
 	
 	/********************************************************************************************
-	 * Creates multiple StoredFile in the DB.
-	 * @param StoredFile with the values that should be inserted. ID will be set by the Database.
-	 * @return 
-	 * @return nothing
+	 * Get the list  of cached tags for the selected space.
 	 * 
+	 * @return set of tags
 	 ********************************************************************************************/
 	public static TreeSet<String> getTags() {
 		
-		if(cachedTags == null) {
-			fetchAndCacheTags();
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
+		if(! cachedTags.containsKey(spaceID) ) {
+			fetchAndCacheTags(spaceID);
 		}
 		
-		return cachedTags;
+		
+		return cachedTags.get(spaceID);
 	}
 	
 	/********************************************************************************************
-	 * Creates multiple StoredFile in the DB.
-	 * @param StoredFile with the values that should be inserted. ID will be set by the Database.
-	 * @return 
-	 * @return nothing
+	 * Get the list  of cached tags for the selected space.
 	 * 
+	 * @return set of tags  as JSON Array string
 	 ********************************************************************************************/
 	public static String getTagsAsJSON() {
 				
@@ -953,48 +980,53 @@ public class CFWDBStoredFile {
 	}
 	
 	/********************************************************************************************
-	 * Adds the tags to the cache for the specified storedfile.
-	 * @param StoredFile with the tags.
-	 * @return nothing
+	 * Adds the tags to the cache for the specified credentials.
+	 * @param Credentials with the tags.
 	 * 
+	 * @return nothing
 	 ********************************************************************************************/
-	public static void updateTags(CFWStoredFile... storedfile) {
+	public static void updateTags(CFWStoredFile... credentials) {
 		
-		for(CFWStoredFile credential : storedfile) {
+		for(CFWStoredFile credential : credentials) {
 			updateTags(credential);
 		}
 	}
 	
 	/********************************************************************************************
-	 * Adds the tags to the cache for the specified storedfile.
-	 * @param StoredFile with the tags.
-	 * @return nothing
+	 * Adds the tags to the cache for the specified credentials.
+	 * @param Credentials with the tags.
 	 * 
+	 * @return nothing
 	 ********************************************************************************************/
-	public static void updateTags(CFWStoredFile storedfile) {
+	public static void updateTags(CFWStoredFile credentials) {
 		
-		if(cachedTags == null) {
-			fetchAndCacheTags();
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
+		if(! cachedTags.containsKey(spaceID) ) {
+			fetchAndCacheTags(spaceID);
 		}
 		
-		if(storedfile.tags() != null) {
-			for(Object tag : storedfile.tags()) {
-				cachedTags.add(tag.toString());
+		if(credentials.tags() != null) {
+			TreeSet<String> tagsForSpace = cachedTags.get(spaceID);
+			for(Object tag : credentials.tags()) {
+				tagsForSpace.add(tag.toString());
 			}
 		}
 	}
 	
 	/********************************************************************************************
-	 * Fetch cachedTags from the database and stores them into the cache.
+	 * Fetch tags from the database and stores them into the cache.
 	 * 
+	 * @param spaceID the spaceID for which the tags should be cached for
+	 * @return nothing
 	 ********************************************************************************************/
-	public static void fetchAndCacheTags() {
+	public static void fetchAndCacheTags(int spaceID) {
 		
-		cachedTags = new TreeSet<String>();
+		TreeSet<String> tagsForSpace = new TreeSet<String>();
 		
 		ResultSet resultSet = new CFWSQL(new CFWStoredFile())
 			.queryCache()
 			.select(CFWStoredFileFields.TAGS.toString())
+			.where().append(FeatureSpaces.getSQLFilter())
 			.getResultSet();
 		
 		try {
@@ -1005,7 +1037,7 @@ public class CFWDBStoredFile {
 				if(tagsArray != null) {
 					Object[] objectArray = (Object[])tagsArray.getArray();
 					for(int i = 0 ; i < objectArray.length; i++) {
-						cachedTags.add(objectArray[i].toString());
+						tagsForSpace.add(objectArray[i].toString());
 					}
 				}
 			}
@@ -1014,6 +1046,7 @@ public class CFWDBStoredFile {
 			.severe("Tags could not be fetched because an error occured.", e);
 		} finally {
 			CFWDB.close(resultSet);
+			cachedTags.put(spaceID, tagsForSpace);
 		}
 				
 	}

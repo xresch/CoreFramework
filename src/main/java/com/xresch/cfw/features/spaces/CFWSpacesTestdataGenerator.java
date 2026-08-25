@@ -1,9 +1,13 @@
 package com.xresch.cfw.features.spaces;
 
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.features.credentials.CFWCredentials;
 import com.xresch.cfw.features.dashboard.Dashboard;
+import com.xresch.cfw.features.filemanager.CFWStoredFile;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.utils.CFWRandom;
@@ -17,6 +21,7 @@ public class CFWSpacesTestdataGenerator {
 
 	boolean doCreateCredentials = false;
 	boolean doCreateDashboards = false;
+	boolean doCreateStoredFiles = false;
 	boolean doCreateGroups = false;
 	
 	int ownerID = 1; // 1 is admin
@@ -29,8 +34,8 @@ public class CFWSpacesTestdataGenerator {
 		
 		doCreateCredentials = defaultForEntities;
 		doCreateDashboards = defaultForEntities;
+		doCreateStoredFiles = defaultForEntities;
 		doCreateGroups 		= defaultForEntities;
-		
 		
 	}
 	
@@ -70,6 +75,29 @@ public class CFWSpacesTestdataGenerator {
 					;
 			
 			return CFW.DB.Dashboards.createGetPrimaryKey(object);
+		}
+		
+		return null;
+		
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	private Integer createStoredFile(int spaceID, String name, boolean isShared, String... tags) {
+		
+		if(doCreateStoredFiles) {
+			CFWStoredFile file = new CFWStoredFile()
+					.fkidSpace(spaceID)
+					.foreignKeyOwner(ownerID)
+					.name(name+".txt")
+					.tags(tags)
+					.isShared(isShared);
+
+			InputStream data = new StringBufferInputStream("test test test");
+			
+			CFW.DB.StoredFile.createAndStoreData(file, data);
+
 		}
 		
 		return null;
@@ -137,7 +165,8 @@ public class CFWSpacesTestdataGenerator {
 		// Create Credentials
 		Integer rootIDCreds = createCredentials(rootID, "CREDS Root "+rootName, true, "tag_R"+rootName);
 		Integer rootIDDash = createDashboard(rootID, "DASH Root "+rootName, true, "tag_R"+rootName);
-		Integer rootIDGroup = createGroup(rootID, "Group Root "+rootName);
+		Integer rootIDFile = createStoredFile(rootID, "FILE Root "+rootName, true, "tag_R"+rootName);
+		Integer rootIDGroup = createGroup(rootID, "GROUP Root "+rootName);
 
 		//-----------------------------
 		// Create Subordinate Trees
@@ -177,7 +206,8 @@ public class CFWSpacesTestdataGenerator {
 		// Create Credentials
 		Integer credsID = createCredentials(newSpaceID, "CREDS "+label, true, "tag_"+label);
  		Integer dashID = createDashboard(newSpaceID, "DASH "+label, true, "tag_"+label);
-		Integer groupID = createGroup(newSpaceID, "Group "+label);
+ 		Integer fileID = createStoredFile(newSpaceID, "FILE "+label, true, "tag_"+label);
+		Integer groupID = createGroup(newSpaceID, "GROUP "+label);
 
 		
 		//#########################################################
@@ -204,7 +234,8 @@ public class CFWSpacesTestdataGenerator {
 		// Create Credentials
 		Integer globalCredsID = createCredentials( newGlobalSpaceID, "CREDS "+labelGlobal, true, "tag_"+labelGlobal);
 		Integer globalDashID  = createDashboard( newGlobalSpaceID, "DASH "+labelGlobal, true, "tag_"+labelGlobal);
-		Integer globalGroupID = createGroup(newGlobalSpaceID, "Group "+labelGlobal);
+		Integer globalFileID  = createStoredFile( newGlobalSpaceID, "FILE "+labelGlobal, true, "tag_"+labelGlobal);
+		Integer globalGroupID = createGroup(newGlobalSpaceID, "GROUP "+labelGlobal);
 				
 		//#########################################################
 		// Subordinates

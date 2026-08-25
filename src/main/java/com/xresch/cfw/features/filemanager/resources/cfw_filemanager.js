@@ -82,6 +82,15 @@ function cfw_filemanager_editStoredFile(id){
 }
 
 /******************************************************************
+ * Edit
+ ******************************************************************/
+function cfw_filemanager_editFileContent(id){
+	
+	cfw_storedfile_editFileContent(id, "cfw_filemanager_draw(CFW_FILEMANAGER_LAST_OPTIONS)");
+	 
+}
+
+/******************************************************************
  * Create
  ******************************************************************/
 function cfw_filemanager_uploadFiles(){
@@ -239,6 +248,37 @@ function cfw_storedfile_editStoredFile(id, callbackJSOrFunc){
 	//-----------------------------------
 	var elTargeto = compositeDiv.find('#storedfileSettingsContent');
 	CFW.http.createForm(CFW_FILEMANAGER_URL, {action: "getform", item: "editstoredfile", id: id}, elTargeto );
+
+	$('#editStoredFileSettingsComposite [data-toggle="tooltip"]').tooltip();		
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_storedfile_editFileContent(id, callbackJSOrFunc){
+	
+
+	// ##################################################
+	// Create and show Modal
+	// ##################################################
+	var compositeDiv = $('<div id="editFileContentSettingsComposite">');
+	
+
+	//-----------------------------------
+	// Role Details
+	//-----------------------------------
+	
+	CFW.ui.showModalMedium(
+			CFWL('cfw_core_settings', 'Settings'), 
+			compositeDiv, 
+			callbackJSOrFunc,
+			true
+	);
+	
+	//-----------------------------------
+	// Load Form
+	//-----------------------------------
+	CFW.http.createForm(CFW_FILEMANAGER_URL, {action: "getform", item: "editfilecontent", id: id}, compositeDiv );
 
 	$('#editStoredFileSettingsComposite [data-toggle="tooltip"]').tooltip();		
 }
@@ -402,19 +442,19 @@ function cfw_filemanager_printStoredFile(data, type){
 	// Tab Desciption
 
 	switch(type){
-		case "mystoredfile":		parent.append('<p>This tab shows all files where you are the owner.</p>')
+		case "mystoredfile":		parent.append('<p>This tab shows files for the selected space where you are the owner.</p>')
 									break;	
 									
-		case "myarchived":			parent.append('<p>This tab shows all archived files where you are the owner.</p>')
+		case "myarchived":			parent.append('<p>This tab shows archived files for the selected space where you are the owner.</p>')
 									break;	
 									
-		case "sharedstoredfile":	parent.append('<p>This list contains all the files that are shared by others and by you.</p>')
+		case "sharedstoredfile":	parent.append('<p>This list contains the files for the selected space that are shared by others and by you.</p>')
 									break;
 									
-		case "adminarchived":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin archive. The list contains all archived files of all users.</b></p>')
+		case "adminarchived":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin archive. The list contains all archived files for the selected space of all users.</b></p>')
 									break;	
 									
-		case "adminstoredfile":	parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all files of all users.</b></p>')
+		case "adminstoredfile":	parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all files for the selected space of all users.</b></p>')
 									break;	
 														
 		default:					break;
@@ -446,13 +486,13 @@ function cfw_filemanager_printStoredFile(data, type){
 		var showFields = [];
 		if(type == 'mystoredfile' 
 		|| type == 'myarchived'){
-			showFields = ['SIZE', 'NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
+			showFields = ['PK_ID', 'SPACE_ABBREV', 'SIZE', 'NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
 		}else if ( type == 'sharedstoredfile'
 				|| type == 'favedstoredfile'){
-			showFields = ['OWNER', 'SIZE', 'NAME', 'DESCRIPTION', 'TAGS'];
+			showFields = ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'SIZE', 'NAME', 'DESCRIPTION', 'TAGS'];
 		}else if (type == 'adminstoredfile'
 				||type == 'adminarchived' ){
-			showFields = ['PK_ID', 'OWNER', 'SIZE', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
+			showFields = ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'SIZE', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
 		}
 		
 		//======================================
@@ -510,6 +550,50 @@ function cfw_filemanager_printStoredFile(data, type){
 				}else{
 					htmlString += '&nbsp;';
 				}
+				return htmlString;
+			});
+			
+		//-------------------------
+		// Edit Content Button
+		actionButtons.push(
+			function (record, id){ 
+				var htmlString = '&nbsp;';
+				
+				// check user can edit
+				if(JSDATA.userid == record.FK_ID_OWNER 
+				|| type == 'adminstoredfile'
+				|| (record.IS_EDITOR) ){
+					
+					// check file is editable
+					let size = (record.SIZE != null) ? record.SIZE  : 0;
+					
+					if(size < 2000000){
+						
+						let mime = (record.MIMETYPE != null) ? record.MIMETYPE  : "";
+						let ext = (record.EXTENSION != null) ? record.EXTENSION : "";
+						
+						if(mime.startsWith("text")
+						|| mime.endsWith("json")
+						|| mime.endsWith("csv")
+						|| mime.endsWith("xml")
+						|| ext.endsWith("json")
+						|| ext.endsWith("csv")
+						|| ext.endsWith("xml")
+						|| ext.endsWith("log")
+						|| ext.endsWith("properties")
+						|| ext.endsWith("sql")
+						|| ext.endsWith("html")
+						|| ext.endsWith("md")
+						){
+							htmlString = '<button class="btn btn-primary btn-sm" alt="Edit File Content" title="Edit File Content" '
+								+'onclick="cfw_filemanager_editFileContent('+id+')");">'
+								+ '<i class="fa fa-file-pen"></i>'
+								+ '</button>';
+							
+						}
+					}
+				}
+				
 				return htmlString;
 			});
 		
@@ -662,9 +746,10 @@ function cfw_filemanager_printStoredFile(data, type){
 					label: 'Sharing Details',
 					name: 'table',
 					renderdef: {
-						visiblefields: [ "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
+						visiblefields: [ "SPACE_ABBREV", "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
 						labels: {
 					 		PK_ID: "ID",
+							SPACE_ABBREV: 'Space',
 					 		IS_SHARED: 'Shared',
 					 		TIME_CREATED: 'Time Uploaded',
 					 		JSON_SHARE_WITH_USERS: 'Shared User', 
@@ -709,6 +794,7 @@ function cfw_filemanager_printStoredFile(data, type){
 			 	visiblefields: showFields,
 			 	labels: {
 			 		PK_ID: "ID",
+					SPACE_ABBREV: 'Space',
 			 		IS_SHARED: 'Shared'
 			 	},
 			 	customizers: {
@@ -838,6 +924,38 @@ function cfw_filemanager_printStoredFile(data, type){
 	}
 }
 
+
+/******************************************************************
+ *
+ ******************************************************************/
+function cfw_filemanager_sanitizeCurrentOptions(options){
+	
+	//-----------------------
+	// Options is Set
+	if(options != null){ return options; }
+	
+	//-----------------------
+	// Last Options Available
+	if(CFW_FILEMANAGER_LAST_OPTIONS != null ){
+		return CFW_FILEMANAGER_LAST_OPTIONS;
+	}
+	
+	//-----------------------
+	// Last Options From Cache
+	// or Default
+	var tabToDisplay = CFW.cache.retrieveValueForPage("storedfilelist-lasttab", "mystoredfile");
+		
+		if(CFW.hasPermission('File Manager: Viewer') 
+		&& !CFW.hasPermission('File Manager: Creator') 
+		&& !CFW.hasPermission('File Manager: Admin')){
+			tabToDisplay = "sharedstoredfile";
+		}
+		
+		$('#tab-'+tabToDisplay).addClass('active');
+	
+	return {tab: tabToDisplay};
+}
+
 /******************************************************************
  * Main method for building the different views.
  * 
@@ -858,28 +976,27 @@ function cfw_filemanager_initialDraw(){
 	// Create Tabs
 	cfw_filemanager_createTabs();
 	
-	
-	var tabToDisplay = CFW.cache.retrieveValueForPage("storedfilelist-lasttab", "mystoredfile");
-	
-	if(CFW.hasPermission('File Manager: Viewer') 
-	&& !CFW.hasPermission('File Manager: Creator') 
-	&& !CFW.hasPermission('File Manager: Admin')){
-		tabToDisplay = "sharedstoredfile";
-	}
-	
-	$('#tab-'+tabToDisplay).addClass('active');
-	
 	//-------------------------------------------
-	// Draw Tab
-	cfw_filemanager_draw({tab: tabToDisplay});
+	// Create Selector and Draw
+	cfw_spaces_createSpaceSelector(function(spaceid){
+			cfw_filemanager_draw(null);
+		}, true);
 	
 }
 
 function cfw_filemanager_draw(options){
+
+	//-------------------------
+	// Options
+	options = cfw_filemanager_sanitizeCurrentOptions(options); 
 	CFW_FILEMANAGER_LAST_OPTIONS = options;
-	
 	CFW.cache.storeValueForPage("storedfilelist-lasttab", options.tab);
+
+	//-------------------------
+	// Clear Tab
 	$("#tab-content").html("");
+	
+	
 	
 	CFW.ui.toggleLoader(true);
 	

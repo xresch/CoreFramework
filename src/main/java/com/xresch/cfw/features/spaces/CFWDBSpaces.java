@@ -23,6 +23,7 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
+import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -178,18 +179,37 @@ public class CFWDBSpaces {
 	 *****************************************************************************/
 	public static JsonArray getHierarchyForSpaceAsJson(String spaceID) {
 		
-		CFWHierarchy<CFWSpace> hierarchy = 
-				new CFWHierarchy<CFWSpace>(new CFWSpace())
-					.setFilter(
-							new CFWSQL(null)
-								.and().custom("(")
-									.arrayContains(CFWHierarchy.H_LINEAGE, spaceID)
-									.or(CFWSpaceFields.PK_ID, spaceID)
-								.custom(")")
-							)
-					.fetchAndCreateHierarchy();
+		if(spaceID == null) {
+			return new JsonArray();
+		}
 		
-		return hierarchy.toJSONArray();
+		int spaceIDParsed = Integer.parseInt(spaceID);
+		
+		if(FeatureSpacesDefaults.ALL.id() != spaceIDParsed) {
+			CFWHierarchy<CFWSpace> hierarchy = 
+					new CFWHierarchy<CFWSpace>(new CFWSpace())
+						.setFilter(
+								new CFWSQL(null)
+									.and().custom("(")
+										.arrayContains(CFWHierarchy.H_LINEAGE, spaceID)
+										.or(CFWSpaceFields.PK_ID, spaceID)
+									.custom(")")
+								)
+						.fetchAndCreateHierarchy();
+			
+			return hierarchy.toJSONArray();
+		}else  {
+			
+			//----------------------------------
+			// Return Full list for Space ALL
+			CFWHierarchy<CFWSpace> hierarchy = 
+					new CFWHierarchy<CFWSpace>(new CFWSpace())
+						.fetchAndCreateHierarchy();
+			
+			return hierarchy.toJSONArray();
+		}
+		
+		
 		
 	}
 	/*****************************************************************************
