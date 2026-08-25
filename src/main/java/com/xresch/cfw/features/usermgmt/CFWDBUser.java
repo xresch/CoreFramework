@@ -573,7 +573,12 @@ public class CFWDBUser {
 			
 		}
 			
-		return new AutocompleteResult(autocompleteList);
+		//-----------------------------
+		// Add Autocomplete Note
+		AutocompleteResult result = new AutocompleteResult(autocompleteList);
+		result.setHTMLDescription("<b>Note: </b> This list only shows users that can access a space within the same root space.");
+
+		return result;
 	}
 	
 }
