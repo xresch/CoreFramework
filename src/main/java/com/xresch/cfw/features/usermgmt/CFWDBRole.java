@@ -271,7 +271,7 @@ public class CFWDBRole {
 			.limit(maxResults)
 			.getAsAutocompleteResult(RoleFields.PK_ID, RoleFields.NAME, RoleFields.DESCRIPTION);
 
-		result.setHTMLDescription("<b>Note: </b> These suggestions depends on the selected space, adjust it if you don't see what you want. (Spaces lower in hierarchy show more.)");
+		result.setHTMLDescription(FeatureSpaces.AUTOCOMPLETE_NOTICE);
 		
 		return result;
 	}

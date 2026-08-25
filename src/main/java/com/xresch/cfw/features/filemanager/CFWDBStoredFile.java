@@ -776,7 +776,7 @@ public class CFWDBStoredFile {
 	 ***************************************************************/
 	public static void autocompleteFileForQuery(AutocompleteResult result, CFWQueryAutocompleteHelper helper, String prefix) {
 		
-		
+
 		if( helper.getCommandTokenCount() < 2 ) {
 			return;
 		}
@@ -784,6 +784,10 @@ public class CFWDBStoredFile {
 		if(prefix == null) {
 			prefix = "";
 		}
+		
+		//-----------------------------
+		// Add Autocomplete Note
+		result.setHTMLDescription(FeatureSpaces.AUTOCOMPLETE_NOTICE);
 		
 		//-----------------------------
 		// Replace "file:" prefix
@@ -822,9 +826,9 @@ public class CFWDBStoredFile {
 						)
 				.whereLike(CFWStoredFileFields.NAME, "%"+searchValue+"%")
 					.and(CFWStoredFileFields.IS_ARCHIVED, false)
+					.and().append(FeatureSpaces.getSQLFilterInclusive())
 				.limit(50)
 				.getResultSet();
-		
 		
 		//------------------------------------
 		// Filter by Access
@@ -841,6 +845,8 @@ public class CFWDBStoredFile {
 					String owner = resultSet.getString("OWNER");
 					Long size = resultSet.getLong("SIZE");
 					Timestamp lastModified = resultSet.getTimestamp("LAST_MODIFIED");
+					Integer spaceID = resultSet.getInt("FK_ID_SPACE");
+					String spaceBreadcrumbs = CFW.DB.Spaces.getFromCache(spaceID).createBreadcrumbsString();
 					
 					JsonObject json = new JsonObject();
 					json.addProperty("id", id);
@@ -857,6 +863,7 @@ public class CFWDBStoredFile {
 					item.description(
 							  "<span>"
 								+ "<b>ID:&nbsp;</b>" + id 
+								+ "&emsp;<b>Space:&nbsp;</b>" + spaceBreadcrumbs
 								+ "&emsp;<b>Owner:&nbsp;</b>" + owner 
 								+ "&emsp;<b>Size:&nbsp;</b>" + CFW.Text.toHumanReadableBytes(size, 1) 
 								+ "&emsp;<b>Modified:&nbsp;</b>" + CFW.Time.formatMillis(lastModified.getTime(), CFW.Time.FORMAT_TIMESTAMP_READABLE)
@@ -864,7 +871,6 @@ public class CFWDBStoredFile {
 							);
 					
 					item.setMethodReplaceBeforeCursor(filePrefix + searchValue);
-					
 					
 					list.addItem(item);
 					
@@ -1026,7 +1032,7 @@ public class CFWDBStoredFile {
 		ResultSet resultSet = new CFWSQL(new CFWStoredFile())
 			.queryCache()
 			.select(CFWStoredFileFields.TAGS.toString())
-			.where().append(FeatureSpaces.getSQLFilter())
+			.where().append(FeatureSpaces.getSQLFilterInclusive())
 			.getResultSet();
 		
 		try {

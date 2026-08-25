@@ -171,7 +171,13 @@ public class CFWCredentials extends CFWObject {
 							}
 						}
 					}
-					return new AutocompleteResult(list);
+					
+					//-----------------------------
+					// Add Autocomplete Note
+					AutocompleteResult result = new AutocompleteResult(list);
+					result.setHTMLDescription(FeatureSpaces.AUTOCOMPLETE_NOTICE);
+					
+					return result;
 				}
 				
 			} );

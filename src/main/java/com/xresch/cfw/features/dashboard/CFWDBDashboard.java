@@ -1405,7 +1405,7 @@ public class CFWDBDashboard {
 		ResultSet resultSet = new CFWSQL(new Dashboard())
 			.queryCache()
 			.select(DashboardFields.TAGS.toString())
-			.where().append(FeatureSpaces.getSQLFilter())
+			.where().append(FeatureSpaces.getSQLFilterInclusive())
 			.getResultSet();
 		
 		try {

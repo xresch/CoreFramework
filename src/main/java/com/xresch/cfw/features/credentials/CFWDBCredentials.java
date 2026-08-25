@@ -642,6 +642,10 @@ public class CFWDBCredentials {
 		}
 		
 		//-----------------------------
+		// Add Autocomplete Note
+		result.setHTMLDescription(FeatureSpaces.AUTOCOMPLETE_NOTICE);
+		
+		//-----------------------------
 		// Replace "creds:" prefix
 		String credsPrefix = "";
 		CFWQueryToken checkIsColonFile = helper.getTokenBeforeCursor(-1);
@@ -677,7 +681,7 @@ public class CFWDBCredentials {
 						)
 				.whereLike(CFWCredentialsFields.NAME, "%"+searchValue+"%")
 					.and(CFWCredentialsFields.IS_ARCHIVED, false)
-					.and().append(FeatureSpaces.getSQLFilter())
+					.and().append(FeatureSpaces.getSQLFilterInclusive())
 				.getResultSet();
 		
 		
@@ -880,7 +884,7 @@ public class CFWDBCredentials {
 		ResultSet resultSet = new CFWSQL(new CFWCredentials())
 			.queryCache()
 			.select(CFWCredentialsFields.TAGS.toString())
-			.where().append(FeatureSpaces.getSQLFilter())
+			.where().append(FeatureSpaces.getSQLFilterInclusive())
 			.getResultSet();
 		
 		try {

@@ -47,6 +47,8 @@ public class FeatureSpaces extends CFWAppFeature {
 	public static final String PERMISSION_SPACES_ADMIN = "Space: Admin All";
 	public static final String PERMISSION_SPACES_CREATE = "Space: Create Spaces";
 	
+	public static final String AUTOCOMPLETE_NOTICE = "<b>Note: </b> These suggestions depends on the selected space, adjust it if you don't see what you want. (Spaces lower in hierarchy show more.)";
+	
 	// Default spaces created when activating the feature
 	public enum FeatureSpacesDefaults{
 		  ALL(0, "All", "This is a special space that can display everything in every space. Useful for admin purposes.")
