@@ -573,13 +573,13 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 		var showFields = [];
 		if(type == 'mystoredQuery' 
 		|| type == 'myarchived'){
-			showFields = ['NAME', 'DESCRIPTION', 'TAGS', 'MAKE_WIDGET', 'IS_SHARED', 'CHECK_PERMISSIONS', 'TIME_CREATED'];
+			showFields = ['PK_ID', 'SPACE_ABBREV', 'NAME', 'DESCRIPTION', 'TAGS', 'MAKE_WIDGET', 'IS_SHARED', 'CHECK_PERMISSIONS', 'TIME_CREATED'];
 		}else if ( type == 'sharedstoredQuery'
 				|| type == 'favedstoredQuery'){
-			showFields = ['OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
+			showFields = ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
 		}else if (type == 'adminstoredQuery'
 				||type == 'adminarchived' ){
-			showFields = ['PK_ID', 'OWNER', 'NAME',  'DESCRIPTION', 'TAGS', 'MAKE_WIDGET', 'IS_SHARED', 'CHECK_PERMISSIONS', 'TIME_CREATED'];
+			showFields = ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME',  'DESCRIPTION', 'TAGS', 'MAKE_WIDGET', 'IS_SHARED', 'CHECK_PERMISSIONS', 'TIME_CREATED'];
 		}
 		
 		//======================================
@@ -749,9 +749,10 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 					label: 'Sharing Details',
 					name: 'table',
 					renderdef: {
-						visiblefields: [ "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
+						visiblefields: [ "SPACE_ABBREV", "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
 						labels: {
 					 		PK_ID: "ID",
+							SPACE_ABBREV: 'Space',
 					 		IS_SHARED: 'Shared',
 					 		JSON_SHARE_WITH_USERS: 'Shared User', 
 						 	JSON_SHARE_WITH_GROUPS: 'Shared Groups', 
@@ -795,6 +796,7 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 			 	visiblefields: showFields,
 			 	labels: {
 			 		  PK_ID: "ID"
+					, SPACE_ABBREV: 'Space'
 			 		, IS_SHARED: 'Shared'
 			 		, MAKE_WIDGET: 'Widget'
 			 	},
@@ -834,6 +836,7 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 								renderdef: {
 									labels: {
 										PK_ID: "ID",
+										SPACE_ABBREV: 'Space',
 			 							IS_SHARED: 'Shared'
 									},
 									rendererSettings: {
@@ -847,6 +850,7 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 								renderdef: {
 									labels: {
 										PK_ID: "ID",
+										SPACE_ABBREV: 'Space',
 			 							IS_SHARED: 'Shared'
 									},
 									rendererSettings: {

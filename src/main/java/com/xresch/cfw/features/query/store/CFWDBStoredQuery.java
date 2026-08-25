@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -18,8 +17,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages.MessageType;
-import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -28,12 +25,12 @@ import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
-import com.xresch.cfw.features.query.store.CFWStoredQuery.CFWStoredQueryFields;
 import com.xresch.cfw.features.eav.CFWDBEAVStats;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterScope;
+import com.xresch.cfw.features.query.store.CFWStoredQuery.CFWStoredQueryFields;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
@@ -62,7 +59,7 @@ public class CFWDBStoredQuery {
 	
 	private static final HashMap<Integer, WidgetStoredQuery> widgetCache = new HashMap<>();
 	
-	public static TreeSet<String> cachedTags = null;
+	public static HashMap<Integer, TreeSet<String>> cachedTags = new HashMap<>();
 	
 	//####################################################################################################
 	// Precheck Initialization
@@ -324,26 +321,7 @@ public class CFWDBStoredQuery {
 	public static CFWStoredQuery selectFirstByName(String name) { 
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWStoredQueryFields.NAME.toString(), name);
 	}
-	
-	
-	/***************************************************************
-	 * Return a list of all user storedQuery
-	 * 
-	 * @return Returns a resultSet with all storedQuery or null.
-	 ****************************************************************/
-	public static ResultSet getUserStoredQueryList() {
 		
-		return new CFWSQL(new CFWStoredQuery())
-				.queryCache()
-				.select()
-				.where(CFWStoredQueryFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
-				.and(CFWStoredQueryFields.VERSION, 0)
-				.and(CFWStoredQueryFields.IS_ARCHIVED, false)
-				.orderby(CFWStoredQueryFields.NAME.toString())
-				.getResultSet();
-		
-	}
-	
 
 	/***************************************************************
 	 * Return a list of all user storedQuery as json string.
@@ -352,14 +330,20 @@ public class CFWDBStoredQuery {
 	 ****************************************************************/
 	public static String getUserStoredQueryListAsJSON() {
 		
-		return new CFWSQL(new CFWStoredQuery())
-				.queryCache()
+		JsonArray array = new CFWSQL(new CFWStoredQuery())
+				.queryCacheSpaced()
 				.select()
 				.where(CFWStoredQueryFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWStoredQueryFields.VERSION, 0)
 				.and(CFWStoredQueryFields.IS_ARCHIVED, false)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWStoredQueryFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
+		
 	}
 	
 	
@@ -377,6 +361,7 @@ public class CFWDBStoredQuery {
 				.where(CFWStoredQueryFields.FK_ID_OWNER, CFW.Context.Request.getUser().id())
 					.and(CFWStoredQueryFields.VERSION, 0)
 					.and(CFWStoredQueryFields.IS_ARCHIVED, false)
+					.and().append(FeatureSpaces.getSQLFilterInclusive())
 				.orderby(CFWStoredQueryFields.NAME.toString())
 				.getAsJSONArray();
 		
@@ -384,7 +369,7 @@ public class CFWDBStoredQuery {
 		
 		userQueries.addAll(sharedQueries);
 		
-		return userQueries;
+		return FeatureSpaces.addSpacesInfoToJSON(userQueries);
 		
 	}
 	
@@ -395,14 +380,19 @@ public class CFWDBStoredQuery {
 	 ****************************************************************/
 	public static String getUserArchivedListAsJSON() {
 		
-		return new CFWSQL(new CFWStoredQuery())
-				.queryCache()
+		JsonArray array = new CFWSQL(new CFWStoredQuery())
+				.queryCacheSpaced()
 				.select()
 				.where(CFWStoredQueryFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 					.and(CFWStoredQueryFields.VERSION, 0)
 					.and(CFWStoredQueryFields.IS_ARCHIVED, true)
+					.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWStoredQueryFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 	}
 		
 
@@ -414,14 +404,19 @@ public class CFWDBStoredQuery {
 	public static String getAdminStoredQueryListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureStoredQuery.PERMISSION_STOREDQUERY_ADMIN)) {
-			return new CFWSQL(new CFWStoredQuery())
-				.queryCache()
+			JsonArray array = new CFWSQL(new CFWStoredQuery())
+				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select()
 				.where(CFWStoredQueryFields.IS_ARCHIVED, false)
 					.and(CFWStoredQueryFields.VERSION, 0)
+					.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWStoredQueryFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+			
+			return CFW.JSON.toJSON(
+					FeatureSpaces.addSpacesInfoToJSON(array)
+				);
 		}else {
 			CFW.Messages.accessDenied();
 			return "[]";
@@ -436,14 +431,19 @@ public class CFWDBStoredQuery {
 	public static String getAdminArchivedListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureStoredQuery.PERMISSION_STOREDQUERY_ADMIN)) {
-			return new CFWSQL(new CFWStoredQuery())
-				.queryCache()
+			JsonArray array = new CFWSQL(new CFWStoredQuery())
+				.queryCacheSpaced()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select()
 				.where(CFWStoredQueryFields.IS_ARCHIVED, true)
 					.and(CFWStoredQueryFields.VERSION, 0)
+					.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWStoredQueryFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+			
+			return CFW.JSON.toJSON(
+					FeatureSpaces.addSpacesInfoToJSON(array)
+				);
 		}else {
 			CFW.Messages.accessDenied();
 			return "[]";
@@ -480,7 +480,8 @@ public class CFWDBStoredQuery {
 					userID,
 					userID,
 					sharedUserslikeID,
-					sharedUserslikeID);
+					sharedUserslikeID)
+			.and().append(FeatureSpaces.getSQLFilter());
 			
 		
 		//-------------------------
@@ -488,6 +489,7 @@ public class CFWDBStoredQuery {
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWStoredQueryFields.PK_ID
+				  , CFWStoredQueryFields.FK_ID_SPACE
 				  , CFWStoredQueryFields.NAME
 				  , CFWStoredQueryFields.QUERY
 				  , CFWStoredQueryFields.QUERY_PARAMS_DEFINED
@@ -499,6 +501,7 @@ public class CFWDBStoredQuery {
 			.where(CFWStoredQueryFields.IS_SHARED, true)
 				.and(CFWStoredQueryFields.VERSION, 0)
 				.and(CFWStoredQueryFields.IS_ARCHIVED, false)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.and().custom("(");
 		
 		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
@@ -517,6 +520,7 @@ public class CFWDBStoredQuery {
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWStoredQueryFields.PK_ID
+					, CFWStoredQueryFields.FK_ID_SPACE
 					, CFWStoredQueryFields.NAME
 					, CFWStoredQueryFields.QUERY
 					, CFWStoredQueryFields.QUERY_PARAMS_DEFINED
@@ -527,6 +531,7 @@ public class CFWDBStoredQuery {
 					)
 			.where(CFWStoredQueryFields.IS_ARCHIVED, false)
 				.and(CFWStoredQueryFields.VERSION, 0)
+				.and().append(FeatureSpaces.getSQLFilter())
 				.and().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {
@@ -561,7 +566,7 @@ public class CFWDBStoredQuery {
 	
 		//-------------------------
 		// Return
-		return sharedBoards;
+		return FeatureSpaces.addSpacesInfoToJSON(sharedBoards);
 	}
 	
 				
@@ -716,7 +721,7 @@ public class CFWDBStoredQuery {
 		if(Strings.isNullOrEmpty(searchValue)) {
 			return new AutocompleteResult();
 		}
-		
+				
 		ResultSet resultSet = new CFWStoredQuery()
 			.queryCache(CFWDBStoredQuery.class, "autocompleteStoredQuery")
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
@@ -724,8 +729,10 @@ public class CFWDBStoredQuery {
 					CFWStoredQueryFields.NAME)
 			.whereLike(CFWStoredQueryFields.NAME, "%"+searchValue+"%")
 				.and(CFWStoredQueryFields.VERSION, 0)
+				.and().append(FeatureSpaces.getSQLFilterInclusive())
 			.limit(maxResults)
 			.getResultSet();
+		
 		
 		//------------------------------------
 		// Filter by Access
@@ -736,7 +743,12 @@ public class CFWDBStoredQuery {
 				if(hasUserAccessToStoredQuery(id)) {
 					String name = resultSet.getString("NAME");
 					String owner = resultSet.getString("OWNER");
-					list.addItem(id, name, "Owner: "+owner);
+					Integer spaceID = resultSet.getInt("FK_ID_SPACE");
+					String spaceBreadcrumbs = CFW.DB.Spaces.getFromCache(spaceID).createBreadcrumbsString();
+					list.addItem(id, name, 
+							  "<b>Space:&nbsp;</b>" + spaceBreadcrumbs
+							+ "&emsp;<b>Owner:&nbsp;</b>" + owner
+							);
 				}
 			}
 		} catch (SQLException e) {
@@ -746,8 +758,12 @@ public class CFWDBStoredQuery {
 			CFWDB.close(resultSet);
 		}
 
-		
-		return new AutocompleteResult(list);
+		//-----------------------------
+		// Add Autocomplete Note
+		AutocompleteResult result = new AutocompleteResult(list);
+		result.setHTMLDescription(FeatureSpaces.AUTOCOMPLETE_NOTICE);
+
+		return result;
 		
 	}
 	
@@ -1183,27 +1199,25 @@ public class CFWDBStoredQuery {
 	}
 	
 	/********************************************************************************************
-	 * Creates multiple StoredQuery in the DB.
-	 * @param StoredQuery with the values that should be inserted. ID will be set by the Database.
-	 * @return 
-	 * @return nothing
+	 * Get the list  of cached tags for the selected space.
 	 * 
+	 * @return set of tags
 	 ********************************************************************************************/
 	public static TreeSet<String> getTags() {
 		
-		if(cachedTags == null) {
-			fetchAndCacheTags();
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
+		if(! cachedTags.containsKey(spaceID) ) {
+			fetchAndCacheTags(spaceID);
 		}
 		
-		return cachedTags;
+		
+		return cachedTags.get(spaceID);
 	}
 	
 	/********************************************************************************************
-	 * Creates multiple StoredQuery in the DB.
-	 * @param StoredQuery with the values that should be inserted. ID will be set by the Database.
-	 * @return 
-	 * @return nothing
+	 * Get the list  of cached tags for the selected space.
 	 * 
+	 * @return set of tags  as JSON Array string
 	 ********************************************************************************************/
 	public static String getTagsAsJSON() {
 				
@@ -1211,49 +1225,53 @@ public class CFWDBStoredQuery {
 	}
 	
 	/********************************************************************************************
-	 * Adds the tags to the cache for the specified storedQuery.
-	 * @param StoredQuery with the tags.
-	 * @return nothing
+	 * Adds the tags to the cache for the specified credentials.
+	 * @param Credentials with the tags.
 	 * 
+	 * @return nothing
 	 ********************************************************************************************/
-	public static void updateTags(CFWStoredQuery... storedQuery) {
+	public static void updateTags(CFWStoredQuery... credentials) {
 		
-		for(CFWStoredQuery credential : storedQuery) {
+		for(CFWStoredQuery credential : credentials) {
 			updateTags(credential);
 		}
 	}
 	
 	/********************************************************************************************
-	 * Adds the tags to the cache for the specified storedQuery.
-	 * @param StoredQuery with the tags.
-	 * @return nothing
+	 * Adds the tags to the cache for the specified credentials.
+	 * @param Credentials with the tags.
 	 * 
+	 * @return nothing
 	 ********************************************************************************************/
-	public static void updateTags(CFWStoredQuery storedQuery) {
+	public static void updateTags(CFWStoredQuery credentials) {
 		
-		if(cachedTags == null) {
-			fetchAndCacheTags();
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
+		if(! cachedTags.containsKey(spaceID) ) {
+			fetchAndCacheTags(spaceID);
 		}
 		
-		if(storedQuery.tags() != null) {
-			for(Object tag : storedQuery.tags()) {
-				cachedTags.add(tag.toString());
+		if(credentials.tags() != null) {
+			TreeSet<String> tagsForSpace = cachedTags.get(spaceID);
+			for(Object tag : credentials.tags()) {
+				tagsForSpace.add(tag.toString());
 			}
 		}
 	}
 	
-	
 	/********************************************************************************************
-	 * Fetch cachedTags from the database and stores them into the cache.
+	 * Fetch tags from the database and stores them into the cache.
 	 * 
+	 * @param spaceID the spaceID for which the tags should be cached for
+	 * @return nothing
 	 ********************************************************************************************/
-	public static void fetchAndCacheTags() {
+	public static void fetchAndCacheTags(int spaceID) {
 		
-		cachedTags = new TreeSet<String>();
+		TreeSet<String> tagsForSpace = new TreeSet<String>();
 		
 		ResultSet resultSet = new CFWSQL(new CFWStoredQuery())
 			.queryCache()
 			.select(CFWStoredQueryFields.TAGS.toString())
+			.where().append(FeatureSpaces.getSQLFilterInclusive())
 			.getResultSet();
 		
 		try {
@@ -1264,7 +1282,7 @@ public class CFWDBStoredQuery {
 				if(tagsArray != null) {
 					Object[] objectArray = (Object[])tagsArray.getArray();
 					for(int i = 0 ; i < objectArray.length; i++) {
-						cachedTags.add(objectArray[i].toString());
+						tagsForSpace.add(objectArray[i].toString());
 					}
 				}
 			}
@@ -1273,44 +1291,11 @@ public class CFWDBStoredQuery {
 			.severe("Tags could not be fetched because an error occured.", e);
 		} finally {
 			CFWDB.close(resultSet);
+			cachedTags.put(spaceID, tagsForSpace);
 		}
 				
 	}
 	
-	/********************************************************************************************
-	 * Fetch cachedTags from the database that are visible to the user.
-	 * 
-	 ********************************************************************************************/
-	public static String getTagsForUserAsJSON(int userID) {
-		
-		TreeSet<String> tags = new TreeSet<String>();
-		
-		ResultSet resultSet = new CFWSQL(new CFWStoredQuery())
-			.queryCache()
-			.select(CFWStoredQueryFields.TAGS.toString())
-			.where(CFWStoredQueryFields.FK_ID_OWNER.toString(), userID)
-			.or(CFWStoredQueryFields.IS_SHARED.toString(), true)
-			.getResultSet();
-		
-		try {
-			while(resultSet.next()) {
-				Object[] tagsArray = (Object[])resultSet.getObject(1);
-				
-				if(tagsArray != null) {
-					for(int i = 0 ; i < tagsArray.length; i++) {
-						tags.add(tagsArray[i].toString());
-					}
-				}
-			}
-		} catch (SQLException e) {
-			new CFWLog(logger)
-			.severe("Tags could not be fetched because an error occured.", e);
-		} finally {
-			CFWDB.close(resultSet);
-		}
-		
-		return CFW.JSON.toJSON(tags.toArray(new String[] {}));
-	}
 	
 	
 	/********************************************************************************************
@@ -1356,8 +1341,6 @@ public class CFWDBStoredQuery {
 	 * 
 	 ********************************************************************************************/
 	public static void fetchAndCacheWidgets() {
-		
-		cachedTags = new TreeSet<String>();
 		
 		ArrayList<CFWStoredQuery> queryArray = new CFWSQL(new CFWStoredQuery())
 			.queryCache()

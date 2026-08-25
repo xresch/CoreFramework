@@ -279,6 +279,31 @@ function cfw_query_printHistoryView(data){
 	
 }
 
+/******************************************************************
+ *
+ ******************************************************************/
+function cfw_query_sanitizeCurrentOptions(options){
+	
+	//-----------------------
+	// Options is Set
+	if(options != null){ return options; }
+	
+	//-----------------------
+	// Last Options Available
+	if(CFW_QUERY_LAST_OPTIONS != null ){
+		return CFW_QUERY_LAST_OPTIONS;
+	}
+	
+	//-----------------------
+	// Last Options From Cache
+	// or Default
+	let tabToDisplay = CFW.cache.retrieveValueForPage("cfw-query-lasttab", "editor");
+	
+	cfw_query_activateTab(tabToDisplay);
+	
+	return {tab: tabToDisplay};
+}
+
 /*******************************************************************************
  * Main method for building the view.
  * 
@@ -297,8 +322,12 @@ function cfw_query_initialDraw(){
 	
 	var tabToDisplay = CFW.cache.retrieveValueForPage("cfw-query-lasttab", "editor");
 	
-
-	cfw_query_draw({tab: tabToDisplay});
+	
+	//-------------------------------------------
+	// Create Selector and Draw
+	cfw_spaces_createSpaceSelector(function(spaceid){
+			cfw_query_draw(null);
+		}, true);
 	
 	//-----------------------------------
 	// Create Editor
@@ -318,11 +347,14 @@ function cfw_query_initialDraw(){
  ******************************************************************/
 function cfw_query_draw(options){
 	
-	//----------------------------
-	// Initialize
+	//-------------------------
+	// Options
+	options = cfw_query_sanitizeCurrentOptions(options); 
 	CFW_QUERY_LAST_OPTIONS = options;
 	CFW.cache.storeValueForPage("cfw-query-lasttab", options.tab);
-	cfw_query_activateTab(options.tab);
+	
+	//----------------------------
+	// Initialize
 	$("#tab-content").html("");
 	
 	//----------------------------

@@ -8,6 +8,7 @@ import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.features.credentials.CFWCredentials;
 import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.filemanager.CFWStoredFile;
+import com.xresch.cfw.features.query.store.CFWStoredQuery;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.utils.CFWRandom;
@@ -22,6 +23,7 @@ public class CFWSpacesTestdataGenerator {
 	boolean doCreateCredentials = false;
 	boolean doCreateDashboards = false;
 	boolean doCreateStoredFiles = false;
+	boolean doCreateStoredQueries = false;
 	boolean doCreateGroups = false;
 	
 	int ownerID = 1; // 1 is admin
@@ -35,6 +37,7 @@ public class CFWSpacesTestdataGenerator {
 		doCreateCredentials = defaultForEntities;
 		doCreateDashboards = defaultForEntities;
 		doCreateStoredFiles = defaultForEntities;
+		doCreateStoredQueries = defaultForEntities;
 		doCreateGroups 		= defaultForEntities;
 		
 	}
@@ -92,12 +95,37 @@ public class CFWSpacesTestdataGenerator {
 					.foreignKeyOwner(ownerID)
 					.name(name+".txt")
 					.tags(tags)
-					.isShared(isShared);
+					.isShared(isShared)
+					.lastModified(System.currentTimeMillis())
+					.size(888L)
+					;
 
 			InputStream data = new StringBufferInputStream("test test test");
 			
 			CFW.DB.StoredFile.createAndStoreData(file, data);
 
+		}
+		
+		return null;
+		
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	private Integer createStoredQuery(int spaceID, String name, boolean isShared, String... tags) {
+		
+		if(doCreateStoredFiles) {
+			CFWStoredQuery object = new CFWStoredQuery()
+					.fkidSpace(spaceID)
+					.foreignKeyOwner(ownerID)
+					.name(name+".txt")
+					.query("| source random")
+					.tags(tags)
+					.isShared(isShared);
+			
+			return CFW.DB.StoredQuery.createGetPrimaryKey(object);
+			
 		}
 		
 		return null;
@@ -162,10 +190,11 @@ public class CFWSpacesTestdataGenerator {
 		}
 		
 		//-----------------------------
-		// Create Credentials
+		// Create Entities
 		Integer rootIDCreds = createCredentials(rootID, "CREDS Root "+rootName, true, "tag_R"+rootName);
 		Integer rootIDDash = createDashboard(rootID, "DASH Root "+rootName, true, "tag_R"+rootName);
 		Integer rootIDFile = createStoredFile(rootID, "FILE Root "+rootName, true, "tag_R"+rootName);
+		Integer rootIDQuery = createStoredQuery(rootID, "QUERY Root "+rootName, true, "tag_R"+rootName);
 		Integer rootIDGroup = createGroup(rootID, "GROUP Root "+rootName);
 
 		//-----------------------------
@@ -203,10 +232,11 @@ public class CFWSpacesTestdataGenerator {
 		}
 		
 		//-----------------------------
-		// Create Credentials
+		// Create Entities
 		Integer credsID = createCredentials(newSpaceID, "CREDS "+label, true, "tag_"+label);
  		Integer dashID = createDashboard(newSpaceID, "DASH "+label, true, "tag_"+label);
  		Integer fileID = createStoredFile(newSpaceID, "FILE "+label, true, "tag_"+label);
+ 		Integer queryID = createStoredQuery(newSpaceID, "QUERY "+label, true, "tag_"+label);
 		Integer groupID = createGroup(newSpaceID, "GROUP "+label);
 
 		
@@ -231,10 +261,11 @@ public class CFWSpacesTestdataGenerator {
 		
 		
 		//-----------------------------
-		// Create Credentials
+		// Create Entities
 		Integer globalCredsID = createCredentials( newGlobalSpaceID, "CREDS "+labelGlobal, true, "tag_"+labelGlobal);
 		Integer globalDashID  = createDashboard( newGlobalSpaceID, "DASH "+labelGlobal, true, "tag_"+labelGlobal);
 		Integer globalFileID  = createStoredFile( newGlobalSpaceID, "FILE "+labelGlobal, true, "tag_"+labelGlobal);
+		Integer globalQueryID = createStoredQuery( newGlobalSpaceID, "QUERY "+labelGlobal, true, "tag_"+labelGlobal);
 		Integer globalGroupID = createGroup(newGlobalSpaceID, "GROUP "+labelGlobal);
 				
 		//#########################################################

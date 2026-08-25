@@ -3,8 +3,8 @@ package com.xresch.cfw.features.query.store;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
@@ -21,20 +21,15 @@ import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.dashboard.Dashboard;
-import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
-import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
-import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandParamDefaults;
-import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.logging.SysoutInterceptor;
 import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
@@ -65,6 +60,7 @@ public class CFWStoredQuery extends CFWObject {
 	
 	public enum CFWStoredQueryFields{
 		  PK_ID
+		, FK_ID_SPACE  // from FeatureSpaces.FK_ID_SPACE
 		, FK_ID_OWNER
 		, NAME
 		, DESCRIPTION
@@ -101,6 +97,8 @@ public class CFWStoredQuery extends CFWObject {
 			.setDescription("The id of the stored query.")
 			.apiFieldType(FormFieldType.NUMBER)
 			;
+	
+	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false, true);
 	
 	private CFWField<Integer> foreignKeyOwner = CFWField.newInteger(FormFieldType.HIDDEN, CFWStoredQueryFields.FK_ID_OWNER)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
@@ -223,6 +221,7 @@ public class CFWStoredQuery extends CFWObject {
 		this.setTableName(TABLE_NAME);
 		this.addFields(
 				  id
+				, fkidSpace
 				, foreignKeyOwner
 				, name
 				, description
@@ -256,6 +255,7 @@ public class CFWStoredQuery extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						CFWStoredQueryFields.PK_ID.toString(), 
+						CFWStoredQueryFields.FK_ID_SPACE.toString(), 
 						CFWStoredQueryFields.NAME.toString(),
 						CFWStoredQueryFields.IS_ARCHIVED.toString(),
 				};
@@ -263,6 +263,7 @@ public class CFWStoredQuery extends CFWObject {
 		String[] outputFields = 
 				new String[] {
 						CFWStoredQueryFields.PK_ID.toString(), 
+						CFWStoredQueryFields.FK_ID_SPACE.toString(), 
 						CFWStoredQueryFields.FK_ID_OWNER.toString(),
 						CFWStoredQueryFields.NAME.toString(),
 						CFWStoredQueryFields.DESCRIPTION.toString(),
@@ -365,7 +366,7 @@ public class CFWStoredQuery extends CFWObject {
 						.setValue(selectedValue)
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
 							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-								return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+								return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());					
 							}
 						});
 
@@ -394,7 +395,7 @@ public class CFWStoredQuery extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+						return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, this.getMaxResults());					
 					}
 				});
 		
@@ -424,7 +425,7 @@ public class CFWStoredQuery extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+						return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());					
 					}
 				});
 
@@ -453,7 +454,7 @@ public class CFWStoredQuery extends CFWObject {
 				.setValue(selectedValue)
 				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-						return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+						return CFW.DB.Roles.autocompleteGroupSpaced(searchValue, this.getMaxResults());					
 					}
 				});
 		
@@ -623,6 +624,15 @@ public class CFWStoredQuery extends CFWObject {
 		return this;
 	}
 	
+	public Integer fkidSpace() {
+		return fkidSpace.getValue();
+	}
+	
+	public CFWStoredQuery fkidSpace(Integer id) {
+		this.fkidSpace.setValue(id);
+		return this;
+	}
+	
 	public Integer foreignKeyOwner() {
 		return foreignKeyOwner.getValue();
 	}
@@ -702,6 +712,13 @@ public class CFWStoredQuery extends CFWObject {
 	
 	public CFWStoredQuery tags(ArrayList<String> tags) {
 		this.tags.setValue(tags);
+		return this;
+	}
+	
+	public CFWStoredQuery tags(String... tags) {
+		ArrayList<String> tagsArray = new ArrayList<>();
+		tagsArray.addAll(Arrays.asList(tags));
+		this.tags.setValue(tagsArray);
 		return this;
 	}
 	

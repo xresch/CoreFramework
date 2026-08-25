@@ -820,6 +820,7 @@ public class CFWDBStoredFile {
 				.queryCache()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.select( CFWStoredFileFields.PK_ID
+						, CFWStoredFileFields.FK_ID_SPACE
 						, CFWStoredFileFields.NAME
 						, CFWStoredFileFields.SIZE
 						, CFWStoredFileFields.LAST_MODIFIED
@@ -888,7 +889,7 @@ public class CFWDBStoredFile {
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)
-				.severe("Error while autocomplete storedfile.", new Throwable());
+				.severe("Error while autocomplete storedfile.", e);
 		} finally {
 			CFW.DB.close(resultSet);
 		}
