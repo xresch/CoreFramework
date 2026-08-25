@@ -215,21 +215,21 @@ function cfw_usermgmt_editGroup(roleID){
  * 
  ******************************************************************/
 function cfw_usermgmt_printGroupListCanEdit(data){
-	cfw_usermgmt_printGroupList(data, true, "This list contains all the groups that you can edit. Either you are the owner of the group or an editor.");
+	cfw_usermgmt_printGroupList(data, true, "This list contains all the groups in the selected space that you can edit. Either you are the owner of the group or an editor.");
 }
 
 /******************************************************************
  * 
  ******************************************************************/
 function cfw_usermgmt_printGroupListOverview(data){
-	cfw_usermgmt_printGroupList(data, false, "Here you can find a list of all groups and their owners and editors. This can help you finding someone that can add you to a group.");
+	cfw_usermgmt_printGroupList(data, false, "Here you can find a list of all groups available in the selected space and their owners and editors. This can help you finding someone that can add you to a group.");
 }
 
 /******************************************************************
  * 
  ******************************************************************/
 function cfw_usermgmt_printGroupListAdmin(data){
-	cfw_usermgmt_printGroupList(data, true, "Groups are basically the same as roles, only difference is that users can choose to share things like dashboards with groups. You can assign additional permissions through groups.");
+	cfw_usermgmt_printGroupList(data, true, "Groups are similar to roles, but users can create them and can choose to share things like dashboards with groups. An admin can assign additional permissions through groups.");
 }
 	
 /******************************************************************
@@ -262,7 +262,7 @@ function cfw_usermgmt_printGroupList(data, allowEdit, description){
 	if(data.payload != undefined){
 		
 		if(data.payload.length == 0){
-			CFW.ui.addAlert("info", "Hmm... seems there aren't any groups in the list.");
+			CFW.ui.addToastInfo("Hmm... seems there aren't any groups in the list.");
 		}
 		//======================================
 		// Prepare actions
@@ -324,9 +324,10 @@ function cfw_usermgmt_printGroupList(data, allowEdit, description){
 			 	textstylefield: null,
 			 	titlefields: ['NAME',],
 			 	titleformat: '{0}',
-			 	visiblefields: ['PK_ID', 'OWNER', 'NAME', 'JSON_EDITORS', 'DESCRIPTION'],
+			 	visiblefields: ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME', 'JSON_EDITORS', 'DESCRIPTION'],
 			 	labels: {
 			 		PK_ID: "ID",
+					SPACE_ABBREV: 'Space',
 			 		JSON_EDITORS: "Editors"
 			 	},
 			 	customizers: {

@@ -220,6 +220,7 @@ label {
 }
 
 .modal-content{
+	min-height: 60vh;
 	max-height: 95vh;
 	padding: 5px;
 	border: 3px solid rgba(2, 2, 2, 0.9);

@@ -113,7 +113,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 													
 							// for groups page						
 							case "allgroups": 		if(!isManager && !isGrouper ) { CFW.Messages.noPermission(); return; }
-													content.append(CFW.DB.Roles.getGroupListAsJSON());
+													content.append(CFW.DB.Roles.getAllGroupListForSpaceAsJSON());
 													break;	
 													
 							case "permissions":		if(!isManager) { CFW.Messages.noPermission(); return; }
@@ -389,6 +389,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 		if(role != null) {
 			
 			role.updateSelectorFields();
+			role.removeField(RoleFields.FK_ID_SPACE); // no changing the Space of roles
 			role.removeField(RoleFields.JSON_EDITORS); // no editors for roles
 			
 			CFWForm editRoleForm = role.toForm("cfwEditRoleForm"+ID, "Update Role");

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -347,14 +348,18 @@ public class CFWDBRole {
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/
 	public static String getGroupListAsJSON() {
-		return new CFWSQL(new Role())
+		JsonArray array = new CFWSQL(new Role())
 				.queryCache()
 				.columnSubquery("OWNER", SQL_SUBQUERY_GROUPOWNER)
 				.select()
 				.where(RoleFields.CATEGORY.toString(), FeatureUserManagement.CATEGORY_USER)
 				.and(RoleFields.IS_GROUP, true)
 				.orderby(RoleFields.NAME.toString())
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 	}
 	
 	/***************************************************************
@@ -368,13 +373,40 @@ public class CFWDBRole {
 			return "[]";
 		}
 		
-		return new CFWSQL(new Role())
-				.queryCache()
+		JsonArray array = new CFWSQL(new Role())
+				.queryCacheSpaced()
 				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE
 						, "sql_getGroupsThatUserCanEditAsJSON.sql"
 						, id
 						, id)
-				.getAsJSON();
+				.and().append(FeatureSpaces.getSQLFilter())
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
+	}
+	
+	/***************************************************************
+	 * Return a list of groups as json string.
+	 * 
+	 * @return Returns a result set with all users or null.
+	 ****************************************************************/
+	public static String getAllGroupListForSpaceAsJSON() {
+		
+		JsonArray array = new CFWSQL(new Role())
+				.queryCacheSpaced()
+				.columnSubquery("OWNER", SQL_SUBQUERY_GROUPOWNER)
+				.select()
+				.where(RoleFields.CATEGORY.toString(), FeatureUserManagement.CATEGORY_USER)
+				.and(RoleFields.IS_GROUP, true)
+				.and().append(FeatureSpaces.getSQLFilter())
+				.orderby(RoleFields.NAME.toString())
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 	}
 	
 	

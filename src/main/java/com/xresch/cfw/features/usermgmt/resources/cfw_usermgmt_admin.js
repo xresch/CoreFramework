@@ -660,7 +660,7 @@ function cfw_usermgmt_draw(options){
 									break;
 									
 			case "groups":			CFW.http.fetchAndCacheData(CFW_USERMGMT_URL, {action: "fetch", item: "groups"}, "groups", cfw_usermgmt_printGroupListAdmin);
-			break;
+									break;
 									
 			case "permissions":		CFW.http.fetchAndCacheData(CFW_USERMGMT_URL, {action: "fetch", item: "permissions"}, "permissions", cfw_usermgmt_printPermissionList);
 									break;	

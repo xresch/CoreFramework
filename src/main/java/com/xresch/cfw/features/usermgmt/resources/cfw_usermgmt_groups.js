@@ -5,6 +5,7 @@
  * @license MIT-License
  **************************************************************************************************************/
 
+var CFW_GROUPS_LAST_OPTIONS = null;
 
 /******************************************************************
  * Reset the view.
@@ -19,7 +20,7 @@ function cfw_usermgmt_groups_createTabs(){
 		//--------------------------------
 		// Groups
 			list.append(
-				'<li class="nav-item"><a class="nav-link active" id="tab-groups" data-toggle="pill" href="#" role="tab" onclick="cfw_usermgmt_groups_draw({tab: \'groups\'})"><i class="fas fa-users mr-2"></i>My Groups</a></li>'
+				'<li class="nav-item"><a class="nav-link" id="tab-groups" data-toggle="pill" href="#" role="tab" onclick="cfw_usermgmt_groups_draw({tab: \'groups\'})"><i class="fas fa-users mr-2"></i>My Groups</a></li>'
 				+'<li class="nav-item"><a class="nav-link ml-2" id="tab-allgroups" data-toggle="pill" href="#" role="tab" onclick="cfw_usermgmt_groups_draw({tab: \'allgroups\'})"><i class="fas fa-users mr-2"></i>All Groups</a></li>'
 			);
 
@@ -31,6 +32,31 @@ function cfw_usermgmt_groups_createTabs(){
 
 }
 
+/******************************************************************
+ *
+ ******************************************************************/
+function cfw_usermgmt_groups_sanitizeCurrentOptions(options){
+	
+	//-----------------------
+	// Options is Set
+	if(options != null){ return options; }
+	
+	//-----------------------
+	// Last Options Available
+	if(CFW_GROUPS_LAST_OPTIONS != null ){
+		return CFW_GROUPS_LAST_OPTIONS;
+	}
+	
+	//-----------------------
+	// Last Options From Cache
+	// or Default
+	let tabToDisplay = CFW.cache.retrieveValueForPage("groups-lasttab", "groups");
+	
+
+	$('#tab-'+tabToDisplay).addClass('active');
+	
+	return {tab: tabToDisplay};
+}
 
 /******************************************************************
  * Main method for building the different views.
@@ -41,14 +67,19 @@ function cfw_usermgmt_groups_createTabs(){
  *  }
  * @return 
  ******************************************************************/
-function cfw_usermgmt_groups_initialDraw(options){
+function cfw_usermgmt_groups_initialDraw(){
 	
 	$('#cfw-container').css('max-width', '80%');
 	
 	cfw_usermgmt_setScopeGroups();
 	cfw_usermgmt_groups_createTabs();
 	
-	cfw_usermgmt_groups_draw(options);
+	//-------------------------------------------
+	// Create Selector and Draw
+	cfw_spaces_createSpaceSelector(function(spaceid){
+			cfw_usermgmt_groups_draw(null);
+		}, true);
+
 }
 
 /******************************************************************
@@ -62,8 +93,18 @@ function cfw_usermgmt_groups_initialDraw(options){
  ******************************************************************/
 function cfw_usermgmt_groups_draw(options){
 	
+	//-------------------------
+	// Options
+	options = cfw_usermgmt_groups_sanitizeCurrentOptions(options); 
+	CFW_GROUPS_LAST_OPTIONS = options;
+	CFW.cache.storeValueForPage("groups-lasttab", options.tab);
+	
+	//-------------------------
+	// Clear Tab
 	$("#tab-content").html("");
 	
+	//-------------------------
+	// Draw
 	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 
@@ -71,10 +112,10 @@ function cfw_usermgmt_groups_draw(options){
 
 		switch(options.tab){
 									
-			case "groups":		CFW.http.fetchAndCacheData(CFW_USERMGMT_URL, {action: "fetch", item: "mygroups"}, "groups", cfw_usermgmt_printGroupListCanEdit);
+			case "groups":			CFW.http.getJSON(CFW_USERMGMT_URL, {action: "fetch", item: "mygroups"}, cfw_usermgmt_printGroupListCanEdit);
 									break;
 									
-			case "allgroups":		CFW.http.fetchAndCacheData(CFW_USERMGMT_URL, {action: "fetch", item: "allgroups"}, "allgroups", cfw_usermgmt_printGroupListOverview);
+			case "allgroups":		CFW.http.getJSON(CFW_USERMGMT_URL, {action: "fetch", item: "allgroups"}, cfw_usermgmt_printGroupListOverview);
 									break;		
 																
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);
