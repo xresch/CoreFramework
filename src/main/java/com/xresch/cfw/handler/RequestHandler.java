@@ -69,6 +69,7 @@ public class RequestHandler extends HandlerWrapper
     	
     	request.setAttribute(CFW.REQUEST_ATTR_ID, requestID);
     	
+
     	//==========================================
     	// Get Session
     	//==========================================
@@ -81,7 +82,7 @@ public class RequestHandler extends HandlerWrapper
     	};
     	
     	CFW.Context.Request.setSessionData((CFWSessionData)session.getAttribute(CFW.SESSION_DATA));
-    	
+    	    	
     	//==========================================
     	// Set Session Timeout
     	//==========================================
@@ -131,7 +132,22 @@ public class RequestHandler extends HandlerWrapper
     	// Before
     	//==========================================    	
 		try {
-	    		    		    	
+	    	
+	    	//==========================================
+	    	// Set SpaceID
+	    	//==========================================
+	    	String spaceID = request.getHeader(CFW.REQUEST_ATTR_SPACEID);
+	    	if(spaceID != null){
+	    		
+    			Integer spaceIDParsed = Integer.parseInt(spaceID);
+    			if ( CFW.DB.Spaces.checkCurrentUserHasAccessToSpace(spaceIDParsed) ) {
+    				CFW.Context.Request.setSpaceIDForRequest(spaceIDParsed);
+    			}else {
+    				throw new Exception("User does not have access to space with id: "+spaceIDParsed);
+    			}
+	    		
+	    	}
+	    	
 	    	//==========================================
 	    	// Call Wrapped Handler
 	    	//==========================================

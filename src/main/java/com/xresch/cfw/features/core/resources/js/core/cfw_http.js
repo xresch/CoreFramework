@@ -216,6 +216,10 @@ function cfw_http_defaultHeaders(){
 		if(JSDATA.username != null){ headers.username =  JSDATA.username; }
 	}
 	
+	if(typeof cfw_spaces_getSelectedSpace === 'function'){
+		headers.spaceid = cfw_spaces_getSelectedSpace();
+	}
+	
 	return headers;
 }
 /**************************************************************************************

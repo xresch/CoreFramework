@@ -42,32 +42,66 @@ function cfw_filterTable(searchField){
 * Function to store a value in the local storage.
 * @param key 
 * @param value
+* @param scope either "local" or "session". (Default: "local")
  *************************************************************************************/
-function cfw_cache_storeValue(key, value) {
-	window.localStorage.setItem("cfw-"+key, value);
+function cfw_cache_storeValue(key, value, scope) {
+	
+	if(scope == null){ scope = 'local'; }
+	
+	scope = scope.trim().toLowerCase();
+	
+	if(scope == "local"){
+		window.localStorage.setItem("cfw-"+key, value);
+	}else{
+		window.sessionStorage.setItem("cfw-"+key, value);
+	}
 };
+
 
 /**************************************************************************************
 * Function to store a value in the local storage for the current page.
 * @param key 
 * @param value
+* @param scope either "local" or "session". (Default: "local")
  *************************************************************************************/
-function cfw_cache_storeValueForPage(key, value) {
-	window.localStorage.setItem("cfw-["+CFW.http.getURLPath()+"]:"+key, value);
+function cfw_cache_storeValueForPage(key, value, scope) {
+
+	if(scope == null){ scope = 'local'; }
+	
+	scope = scope.trim().toLowerCase();
+	let finalKey = "cfw-["+CFW.http.getURLPath()+"]:"+key;
+	
+	if(scope == "local"){
+		window.localStorage.setItem(finalKey, value);
+	}else{
+		window.sessionStorage.setItem(finalKey, value);
+	}
 };
 
 /**************************************************************************************
 * Function to retrieve a stored value.
 * @param key 
 * @param defaultValue if there is nothing stored
+* @param scope either "local" or "session". (Default: "local")
 * @return either the value of the cookie or an empty string
  *************************************************************************************/
-function cfw_cache_retrieveValue(key, defaultValue) {
+function cfw_cache_retrieveValue(key, defaultValue, scope) {
 	
-	var item = window.localStorage.getItem("cfw-"+key);
-    if(item != null){
-    	return item;
-    }
+	if(scope == null){ scope = 'local'; }
+		
+	scope = scope.trim().toLowerCase();
+	
+	let finalKey = "cfw-"+key;
+	
+	let item;
+	if(scope == "local"){
+		item = window.localStorage.getItem(finalKey);
+	}else{
+		item = window.sessionStorage.getItem(finalKey);
+	}
+		
+    if(item != null){ return item; }
+	
 	return defaultValue;
 };
 
@@ -75,16 +109,29 @@ function cfw_cache_retrieveValue(key, defaultValue) {
 * Function to retrieve a value that was stored for the page.
 * @param key 
 * @param defaultValue if there is nothing stored
+* @param scope either "local" or "session". (Default: "local")
 * @return either the value of the cookie or an empty string
  *************************************************************************************/
-function cfw_cache_retrieveValueForPage(key, defaultValue) {
+function cfw_cache_retrieveValueForPage(key, defaultValue, scope) {
 	
-	var item = window.localStorage.getItem("cfw-["+CFW.http.getURLPath()+"]:"+key);
-    if(item != null){
-    	return item;
-    }
+	if(scope == null){ scope = 'local'; }
+			
+	scope = scope.trim().toLowerCase();
+	
+	let finalKey = "cfw-["+CFW.http.getURLPath()+"]:"+key;
+	
+	let item;
+	if(scope == "local"){
+		item = window.localStorage.getItem(finalKey);
+	}else{
+		item = window.sessionStorage.getItem(finalKey);
+	}
+		
+    if(item != null){ return item; }
+	
 	return defaultValue;
 };
+
 /******************************************************************
  * Method to remove the cached data under the specified key.
  *

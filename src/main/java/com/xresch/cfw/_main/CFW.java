@@ -147,6 +147,7 @@ public class CFW {
 	// GLOBALS
 	//##############################################################################
 	public static final String REQUEST_ATTR_ID = "requestID";
+	public static final String REQUEST_ATTR_SPACEID = "spaceid";
 	public static final String RQUEST_ATTR_USERNAME = "username";
 	public static final String SESSION_DATA = "sessionData";	
 	

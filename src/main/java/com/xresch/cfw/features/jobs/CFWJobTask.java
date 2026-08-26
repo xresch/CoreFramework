@@ -147,7 +147,7 @@ public abstract class CFWJobTask implements InterruptableJob {
 		// Override SpaceID
 		Integer spaceID = context.getJobDetail().getJobDataMap().getInt(CFWJobFields.FK_ID_SPACE.toString());
 		
-		CFW.Context.Request.setSpaceIDOverride(spaceID);
+		CFW.Context.Request.setSpaceIDForRequest(spaceID);
 		
 		//---------------------------------------
 		// Start Log

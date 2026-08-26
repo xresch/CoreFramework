@@ -42,7 +42,7 @@ public class CFWContextRequest {
 		
 		protected LinkedHashMap<String,CFWHTMLItemAlertMessage> messageArray = null;
 		
-		protected Integer spaceIDOverride = null;
+		protected Integer spaceIDForRequest = null;
 	}
 	
 	/**************************************************************************
@@ -173,15 +173,15 @@ public class CFWContextRequest {
 	}
 	
 	/**************************************************************************
-	 * Sets a spaceID to override the normal spaceID.
+	 * Sets a spaceID to override the spaceID set in the session.
 	 * This is needed in case of context-less executions, like executing jobs
 	 * or when loading dashboard widgets.
 	 * 
 	 * @param spaceID that should be used.
 	 **************************************************************************/
-	public static void setSpaceIDOverride(Integer spaceID) {
+	public static void setSpaceIDForRequest(Integer spaceID) {
 		
-		getContext().spaceIDOverride = spaceID;
+		getContext().spaceIDForRequest = spaceID;
 	}
 	
 	/**************************************************************************
@@ -195,7 +195,7 @@ public class CFWContextRequest {
 	 **************************************************************************/
 	public static int getSelectedSpaceID() {
 		
-		if(getContext().spaceIDOverride != null) { return getContext().spaceIDOverride; }
+		if(getContext().spaceIDForRequest != null) { return getContext().spaceIDForRequest; }
 		
 		if(getContext().sessionData != null) {
 			return getContext().sessionData.getSelectedSpaceID();

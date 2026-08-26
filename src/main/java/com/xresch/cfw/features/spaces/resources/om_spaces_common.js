@@ -32,7 +32,7 @@ function cfw_spaces_createSpaceSelector(callbackFunction){
 	CFW.http.getJSON(URL_CFWSPACES, params, 
 		function(data) {
 			
-			let lastSelectedSpace = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE);
+			let lastSelectedSpace = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE, 1, "session");
 
 			if(data.success 
 			&& data.payload != null
@@ -113,7 +113,7 @@ function cfw_spaces_onSpaceSelectorChange(){
 	
 	let callbackFunction = select.data('callbackFunction');
 	let selectedSpace = select.val();
-	CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, selectedSpace);
+	CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, selectedSpace, "session");
 	
 	console.log("cfw_spaces_onSpaceSelectorChange")
 	CFW.http.getJSON(URL_CFWSPACES, { action: "update", item: "selectedspaceid", spaceid: selectedSpace});
