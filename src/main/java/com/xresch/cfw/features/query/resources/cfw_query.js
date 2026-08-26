@@ -327,7 +327,7 @@ function cfw_query_initialDraw(){
 	// Create Selector and Draw
 	cfw_spaces_createSpaceSelector(function(spaceid){
 			cfw_query_draw(null);
-		}, true);
+		});
 	
 	//-----------------------------------
 	// Create Editor

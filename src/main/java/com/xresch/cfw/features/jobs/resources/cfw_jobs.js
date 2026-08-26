@@ -559,7 +559,7 @@ function cfwjobs_initialDraw(){
 	// Create Selector and Draw
 	cfw_spaces_createSpaceSelector(function(spaceid){
 			cfwjobs_draw(null);
-		}, true);
+		});
 }
 
 /******************************************************************

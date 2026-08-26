@@ -215,6 +215,12 @@ label {
     border-radius: 0;
 }
 
+button:disabled {
+    background-color: rgba(239, 239, 239, 0.6);
+    color: rgba(16, 16, 16, 0.7);
+    border-color: rgba(118, 118, 118, 0.3);
+}
+
 .alert {
     margin-bottom: 0px;
 }
@@ -358,7 +364,7 @@ label {
 .dropdown-menu-fixed{
 	display: none;
 }
-
+    
 .dropdown-toggle-wide::after {
     position: absolute;
     right: 8px;

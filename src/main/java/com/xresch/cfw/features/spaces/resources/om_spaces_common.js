@@ -14,10 +14,8 @@ var CFW_SPACE_SELECT_ID = 'om-global-space-selector';
  * @param callbackFunction callback function that will be called with the
  * last selected org id, or null if the user has no org.
  * 
- * @param isForOrganize set to true if the selector is for the org unit 
- * organize view
  ******************************************************************/
-function cfw_spaces_createSpaceSelector(callbackFunction){
+function cfw_spaces_createSpaceSelector(callbackFunction, selectedSpaceID, isDisabled){
 	
 	//-------------------------------
 	// Reset if exists
@@ -32,13 +30,23 @@ function cfw_spaces_createSpaceSelector(callbackFunction){
 	CFW.http.getJSON(URL_CFWSPACES, params, 
 		function(data) {
 			
-			let lastSelectedSpace = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE, 1, "session");
+			if(CFW.utils.isNullOrEmpty(selectedSpaceID) ) {
+				selectedSpaceID = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE, 1, "session");
+			}
 
 			if(data.success 
 			&& data.payload != null
 			&& data.payload.length > 0){
 				
-				let inputField = $('<input id="'+CFW_SPACE_SELECT_ID+'" >');
+				//------------------------------
+				// Create Base Field
+				let disabledString = '';
+				if(isDisabled != null 
+				&& isDisabled == true){ 
+					disabledString = ' disabled'; 
+				}; 
+				
+				let inputField = $('<input id="'+CFW_SPACE_SELECT_ID+'" ' + disabledString + '>');
 				inputField.data('callbackFunction', callbackFunction)
 				
 				let lastSelectedSpaceExists = false;
@@ -55,9 +63,9 @@ function cfw_spaces_createSpaceSelector(callbackFunction){
 					});
 					//select.append('<option value="'+currentSpace.PK_ID+'">'+ indendation + currentSpace.NAME + '</option>')
 					
-					if(currentSpace.PK_ID == lastSelectedSpace){
+					if(currentSpace.PK_ID == selectedSpaceID){
 						lastSelectedSpaceExists = true;
-						inputField.attr('value', lastSelectedSpace);
+						inputField.attr('value', selectedSpaceID);
 					}
 				}
 				
@@ -81,9 +89,10 @@ function cfw_spaces_createSpaceSelector(callbackFunction){
 				
 				inputField.parent().find("button") // remove classes added by initialize Select
 					  .removeClass()
-					  .addClass("dropdown-toggle");
+					  .addClass("dropdown-toggle " + disabledString)
+					  .attr('disabled', isDisabled);
 				
-				CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, inputField.val());
+				CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, inputField.val(), "session");
 				
 				//------------------------------
 				// Create filter button
@@ -118,7 +127,9 @@ function cfw_spaces_onSpaceSelectorChange(){
 	console.log("cfw_spaces_onSpaceSelectorChange")
 	CFW.http.getJSON(URL_CFWSPACES, { action: "update", item: "selectedspaceid", spaceid: selectedSpace});
 	
-	callbackFunction(selectedSpace);
+	if(callbackFunction != null){
+		callbackFunction(selectedSpace);
+	}
 	
 }
 

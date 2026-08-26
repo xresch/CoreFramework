@@ -434,7 +434,7 @@ function om_spaces_printSortableHierarchy(data){
 function om_spaces_reloadSpaceSelectorAndDraw(){
 	cfw_spaces_createSpaceSelector(function(spaceid){
 		om_spaces_draw(null);
-	}, true);
+	});
 }
 
 /******************************************************************

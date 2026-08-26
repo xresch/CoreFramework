@@ -2029,6 +2029,13 @@ function cfw_dashboard_initialDraw(){
 	
 	cfw_dashboard_initialize('.grid-stack');
 	
+	
+	if(CFW_DASHBOARDVIEW_URL != null 
+	&& CFW_DASHBOARDVIEW_URL.includes("/app/dashboard/view")
+	){
+		
+		cfw_spaces_createSpaceSelector(null, JSDATA.dashboardSpaceID, true);
+	}
 
 	//-----------------------------------
 	// Timeframe Picker

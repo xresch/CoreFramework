@@ -232,6 +232,10 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable, callbackFu
 	//--------------------------
 	// Create Dropdown
 	let classes = originalField.attr('class');
+	
+	if( CFW.utils.isTrue(originalField.prop('disabled')) ){
+		classes += " disabled";
+	}
 	let dropdownHTML = `<div class="dropdown">
 			<button id="${id}-dropdownMenuButton" class="form-control mb-2 dropdown-toggle dropdown-toggle-wide ${classes}" style="text-align: start;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			   &nbsp;

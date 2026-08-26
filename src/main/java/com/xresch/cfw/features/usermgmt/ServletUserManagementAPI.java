@@ -315,7 +315,10 @@ public class ServletUserManagementAPI extends HttpServlet {
 		
 		String formID = (!withOwner) ? "cfwCreateGroupForm" : "cfwCreateGroupWithOwnerForm";
 
-		CFWForm createGroupForm = new Role().toForm(formID, "Create Group");
+		Role role = new Role();
+		makeAutocompleteSpaced(role);
+		
+		CFWForm createGroupForm = role.toForm(formID, "Create Group");
 		
 		createGroupForm.setFormHandler(new CFWFormHandler() {
 			
@@ -423,6 +426,8 @@ public class ServletUserManagementAPI extends HttpServlet {
 		Role role = CFW.DB.Roles.selectByID(Integer.parseInt(ID));
 		role.updateSelectorFields();
 		
+		makeAutocompleteSpaced(role);
+		
 		if(role != null) {
 			
 			CFWForm editRoleForm = role.toForm("cfwEditGroupForm"+ID, "Update Group");
@@ -446,6 +451,26 @@ public class ServletUserManagementAPI extends HttpServlet {
 			
 		}
 		
+	}
+
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private static void makeAutocompleteSpaced(Role role) {
+		
+		//----------------------------------
+		// Make Autocomplete Spaced for Groups
+		CFWAutocompleteHandler autocompleteSpaced = new CFWAutocompleteHandler(10,2) {
+			public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+				return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());					
+			}
+		};
+		
+		role.getField(RoleFields.JSON_ROLEMEMBERS.toString())
+			.setAutocompleteHandler(autocompleteSpaced);
+			
+		role.getField(RoleFields.JSON_EDITORS.toString())
+			.setAutocompleteHandler(autocompleteSpaced);
 	}
 	
 	/******************************************************************
@@ -471,7 +496,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 						.addValidator(new NotNullOrEmptyValidator())
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-								return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+								return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());					
 							}
 						})
 				);

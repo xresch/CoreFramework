@@ -663,7 +663,7 @@ function cfw_credentialslist_initialDraw(){
 	// Create Selector and Draw
 	cfw_spaces_createSpaceSelector(function(spaceid){
 			cfw_credentialslist_draw(null);
-		}, true);
+		});
 		
 }
 

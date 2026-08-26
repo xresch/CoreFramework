@@ -1083,7 +1083,7 @@ function cfw_dashboardlist_initialDraw(){
 	// Create Selector and Draw
 	cfw_spaces_createSpaceSelector(function(spaceid){
 			cfw_dashboardlist_draw(null);
-		}, true);
+		});
 			
 }
 

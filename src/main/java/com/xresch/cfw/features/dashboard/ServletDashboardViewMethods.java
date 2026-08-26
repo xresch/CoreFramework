@@ -41,6 +41,7 @@ import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterScope;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -118,6 +119,7 @@ public class ServletDashboardViewMethods
 				
 				//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".js", "cfw_usermgmt.js"));
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "gridstack-h5-5.1.0.js");
+				FeatureSpaces.addSpacesCommonJS(html);
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureParameter.PACKAGE_RESOURCES, "cfw_parameter.js");
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_dashboard_common.js");
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_dashboard_view.js");
@@ -182,6 +184,7 @@ public class ServletDashboardViewMethods
 				html.addJavascriptData("isOwner", dashboard.foreignKeyOwner() == CFW.Context.Request.getUserID() );
 				html.addJavascriptData("canEdit", CFW.DB.Dashboards.checkCanEdit(request.getParameter("id")) );
 				html.addJavascriptData("canEditSettings",  dashboard.alloweEditSettings());
+				html.addJavascriptData("dashboardSpaceID",  dashboard.fkidSpace());
 				html.addJavascriptCode("cfw_dashboard_initialDraw();");
 				
 		        response.setContentType("text/html");
