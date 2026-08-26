@@ -5,9 +5,11 @@ import java.io.StringBufferInputStream;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
+import com.xresch.cfw.features.analytics.CFWJobTaskTestAlerting;
 import com.xresch.cfw.features.credentials.CFWCredentials;
 import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.filemanager.CFWStoredFile;
+import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.query.store.CFWStoredQuery;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
 import com.xresch.cfw.features.usermgmt.Role;
@@ -25,6 +27,7 @@ public class CFWSpacesTestdataGenerator {
 	boolean doCreateStoredFiles = false;
 	boolean doCreateStoredQueries = false;
 	boolean doCreateGroups = false;
+	boolean doCreateJobs = false;
 	
 	int ownerID = 1; // 1 is admin
 	
@@ -39,6 +42,7 @@ public class CFWSpacesTestdataGenerator {
 		doCreateStoredFiles = defaultForEntities;
 		doCreateStoredQueries = defaultForEntities;
 		doCreateGroups 		= defaultForEntities;
+		doCreateJobs 		= defaultForEntities;
 		
 	}
 	
@@ -155,6 +159,29 @@ public class CFWSpacesTestdataGenerator {
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/
+	private Integer createJob(int spaceID, String name) {
+		
+		if(doCreateGroups) {
+			CFWJob entity = new CFWJob()
+					.fkidSpace(spaceID)
+					.foreignKeyOwner(ownerID)
+					.jobname(name)
+					.taskName(new CFWJobTaskTestAlerting().uniqueName())
+					.isEnabled(false)
+					;
+			
+			return CFW.DB.Jobs.createGetPrimaryKey(entity);
+		}
+		
+		return null;
+		
+	}
+	
+	
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void generateHierarchy() {
 		createTestdataHierarchy(0);
 	}
@@ -196,6 +223,7 @@ public class CFWSpacesTestdataGenerator {
 		Integer rootIDFile = createStoredFile(rootID, "FILE Root "+rootName, true, "tag_R"+rootName);
 		Integer rootIDQuery = createStoredQuery(rootID, "QUERY Root "+rootName, true, "tag_R"+rootName);
 		Integer rootIDGroup = createGroup(rootID, "GROUP Root "+rootName);
+		Integer rootIDJob = createJob(rootID, "JOB Root "+rootName);
 
 		//-----------------------------
 		// Create Subordinate Trees
@@ -238,8 +266,8 @@ public class CFWSpacesTestdataGenerator {
  		Integer fileID = createStoredFile(newSpaceID, "FILE "+label, true, "tag_"+label);
  		Integer queryID = createStoredQuery(newSpaceID, "QUERY "+label, true, "tag_"+label);
 		Integer groupID = createGroup(newSpaceID, "GROUP "+label);
+		Integer jobID = createJob(newSpaceID, "JOB "+label);
 
-		
 		//#########################################################
 		// Global Space 
 		//#########################################################
@@ -267,6 +295,7 @@ public class CFWSpacesTestdataGenerator {
 		Integer globalFileID  = createStoredFile( newGlobalSpaceID, "FILE "+labelGlobal, true, "tag_"+labelGlobal);
 		Integer globalQueryID = createStoredQuery( newGlobalSpaceID, "QUERY "+labelGlobal, true, "tag_"+labelGlobal);
 		Integer globalGroupID = createGroup(newGlobalSpaceID, "GROUP "+labelGlobal);
+		Integer globalJobID = createJob(newGlobalSpaceID, "JOB "+labelGlobal);
 				
 		//#########################################################
 		// Subordinates
@@ -274,7 +303,6 @@ public class CFWSpacesTestdataGenerator {
 		if(currentDepth < maxDepth) {
 			createSubordinatesHierarchy(rootID, newSpaceID, character, currentDepth+1, maxDepth);
 		}
-	
 		
 	}
 	

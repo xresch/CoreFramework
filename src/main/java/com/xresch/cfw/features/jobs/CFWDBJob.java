@@ -81,6 +81,17 @@ public class CFWDBJob {
 		return false;
 	}
 	
+	public static Integer createGetPrimaryKey(CFWJob item) { 
+		Integer id = CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);
+		if (id != null) {
+			CFWJob job = CFW.DB.Jobs.selectByID(id);
+			CFW.Registry.Jobs.addJob(job);
+			return id;
+		}
+		
+		return id;
+	}
+	
 	
 	//####################################################################################################
 	// UPDATE
