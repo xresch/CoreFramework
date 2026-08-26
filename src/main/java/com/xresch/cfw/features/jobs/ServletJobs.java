@@ -16,6 +16,7 @@ import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.utils.CFWRandom;
@@ -64,6 +65,8 @@ public class ServletJobs extends HttpServlet
 				handleDataRequest(request, response);	
 				
 			}else {
+				
+				FeatureSpaces.addSpacesCommonJS(html);
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureJobs.PACKAGE_RESOURCES, "cfw_jobs.js");
 				
 				html.addJavascriptCode("cfwjobs_initialDraw();");

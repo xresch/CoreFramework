@@ -13,6 +13,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWMonitor;
@@ -141,6 +142,13 @@ public abstract class CFWJobTask implements InterruptableJob {
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 
 		String jobID = context.getJobDetail().getKey().getName();
+		
+		//---------------------------------------
+		// Override SpaceID
+		Integer spaceID = context.getJobDetail().getJobDataMap().getInt(CFWJobFields.FK_ID_SPACE.toString());
+		
+		CFW.Context.Request.setSpaceIDOverride(spaceID);
+		
 		//---------------------------------------
 		// Start Log
 		CFWLog log = new CFWLog(logger)

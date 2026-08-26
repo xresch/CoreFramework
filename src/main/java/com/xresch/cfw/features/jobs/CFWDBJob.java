@@ -18,9 +18,8 @@ import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
-import com.xresch.cfw.features.usermgmt.CFWDBUser;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -200,17 +199,6 @@ public class CFWDBJob {
 		
 	}
 	
-	/*******************************************************
-	 * 
-	 *******************************************************/
-	public static String getJobListAsJSON() {
-		
-		return new CFWSQL(new CFWJob())
-				.queryCache()
-				.select()
-				.getAsJSON();
-		
-	}
 	
 	/*******************************************************
 	 * 
@@ -224,6 +212,7 @@ public class CFWDBJob {
 			.columnSubqueryTotalRecords()
 			.select()
 			.whereIn(CFWJobFields.PK_ID, IDs)
+			.and().append(FeatureSpaces.getSQLFilter())
 			.orderby(CFWJobFields.JOB_NAME)
 			.getAsJSONArray()
 			;
@@ -232,7 +221,7 @@ public class CFWDBJob {
 		// Add Is Running	
 		addIsRunning(result);
 		
-		return result;
+		return FeatureSpaces.addSpacesInfoToJSON(result);
 				
 	}
 	
@@ -240,20 +229,28 @@ public class CFWDBJob {
 	 * 
 	 *******************************************************/
 	public static JsonArray getPartialJobListAsJSONForUser(String pageSize, String pageNumber, String filterquery, String sortby, boolean isAscending) {
-		return getPartialJobListAsJSONForUser(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, isAscending);
+		boolean filterInclusive = CFW.Context.Request.getFilterSpaceInclusive();
+		return getPartialJobListAsJSONForUser(
+						  Integer.parseInt(pageSize)
+						, Integer.parseInt(pageNumber)
+						, filterquery
+						, sortby
+						, isAscending
+						, filterInclusive
+					);
 	}
 	
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static JsonArray getPartialJobListAsJSONForUser(int pageSize, int pageNumber, String filterquery, String sortby, boolean isAscending) {	
+	public static JsonArray getPartialJobListAsJSONForUser(int pageSize, int pageNumber, String filterquery, String sortby, boolean isAscending, boolean isInclusive) {	
 		
 		//-------------------------------------
 		// Filter with fulltext search
 		// Enabled by CFWObject.enableFulltextSearch()
 		// on the CFWJob Object
 		int userID = CFW.Context.Request.getUser().id();
-		
+				
 		CFWSQL query;
 		if(Strings.isNullOrEmpty(filterquery)) {
 			//-------------------------------------
@@ -263,6 +260,7 @@ public class CFWDBJob {
 				.columnSubqueryTotalRecords()
 				.select()
 				.where(CFWJobFields.FK_ID_USER, userID)
+				.and().append(FeatureSpaces.getSQLFilter(isInclusive))
 				;
 		}else {
 			//-------------------------------------
@@ -276,6 +274,7 @@ public class CFWDBJob {
 					.columnSubqueryTotalRecords()
 					.select()
 					.where(CFWJobFields.FK_ID_USER, userID)
+					.and().append(FeatureSpaces.getSQLFilter())
 					.and()
 						.custom("(")
 							.like(CFWJobFields.JOB_NAME, wildcardString)
@@ -307,7 +306,7 @@ public class CFWDBJob {
 		
 		addIsRunning(result);
 		
-		return result;
+		return FeatureSpaces.addSpacesInfoToJSON(result);
 				
 	}
 	
@@ -339,13 +338,14 @@ public class CFWDBJob {
 	 * 
 	 *******************************************************/
 	public static JsonArray getPartialJobListAsJSONForAdmin(String pageSize, String pageNumber, String filterquery, String sortby, boolean isAscending) {
-		return getPartialJobListAsJSONForAdmin(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, isAscending);
+		boolean filterInclusive = CFW.Context.Request.getFilterSpaceInclusive();
+		return getPartialJobListAsJSONForAdmin(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, isAscending, filterInclusive);
 	}
 	
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static JsonArray getPartialJobListAsJSONForAdmin(int pageSize, int pageNumber, String searchString, String sortby, boolean isAscending) {	
+	public static JsonArray getPartialJobListAsJSONForAdmin(int pageSize, int pageNumber, String searchString, String sortby, boolean isAscending, boolean isInclusive) {	
 		
 		//-------------------------------------
 		// Filter with fulltext search
@@ -361,7 +361,8 @@ public class CFWDBJob {
 					//.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForAdmin-SearchEmpty-sort-"+isAscending)
 					.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
 					.columnSubqueryTotalRecords()
-					.select();
+					.select()
+					.where().append(FeatureSpaces.getSQLFilter(isInclusive));
 			
 		}else {
 			
@@ -377,11 +378,14 @@ public class CFWDBJob {
 					.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
 					.columnSubqueryTotalRecords()
 					.select()
-					.whereLike(CFWJobFields.JOB_NAME, wildcardString)
-						.or().like(CFWJobFields.DESCRIPTION, wildcardString)
-						.or().like(CFWJobFields.TASK_NAME, wildcardString)
-						.or().like(CFWJobFields.JSON_PROPERTIES, wildcardString)
-						.or().custom("LOWER(("+CFW.DB.Users.USERNAME_SUBQUERY+")) LIKE LOWER(?)", wildcardString);
+					.where().custom("(")
+							.like(CFWJobFields.JOB_NAME, wildcardString)
+							.or().like(CFWJobFields.DESCRIPTION, wildcardString)
+							.or().like(CFWJobFields.TASK_NAME, wildcardString)
+							.or().like(CFWJobFields.JSON_PROPERTIES, wildcardString)
+							.or().custom("LOWER(("+CFW.DB.Users.USERNAME_SUBQUERY+")) LIKE LOWER(?)", wildcardString)
+						.custom(")")
+						.and().append(FeatureSpaces.getSQLFilter(isInclusive));
 		}
 		
 		//-------------------------------------
@@ -404,7 +408,7 @@ public class CFWDBJob {
 		
 		addIsRunning(result);
 		
-		return result;
+		return FeatureSpaces.addSpacesInfoToJSON(result);
 				
 	}
 	
@@ -472,6 +476,7 @@ public class CFWDBJob {
 								, searchValue
 								, CFWJobFields.JOB_NAME.toString()
 								, false
+								, true
 								);
 		}else if(user.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
 			jobsArray = getPartialJobListAsJSONForUser(
@@ -480,6 +485,7 @@ public class CFWDBJob {
 								, searchValue
 								, CFWJobFields.JOB_NAME.toString()
 								, false
+								, true
 								);
 		}
 		
@@ -490,9 +496,14 @@ public class CFWDBJob {
 				
 				Object value = object.get(CFWJobFields.PK_ID.toString());
 				Object label = object.get(CFWJobFields.JOB_NAME.toString());
+				Integer spaceID = object.get(CFWJobFields.FK_ID_SPACE.toString()).getAsInt();
+				String spaceBreadcrumbs = CFW.DB.Spaces.getFromCache(spaceID).createBreadcrumbsString();
+
 				Object description = 
-							"<b>Task Name:&nbsp;</b>"+object.get(CFWJobFields.TASK_NAME.toString())
-							;
+						   "&emsp;<b>Space:&nbsp;</b>" + spaceBreadcrumbs
+						 + "&emsp;<b>Task Name:&nbsp;</b>" + object.get(CFWJobFields.TASK_NAME.toString())
+						   ;
+				
 				autocompleteList.addItem(value, label, description);
 				
 			}

@@ -513,6 +513,55 @@ function cfwjobs_printJobs(itemType){
 	
 }
 
+
+/******************************************************************
+ *
+ ******************************************************************/
+function cfwjobs_sanitizeCurrentOptions(options){
+	
+	//-----------------------
+	// Options is Set
+	if(options != null){ return options; }
+	
+	//-----------------------
+	// Last Options Available
+	if(CFWJOBS_LAST_OPTIONS != null ){
+		return CFWJOBS_LAST_OPTIONS;
+	}
+	
+	//-----------------------
+	// Last Options From Cache
+	// or Default
+	let tabToDisplay = CFW.cache.retrieveValueForPage("cfwjobs-lasttab", "myjoblist");
+	
+	if(CFW.hasPermission('Jobs: Admin')){
+		tabToDisplay = "myjoblist";
+	}
+
+	$('#tab-'+tabToDisplay).addClass('active');
+	
+	return {tab: tabToDisplay};
+}
+
+/******************************************************************
+ *  
+ ******************************************************************/
+
+function cfwjobs_initialDraw(){
+	
+	cfwjobs_createTabs();
+	
+	//-----------------------------------
+	// Make Broad Page
+	$('#cfw-container').css('max-width', '100%');
+
+	//-------------------------------------------
+	// Create Selector and Draw
+	cfw_spaces_createSpaceSelector(function(spaceid){
+			cfwjobs_draw(null);
+		}, true);
+}
+
 /******************************************************************
  * Main method for building the different views.
  * 
@@ -522,29 +571,20 @@ function cfwjobs_printJobs(itemType){
  *  }
  * @return 
  ******************************************************************/
-
-function cfwjobs_initialDraw(){
-	
-	cfwjobs_createTabs();
-	
-	//-----------------------------------
-	// Restore last tab
-	var tabToDisplay = CFW.cache.retrieveValueForPage("cfwjobs-lasttab", "myjoblist");
-	
-	$('#cfw-container').css('max-width', '100%');
-	
-	$('#tab-'+tabToDisplay).addClass('active');
-	
-	cfwjobs_draw({tab: tabToDisplay});
-}
-
 function cfwjobs_draw(options){
+
+	//-------------------------
+	// Options
+	options = cfwjobs_sanitizeCurrentOptions(options); 
 	CFWJOBS_LAST_OPTIONS = options;
-	
 	CFW.cache.storeValueForPage("cfwjobs-lasttab", options.tab);
 	
+	//-------------------------
+	// Clear Tabl
 	$("#tab-content").html("");
 	
+	//-------------------------
+	// Draw
 	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 

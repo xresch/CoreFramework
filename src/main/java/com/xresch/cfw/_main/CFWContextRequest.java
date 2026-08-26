@@ -30,16 +30,19 @@ public class CFWContextRequest {
 	private static final CFWContextRequest INSTANCE = new CFWContextRequest();
 	private static ThreadLocal<CFWContextObject> context = new ThreadLocal<>();
 	
+
 	public class CFWContextObject{
 		protected HttpServletRequest httpRequest = null;
 		protected HttpServletResponse httpResponse = null;
 		protected Long requestStartMillis = null;
 		
 		protected AbstractResponse responseContent = null;
+		
 		protected CFWSessionData sessionData = null;
 		
 		protected LinkedHashMap<String,CFWHTMLItemAlertMessage> messageArray = null;
 		
+		protected Integer spaceIDOverride = null;
 	}
 	
 	/**************************************************************************
@@ -57,6 +60,7 @@ public class CFWContextRequest {
 	 **************************************************************************/
 	public static void setContext(CFWContextObject newContext) {
 		context.set(newContext);
+		
 	}
 	
 	/**************************************************************************
@@ -169,9 +173,30 @@ public class CFWContextRequest {
 	}
 	
 	/**************************************************************************
-	 * Returns null if there is no space selected.
+	 * Sets a spaceID to override the normal spaceID.
+	 * This is needed in case of context-less executions, like executing jobs
+	 * or when loading dashboard widgets.
+	 * 
+	 * @param spaceID that should be used.
+	 **************************************************************************/
+	public static void setSpaceIDOverride(Integer spaceID) {
+		
+		getContext().spaceIDOverride = spaceID;
+	}
+	
+	/**************************************************************************
+	 * Will return either of the following in this order:
+	 * <ol>
+	 * 	<li>SpaceID Override if set with setSpaceIDOverride().</li>
+	 * 	<li>The SpaceID selected by the user in the UI. </li>
+	 * 	<li>The SpaceID of the Default Space. </li>
+	 * </ol>
+	 * 
 	 **************************************************************************/
 	public static int getSelectedSpaceID() {
+		
+		if(getContext().spaceIDOverride != null) { return getContext().spaceIDOverride; }
+		
 		if(getContext().sessionData != null) {
 			return getContext().sessionData.getSelectedSpaceID();
 		}

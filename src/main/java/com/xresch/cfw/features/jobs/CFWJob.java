@@ -17,12 +17,12 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.datahandling.CFWSchedule.EndType;
-import com.xresch.cfw.datahandling.CFWSchedule.IntervalType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
+import com.xresch.cfw.datahandling.CFWSchedule.EndType;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.validation.LengthValidator;
@@ -39,6 +39,7 @@ public class CFWJob extends CFWObject {
 	
 	public enum CFWJobFields{
 		PK_ID, 
+		FK_ID_SPACE,  // from FeatureSpaces.FK_ID_SPACE
 		FK_ID_USER,
 		JOB_NAME, 
 		DESCRIPTION,
@@ -61,6 +62,8 @@ public class CFWJob extends CFWObject {
 								   .setDescription("The job id.")
 								   .apiFieldType(FormFieldType.NUMBER)
 								   .setValue(null);
+	
+	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false, true);
 	
 	private CFWField<Integer> foreignKeyOwner = CFWField.newInteger(FormFieldType.HIDDEN, CFWJobFields.FK_ID_USER)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
@@ -141,6 +144,7 @@ public class CFWJob extends CFWObject {
 		//this.enableFulltextSearch(fullTextSearchColumns);
 		
 		this.addFields(id, 
+				fkidSpace,
 				foreignKeyOwner,
 				jobname, 
 				description,
@@ -175,6 +179,7 @@ public class CFWJob extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						CFWJobFields.PK_ID.toString(), 
+						CFWJobFields.FK_ID_SPACE.toString(), 
 						CFWJobFields.FK_ID_USER.toString(),
 						CFWJobFields.JOB_NAME.toString(),
 						CFWJobFields.TASK_NAME.toString(),
@@ -183,6 +188,7 @@ public class CFWJob extends CFWObject {
 		String[] outputFields = 
 				new String[] {
 						CFWJobFields.PK_ID.toString(), 
+						CFWJobFields.FK_ID_SPACE.toString(),
 						CFWJobFields.FK_ID_USER.toString(),
 						CFWJobFields.JOB_NAME.toString(),
 						CFWJobFields.DESCRIPTION.toString(),
@@ -243,13 +249,19 @@ public class CFWJob extends CFWObject {
 		//-----------------------------------
 		// Create Trigger
 		TriggerBuilder<Trigger> triggerBuilder = this.schedule().createQuartzTriggerBuilder();
+
+		//-----------------------------------
+		// Add SpaceID
+		triggerBuilder.usingJobData(CFWJobFields.FK_ID_SPACE.toString(), this.fkidSpace());
 		
+		//-----------------------------------
+		// Add Properties
 		LinkedHashMap<String, String> map = this.propertiesAsMap();
 				
 		if(map != null) {
 			for(Entry<String, String> entry : map.entrySet()){
 				triggerBuilder.usingJobData(entry.getKey(), entry.getValue());
-				triggerBuilder.usingJobData("test", "test");
+				//triggerBuilder.usingJobData("test", "test");
 			}
 		}
 		
@@ -268,6 +280,15 @@ public class CFWJob extends CFWObject {
 	
 	public CFWJob id(Integer id) {
 		this.id.setValue(id);
+		return this;
+	}
+	
+	public Integer fkidSpace() {
+		return fkidSpace.getValue();
+	}
+	
+	public CFWJob fkidSpace(Integer id) {
+		this.fkidSpace.setValue(id);
 		return this;
 	}
 	

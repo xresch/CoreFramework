@@ -351,7 +351,23 @@ public class FeatureSpaces extends CFWAppFeature {
 	 * </ul>  
 	 **********************************************************************************/
 	public static CFWSQL getSQLFilter() {
-		boolean filterInclusive = CFW.Context.Request.getFilterSpaceInclusive();
+		return getSQLFilter( CFW.Context.Request.getFilterSpaceInclusive() );
+	}
+	
+	/**********************************************************************************
+	 * Returns a partial query which will filter by the column "FK_ID_SPACE" and returns
+	 * entities:
+	 * <ul>
+	 *   <li>Directly in the selected space.</li>
+	 *   <li>In parent spaces of selected space.</li>
+	 *   <li>In global spaces of Type ROOT_SPACE.</li>
+	 *   <li>In global spaces of Type SPACE with the same ROOT_SPACE.</li>
+	 * </ul>  
+	 * 
+	 * @param filterInclusive if the filter should be inclusive or exclusive
+	 **********************************************************************************/
+	public static CFWSQL getSQLFilter(boolean filterInclusive) {
+
 		int spaceID = CFW.Context.Request.getSelectedSpaceID();
 		
 		//--------------------------
