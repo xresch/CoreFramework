@@ -379,7 +379,7 @@ public class CFWJob extends CFWObject {
 	}
 	
 	/***********************************************
-	 * Returns a JSON Object or null.
+	 * @return HashMap, empty if properties are null
 	 ***********************************************/
 	public LinkedHashMap<String, String> propertiesAsMap() {
 		

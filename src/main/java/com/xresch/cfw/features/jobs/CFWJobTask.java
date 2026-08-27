@@ -2,6 +2,7 @@ package com.xresch.cfw.features.jobs;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.quartz.InterruptableJob;
@@ -9,6 +10,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
 
+import com.oracle.truffle.js.builtins.ConsoleBuiltins.Console;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition;
@@ -145,7 +147,7 @@ public abstract class CFWJobTask implements InterruptableJob {
 		
 		//---------------------------------------
 		// Override SpaceID
-		Integer spaceID = context.getJobDetail().getJobDataMap().getInt(CFWJobFields.FK_ID_SPACE.toString());
+		Integer spaceID = context.getMergedJobDataMap().getInt(CFWJobFields.FK_ID_SPACE.toString());
 		
 		CFW.Context.Request.setSpaceIDForRequest(spaceID);
 		
