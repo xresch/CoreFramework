@@ -520,7 +520,7 @@ public  class CFWDBDefaultOperations {
 					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.selectFirstBy"+column)
 					.select()
 					.where(column, value)
-					.and().append(FeatureSpaces.getSQLFilter())
+					.and().append(FeatureSpaces.getSQLFilterInclusive())
 					.getFirstAsObject();
 		} catch (Exception e) {
 			new CFWLog(logger)

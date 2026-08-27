@@ -506,7 +506,8 @@ public class CFWDBCredentials {
 						, CFWCredentialsFields.JSON_SHARE_WITH_GROUPS
 						, CFWCredentialsFields.JSON_EDITOR_GROUPS
 					)
-				.where(CFWCredentialsFields.PK_ID, credentialsID).getFirstAsObject();
+				.where(CFWCredentialsFields.PK_ID, credentialsID)
+				.getFirstAsObject();
 
 		//-----------------------------------
 		// Check User has Shared Role

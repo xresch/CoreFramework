@@ -226,13 +226,17 @@ button:disabled {
 }
 
 .modal-content{
-	min-height: 60vh;
+	
 	max-height: 95vh;
 	padding: 5px;
 	border: 3px solid rgba(2, 2, 2, 0.9);
     /* backdrop-filter: blur(4px); Don't do this here, will create issues with expanding elements to fullscreen */
     background-color: rgba(0, 0, 0, 0.70);
 	box-shadow: 0 0 9px rgba(255, 255, 255, 0.66);
+}
+
+#cfw-default-modal .modal-content{
+	min-height: 60vh;
 }
 
 .modal-bg-blur{

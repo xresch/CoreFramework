@@ -1179,6 +1179,7 @@ public class CFWDBDashboard {
 			.select(DashboardFields.PK_ID,
 					DashboardFields.NAME)
 			.whereLike(DashboardFields.NAME, "%"+searchValue+"%")
+			.and().append(FeatureSpaces.getSQLFilterInclusive())
 			.limit(maxResults)
 			.getResultSet();
 		
