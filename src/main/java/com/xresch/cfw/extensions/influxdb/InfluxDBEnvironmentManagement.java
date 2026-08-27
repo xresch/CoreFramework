@@ -58,7 +58,7 @@ public class InfluxDBEnvironmentManagement {
 		// Clear environments
 		environments = new HashMap<Integer, InfluxDBEnvironment>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(InfluxDBEnvironment.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForTypeAll(InfluxDBEnvironment.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			InfluxDBEnvironment current = (InfluxDBEnvironment)settings;

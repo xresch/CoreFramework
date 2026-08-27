@@ -54,7 +54,7 @@ public class PostgresEnvironmentManagement {
 		// Clear environments
 		environmentsWithDB = new HashMap<Integer, PostgresEnvironment>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(PostgresEnvironment.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForTypeAll(PostgresEnvironment.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			PostgresEnvironment current = (PostgresEnvironment)settings;

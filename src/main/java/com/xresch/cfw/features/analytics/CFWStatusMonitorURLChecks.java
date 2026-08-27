@@ -38,7 +38,7 @@ public class CFWStatusMonitorURLChecks implements CFWStatusMonitor {
 	 * 
 	 *************************************************************/
 	@Override
-	public HashMap<JsonObject, CFWStateOption> getStatuses() {
+	public HashMap<JsonObject, CFWStateOption> getStatusesSpaced() {
 		
 		
 		LinkedHashMap<JsonObject, CFWStateOption> result = new LinkedHashMap<>();

@@ -78,7 +78,7 @@ public class CFWJobsChannelFilesystemSettingsManagement {
 		// Clear environments
 		environments = new HashMap<Integer, CFWJobsChannelFilesystemSettings>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(CFWJobsChannelFilesystemSettings.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForTypeAll(CFWJobsChannelFilesystemSettings.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			CFWJobsChannelFilesystemSettings current = (CFWJobsChannelFilesystemSettings)settings;

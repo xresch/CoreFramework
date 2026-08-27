@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.spaces.CFWSpace;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWState;
 import com.xresch.cfw.utils.CFWState.CFWStateOption;
@@ -25,8 +26,10 @@ public class CFWStatusMonitorRegistry {
 	// monitor name and instance
 	private static TreeMap<String,  CFWStatusMonitor> statusMonitorMap = new TreeMap<>();
 
-	private static JsonObject cachedStatusList;
-	private static CFWStateOption cachedWorstStatus = CFWStateOption.NONE;
+	// Integer and Json Object
+	private static HashMap<Integer,JsonObject> cachedStatusList = new HashMap<>();
+	// Integer and worst status
+	private static HashMap<Integer,CFWStateOption> cachedWorstStatus = new HashMap<>();
 
 	/***********************************************************************
 	 * Adds a CFWStatusMonitor class to the registry.
@@ -100,12 +103,13 @@ public class CFWStatusMonitorRegistry {
 	 * Returns the current worst status
 	 * 
 	 ***********************************************************************/
-	public static CFWStateOption getWorstStatus()  {
+	public static CFWStateOption getWorstStatusSpaced()  {
 		boolean colorize = CFW.DB.Config.getConfigAsBoolean(FeatureSystemAnalytics.CATEGORY_STATUS_MONITOR, FeatureSystemAnalytics.CONFIG_COLOR_MENU_ICON);
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
 		
 		if(!colorize) { return CFWStateOption.NONE; }
 		
-		return cachedWorstStatus;
+		return cachedWorstStatus.get(spaceID);
 	}
 	/***********************************************************************
 	 * Returns the list of statuses with their categories.
@@ -119,7 +123,7 @@ public class CFWStatusMonitorRegistry {
 	 * 
 	 ***********************************************************************/
 	public static JsonObject getStatusListCategorized()  {
-		return cachedStatusList;
+		return cachedStatusList.get(CFW.Context.Request.getSelectedSpaceID());
 	}
 	
 	/***********************************************************************
@@ -139,68 +143,82 @@ public class CFWStatusMonitorRegistry {
 	 * }
 	 * 
 	 ***********************************************************************/
-	protected static void loadStatusListAndCache()  {
+	protected static void loadStatusListAndCacheSpaced()  {
 		
-		JsonObject result = new JsonObject();
-		TreeMap<String, JsonArray> categoryMap = new TreeMap<>();
-		
-		CFWStateOption worstStatus = CFWStateOption.NONE;
-		for(CFWStatusMonitor monitor : statusMonitorMap.values()) {
+
+		for(CFWSpace space : CFW.DB.Spaces.getSpaceListAsHashMap().values()) {
 			
+			JsonObject result = new JsonObject();
+			TreeMap<String, JsonArray> categoryMap = new TreeMap<>();
 			
-			//------------------------
-			// Get Array for Category
-			String category = monitor.category();
+			CFWStateOption worstStatus = CFWStateOption.NONE;
 			
-			if( !categoryMap.containsKey(category)) {
-				categoryMap.put(category, new JsonArray());
+			//-------------------------
+			// Check do Context Settings
+			int spaceID = space.id();
+			if( ! space.isEnabled() 
+			||  ! CFW.DB.ContextSettings.checkSpaceHasContextSettings(spaceID) ) {
+				continue;
 			}
 			
-			JsonArray categoryArray = categoryMap.get(category);
-		
-			try {	
+			for(CFWStatusMonitor monitor : statusMonitorMap.values()) {
+				
 				//------------------------
 				// Get Array for Category
-				HashMap<JsonObject, CFWStateOption> statuses = monitor.getStatuses();
-				if(statuses != null) {
-					for(Entry<JsonObject, CFWStateOption> status : statuses.entrySet()) {
-						
-						JsonObject object = status.getKey();
-						CFWStateOption state = status.getValue();
-						
-						object.addProperty("category", monitor.category() );
-						object.addProperty("monitor", monitor.uniqueName() );
-						object.addProperty("status", state.toString() );
-						
-						categoryArray.add(object);
-						
-						worstStatus = CFWState.compareAndGetMoreDangerous(worstStatus, state);
-					};
+				String category = monitor.category();
+				
+				if( !categoryMap.containsKey(category)) {
+					categoryMap.put(category, new JsonArray());
 				}
-			}catch(Exception e){
-				JsonObject object = new JsonObject();
 				
-				object.addProperty("category", monitor.category() );
-				object.addProperty("monitor", monitor.uniqueName() );
-				object.addProperty("status", CFWStateOption.RED.toString() );
-				object.addProperty("error", e.getMessage() );
-				
-				categoryArray.add(object);
-				
-				new CFWLog(logger)
-					.silent(true)
-					.warn("Error occured in Status Monitor '"+monitor.uniqueName()+"' with message: "+e.getMessage(), e);
+				JsonArray categoryArray = categoryMap.get(category);
+			
+				try {	
+					//------------------------
+					// Get Array for Category
+					HashMap<JsonObject, CFWStateOption> statuses = monitor.getStatusesSpaced();
+					if(statuses != null) {
+						for(Entry<JsonObject, CFWStateOption> status : statuses.entrySet()) {
+							
+							JsonObject object = status.getKey();
+							CFWStateOption state = status.getValue();
+							
+							object.addProperty("category", monitor.category() );
+							object.addProperty("monitor", monitor.uniqueName() );
+							object.addProperty("status", state.toString() );
+							
+							categoryArray.add(object);
+							
+							worstStatus = CFWState.compareAndGetMoreDangerous(worstStatus, state);
+						};
+					}
+				}catch(Exception e){
+					JsonObject object = new JsonObject();
+					
+					object.addProperty("category", monitor.category() );
+					object.addProperty("monitor", monitor.uniqueName() );
+					object.addProperty("status", CFWStateOption.RED.toString() );
+					object.addProperty("error", e.getMessage() );
+					
+					categoryArray.add(object);
+					
+					new CFWLog(logger)
+						.silent(true)
+						.warn("Error occured in Status Monitor '"+monitor.uniqueName()+"' with message: "+e.getMessage(), e);
+				}
+	
 			}
-
+			
+			cachedWorstStatus.put(spaceID, worstStatus);
+			
+			result.addProperty("worstStatus", worstStatus.toString());
+			result.addProperty("time", System.currentTimeMillis());
+			result.add("categories", CFW.JSON.toJSONElement(categoryMap).getAsJsonObject() );
+			
+			cachedStatusList.put(spaceID, result);
 		}
-		
-		cachedWorstStatus = worstStatus;
-		
-		result.addProperty("worstStatus", worstStatus.toString());
-		result.addProperty("time", System.currentTimeMillis());
-		result.add("categories", CFW.JSON.toJSONElement(categoryMap).getAsJsonObject() );
-		
-		cachedStatusList = result;
+
+
 		
 	}
 		

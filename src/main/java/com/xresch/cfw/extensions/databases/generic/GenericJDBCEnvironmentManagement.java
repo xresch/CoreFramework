@@ -49,7 +49,7 @@ public class GenericJDBCEnvironmentManagement {
 		// Clear environments
 		environmentsWithDB = new HashMap<Integer, GenericJDBCEnvironment>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(GenericJDBCEnvironment.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForTypeAll(GenericJDBCEnvironment.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			GenericJDBCEnvironment current = (GenericJDBCEnvironment)settings;

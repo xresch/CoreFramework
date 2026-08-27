@@ -46,6 +46,6 @@ public interface CFWStatusMonitor {
 	 * 
 	 * @return HasMap
 	 ******************************************************************/
-	public HashMap<JsonObject, CFWStateOption> getStatuses();
+	public HashMap<JsonObject, CFWStateOption> getStatusesSpaced();
 
 }

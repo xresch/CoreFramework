@@ -14,14 +14,10 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
-import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.contextsettings.ContextSettings.ContextSettingsFields;
-import com.xresch.cfw.features.dashboard.Dashboard;
-import com.xresch.cfw.features.dashboard.FeatureDashboard;
-import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -222,42 +218,59 @@ public class CFWDBContextSettings {
 	}
 	
 	/***************************************************************
-	 * Select a dashboard by it's ID and return it as JSON string.
-	 * @param id of the dashboard
+	 * Returns all context settings for the selected type.
+	 * @param type of the context settings
+	 * @param activeOnly toggle return only active ones
 	 * @return Returns a dashboard or null if not found or in case of exception.
 	 ****************************************************************/
-	public static String getContextSettingsAsJSON(String id) {
-		
-		return new ContextSettings()
-				.queryCache(CFWDBContextSettings.class, "getContextSettingsAsJSON")
-				.select()
-				.where(ContextSettingsFields.PK_ID.toString(), Integer.parseInt(id))
-				.getAsJSON();
-		
+	public static ArrayList<AbstractContextSettings> getContextSettingsForTypeAll(String type, boolean activeOnly) {
+		return getContextSettingsForType(type, activeOnly, false);
 	}
 	
 	/***************************************************************
-	 * Returns context settings for the selected type.
-	 * @param activeOnly TODO
-	 * @param id of the dashboard
+	 * Returns context settings for the selected type and currently
+	 * selected space.
+	 * @param type of the context settings
+	 * @param activeOnly toggle return only active ones
 	 * @return Returns a dashboard or null if not found or in case of exception.
 	 ****************************************************************/
-	public static ArrayList<AbstractContextSettings> getContextSettingsForType(String type, boolean activeOnly) {
+	public static ArrayList<AbstractContextSettings> getContextSettingsForTypeSpaced(String type, boolean activeOnly) {
+		return getContextSettingsForType(type, activeOnly, true);
+	}
+	
+	/***************************************************************
+	 * Returns context settings for the selected type, either all or 
+	 * spaced.
+	 * @param type of the context settings
+	 * @param activeOnly toggle return only active ones
+	 * @return Returns a dashboard or null if not found or in case of exception.
+	 ****************************************************************/
+	public static ArrayList<AbstractContextSettings> getContextSettingsForType(String type, boolean activeOnly, boolean filterSpaced) {
 		
 		if(settingsCache.containsKey(type)) {
 			return settingsCache.get(type);
 		}
 		
-		ArrayList<CFWObject> objects =  new ContextSettings()
-				.queryCache(CFWDBContextSettings.class, "getContextSettingsForType")
+		//-------------------------
+		// Prepare SQL
+		CFWSQL sql = new CFWSQL(new ContextSettings())
+				.queryCache()
 				.select()
 				.where(ContextSettingsFields.CFW_CTXSETTINGS_TYPE, type)
-				.getAsObjectList();
-
-		ArrayList<AbstractContextSettings> settingsArray = new ArrayList<AbstractContextSettings>();
+				;
 		
-		for(CFWObject object : objects) {
-			ContextSettings current = (ContextSettings)object;
+		if(filterSpaced) {
+			sql.and().append(FeatureSpaces.getSQLFilterInclusive());
+		}
+
+		//-------------------------
+		// Execute SQL
+		ArrayList<ContextSettings> objects = sql.getAsObjectListConvert(ContextSettings.class);
+		
+		//-------------------------
+		// Prepare 
+		ArrayList<AbstractContextSettings> settingsArray = new ArrayList<AbstractContextSettings>();
+		for(ContextSettings current : objects) {
 			
 			if( !activeOnly || current.isActive()) {
 				AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(current.type());
@@ -319,6 +332,7 @@ public class CFWDBContextSettings {
 		}
 
 		query.custom(")")
+			.and().append(FeatureSpaces.getSQLFilter())
 			.orderby(ContextSettingsFields.CFW_CTXSETTINGS_NAME);
 		
 		return query;
@@ -383,34 +397,25 @@ public class CFWDBContextSettings {
 		return objects;
 	}
 	
-	/***************************************************************
-	 * Return a list of all user dashboards
-	 * 
-	 * @return Returns a resultSet with all dashboards or null.
-	 ****************************************************************/
-	public static ResultSet getContextSettingsList() {
-		
-		return new ContextSettings()
-				.queryCache(CFWDBContextSettings.class, "getUserContextSettingsList")
-				.select()
-				.orderby(ContextSettingsFields.CFW_CTXSETTINGS_NAME.toString())
-				.getResultSet();
-		
-	}
 	
 	
 	/***************************************************************
-	 * Return a list of all user dashboards as json string.
+	 * Return a list of all user context settings as json string.
 	 * 
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/
 	public static String getContextSettingsListAsJSON() {
 		
-		return new ContextSettings()
-				.queryCache(CFWDBContextSettings.class, "getUserContextSettingsListAsJSON")
+		JsonArray array = new CFWSQL(new ContextSettings())
+				.queryCacheSpaced()
 				.select()
+				.where().append(FeatureSpaces.getSQLFilter())
 				.orderby(ContextSettingsFields.CFW_CTXSETTINGS_TYPE)
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 	}
 	
 	/***************************************************************
@@ -445,8 +450,8 @@ public class CFWDBContextSettings {
 	}
 	
 	public static boolean checkExists(String type, String name) {	
-		int count = new ContextSettings()
-				.queryCache(CFWDBContextSettings.class, "checkExists")
+		int count = new CFWSQL(new ContextSettings())
+				.queryCache()
 				.selectCount()
 				.where(ContextSettingsFields.CFW_CTXSETTINGS_TYPE, type)
 				.and(ContextSettingsFields.CFW_CTXSETTINGS_NAME, name)
@@ -461,12 +466,25 @@ public class CFWDBContextSettings {
 	}
 	
 	public static boolean checkExistsIgnoreCurrent(Integer currentID, String type, String name) {	
-		int count = new ContextSettings()
-				.queryCache(CFWDBContextSettings.class, "checkExistsIgnoreCurrent")
+		int count = new CFWSQL(new ContextSettings())
+				.queryCache()
 				.selectCount()
 				.where(ContextSettingsFields.CFW_CTXSETTINGS_TYPE, type)
 				.and(ContextSettingsFields.CFW_CTXSETTINGS_NAME, name)
 				.and().not().is(ContextSettingsFields.PK_ID, currentID)
+				.limit(1)
+				.executeCount();
+		
+		return (count > 0);
+	}
+	
+	
+	
+	public static boolean checkSpaceHasContextSettings(int spaceID) {	
+		int count = new CFWSQL(new ContextSettings())
+				.queryCache()
+				.selectCount()
+				.where(ContextSettingsFields.FK_ID_SPACE, spaceID)
 				.limit(1)
 				.executeCount();
 		

@@ -16,6 +16,7 @@ import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
@@ -29,6 +30,7 @@ public class ContextSettings extends CFWObject {
 	
 	public enum ContextSettingsFields{
 		PK_ID,
+		FK_ID_SPACE,  // from FeatureSpaces.FK_ID_SPACE
 		CFW_CTXSETTINGS_TYPE,
 		CFW_CTXSETTINGS_NAME,
 		CFW_CTXSETTINGS_DESCRIPTION,
@@ -42,6 +44,8 @@ public class ContextSettings extends CFWObject {
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the context setting.")
 			.apiFieldType(FormFieldType.NUMBER);
+	
+	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false, true);
 	
 	private CFWField<String> type = CFWField.newString(FormFieldType.HIDDEN, ContextSettingsFields.CFW_CTXSETTINGS_TYPE.toString())
 			.setColumnDefinition("VARCHAR(255)")
@@ -101,7 +105,17 @@ public class ContextSettings extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, type, name, description, isActive, restrictedToUsers, restrictedToGroups, settings);
+		this.addFields(
+				  id
+				, fkidSpace
+				, type
+				, name
+				, description
+				, isActive
+				, restrictedToUsers
+				, restrictedToGroups
+				, settings
+			);
 	}
 		
 	public void migrateTable(){
@@ -118,6 +132,7 @@ public class ContextSettings extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						ContextSettingsFields.PK_ID.toString(), 
+						ContextSettingsFields.FK_ID_SPACE.toString(), 
 						ContextSettingsFields.CFW_CTXSETTINGS_NAME.toString(),
 						ContextSettingsFields.CFW_CTXSETTINGS_ISACTIVE.toString()
 				};
@@ -159,10 +174,19 @@ public class ContextSettings extends CFWObject {
 		return this;
 	}
 	
+	public Integer fkidSpace() {
+		return fkidSpace.getValue();
+	}
+	
+	public ContextSettings fkidSpace(Integer id) {
+		this.fkidSpace.setValue(id);
+		return this;
+	}
+	
 	public String type() {
 		return type.getValue();
 	}
-	
+
 	public ContextSettings type(String type) {
 		this.type.setValue(type);
 		return this;

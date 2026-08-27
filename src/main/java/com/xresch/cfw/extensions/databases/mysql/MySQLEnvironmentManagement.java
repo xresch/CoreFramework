@@ -49,7 +49,7 @@ public class MySQLEnvironmentManagement {
 		// Clear environments
 		environmentsWithDB = new HashMap<Integer, MySQLEnvironment>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(MySQLEnvironment.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForTypeAll(MySQLEnvironment.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			MySQLEnvironment current = (MySQLEnvironment)settings;

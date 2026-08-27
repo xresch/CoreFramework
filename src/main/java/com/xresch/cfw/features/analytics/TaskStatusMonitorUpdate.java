@@ -19,7 +19,7 @@ public class TaskStatusMonitorUpdate extends CFWScheduledTask {
 	@Override
 	public void execute() {
 		
-		CFWStatusMonitorRegistry.loadStatusListAndCache();
+		CFWStatusMonitorRegistry.loadStatusListAndCacheSpaced();
 		
 	}
 	

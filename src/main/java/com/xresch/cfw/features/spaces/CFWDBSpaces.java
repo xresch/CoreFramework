@@ -66,7 +66,7 @@ public class CFWDBSpaces {
 		userSpacelistCache.invalidateAll();
 		userBreadcrumbedSpacelistCache.invalidateAll();
 		
-		allSpacesCache = getSpaceListAsArrayList();
+		allSpacesCache = getSpaceListAsHashMap();
 		
 	}
 	
@@ -228,7 +228,7 @@ public class CFWDBSpaces {
 	/*****************************************************************************
 	 *  Returns a list of all Spaces.
 	 *****************************************************************************/
-	public static LinkedHashMap<Integer, CFWSpace> getSpaceListAsArrayList() {
+	public static LinkedHashMap<Integer, CFWSpace> getSpaceListAsHashMap() {
 		
 		return new CFWSQL(new CFWSpace())
 				.queryCache()

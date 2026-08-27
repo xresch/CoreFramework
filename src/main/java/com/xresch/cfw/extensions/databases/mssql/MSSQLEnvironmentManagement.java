@@ -49,7 +49,7 @@ public class MSSQLEnvironmentManagement {
 		// Clear environments
 		environmentsWithDB = new HashMap<Integer, MSSQLEnvironment>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(MSSQLEnvironment.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForTypeAll(MSSQLEnvironment.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			MSSQLEnvironment current = (MSSQLEnvironment)settings;

@@ -37,14 +37,14 @@ public class CFWStatusMonitorDatabase implements CFWStatusMonitor {
 	 * 
 	 *************************************************************/
 	@Override
-	public HashMap<JsonObject, CFWStateOption> getStatuses() {
+	public HashMap<JsonObject, CFWStateOption> getStatusesSpaced() {
 		
 		
 		LinkedHashMap<JsonObject, CFWStateOption> result = new LinkedHashMap<>();
 		
 		//----------------------------------
 		// Generic JDBC
-		ArrayList<AbstractContextSettings> jdbcList = CFW.DB.ContextSettings.getContextSettingsForType(GenericJDBCEnvironment.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> jdbcList = CFW.DB.ContextSettings.getContextSettingsForTypeSpaced(GenericJDBCEnvironment.SETTINGS_TYPE, true);
 		for(AbstractContextSettings  setting : jdbcList) {
 			
 			GenericJDBCEnvironment jdbc = (GenericJDBCEnvironment)setting;
@@ -61,7 +61,7 @@ public class CFWStatusMonitorDatabase implements CFWStatusMonitor {
 		
 		//----------------------------------
 		// PostGres
-		ArrayList<AbstractContextSettings> postgresList = CFW.DB.ContextSettings.getContextSettingsForType(PostgresEnvironment.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> postgresList = CFW.DB.ContextSettings.getContextSettingsForTypeSpaced(PostgresEnvironment.SETTINGS_TYPE, true);
 		for(AbstractContextSettings  setting : postgresList) {
 			
 			PostgresEnvironment jdbc = (PostgresEnvironment)setting;
@@ -77,7 +77,7 @@ public class CFWStatusMonitorDatabase implements CFWStatusMonitor {
 		
 		//----------------------------------
 		// MSSQL
-		ArrayList<AbstractContextSettings> mssqlList = CFW.DB.ContextSettings.getContextSettingsForType(MSSQLEnvironment.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> mssqlList = CFW.DB.ContextSettings.getContextSettingsForTypeSpaced(MSSQLEnvironment.SETTINGS_TYPE, true);
 		for(AbstractContextSettings  setting : mssqlList) {
 			
 			MSSQLEnvironment jdbc = (MSSQLEnvironment)setting;
@@ -93,7 +93,7 @@ public class CFWStatusMonitorDatabase implements CFWStatusMonitor {
 		
 		//----------------------------------
 		// MySQL
-		ArrayList<AbstractContextSettings> mysqlList = CFW.DB.ContextSettings.getContextSettingsForType(MySQLEnvironment.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> mysqlList = CFW.DB.ContextSettings.getContextSettingsForTypeSpaced(MySQLEnvironment.SETTINGS_TYPE, true);
 		for(AbstractContextSettings  setting : mysqlList) {
 			
 			MySQLEnvironment jdbc = (MySQLEnvironment)setting;
@@ -109,7 +109,7 @@ public class CFWStatusMonitorDatabase implements CFWStatusMonitor {
 		
 		//----------------------------------
 		// Oracle
-		ArrayList<AbstractContextSettings> oracleList = CFW.DB.ContextSettings.getContextSettingsForType(OracleEnvironment.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> oracleList = CFW.DB.ContextSettings.getContextSettingsForTypeSpaced(OracleEnvironment.SETTINGS_TYPE, true);
 		for(AbstractContextSettings  setting : oracleList) {
 			
 			OracleEnvironment jdbc = (OracleEnvironment)setting;

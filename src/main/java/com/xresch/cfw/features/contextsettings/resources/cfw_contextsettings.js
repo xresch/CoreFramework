@@ -142,7 +142,7 @@ function cfw_contextsettings_printContextSettings(data){
 		
 		var resultCount = data.payload.length;
 		if(resultCount == 0){
-			CFW.ui.addAlert("info", "Hmm... seems there aren't any context settings in the list.");
+			CFW.ui.addToastInfo( "Hmm... seems there aren't any context settings in the list.");
 			return;
 		}
 		
@@ -201,9 +201,10 @@ function cfw_contextsettings_printContextSettings(data){
 			 	textstylefield: null,
 			 	titlefields: ['CFW_CTXSETTINGS_NAME'],
 			 	titleformat: '{0}',
-			 	visiblefields: ['PK_ID','CFW_CTXSETTINGS_TYPE', 'CFW_CTXSETTINGS_NAME', 'CFW_CTXSETTINGS_DESCRIPTION', 'CFW_CTXSETTINGS_ISACTIVE'],
+			 	visiblefields: ['PK_ID', 'SPACE_ABBREV', 'CFW_CTXSETTINGS_TYPE', 'CFW_CTXSETTINGS_NAME', 'CFW_CTXSETTINGS_DESCRIPTION', 'CFW_CTXSETTINGS_ISACTIVE'],
 			 	labels: {
 			 		PK_ID: "ID",
+					SPACE_ABBREV: 'Space',
 			 		CFW_CTXSETTINGS_TYPE: CFWL('cfw_core_type', 'Type'),
 			 		CFW_CTXSETTINGS_NAME: CFWL('cfw_core_name', 'Name'),
 			 		CFW_CTXSETTINGS_DESCRIPTION: CFWL('cfw_core_description', 'Description'),
@@ -294,7 +295,12 @@ function cfw_contextsettings_printContextSettings(data){
  ******************************************************************/
 
 function cfw_contextsettings_initialDraw(){
-	cfw_contextsettings_draw({tab: "contextsettings"});
+
+	//-------------------------------------------
+	// Create Selector and Draw
+	cfw_spaces_createSpaceSelector(function(spaceid){
+			cfw_contextsettings_draw({tab: "contextsettings"});
+		});
 }
 
 function cfw_contextsettings_draw(options){
@@ -308,7 +314,7 @@ function cfw_contextsettings_draw(options){
 	function(){
 		
 		switch(options.tab){
-			case "contextsettings":		CFW.http.fetchAndCacheData(CFW_CTXSETTINGS_URL, {action: "fetch", item: "contextsettings"}, "contextsettings", cfw_contextsettings_printContextSettings);
+			case "contextsettings":		CFW.http.getJSON(CFW_CTXSETTINGS_URL, {action: "fetch", item: "contextsettings"}, cfw_contextsettings_printContextSettings);
 										break;						
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);
 		}

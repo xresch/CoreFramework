@@ -87,7 +87,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 							.addAttribute("id", "cfw-worst-status")
 							.addAttribute(
 									  "data-worst-status"
-									, CFW.Registry.StatusMonitor.getWorstStatus().toString()
+									, CFW.Registry.StatusMonitor.getWorstStatusSpaced().toString()
 							)
 							;
 					

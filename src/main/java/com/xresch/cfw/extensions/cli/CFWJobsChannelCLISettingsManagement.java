@@ -78,7 +78,7 @@ public class CFWJobsChannelCLISettingsManagement {
 		// Clear environments
 		environments = new HashMap<Integer, CFWJobsChannelCLISettings>();
 		
-		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(CFWJobsChannelCLISettings.SETTINGS_TYPE, true);
+		ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForTypeAll(CFWJobsChannelCLISettings.SETTINGS_TYPE, true);
 
 		for(AbstractContextSettings settings : settingsArray) {
 			CFWJobsChannelCLISettings current = (CFWJobsChannelCLISettings)settings;
