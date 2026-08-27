@@ -75,9 +75,7 @@ public class CFWJobsReporting {
 		if(user != null) {
 			for(CFWJobsChannel channel : getAllChannelInstances()) {
 	
-				if(channel.hasPermission(CFW.Context.Request.getUser())
-				|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)	
-				) {
+				if(channel.hasPermission(CFW.Context.Request.getUser())) {
 					channelNames.put(channel.getUniqueName(), channel.getLabel());
 				}
 			}

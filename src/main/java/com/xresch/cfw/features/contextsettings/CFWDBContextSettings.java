@@ -254,7 +254,7 @@ public class CFWDBContextSettings {
 		//-------------------------
 		// Prepare SQL
 		CFWSQL sql = new CFWSQL(new ContextSettings())
-				.queryCache()
+				//.queryCache() // cannot cache here
 				.select()
 				.where(ContextSettingsFields.CFW_CTXSETTINGS_TYPE, type)
 				;
@@ -332,7 +332,7 @@ public class CFWDBContextSettings {
 		}
 
 		query.custom(")")
-			.and().append(FeatureSpaces.getSQLFilter())
+			.and().append(FeatureSpaces.getSQLFilterInclusive())
 			.orderby(ContextSettingsFields.CFW_CTXSETTINGS_NAME);
 		
 		return query;

@@ -169,22 +169,17 @@ public class CFWJobsChannelCLI extends CFWJobsChannel {
 	@Override
 	public boolean hasPermission(User user) {
 		
+		CFWJobsChannelCLISettings filesystemSettings = getContextSettings();
+		
+		HashMap<Integer, Object> settingsMap = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(
+				CFWJobsChannelCLISettings.SETTINGS_TYPE
+				, user
+			);
+		
+		System.out.println(CFW.JSON.toJSON(settingsMap) );
+		
+		return settingsMap.containsKey(filesystemSettings.getDefaultObject().id() );
 
-		if( user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN) ){
-			return true;
-		}else {
-			CFWJobsChannelCLISettings filesystemSettings = getContextSettings();
-			
-			
-			HashMap<Integer, Object> settingsMap = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(
-					CFWJobsChannelCLISettings.SETTINGS_TYPE
-					, user
-				);
-			
-			return settingsMap.containsKey(filesystemSettings.getDefaultObject().id() );
-			
-		}
-			
 	}
 	
 	/************************************************************************************

@@ -1,7 +1,5 @@
 package com.xresch.cfw.features.jobs;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import com.xresch.cfw._main.CFW;
@@ -18,8 +16,6 @@ import com.xresch.cfw.features.jobs.channels.CFWJobsChannelFilesystemSettings;
 import com.xresch.cfw.features.jobs.channels.CFWJobsChannelFilesystemSettingsManagement;
 import com.xresch.cfw.features.jobs.channels.CFWManualPageChannel;
 import com.xresch.cfw.features.manual.ManualPage;
-import com.xresch.cfw.features.parameter.CFWQueryManualPageParameter;
-import com.xresch.cfw.features.parameter.ParameterDefinition;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;

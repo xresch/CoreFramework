@@ -176,21 +176,15 @@ public class CFWJobsChannelFilesystem extends CFWJobsChannel {
 	@Override
 	public boolean hasPermission(User user) {
 		
-
-		if( user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN) ){
-			return true;
-		}else {
-			CFWJobsChannelFilesystemSettings filesystemSettings = getContextSettings();
+		CFWJobsChannelFilesystemSettings filesystemSettings = getContextSettings();
+		
+		HashMap<Integer, Object> settingsMap = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(
+				CFWJobsChannelFilesystemSettings.SETTINGS_TYPE
+				, user
+			);
+		
+		return settingsMap.containsKey(filesystemSettings.getDefaultObject().id() );
 			
-			
-			HashMap<Integer, Object> settingsMap = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(
-					CFWJobsChannelFilesystemSettings.SETTINGS_TYPE
-					, user
-				);
-			
-			return settingsMap.containsKey(filesystemSettings.getDefaultObject().id() );
-			
-		}
 			
 	}
 	
