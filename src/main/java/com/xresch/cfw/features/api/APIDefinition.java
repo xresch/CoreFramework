@@ -32,6 +32,8 @@ public abstract class APIDefinition {
 	private CFWObject instance;
 	
 	private APIRequestHandler requestHandler;
+	
+	private boolean isSpaced = true;
 
 	/************************************************************************************
 	 * Constructor
@@ -146,12 +148,22 @@ public abstract class APIDefinition {
 			return;
 		}
 	}
+		
+	/*****************************************************************
+	 * 
+	 *****************************************************************/
+	public boolean isSpaced() {
+		// TODO Auto-generated method stub
+		return isSpaced;
+	}
 	
-	/************************************************************************************
-	 * Implement this method to return true if this API endpoint is spaced.
-	 *  
-	 ************************************************************************************/
-	public abstract boolean isSpaced();
+	/*****************************************************************
+	 * 
+	 *****************************************************************/
+	public APIDefinition isSpaced(boolean isSpaced) {
+		this.isSpaced = isSpaced;
+		return this;
+	}
 	
 	
 	public String getApiName() {
@@ -261,6 +273,7 @@ public abstract class APIDefinition {
 		object.addProperty("name", apiName);
 		object.addProperty("action", actionName);
 		object.addProperty("description", description);
+		object.addProperty("isSpaced", this.isSpaced());
 		object.addProperty("bodyParamName", bodyParamName);
 		
 		//-----------------------------------

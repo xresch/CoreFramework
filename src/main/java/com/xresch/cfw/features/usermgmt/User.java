@@ -326,14 +326,14 @@ public class User extends CFWObject {
 
 		//----------------------------------
 		// fetchJSON
-		APIDefinitionFetch fetchDataAPI = 
+		APIDefinition fetchDataAPI = 
 				new APIDefinitionFetch(
 						this.getClass(),
 						"User",
 						"fetchData",
 						inputFields,
 						outputFields
-				);
+				).isSpaced(false);
 		
 		apis.add(fetchDataAPI);
 		apis.add(createAPIAddRole());

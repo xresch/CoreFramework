@@ -76,33 +76,34 @@ public class APITokenPermission extends CFWObject {
 	public ArrayList<APIDefinition> getAPIDefinitions() {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
 		
+		// !!!!! Too Dangerous, removed because of spaces feature !!!!!
 		
-		String[] inputFields = 
-				new String[] {
-						APITokenPermissionFields.PK_ID.toString(), 
-						APITokenPermissionFields.API_NAME.toString(),
-						APITokenPermissionFields.ACTION_NAME.toString(),
-				};
-		
-		String[] outputFields = 
-				new String[] {
-						APITokenPermissionFields.PK_ID.toString(), 
-						APITokenPermissionFields.API_NAME.toString(),
-						APITokenPermissionFields.ACTION_NAME.toString(),
-				};
-
-		//----------------------------------
-		// fetchJSON
-		APIDefinitionFetch fetchDataAPI = 
-				new APIDefinitionFetch(
-						this.getClass(),
-						this.getClass().getSimpleName(),
-						"fetchData",
-						inputFields,
-						outputFields
-				);
-		
-		apis.add(fetchDataAPI);
+//		String[] inputFields = 
+//				new String[] {
+//						APITokenPermissionFields.PK_ID.toString(), 
+//						APITokenPermissionFields.API_NAME.toString(),
+//						APITokenPermissionFields.ACTION_NAME.toString(),
+//				};
+//		
+//		String[] outputFields = 
+//				new String[] {
+//						APITokenPermissionFields.PK_ID.toString(), 
+//						APITokenPermissionFields.API_NAME.toString(),
+//						APITokenPermissionFields.ACTION_NAME.toString(),
+//				};
+//
+//		//----------------------------------
+//		// fetchJSON
+//		APIDefinition fetchDataAPI = 
+//				new APIDefinitionFetch(
+//						this.getClass(),
+//						this.getClass().getSimpleName(),
+//						"fetchData",
+//						inputFields,
+//						outputFields
+//				);
+//		
+//		apis.add(fetchDataAPI);
 		
 		return apis;
 	}

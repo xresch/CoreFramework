@@ -3,11 +3,15 @@ package com.xresch.cfw.features.api;
 import java.sql.ResultSet;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.api.APITokenPermission.APITokenPermissionFields;
 import com.xresch.cfw.features.api.APITokenPermissionMap.APITokenPermissionMapFields;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -105,11 +109,35 @@ public class APITokenPermissionMapDBMethods {
 	 * 
 	 ****************************************************************/
 	public static String getPermissionMapForTokenID(String tokenID) {
-				
-		return new CFWSQL(null)
+		
+		
+		JsonArray array = new CFWSQL(null)
 				.queryCache()
 				.loadSQLResource(FeatureAPI.RESOURCE_PACKAGE, "sql_getPermissionMapForTokenID.sql", tokenID)
-				.getAsJSON();
+				.getAsJSONArray();
+		
+		JsonArray filtered = new JsonArray();
+		
+		if( CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN) ) {
+			filtered = array; 
+		}else {
+			
+			for(JsonElement element : array) {
+				JsonObject object = element.getAsJsonObject();
+				
+				String apiName = object.get(APITokenPermissionFields.API_NAME.toString()).getAsString();
+				String actionName = object.get(APITokenPermissionFields.ACTION_NAME.toString()).getAsString();
+				
+				APIDefinition definition = CFW.Registry.API.getDefinition(apiName, actionName);
+				if(definition != null
+				&& definition.isSpaced()
+				){
+					filtered.add(element);
+				}
+			}
+		}
+		
+		return CFW.JSON.toJSON(filtered);
 
 	}
 	

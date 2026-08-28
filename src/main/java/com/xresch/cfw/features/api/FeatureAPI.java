@@ -21,6 +21,7 @@ public class FeatureAPI extends CFWAppFeature {
 	private static Logger logger = CFWLog.getLogger(FeatureAPI.class.getName());
 	
 	public static final String PERMISSION_CFW_API = "API";
+	public static final String PERMISSION_CFW_API_ADMIN = "API Admin";
 	public static final String PERMISSION_CFW_APITOKEN_MGMT = "API Token Managment";
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.api.resources";
 	
@@ -65,8 +66,15 @@ public class FeatureAPI extends CFWAppFeature {
 		);
 			
 		CFW.DB.Permissions.oneTimeCreate(
+				new Permission(PERMISSION_CFW_API_ADMIN, FeatureUserManagement.CATEGORY_USER)
+				.description("User can manage API tokens and every API endpoint."),
+				true,
+				false
+				);
+		
+		CFW.DB.Permissions.oneTimeCreate(
 			new Permission(PERMISSION_CFW_APITOKEN_MGMT, FeatureUserManagement.CATEGORY_USER)
-				.description("User can manage API Tokens."),
+				.description("User can create their own API Tokens for API endpoints that are restricted to spaces."),
 				true,
 				false
 		);

@@ -120,36 +120,38 @@ public class APIToken extends CFWObject {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
 		
 		
-		String[] inputFields = 
-				new String[] {
-						APITokenFields.PK_ID.toString(), 
-						APITokenFields.FK_ID_CREATOR.toString(),
-						APITokenFields.TOKEN.toString(),
-						APITokenFields.IS_ACTIVE.toString(),
-				};
+		// !!!!! Too Dangerous, removed because of spaces feature !!!!!
 		
-		String[] outputFields = 
-				new String[] {
-						APITokenFields.PK_ID.toString(), 
-						APITokenFields.FK_ID_CREATOR.toString(),
-						APITokenFields.TOKEN.toString(),
-						APITokenFields.DESCRIPTION.toString(),
-						APITokenFields.IS_ACTIVE.toString(),
-						APITokenFields.JSON_RESPONSIBLE_USERS.toString(),
-				};
-
-		//----------------------------------
-		// fetchJSON
-		APIDefinitionFetch fetchDataAPI = 
-				new APIDefinitionFetch(
-						this.getClass(),
-						this.getClass().getSimpleName(),
-						"fetchData",
-						inputFields,
-						outputFields
-				);
-		
-		apis.add(fetchDataAPI);
+//		String[] inputFields = 
+//				new String[] {
+//						APITokenFields.PK_ID.toString(), 
+//						APITokenFields.FK_ID_CREATOR.toString(),
+//						APITokenFields.TOKEN.toString(),
+//						APITokenFields.IS_ACTIVE.toString(),
+//				};
+//		
+//		String[] outputFields = 
+//				new String[] {
+//						APITokenFields.PK_ID.toString(), 
+//						APITokenFields.FK_ID_CREATOR.toString(),
+//						APITokenFields.TOKEN.toString(),
+//						APITokenFields.DESCRIPTION.toString(),
+//						APITokenFields.IS_ACTIVE.toString(),
+//						APITokenFields.JSON_RESPONSIBLE_USERS.toString(),
+//				};
+//
+//		//----------------------------------
+//		// fetchJSON
+//		APIDefinition fetchDataAPI = 
+//				new APIDefinitionFetch(
+//						this.getClass(),
+//						this.getClass().getSimpleName(),
+//						"fetchData",
+//						inputFields,
+//						outputFields
+//				);
+//		
+//		apis.add(fetchDataAPI);
 		
 		return apis;
 	}

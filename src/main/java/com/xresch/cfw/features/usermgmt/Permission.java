@@ -140,14 +140,14 @@ public class Permission extends CFWObject{
 
 		//----------------------------------
 		// fetchData
-		APIDefinitionFetch fetchDataAPI = 
+		APIDefinition fetchDataAPI = 
 				new APIDefinitionFetch(
 						this.getClass(),
 						this.getClass().getSimpleName(),
 						"fetchData",
 						inputFields,
 						outputFields
-				);
+				).isSpaced(false);
 		
 		apis.add(fetchDataAPI);
 		

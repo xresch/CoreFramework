@@ -219,14 +219,14 @@ public class EAVStats extends CFWObject {
 
 		//----------------------------------
 		// fetchData
-		APIDefinitionFetch fetchDataAPI = 
+		APIDefinition fetchDataAPI = 
 				new APIDefinitionFetch(
 						this.getClass(),
 						this.getClass().getSimpleName(),
 						"fetchData",
 						inputFields,
 						outputFields
-				);
+				).isSpaced(false);
 		
 		apis.add(fetchDataAPI);
 		apis.add(new APIEAVPushStats(this.getClass().getSimpleName(), "pushStats"));

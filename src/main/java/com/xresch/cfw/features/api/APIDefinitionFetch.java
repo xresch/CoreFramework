@@ -29,15 +29,6 @@ public class APIDefinitionFetch extends APIDefinition{
 	
 	
 	/*****************************************************************
-	 * 
-	 *****************************************************************/
-	@Override
-	public boolean isSpaced() {
-		// TODO Auto-generated method stub
-		return true;
-	}
-	
-	/*****************************************************************
 	 * Constructor
 	 *****************************************************************/
 	public APIDefinitionFetch(Class<? extends CFWObject> clazz,
@@ -77,7 +68,7 @@ public class APIDefinitionFetch extends APIDefinition{
 				
 				ArrayList<CFWField> affectedFields = new ArrayList<CFWField>();
 				ArrayList<String> fieldnames = new ArrayList<String>();
-				boolean success = true;
+
 				
 				// iterate parameters
 				while(params.hasMoreElements()) {
@@ -98,50 +89,49 @@ public class APIDefinitionFetch extends APIDefinition{
 				
 				//----------------------------------
 				// Create Response
-				if(success) {
-					
-					CFWSQL statement = object.select(definition.getOutputFieldnames());
-					
-					//--------------------------
-					// Add Filters From API
-					for(int i = 0; i < affectedFields.size(); i++) {
-						CFWField<?> currentField = affectedFields.get(i);
-						if(i == 0) {
-							statement.where(currentField.getName(), currentField.getValue(), false);
-						}else {
-							statement.and(currentField.getName(), currentField.getValue(), false);
-						}
+
+				CFWSQL statement = object.select(definition.getOutputFieldnames());
+				
+				//--------------------------
+				// Add Filters From API
+				for(int i = 0; i < affectedFields.size(); i++) {
+					CFWField<?> currentField = affectedFields.get(i);
+					if(i == 0) {
+						statement.where(currentField.getName(), currentField.getValue(), false);
+					}else {
+						statement.and(currentField.getName(), currentField.getValue(), false);
 					}
-					
-					//--------------------------
-					// Add Space Filter
+				}
+				
+				//--------------------------
+				// Add Space Filter
+				if( isSpaced() ) {
 					if(affectedFields.size() > 0) {
 						statement.and().append(FeatureSpaces.getSQLFilterInclusive());
 					}else {
 						statement.where().append(FeatureSpaces.getSQLFilterInclusive());
 					}
-					
-					String format = request.getParameter(APIFORMAT);
-					if(format == null || format.equals("")) {
-						format = "JSON";
-					}
-					if(format.toUpperCase().equals(APIReturnFormat.JSON.toString())) {
-						json.getContent().append(statement.getAsJSON());
-					}else if(format.toUpperCase().equals(APIReturnFormat.CSV.toString())){		
-						PlaintextResponse plaintext = new PlaintextResponse();
-						
-						plaintext.getContent().append(statement.getAsCSV());
-					}else if(format.toUpperCase().equals(APIReturnFormat.XML.toString())){		
-						PlaintextResponse plaintext = new PlaintextResponse();
-						
-						plaintext.getContent().append(statement.getAsXML());
-					}
-					
-				}else {
-					response.setStatus(400);
 				}
 				
-				json.setSuccess(success);
+				//--------------------------
+				// Choose Format
+				String format = request.getParameter(APIFORMAT);
+				if(format == null || format.equals("")) {
+					format = "JSON";
+				}
+				
+				//--------------------------
+				// Fetch Return Result
+				if(format.toUpperCase().equals(APIReturnFormat.JSON.toString())) {
+					json.getContent().append(statement.getAsJSON());
+				}else if(format.toUpperCase().equals(APIReturnFormat.CSV.toString())){		
+					PlaintextResponse plaintext = new PlaintextResponse();
+					plaintext.getContent().append(statement.getAsCSV());
+					
+				}else if(format.toUpperCase().equals(APIReturnFormat.XML.toString())){		
+					PlaintextResponse plaintext = new PlaintextResponse();
+					plaintext.getContent().append(statement.getAsXML());
+				}
 
 			}
 		});		

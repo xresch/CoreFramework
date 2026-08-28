@@ -285,14 +285,14 @@ public class CFWStoredQuery extends CFWObject {
 
 		//----------------------------------
 		// fetchJSON
-		APIDefinitionFetch fetchDataAPI = 
+		APIDefinition fetchDataAPI = 
 				new APIDefinitionFetch(
 						this.getClass(),
 						this.getClass().getSimpleName(),
 						"fetchData",
 						inputFields,
 						outputFields
-				);
+				).isSpaced(true);
 		
 		apis.add(fetchDataAPI);
 		

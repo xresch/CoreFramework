@@ -301,14 +301,14 @@ public class Role extends CFWObject {
 						RoleFields.IS_GROUP.toString(),	
 				};
 		
-		APIDefinitionFetch fetchDataAPI = 
+		APIDefinition fetchDataAPI = 
 				new APIDefinitionFetch(
 						this.getClass(),
 						this.getClass().getSimpleName(),
 						"fetchData",
 						inputFieldsFetch,
 						outputFields
-				);
+				).isSpaced(true);
 		
 		apis.add(fetchDataAPI);
 		

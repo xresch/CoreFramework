@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -97,7 +98,11 @@ public class CFWRegistryAPI {
 		JsonArray array = new JsonArray();
  
 		for(APIDefinition definition : definitionArray.values()) {
-			array.add(definition.getJSON());
+			if(CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN)
+			|| definition.isSpaced() 
+			){
+				array.add(definition.getJSON());
+			}
 		}
 		
 		return array;

@@ -62,33 +62,35 @@ public class APITokenPermissionMap extends CFWObject {
 	@Override
 	public ArrayList<APIDefinition> getAPIDefinitions() {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
-				
-		String[] inputFields = 
-				new String[] {
-						APITokenPermissionMapFields.PK_ID.toString(), 
-						APITokenPermissionMapFields.FK_ID_PERMISSION.toString(),
-						APITokenPermissionMapFields.FK_ID_TOKEN.toString(),
-				};
+	
+		// !!!!! Too Dangerous, removed because of spaces feature !!!!!
 		
-		String[] outputFields = 
-				new String[] {
-						APITokenPermissionMapFields.PK_ID.toString(), 
-						APITokenPermissionMapFields.FK_ID_PERMISSION.toString(),
-						APITokenPermissionMapFields.FK_ID_TOKEN.toString(),
-				};
-
-		//----------------------------------
-		// fetchData
-		APIDefinitionFetch fetchDataAPI = 
-				new APIDefinitionFetch(
-						this.getClass(),
-						this.getClass().getSimpleName(),
-						"fetchData",
-						inputFields,
-						outputFields
-				);
-		
-		apis.add(fetchDataAPI);
+//		String[] inputFields = 
+//				new String[] {
+//						APITokenPermissionMapFields.PK_ID.toString(), 
+//						APITokenPermissionMapFields.FK_ID_PERMISSION.toString(),
+//						APITokenPermissionMapFields.FK_ID_TOKEN.toString(),
+//				};
+//		
+//		String[] outputFields = 
+//				new String[] {
+//						APITokenPermissionMapFields.PK_ID.toString(), 
+//						APITokenPermissionMapFields.FK_ID_PERMISSION.toString(),
+//						APITokenPermissionMapFields.FK_ID_TOKEN.toString(),
+//				};
+//
+//		//----------------------------------
+//		// fetchData
+//		APIDefinition fetchDataAPI = 
+//				new APIDefinitionFetch(
+//						this.getClass(),
+//						this.getClass().getSimpleName(),
+//						"fetchData",
+//						inputFields,
+//						outputFields
+//				);
+//		
+//		apis.add(fetchDataAPI);
 		
 		return apis;
 	}

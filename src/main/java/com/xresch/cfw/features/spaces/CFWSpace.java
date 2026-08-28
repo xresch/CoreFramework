@@ -286,14 +286,14 @@ public class CFWSpace extends CFWObject {
 
 		//----------------------------------
 		// fetchJSON
-		APIDefinitionFetch fetchDataAPI = 
+		APIDefinition fetchDataAPI = 
 				new APIDefinitionFetch(
 						this.getClass(),
 						this.getClass().getSimpleName(),
 						"fetchData",
 						inputFields,
 						outputFields
-				);
+				).isSpaced(false);
 		
 		apis.add(fetchDataAPI);
 		
