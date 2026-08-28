@@ -43,7 +43,10 @@ public class CFWDBPermission {
 	 ********************************************************************************************/
 	public static boolean oneTimeCreate(Permission permission, boolean addToAdminRole, boolean addToUserRole) {
 		
+		//--------------------------------------
+		// Create if not Exists
 		boolean result = true; 
+		
 		if(!CFW.DB.Permissions.checkExistsByName(permission)) {
 			
 			result &= CFW.DB.Permissions.create(permission);
@@ -59,6 +62,15 @@ public class CFWDBPermission {
 				result &= CFW.DB.RolePermissionMap.addPermissionToRole(permission, userRole, true);
 			}
 		}
+		
+		//--------------------------------------
+		// Check needs Update
+		Permission dbPermission = CFW.DB.Permissions.selectByName(permission.name());
+		if( permission.checkNeedsUpdate(dbPermission) ) {
+			permission.id(dbPermission.id());
+			update(permission);
+		}
+		
 		
 		return result;
 	}

@@ -21,7 +21,8 @@ public class FeatureAPI extends CFWAppFeature {
 	private static Logger logger = CFWLog.getLogger(FeatureAPI.class.getName());
 	
 	public static final String PERMISSION_CFW_API = "API";
-	public static final String PERMISSION_CFW_API_ADMIN = "API Admin";
+	public static final String PERMISSION_CFW_API_ADMIN_GLOBAL = "API Admin Global";
+	public static final String PERMISSION_CFW_API_ADMIN_SPACE = "API Admin Space";
 	public static final String PERMISSION_CFW_APITOKEN_MGMT = "API Token Managment";
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.api.resources";
 	
@@ -63,21 +64,28 @@ public class FeatureAPI extends CFWAppFeature {
 				.description("User can access the API."),
 				true,
 				false
-		);
+			);
 			
 		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_CFW_API_ADMIN, FeatureUserManagement.CATEGORY_USER)
-				.description("User can manage API tokens and every API endpoint."),
+				new Permission(PERMISSION_CFW_API_ADMIN_GLOBAL, FeatureUserManagement.CATEGORY_USER)
+				.description("User can manage all API tokens and grant access to every API endpoint."),
 				true,
 				false
-				);
+			);
+		
+		CFW.DB.Permissions.oneTimeCreate(
+				new Permission(PERMISSION_CFW_API_ADMIN_SPACE, FeatureUserManagement.CATEGORY_USER)
+				.description("User can manage API tokens in the spaces he has access too. Can only grant access to spaced APIs."),
+				true,
+				false
+			);
 		
 		CFW.DB.Permissions.oneTimeCreate(
 			new Permission(PERMISSION_CFW_APITOKEN_MGMT, FeatureUserManagement.CATEGORY_USER)
 				.description("User can create their own API Tokens for API endpoints that are restricted to spaces."),
 				true,
 				false
-		);
+			);
 
 	}
 

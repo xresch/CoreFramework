@@ -3,6 +3,8 @@ package com.xresch.cfw.features.api;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -98,14 +100,36 @@ public class APITokenDBMethods {
 	
 	
 	public static String getTokenListAsJSON() {
-		
-		JsonArray array = new CFWSQL(new APIToken())
-				.queryCacheSpaced()
+
+		CFWSQL sql = new CFWSQL(new APIToken())
+				//.queryCacheSpaced() // can't cache this
 				.columnSubquery("CREATED_BY", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 				.select()
 				.where().append(FeatureSpaces.getSQLFilter())
-				.getAsJSONArray();
+				;
+
+		//---------------------------------
+		// Add User Filter
+		if( ! CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN_GLOBAL) 
+		&&  ! CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN_SPACE) ) {
+			int userID = CFW.Context.Request.getUserID();
+			sql.and(APITokenFields.FK_ID_CREATOR, userID);
+		}
 		
+		//---------------------------------
+		// Fetch Data and Obfuscate
+		JsonArray array = sql.getAsJSONArray();
+		
+		for(JsonElement e : array) {
+			JsonObject object = e.getAsJsonObject();
+			
+			String token = object.get( APITokenFields.TOKEN.toString()).getAsString();
+			String obfuscated = CFW.Security.maskString(token, 66);
+			object.addProperty(APITokenFields.TOKEN.toString(), obfuscated);
+		}
+		
+		//---------------------------------
+		// Return Data
 		return CFW.JSON.toJSON(
 				FeatureSpaces.addSpacesInfoToJSON(array)
 			);

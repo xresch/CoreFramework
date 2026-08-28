@@ -118,7 +118,7 @@ public class APITokenPermissionMapDBMethods {
 		
 		JsonArray filtered = new JsonArray();
 		
-		if( CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN) ) {
+		if( CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN_GLOBAL) ) {
 			filtered = array; 
 		}else {
 			

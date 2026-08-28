@@ -64,7 +64,7 @@ public class Permission extends CFWObject{
 	
 	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, PermissionFields.DESCRIPTION.toString())
 											.setDescription("The description of the permission.")
-											.addValidator(new LengthValidator(-1, 2000000));
+											.addValidator(new LengthValidator(1, 2000000));
 	
 
 	public Permission() {
@@ -189,6 +189,25 @@ public class Permission extends CFWObject{
 	public Permission description(String description) {
 		this.description.setValue(description);
 		return this;
+	}
+	
+	/***************************************************************
+	 * Checks if a permission needs updating in the database.
+	 * 
+	 * @param dbPermission the current state from the database
+	 * @return true if needs update, false otherwise
+	 ***************************************************************/
+	public boolean checkNeedsUpdate(Permission dbPermission) {
+		
+		if(dbPermission == null) { return false; }
+		
+		if( ! this.category().equals( dbPermission.category() ) 
+		||  ! this.description().equals( dbPermission.description() ) ){
+			return true;
+		}
+		
+		return false;
+		
 	}
 		
 }

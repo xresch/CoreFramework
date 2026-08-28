@@ -98,7 +98,7 @@ public class CFWRegistryAPI {
 		JsonArray array = new JsonArray();
  
 		for(APIDefinition definition : definitionArray.values()) {
-			if(CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN)
+			if(CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN_GLOBAL)
 			|| definition.isSpaced() 
 			){
 				array.add(definition.getJSON());

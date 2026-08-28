@@ -27,16 +27,7 @@ public class APIDefinitionCreate extends APIDefinition{
 	private static final Logger logger = CFWLog.getLogger(APIDefinitionCreate.class.getName());
 	
 	protected static final String APIFORMAT = "APIFORMAT";
-	
-	/*****************************************************************
-	 * 
-	 *****************************************************************/
-	@Override
-	public boolean isSpaced() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
+		
 	/*****************************************************************
 	 * Constructor
 	 *****************************************************************/
