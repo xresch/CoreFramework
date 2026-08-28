@@ -11,17 +11,15 @@ import javax.servlet.http.HttpServletRequest;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.db.CFWSQL;
-import com.xresch.cfw.features.api.APIDefinition;
-import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.LengthValidator;
+import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
  * 
@@ -34,6 +32,7 @@ public class APIToken extends CFWObject {
 	
 	public enum APITokenFields{
 		PK_ID,
+		FK_ID_SPACE,  // from FeatureSpaces.FK_ID_SPACE
 		FK_ID_CREATOR,
 		TOKEN,
 		DESCRIPTION,
@@ -48,6 +47,8 @@ public class APIToken extends CFWObject {
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the token.")
 			.apiFieldType(FormFieldType.NUMBER);
+	
+	private CFWField<Integer> fkidSpace = FeatureSpaces.createSpaceSelectorField(this, false, true);
 	
 	private CFWField<Integer> foreignKeyCreator = CFWField.newInteger(FormFieldType.HIDDEN, APITokenFields.FK_ID_CREATOR)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
@@ -72,7 +73,7 @@ public class APIToken extends CFWObject {
 			.setDescription("Specify the users responsible for this token.")
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+					return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());					
 				}
 			});
 	
@@ -82,7 +83,7 @@ public class APIToken extends CFWObject {
 			.addAttribute("maxTags", "1")
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+					return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());					
 				}
 			});
 
@@ -98,7 +99,17 @@ public class APIToken extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyCreator, token, description, isActive, responsibleUsers, permissionsOfUser);
+		this.addFields(
+				  id
+				, fkidSpace
+				, foreignKeyCreator
+				, token
+				, description
+				, isActive
+				, responsibleUsers
+				, permissionsOfUser
+			);
+		
 	}
 		
 	/**************************************************************************************
@@ -149,6 +160,15 @@ public class APIToken extends CFWObject {
 	
 	public APIToken id(Integer id) {
 		this.id.setValue(id);
+		return this;
+	}
+	
+	public Integer fkidSpace() {
+		return fkidSpace.getValue();
+	}
+	
+	public APIToken fkidSpace(Integer id) {
+		this.fkidSpace.setValue(id);
 		return this;
 	}
 	

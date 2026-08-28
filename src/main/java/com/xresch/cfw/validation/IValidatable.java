@@ -12,7 +12,7 @@ public interface IValidatable<T> {
 	public abstract String getLabel();
 	public abstract boolean setValueValidated(T value);
 	public abstract T getValue();
-
+		
 	public IValidatable<T> addValidator(IValidator e);
 
 	public boolean removeValidator(IValidator o);

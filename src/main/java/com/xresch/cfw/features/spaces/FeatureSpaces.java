@@ -310,7 +310,7 @@ public class FeatureSpaces extends CFWAppFeature {
 		field.setLabel("Space")
 			.setDescription("The space this entity belongs to.")
 			.setOptions(CFW.DB.Spaces.getSpaceListForUserOptions())
-			.apiFieldType(FormFieldType.SELECT);
+			.apiFieldType(FormFieldType.NUMBER);
 		
 		Integer selectedSpace = CFW.Context.Request.getSelectedSpaceID();
 		if(selectedSpace != null) {

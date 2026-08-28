@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 
@@ -46,9 +46,10 @@ public class ServletAPITokenManagement extends HttpServlet
 			
 			if(action == null) {
 
+				FeatureSpaces.addSpacesCommonJS(html);
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureAPI.RESOURCE_PACKAGE, "cfw_apitokenmgmt.js");
 				
-				html.addJavascriptCode("cfw_apitokenmgmt_draw();");
+				html.addJavascriptCode("cfw_apitokenmgmt_initialDraw();");
 				
 		        response.setContentType("text/html");
 		        response.setStatus(HttpServletResponse.SC_OK);
@@ -71,7 +72,7 @@ public class ServletAPITokenManagement extends HttpServlet
 		String ID = request.getParameter("id");
 		String IDs = request.getParameter("ids");
 		//int	userID = CFW.Context.Request.getUser().id();
-			
+
 		JSONResponse jsonResponse = new JSONResponse();		
 
 		switch(action.toLowerCase()) {

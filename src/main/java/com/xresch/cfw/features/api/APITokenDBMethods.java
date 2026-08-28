@@ -2,12 +2,14 @@ package com.xresch.cfw.features.api;
 
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.APIToken.APITokenFields;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -97,21 +99,16 @@ public class APITokenDBMethods {
 	
 	public static String getTokenListAsJSON() {
 		
-		return new CFWSQL(new APIToken())
-				.queryCache()
+		JsonArray array = new CFWSQL(new APIToken())
+				.queryCacheSpaced()
 				.columnSubquery("CREATED_BY", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 				.select()
-				.getAsJSON();
+				.where().append(FeatureSpaces.getSQLFilter())
+				.getAsJSONArray();
 		
-	}
-	
-	public static int getCount() {
-		
-		return new CFWSQL(new APIToken())
-				.queryCache()
-				.selectCount()
-				.executeCount();
-		
+		return CFW.JSON.toJSON(
+				FeatureSpaces.addSpacesInfoToJSON(array)
+			);
 	}
 	
 	public static boolean checkIsTokenActive(String token) {

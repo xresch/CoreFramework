@@ -211,9 +211,10 @@ function cfw_apitokenmgmt_printTokenList(data){
 			 	textstylefield: null,
 			 	titlefields: ['TOKEN'],
 			 	titleformat: '{0}',
-			 	visiblefields: ['PK_ID', 'TOKEN', 'DESCRIPTION', 'IS_ACTIVE', 'JSON_RESPONSIBLE_USERS', 'CREATED_BY'],
+			 	visiblefields: ['PK_ID', 'SPACE_ABBREV', 'TOKEN', 'DESCRIPTION', 'IS_ACTIVE', 'JSON_RESPONSIBLE_USERS', 'CREATED_BY'],
 			 	labels: {
 			 		PK_ID: "ID",
+					SPACE_ABBREV: 'Space',
 			 		JSON_RESPONSIBLE_USERS: "Responsible Users"
 			 	},
 			 	customizers: {
@@ -280,7 +281,18 @@ function cfw_apitokenmgmt_printTokenList(data){
 	}
 }
 
-
+/******************************************************************
+ *
+ ******************************************************************/
+function cfw_apitokenmgmt_initialDraw(){
+	
+	//-------------------------------------------
+	// Create Selector and Draw
+	cfw_spaces_createSpaceSelector(function(spaceid){
+			cfw_apitokenmgmt_draw(null);
+		});
+}
+	
 /******************************************************************
  * Main method.
  ******************************************************************/
@@ -292,7 +304,7 @@ function cfw_apitokenmgmt_draw(){
 	window.setTimeout( 
 	function(){
 		
-		CFW.http.fetchAndCacheData(CFW_APITOKENMGMT_URL, {action: "fetch", item: "tokenlist"}, "tokenlist", cfw_apitokenmgmt_printTokenList);
+		CFW.http.getJSON(CFW_APITOKENMGMT_URL, {action: "fetch", item: "tokenlist"}, cfw_apitokenmgmt_printTokenList);
 
 		CFW.ui.toggleLoader(false);
 	}, 50);

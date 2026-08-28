@@ -13,13 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -68,7 +67,7 @@ public class ServletAPI extends HttpServlet
     	if(!Strings.isNullOrEmpty(token)) {
     		handleTokenBased(request, response, token);
     	}else {
-    		handleUserBasedAPI(request, response);
+    		handleSessionBasedAPI(request, response);
     	}
 	}
 	
@@ -78,7 +77,15 @@ public class ServletAPI extends HttpServlet
 	protected void handleTokenBased( HttpServletRequest request, HttpServletResponse response, String token ) throws ServletException, IOException
 	{
 
+		//------------------------------------------
+		// Variables
 		JSONResponse json = new JSONResponse();
+		APIToken apiToken = APITokenDBMethods.selectFirstByToken(token);
+		
+		//------------------------------------------
+		// Set Space
+		int spaceID = apiToken.fkidSpace();
+		CFW.Context.Request.setSpaceIDForRequest(spaceID);
 		
 		//------------------------------------------
 		// Check if the token is active
@@ -127,7 +134,6 @@ public class ServletAPI extends HttpServlet
 		//------------------------------------------
 		// Check if token has permission and handle
 		// request
-		APIToken apiToken = APITokenDBMethods.selectFirstByToken(token);
 		if(APITokenPermissionMapDBMethods.checkHasTokenThePermission(apiToken, apiName, actionName)){
 			
 			//------------------------------------------
@@ -147,9 +153,10 @@ public class ServletAPI extends HttpServlet
 		
 	}
 	/*****************************************************************
-	 *
+	 * This method will be used when no api token was provided,
+	 * therefore it is assumed the user is logged in and has a session.
 	 ******************************************************************/
-	protected void handleUserBasedAPI( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+	protected void handleSessionBasedAPI( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
 	{
 
 		if(CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)) {
@@ -204,9 +211,10 @@ public class ServletAPI extends HttpServlet
 		if(CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)) {
 
 			//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".js", "cfw_apioverview.js"));
+			FeatureSpaces.addSpacesCommonJS(html);
 			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureAPI.RESOURCE_PACKAGE, "cfw_apioverview.js");
 			
-			html.addJavascriptCode("cfw_apioverview_draw();");
+			html.addJavascriptCode("cfw_apioverview_initialDraw();");
 			html.addJavascriptData("id", CFW.Context.Request.getRequest().getSession().getId());
 	        response.setContentType("text/html");
 	        response.setStatus(HttpServletResponse.SC_OK);

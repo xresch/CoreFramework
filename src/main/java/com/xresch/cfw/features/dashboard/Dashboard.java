@@ -332,6 +332,7 @@ public class Dashboard extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						DashboardFields.PK_ID.toString(), 
+						DashboardFields.FK_ID_SPACE.toString(), 
 						DashboardFields.VERSION.toString(),
 //						DashboardFields.CATEGORY.toString(),
 						DashboardFields.NAME.toString(),
