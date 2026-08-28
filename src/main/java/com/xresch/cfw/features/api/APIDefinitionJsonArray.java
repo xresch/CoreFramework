@@ -33,16 +33,7 @@ public class APIDefinitionJsonArray extends APIDefinition{
 	private APIExecutorJsonArray executor;
 	private boolean isSuccess = true;
 	private int httpStatusCode = HttpURLConnection.HTTP_OK;
-		
-	/*****************************************************************
-	 * 
-	 *****************************************************************/
-	@Override
-	public boolean isSpaced() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
+			
 	/*****************************************************************************
 	 * 
 	 *****************************************************************************/
