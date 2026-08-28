@@ -14,7 +14,7 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class APIDefinition {
+public abstract class APIDefinition {
 	
 	private static final Logger logger = CFWLog.getLogger(APIDefinition.class.getName());
 	
@@ -33,6 +33,15 @@ public class APIDefinition {
 	
 	private APIRequestHandler requestHandler;
 
+	/************************************************************************************
+	 * Constructor
+	 * 
+	 * @param clazz
+	 * @param apiName
+	 * @param actionName
+	 * @param inputFieldnames
+	 * @param outputFieldnames
+	 ************************************************************************************/
 	public APIDefinition(			  
 			  Class<? extends CFWObject> clazz,
 			  String apiName, 
@@ -74,7 +83,15 @@ public class APIDefinition {
 		}
 		
 	}
-	
+	/************************************************************************************
+	 * Constructor
+	 * 
+	 * @param clazz
+	 * @param apiName
+	 * @param actionName
+	 * @param inputFields
+	 * @param outputFields
+	 ************************************************************************************/
 	public APIDefinition(			  
 			  Class<? extends CFWObject> clazz,
 			  String apiName, 
@@ -98,6 +115,15 @@ public class APIDefinition {
 		}
 	}
 	
+	/************************************************************************************
+	 * Constructor
+	 * 
+	 * @param clazz
+	 * @param apiName
+	 * @param actionName
+	 * @param inputFieldsObject
+	 * @param outputFieldsObject
+	 ************************************************************************************/
 	public APIDefinition(			  
 			  Class<? extends CFWObject> clazz,
 			  String apiName, 
@@ -120,6 +146,13 @@ public class APIDefinition {
 			return;
 		}
 	}
+	
+	/************************************************************************************
+	 * Implement this method to return true if this API endpoint is spaced.
+	 *  
+	 ************************************************************************************/
+	public abstract boolean isSpaced();
+	
 	
 	public String getApiName() {
 		return apiName;

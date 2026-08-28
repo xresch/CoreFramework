@@ -24,6 +24,18 @@ public class APIQueryExecute extends APIDefinition{
 	private static final String[] inputFieldnames = new String[] {FIELDNAME_TIME, FIELDNAME_QUERY};
 	private static final String[] outputFieldnames = new String[] {FIELDNAME_JSON_OBJECT};
 	
+	/*****************************************************************
+	 * 
+	 *****************************************************************/
+	@Override
+	public boolean isSpaced() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	
+	/*****************************************************************************
+	 * 
+	 *****************************************************************************/
 	public APIQueryExecute(String apiName, 
 						      String actionName) {
 		

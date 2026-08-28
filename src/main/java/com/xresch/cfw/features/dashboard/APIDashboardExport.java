@@ -18,6 +18,19 @@ public class APIDashboardExport extends APIDefinition{
 	
 	private static final String[] inputFieldnames = new String[] {DashboardFields.PK_ID.toString()};
 	private static final String[] outputFieldnames = new Dashboard().getFieldnames();
+	
+	/*****************************************************************
+	 * 
+	 *****************************************************************/
+	@Override
+	public boolean isSpaced() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	/*****************************************************************************
+	 * 
+	 *****************************************************************************/
 	public APIDashboardExport(String apiName, 
 						      String actionName) {
 		

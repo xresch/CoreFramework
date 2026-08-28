@@ -30,6 +30,14 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 	private static final String[] inputFieldnames = new String[] {FIELDNAME_SEPARATOR, FIELDNAME_VALUES};
 	private static final String[] outputFieldnames = new String[] {FIELDNAME_JSON_OBJECT};
 	
+	/*****************************************************************
+	 * 
+	 *****************************************************************/
+	@Override
+	public boolean isSpaced() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 	/*********************************************************************
 	 * 

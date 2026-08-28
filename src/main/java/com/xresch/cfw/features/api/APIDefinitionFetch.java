@@ -11,10 +11,10 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.PlaintextResponse;
-import com.xresch.cfw.utils.CFWUtilsArray;
 
 /**************************************************************************************************************
  * 
@@ -27,6 +27,19 @@ public class APIDefinitionFetch extends APIDefinition{
 	
 	protected static final String APIFORMAT = "APIFORMAT";
 	
+	
+	/*****************************************************************
+	 * 
+	 *****************************************************************/
+	@Override
+	public boolean isSpaced() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	
+	/*****************************************************************
+	 * Constructor
+	 *****************************************************************/
 	public APIDefinitionFetch(Class<? extends CFWObject> clazz,
 							  String apiName, 
 						      String actionName, 
@@ -89,6 +102,8 @@ public class APIDefinitionFetch extends APIDefinition{
 					
 					CFWSQL statement = object.select(definition.getOutputFieldnames());
 					
+					//--------------------------
+					// Add Filters From API
 					for(int i = 0; i < affectedFields.size(); i++) {
 						CFWField<?> currentField = affectedFields.get(i);
 						if(i == 0) {
@@ -96,6 +111,14 @@ public class APIDefinitionFetch extends APIDefinition{
 						}else {
 							statement.and(currentField.getName(), currentField.getValue(), false);
 						}
+					}
+					
+					//--------------------------
+					// Add Space Filter
+					if(affectedFields.size() > 0) {
+						statement.and().append(FeatureSpaces.getSQLFilterInclusive());
+					}else {
+						statement.where().append(FeatureSpaces.getSQLFilterInclusive());
 					}
 					
 					String format = request.getParameter(APIFORMAT);

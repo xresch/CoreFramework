@@ -28,6 +28,18 @@ public class APIDefinitionCreate extends APIDefinition{
 	
 	protected static final String APIFORMAT = "APIFORMAT";
 	
+	/*****************************************************************
+	 * 
+	 *****************************************************************/
+	@Override
+	public boolean isSpaced() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	/*****************************************************************
+	 * Constructor
+	 *****************************************************************/
 	public APIDefinitionCreate(Class<? extends CFWObject> clazz,
 							  String apiName, 
 						      String actionName, 

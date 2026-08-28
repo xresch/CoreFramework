@@ -31,6 +31,18 @@ public class APIEAVPushStats extends APIDefinition{
 	private static final String[] inputFieldnames = new String[] {FIELDNAME_VALUES};
 	private static final String[] outputFieldnames = new String[] {FIELDNAME_JSON_OBJECT};
 	
+	/*****************************************************************
+	 * 
+	 *****************************************************************/
+	@Override
+	public boolean isSpaced() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	/*****************************************************************************
+	 * 
+	 *****************************************************************************/
 	public APIEAVPushStats(String apiName, 
 						   String actionName) {
 		

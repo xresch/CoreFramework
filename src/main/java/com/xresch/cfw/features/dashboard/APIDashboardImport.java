@@ -25,6 +25,18 @@ public class APIDashboardImport extends APIDefinition{
 	private static final String[] inputFieldnames = new String[] {};
 	private static final String[] outputFieldnames = new String[] {};
 	
+	/*****************************************************************
+	 * 
+	 *****************************************************************/
+	@Override
+	public boolean isSpaced() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	/*****************************************************************************
+	 * 
+	 *****************************************************************************/
 	public APIDashboardImport(String apiName, 
 						      String actionName) {
 
