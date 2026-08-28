@@ -35,16 +35,7 @@ public class APIDefinitionSQL extends APIDefinition{
 	private APIExecutorSQL executor;
 	private boolean isSuccess = true;
 	private int httpStatusCode = HttpURLConnection.HTTP_OK;
-	
-	/*****************************************************************
-	 * 
-	 *****************************************************************/
-	@Override
-	public boolean isSpaced() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
+		
 	/*****************************************************************************
 	 * 
 	 *****************************************************************************/	
@@ -102,7 +93,7 @@ public class APIDefinitionSQL extends APIDefinition{
 				//----------------------------------
 				// Create Response
 					
-				ResultSet result = executor.execute(sqlAPIDef, object);
+				ResultSet result = executor.execute(sqlAPIDef, object, definition.isSpaced() );
 				 
 				try {
 					String format = request.getParameter(APIFORMAT);

@@ -33,7 +33,7 @@ public abstract class APIDefinition {
 	
 	private APIRequestHandler requestHandler;
 	
-	private boolean isSpaced = true;
+	private boolean isSpaced = false;
 
 	/************************************************************************************
 	 * Constructor

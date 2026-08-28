@@ -18,7 +18,8 @@ public abstract class APIExecutorSQL {
 	 * @param instance of the class given to the constructor of 
 	 * 		  APIDefinitionSQL, contains the values given to the 
 	 * 		  API by parameters
+	 * @param isSpaced true if API is spaced, false otherwise
 	 * @return the ResultSet of the SQL, or null on error.
 	 ***********************************************************/
-	public abstract ResultSet execute(APIDefinitionSQL definition, CFWObject instance);
+	public abstract ResultSet execute(APIDefinitionSQL definition, CFWObject instance, boolean isSpaced);
 }

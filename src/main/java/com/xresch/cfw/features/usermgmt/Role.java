@@ -322,18 +322,19 @@ public class Role extends CFWObject {
 						RoleFields.DESCRIPTION.toString(),
 						RoleFields.IS_GROUP.toString(),	
 				};
-		APIDefinitionCreate createAPI = 
+		
+		
+		APIDefinition createAPI = 
 				new APIDefinitionCreate(
 						this.getClass(),
 						this.getClass().getSimpleName(),
 						"create",
 						inputFieldsCreate,
 						outputFields
-				);
+				).isSpaced(false);
 		
 		apis.add(createAPI);
 
-		
 		return apis;
 	}
 	/******************************************************************

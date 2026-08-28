@@ -348,7 +348,7 @@ public class User extends CFWObject {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
-	private APIDefinitionSQL createAPIGetUserPermissionsOverview() {
+	private APIDefinition createAPIGetUserPermissionsOverview() {
 		APIDefinitionSQL getUserPermissionsOverview = 
 				new APIDefinitionSQL(
 						this.getClass(),
@@ -360,20 +360,21 @@ public class User extends CFWObject {
 		
 		APIExecutorSQL overviewExecutor = new APIExecutorSQL() {
 			@Override
-			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
+			public ResultSet execute(APIDefinitionSQL definition, CFWObject object, boolean isSpaced) {
 							
 				return CFW.DB.RolePermissionMap.getPermissionOverview();
 			}
 		};
 			
 		getUserPermissionsOverview.setSQLExecutor(overviewExecutor);
-		return getUserPermissionsOverview;
+		
+		return getUserPermissionsOverview.isSpaced(false);
 	}
 	
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
-	private APIDefinitionSQL createAPIGetUserPermissions() {
+	private APIDefinition createAPIGetUserPermissions() {
 		APIDefinitionSQL getUserPermissionsAPI = 
 				new APIDefinitionSQL(
 						this.getClass(),
@@ -386,20 +387,20 @@ public class User extends CFWObject {
 		
 		APIExecutorSQL executor = new APIExecutorSQL() {
 			@Override
-			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
+			public ResultSet execute(APIDefinitionSQL definition, CFWObject object, boolean isSpaced) {
 				
 				return CFW.DB.RolePermissionMap.selectPermissionsForUserResultSet((User)object);
 			}
 		};
 			
 		getUserPermissionsAPI.setSQLExecutor(executor);
-		return getUserPermissionsAPI;
+		return getUserPermissionsAPI.isSpaced(false);
 	}
 	
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
-	private APIDefinitionSQL createAPICreateUser() {
+	private APIDefinition createAPICreateUser() {
 		APIDefinitionSQL apiCreateUser = 
 				new APIDefinitionSQL(
 						APICreateUserObject.class,
@@ -421,7 +422,7 @@ public class User extends CFWObject {
 		
 		APIExecutorSQL createUserExecutor = new APIExecutorSQL() {
 			@Override
-			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
+			public ResultSet execute(APIDefinitionSQL definition, CFWObject object, boolean isSpaced) {
 				APICreateUserObject createUserObject = (APICreateUserObject)object;	
 				User newUser = createUserObject.getUserWithPassword();
 
@@ -444,13 +445,13 @@ public class User extends CFWObject {
 		};
 		
 		apiCreateUser.setSQLExecutor(createUserExecutor);
-		return apiCreateUser;
+		return apiCreateUser.isSpaced(false);
 	}
 	
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
-	private APIDefinitionSQL createAPIAddRole() {
+	private APIDefinition createAPIAddRole() {
 		//----------------------------------
 		// addRole
 		APIDefinitionSQL apiAddRole = 
@@ -468,7 +469,7 @@ public class User extends CFWObject {
 		
 		APIExecutorSQL addRoleExecutor = new APIExecutorSQL() {
 			@Override
-			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
+			public ResultSet execute(APIDefinitionSQL definition, CFWObject object, boolean isSpaced) {
 				UserRoleMap map = (UserRoleMap)object;	
 				int userID = map.foreignKeyUser();
 				int roleID = map.foreignKeyRole();
@@ -489,13 +490,14 @@ public class User extends CFWObject {
 		};
 			
 		apiAddRole.setSQLExecutor(addRoleExecutor);
-		return apiAddRole;
+		
+		return apiAddRole.isSpaced(false);
 	}
 	
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
-	private APIDefinitionSQL createAPISetStatus() {
+	private APIDefinition createAPISetStatus() {
 		//----------------------------------
 		// addRole
 		APIDefinitionSQL definition = 
@@ -516,7 +518,7 @@ public class User extends CFWObject {
 		
 		APIExecutorSQL addRoleExecutor = new APIExecutorSQL() {
 			@Override
-			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
+			public ResultSet execute(APIDefinitionSQL definition, CFWObject object, boolean isSpaced) {
 				User inputData = (User)object;	
 				Integer userID = inputData.id();
 				String username = inputData.username();
@@ -585,7 +587,8 @@ public class User extends CFWObject {
 		};
 			
 		definition.setSQLExecutor(addRoleExecutor);
-		return definition;
+		
+		return definition.isSpaced(false);
 	}
 	
 	/**************************************************************************************
