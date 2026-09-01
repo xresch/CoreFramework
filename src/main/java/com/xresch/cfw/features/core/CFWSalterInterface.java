@@ -24,6 +24,12 @@ public interface CFWSalterInterface {
 	 * Return a constant string used for salting.
 	 * @return salty string for salting
 	 ***********************************************************/
+	public String credentialsAccountSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
 	public String credentialsPWSalt();
 	
 	
@@ -38,4 +44,64 @@ public interface CFWSalterInterface {
 	 * @return salty string for salting
 	 ***********************************************************/
 	public String credentialsSecretSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String credentialsDomainSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String credentialsHostnameSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String credentialsUrlSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String credentialsDataSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String credentialsCustomSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String dbJDBCSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String dbPostgresSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String dbMySQLSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String dbMSSQLSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String dbOracleSalt();
 }

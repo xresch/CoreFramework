@@ -107,6 +107,7 @@ public class CFWCredentials extends CFWObject {
 	
 	private CFWField<String> account = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.ACCOUNT)
 			.setDescription("(Optional)The account or username of the credentials.")
+			.enableEncryption(CFW.Security.salter().credentialsAccountSalt())
 			;
 	
 	private CFWField<String> password = CFWField.newString(FormFieldType.PASSWORD, CFWCredentialsFields.PASSWORD)
@@ -131,22 +132,27 @@ public class CFWCredentials extends CFWObject {
 	
 	private CFWField<String> domain = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.DOMAIN)
 			.setDescription("(Optional)The domain of the credentials.")
+			.enableEncryption(CFW.Security.salter().credentialsDomainSalt())
 			;
 	
 	private CFWField<String> hostname = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.HOSTNAME)
 			.setDescription("(Optional)The hostname of the credentials.")
+			.enableEncryption(CFW.Security.salter().credentialsHostnameSalt())
 			;
 	
 	private CFWField<String> url = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.URL)
 			.setDescription("(Optional)The URL of the credentials.")
+			.enableEncryption(CFW.Security.salter().credentialsUrlSalt())
 			;
 	
 	private CFWField<String> data = CFWField.newString(FormFieldType.TEXTAREA, CFWCredentialsFields.DATA)
 			.setDescription("(Optional)Te data for the credentials.")
+			.enableEncryption(CFW.Security.salter().credentialsDataSalt())
 			;
 	
 	private CFWField<String> custom = CFWField.newString(FormFieldType.TEXTAREA, CFWCredentialsFields.CUSTOM)
 			.setDescription("(Optional)A custom value for the credentials.")
+			.enableEncryption(CFW.Security.salter().credentialsCustomSalt())
 			;
 	
 	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, CFWCredentialsFields.DESCRIPTION)

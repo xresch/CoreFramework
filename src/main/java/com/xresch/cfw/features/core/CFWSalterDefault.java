@@ -26,9 +26,21 @@ public class CFWSalterDefault implements CFWSalterInterface {
 	private static final LinkedProperties saltingProperties = new LinkedProperties();
 	
 	private enum DefaultSalterFields {
-		  saltCredentialsPW("CredentialsPW-Default-Salt")
+		  saltCredentialsAccount("CredentialsAccount-Default-Salt")
+		, saltCredentialsPW("CredentialsPW-Default-Salt")
 		, saltCredentialsToken("CredentialsToken-Default-Salt")
 		, saltCredentialsSecret("CredentialsSecret-Default-Salt")
+		, saltCredentialsDomain("CredentialsDomain-Default-Salt")
+		, saltCredentialsHostname("CredentialsHostname-Default-Salt")
+		, saltCredentialsUrl("CredentialsUrl-Default-Salt")
+		, saltCredentialsData("CredentialsData-Default-Salt")
+		, saltCredentialsCustom("CredentialsCustom-Default-Salt")
+		
+		, saltDBJDBC("genericjdbc_DB_PW_Salt")
+		, saltDBMySQL("mysql_DB_PW_Salt")
+		, saltDBMSSQL("mssql_DB_PW_Salt")
+		, saltDBOracle("oracle_DB_PW_Salt")
+		, saltDBPostgres("postgres_DB_PW_Salt")
 		;
 		
 		private String defaultValue;
@@ -131,7 +143,7 @@ public class CFWSalterDefault implements CFWSalterInterface {
 		for(DefaultSalterFields field : DefaultSalterFields.values()) {
 			generatedContents.append(field.toString())
 					.append("=")	
-					.append(CFW.Random.stringAlphaNumSpecial(64))
+					.append(CFW.Random.stringAlphaNumSpecial(256))
 					.append("\n")
 					;
 		}
@@ -155,20 +167,21 @@ public class CFWSalterDefault implements CFWSalterInterface {
 		
 	}
 	
+	@Override	public String credentialsAccountSalt() {	return getSalt(DefaultSalterFields.saltCredentialsAccount);		}
+	@Override	public String credentialsPWSalt() {			return getSalt(DefaultSalterFields.saltCredentialsPW);		}
+	@Override	public String credentialsTokenSalt() {		return getSalt(DefaultSalterFields.saltCredentialsToken);	}
+	@Override 	public String credentialsSecretSalt() {		return getSalt(DefaultSalterFields.saltCredentialsSecret);	}
+	@Override 	public String credentialsDomainSalt() {		return getSalt(DefaultSalterFields.saltCredentialsDomain);	}
+	@Override 	public String credentialsHostnameSalt() {	return getSalt(DefaultSalterFields.saltCredentialsHostname);	}
+	@Override 	public String credentialsUrlSalt() {		return getSalt(DefaultSalterFields.saltCredentialsUrl);	}
+	@Override 	public String credentialsDataSalt() {		return getSalt(DefaultSalterFields.saltCredentialsData);	}
+	@Override 	public String credentialsCustomSalt() {		return getSalt(DefaultSalterFields.saltCredentialsCustom);	}
 	
-	@Override
-	public String credentialsPWSalt() {
-		return getSalt(DefaultSalterFields.saltCredentialsPW);
-	}
-
-	@Override
-	public String credentialsTokenSalt() {
-		return getSalt(DefaultSalterFields.saltCredentialsToken);
-	}
-
-	@Override
-	public String credentialsSecretSalt() {
-		return getSalt(DefaultSalterFields.saltCredentialsSecret);
-	}
+	
+	@Override 	public String dbJDBCSalt() {		return getSalt(DefaultSalterFields.saltDBJDBC);	}
+	@Override 	public String dbMySQLSalt() {		return getSalt(DefaultSalterFields.saltDBMySQL);	}
+	@Override 	public String dbMSSQLSalt() {		return getSalt(DefaultSalterFields.saltDBMSSQL);	}
+	@Override 	public String dbOracleSalt() {		return getSalt(DefaultSalterFields.saltDBOracle);	}
+	@Override 	public String dbPostgresSalt() {	return getSalt(DefaultSalterFields.saltDBPostgres);	}
 
 }

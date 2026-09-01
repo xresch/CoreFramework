@@ -33,20 +33,25 @@ public class GenericJDBCEnvironment extends AbstractContextSettings {
 	
 	private CFWField<String> dbDriver = CFWField.newString(FormFieldType.SELECT, GenericJDBCEnvironmentFields.DB_DRIVER)
 			.setDescription("The JDBC driver for your database solution. Copy the driver jar-File(s) to the folder ./extensions in the application root directory. (needs restart)")
+			.disableSanitization()
 			.setOptions(DBInterface.getListofDriverClassnames())
 			;
 	
 	private CFWField<String> dbConnectionURL = CFWField.newString(FormFieldType.TEXT, GenericJDBCEnvironmentFields.DB_CONNECTION_URL)
 			.setDescription("The Connection URL for the database, including protocol.(for example: jdbc:sqlserver://servername:1433;databaseName=AdventureWorks)")
+			.disableSanitization()
+			.enableEncryption(CFW.Security.salter().dbJDBCSalt())
 			.setValue("jbdc:{databasename}://{server}:{port};{parameters}");
 	
 	private CFWField<String> dbUser = CFWField.newString(FormFieldType.TEXT, GenericJDBCEnvironmentFields.DB_USER)
-			.setDescription("The name of the user for accessing the database.");
+			.setDescription("The name of the user for accessing the database.")
+			.disableSanitization()
+			.enableEncryption(CFW.Security.salter().dbJDBCSalt());
 	
 	private CFWField<String> dbPassword = CFWField.newString(FormFieldType.PASSWORD, GenericJDBCEnvironmentFields.DB_PASSWORD)
 			.setDescription("The password of the DB user.")
 			.disableSanitization()
-			.enableEncryption("genericjdbc_DB_PW_Salt");
+			.enableEncryption(CFW.Security.salter().dbJDBCSalt());
 	
 	private CFWField<Boolean> isUpdateAllowed = CFWField.newBoolean(FormFieldType.BOOLEAN, GenericJDBCEnvironmentFields.IS_UPDATE_ALLOWED)
 			.setDescription("Defines if this database connection allows to execute updates.")

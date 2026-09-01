@@ -31,21 +31,27 @@ public class MSSQLEnvironment extends AbstractContextSettings {
 	}
 		
 	private CFWField<String> dbHost = CFWField.newString(FormFieldType.TEXT, MSSQLEnvironmentFields.DB_HOST)
-			.setDescription("The server name of the database host.");
+			.setDescription("The server name of the database host.")
+			.disableSanitization()
+			.enableEncryption( CFW.Security.salter().dbMSSQLSalt() );
 	
 	private CFWField<Integer> dbPort = CFWField.newInteger(FormFieldType.NUMBER, MSSQLEnvironmentFields.DB_PORT)
 			.setDescription("The port used to access the database.");
 	
 	private CFWField<String> dbName = CFWField.newString(FormFieldType.TEXT, MSSQLEnvironmentFields.DB_NAME)
-			.setDescription("The name of the user for accessing the database.");
+			.setDescription("The name of the user for accessing the database.")
+			.disableSanitization()
+			.enableEncryption( CFW.Security.salter().dbMSSQLSalt() );
 	
 	private CFWField<String> dbUser = CFWField.newString(FormFieldType.TEXT, MSSQLEnvironmentFields.DB_USER)
-			.setDescription("The name of the user for accessing the database.");
+			.setDescription("The name of the user for accessing the database.")
+			.disableSanitization()
+			.enableEncryption( CFW.Security.salter().dbMSSQLSalt() );
 	
 	private CFWField<String> dbPassword = CFWField.newString(FormFieldType.PASSWORD, MSSQLEnvironmentFields.DB_PASSWORD)
 			.setDescription("The password of the DB user.")
 			.disableSanitization()
-			.enableEncryption("mssql_DB_PW_Salt");
+			.enableEncryption( CFW.Security.salter().dbMSSQLSalt() );
 	
 	private CFWField<Boolean> isUpdateAllowed = CFWField.newBoolean(FormFieldType.BOOLEAN, MSSQLEnvironmentFields.IS_UPDATE_ALLOWED)
 			.setDescription("Defines if this database connection allows to execute updates.")

@@ -32,13 +32,17 @@ public class OracleEnvironment extends AbstractContextSettings {
 	}
 		
 	private CFWField<String> dbHost = CFWField.newString(FormFieldType.TEXT, OracleEnvironmentFields.DB_HOST)
-			.setDescription("The server name of the database host.");
+			.setDescription("The server name of the database host.")
+			.disableSanitization()
+			.enableEncryption( CFW.Security.salter().dbOracleSalt() );
 	
 	private CFWField<Integer> dbPort = CFWField.newInteger(FormFieldType.NUMBER, OracleEnvironmentFields.DB_PORT)
 			.setDescription("The port used to access the database.");
 	
 	private CFWField<String> dbName = CFWField.newString(FormFieldType.TEXT, OracleEnvironmentFields.DB_NAME)
-			.setDescription("The name of the user for accessing the database.");
+			.setDescription("The name of the user for accessing the database.")
+			.disableSanitization()
+			.enableEncryption( CFW.Security.salter().dbOracleSalt() );
 	
 	private CFWField<String> dbType = CFWField.newString(FormFieldType.SELECT, OracleEnvironmentFields.DB_TYPE)
 			.setDescription("The type of the oracle service.")
@@ -46,12 +50,14 @@ public class OracleEnvironment extends AbstractContextSettings {
 			.setValue("SID");
 	
 	private CFWField<String> dbUser = CFWField.newString(FormFieldType.TEXT, OracleEnvironmentFields.DB_USER)
-			.setDescription("The name of the user for accessing the database.");
+			.setDescription("The name of the user for accessing the database.")
+			.disableSanitization()
+			.enableEncryption( CFW.Security.salter().dbOracleSalt() );
 	
 	private CFWField<String> dbPassword = CFWField.newString(FormFieldType.PASSWORD, OracleEnvironmentFields.DB_PASSWORD)
 			.setDescription("The password of the DB user.")
 			.disableSanitization()
-			.enableEncryption("oracle_DB_PW_Salt");
+			.enableEncryption( CFW.Security.salter().dbOracleSalt() );
 	
 	private CFWField<Boolean> isUpdateAllowed = CFWField.newBoolean(FormFieldType.BOOLEAN, OracleEnvironmentFields.IS_UPDATE_ALLOWED)
 			.setDescription("Defines if this database connection allows to execute updates.")

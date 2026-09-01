@@ -31,21 +31,27 @@ public class MySQLEnvironment extends AbstractContextSettings {
 	}
 		
 	private CFWField<String> dbHost = CFWField.newString(FormFieldType.TEXT, MySQLEnvironmentFields.DB_HOST)
-			.setDescription("The server name of the database host.");
+			.setDescription("The server name of the database host.")
+			.disableSanitization()
+			.enableEncryption( CFW.Security.salter().dbMySQLSalt() );
 	
 	private CFWField<Integer> dbPort = CFWField.newInteger(FormFieldType.NUMBER, MySQLEnvironmentFields.DB_PORT)
 			.setDescription("The port used to access the database.");
 	
 	private CFWField<String> dbName = CFWField.newString(FormFieldType.TEXT, MySQLEnvironmentFields.DB_NAME)
-			.setDescription("The name of the user for accessing the database.");
+			.setDescription("The name of the user for accessing the database.")
+			.disableSanitization()
+			.enableEncryption( CFW.Security.salter().dbMySQLSalt() );
 	
 	private CFWField<String> dbUser = CFWField.newString(FormFieldType.TEXT, MySQLEnvironmentFields.DB_USER)
-			.setDescription("The name of the user for accessing the database.");
+			.setDescription("The name of the user for accessing the database.")
+			.disableSanitization()
+			.enableEncryption( CFW.Security.salter().dbMySQLSalt() );
 	
 	private CFWField<String> dbPassword = CFWField.newString(FormFieldType.PASSWORD, MySQLEnvironmentFields.DB_PASSWORD)
 			.setDescription("The password of the DB user.")
 			.disableSanitization()
-			.enableEncryption("mysql_DB_PW_Salt");
+			.enableEncryption( CFW.Security.salter().dbMySQLSalt() );
 	
 	private CFWField<Boolean> isUpdateAllowed = CFWField.newBoolean(FormFieldType.BOOLEAN, MySQLEnvironmentFields.IS_UPDATE_ALLOWED)
 			.setDescription("Defines if this database connection allows to execute updates.")
