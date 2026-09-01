@@ -213,8 +213,6 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 	private CFWCredentials fetchCredentialsFromDB(QueryPartValue credsValue) {
 		CFWCredentials credentials = null;
 		
-		System.out.println(credsValue.type());
-		System.out.println(credsValue);
 		if(credsValue.isString()) {
 			String credsName = credsValue.getAsString();
 			credentials = CFW.DB.Credentials.selectFirstByName(credsName);
@@ -228,6 +226,9 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 				credentials = CFW.DB.Credentials.selectByID(credsID);
 			}
 		}
+		
+		credentials.decryptAll();
+		
 		return credentials;
 	}
 

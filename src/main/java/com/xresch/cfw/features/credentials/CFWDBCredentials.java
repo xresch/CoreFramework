@@ -240,7 +240,6 @@ public class CFWDBCredentials {
 	}
 	
 		
-
 	/***************************************************************
 	 * Return a list of all user credentials as json string.
 	 * 

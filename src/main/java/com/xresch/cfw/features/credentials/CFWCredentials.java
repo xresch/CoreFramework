@@ -34,11 +34,8 @@ import com.xresch.cfw.validation.LengthValidator;
  **************************************************************************************************************/
 public class CFWCredentials extends CFWObject {
 	
-	// !!! IMPORTANT !!! never change these salt-string! 
-	private static final String CREDENTIALS_PW_SALT = "CredentialsPW-Default-Salt"; 
-	private static final String CREDENTIALS_TOKEN_SALT = "CredentialsToken-Default-Salt"; 
-	private static final String CREDENTIALS_SECRET_SALT = "CredentialsSecret-Default-Salt"; 
-
+	private static final String SECONDARY_ENCRYPT_PREFIX = "credsenc:";
+	
 	public static final String TABLE_NAME = "CFW_CREDENTIALS";
 	
 	public static final String FIELDNAME_SHARE_WITH_USERS = "JSON_SHARE_WITH_USERS";
@@ -46,6 +43,7 @@ public class CFWCredentials extends CFWObject {
 	public static final String FIELDNAME_EDITORS = "JSON_EDITORS";
 	public static final String FIELDNAME_EDITOR_GROUPS = "JSON_EDITOR_GROUPS";
 	
+
 	public static final String[] SELECTOR_FIELDS = new String[] {
 			  FIELDNAME_SHARE_WITH_USERS
 			, FIELDNAME_SHARE_WITH_GROUPS
@@ -113,17 +111,17 @@ public class CFWCredentials extends CFWObject {
 	
 	private CFWField<String> password = CFWField.newString(FormFieldType.PASSWORD, CFWCredentialsFields.PASSWORD)
 			.setDescription("(Optional)The password of the credentials.")
-			.enableEncryption(CREDENTIALS_PW_SALT) // !!! IMPORTANT !!! never change this string! 
+			.enableEncryption( CFW.Security.salter().credentialsPWSalt() ) // !!! IMPORTANT !!! never change this string! 
 			;
 	
 	private CFWField<String> token = CFWField.newString(FormFieldType.PASSWORD, CFWCredentialsFields.TOKEN)
 			.setDescription("(Optional)The token of the credentials.")
-			.enableEncryption(CREDENTIALS_TOKEN_SALT) // !!! IMPORTANT !!! never change this string! 
+			.enableEncryption( CFW.Security.salter().credentialsTokenSalt() ) // !!! IMPORTANT !!! never change this string! 
 			;
 	
 	private CFWField<String> secret = CFWField.newString(FormFieldType.PASSWORD, CFWCredentialsFields.SECRET)
 			.setDescription("(Optional)The secret of the credentials.")
-			.enableEncryption(CREDENTIALS_SECRET_SALT) // !!! IMPORTANT !!! never change this string! 
+			.enableEncryption(CFW.Security.salter().credentialsSecretSalt()) // !!! IMPORTANT !!! never change this string! 
 			;
 	
 	private CFWField<String> salt = CFWField.newString(FormFieldType.NONE, CFWCredentialsFields.SALT)
@@ -535,6 +533,67 @@ public class CFWCredentials extends CFWObject {
 		result.addProperty("custom", custom.getValue());
 		
 		return result;
+	}
+	
+	/******************************************************************
+	 * Encrypts all the fields with the salt of this credentials instance.
+	 * 
+	 ******************************************************************/
+	public void encryptAll() {
+		
+		String salt = this.salt.getValue();
+		
+		encryptField(password, salt);
+		encryptField(token, salt);
+		encryptField(secret, salt);
+	}
+	
+	/******************************************************************
+	 * Encrypts the defined field with the specified salt.
+	 * This will create a secondary encryption on top of the fields
+	 * encryption.
+	 ******************************************************************/
+	private void encryptField(CFWField<String> field, String salt) {
+		
+		String currentValue = field.getValue();
+		
+		if( ! currentValue.startsWith(SECONDARY_ENCRYPT_PREFIX) ) {
+			String encrypted = CFW.Security.encryptValue(currentValue, salt);
+			field.setValue(SECONDARY_ENCRYPT_PREFIX + encrypted);
+		}
+	}
+	
+	/******************************************************************
+	 * Decrypts all the fields with the salt of this credentials instance.
+
+	 ******************************************************************/
+	public void decryptAll() {
+		
+		String salt = this.salt.getValue();
+		
+		decryptField(password, salt);
+		decryptField(token, salt);
+		decryptField(secret, salt);
+	}
+	
+	/******************************************************************
+	 * Encrypts the defined field with the specified salt.
+	 * This will remove the secondary encryption on top of the fields
+	 * encryption.
+	 ******************************************************************/
+	private void decryptField(CFWField<String> field, String salt) {
+		
+		String currentValue = field.getValue();
+		
+		if(currentValue.startsWith(SECONDARY_ENCRYPT_PREFIX) ) {
+			
+			String decrypted = CFW.Security.decryptValue(
+					currentValue.replaceFirst(SECONDARY_ENCRYPT_PREFIX, "")
+					, salt
+				);
+			field.setValue(decrypted);
+		}
+		
 	}
 	
 	

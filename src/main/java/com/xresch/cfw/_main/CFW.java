@@ -33,6 +33,8 @@ import com.xresch.cfw.features.contextsettings.CFWDBContextSettings;
 import com.xresch.cfw.features.contextsettings.CFWRegistryContextSettings;
 import com.xresch.cfw.features.contextsettings.FeatureContextSettings;
 import com.xresch.cfw.features.core.CFWLocalization;
+import com.xresch.cfw.features.core.CFWSalterDefault;
+import com.xresch.cfw.features.core.CFWSalterInterface;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.core.ServletHierarchy;
 import com.xresch.cfw.features.credentials.CFWDBCredentials;
@@ -330,6 +332,40 @@ public class CFW {
 		}
 	}
 	
+	
+	/***********************************************************************
+	 * Searches all classes implementing with CFWAppInterface and 
+	 * returns an instance of the first finding or an empty default application.
+	 * 
+	 ***********************************************************************/
+	private static void loadSalter() {
+		
+		//----------------------------
+		// set default
+		CFWSalterInterface salter = new CFWSalterDefault();
+		
+		//----------------------------
+		// Load First if Present
+		ServiceLoader<CFWSalterInterface> loader = ServiceLoader.load(CFWSalterInterface.class);
+		for(CFWSalterInterface instance : loader) {
+			salter = instance;
+			break;
+		}
+		
+		//----------------------------
+		// Set Default
+		CFW.Security.setSaltingInstance(salter);
+	}
+	
+	/***********************************************************************
+	 * Execute tasks that have to be executed before the application is 
+	 * started.
+	 * 
+	 ***********************************************************************/
+	private static void preAppStart() {
+		loadSalter();
+	}
+	
 	/***********************************************************************
 	 * Searches all classes implementing with CFWAppInterface and 
 	 * returns an instance of the first finding or an empty default application.
@@ -337,15 +373,16 @@ public class CFW {
 	 ***********************************************************************/
 	public static CFWAppInterface loadExtensionApplication() {
 		
-       ServiceLoader<CFWAppInterface> loader = ServiceLoader.load(CFWAppInterface.class);
-       for(CFWAppInterface instance : loader) {
-    	   new CFWLog(logger).info("Load CFW Application:"+instance.getClass().getName());
-    	   return instance;
-
-       }
+		ServiceLoader<CFWAppInterface> loader = ServiceLoader.load(CFWAppInterface.class);
+		for(CFWAppInterface instance : loader) {
+			new CFWLog(logger).info("Load CFW Application:"+instance.getClass().getName());
+			return instance;
+		}
        
-       return null;
+		return null;
 	}
+	
+
 	
 	/***********************************************************************
 	 * Searches all classes annotated with @CFWExtentionFeature and adds 
@@ -367,6 +404,8 @@ public class CFW {
 	 * @throws Exception 
 	 ***********************************************************************/
 	public static void initializeApp(CFWAppInterface appToStart, String[] args) throws Exception {
+		
+		preAppStart();
 		
 	   	//------------------------------------
 	   	// Create empty Default if null

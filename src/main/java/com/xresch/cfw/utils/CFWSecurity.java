@@ -14,6 +14,8 @@ import javax.crypto.spec.SecretKeySpec;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 
+import com.xresch.cfw.features.core.CFWSalterDefault;
+import com.xresch.cfw.features.core.CFWSalterInterface;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -30,6 +32,9 @@ import com.xresch.cfw.logging.CFWLog;
 
 public class CFWSecurity {
 
+	
+	private static CFWSalterInterface salter = null;
+	
 	// internal salt to make it even more complicated to recreate a password
 	// Don't change this if you don't want to mess up existing passwords!
 	public static final String INTERNAL_SALT = "1a@2v#3r%9s&7k?";
@@ -54,7 +59,21 @@ public class CFWSecurity {
 		{ "\'", "&#x27;" }, 
 		// { "/", "&#x2F;" }, allow forward slashes for URLs
 		};
-		
+	
+	/******************************************************************************
+	 * Set your static salting class once at application startup
+	 ******************************************************************************/
+	public static void setSaltingInstance(CFWSalterInterface salter) {
+		CFWSecurity.salter = salter;
+	}
+	
+	/******************************************************************************
+	 * Returns the salter for salting.
+	 ******************************************************************************/
+	public static CFWSalterInterface salter() {
+		return salter;
+	}
+	
 	/******************************************************************************
 	 * Creates a salted SHA512 password hash and returns a string of 127 or less
 	 * bytes. Removes the first character of the resulting hash string. This adds as

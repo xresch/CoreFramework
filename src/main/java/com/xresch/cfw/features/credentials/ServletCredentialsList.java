@@ -281,6 +281,7 @@ public class ServletCredentialsList extends HttpServlet
 						origin.mapRequestParameters(request);
 						CFWCredentials credentials = (CFWCredentials)origin;
 						credentials.foreignKeyOwner(CFW.Context.Request.getUser().id());
+						credentials.encryptAll();
 						
 						Integer newID = CFW.DB.Credentials.createGetPrimaryKey(credentials);
 						
@@ -310,6 +311,8 @@ public class ServletCredentialsList extends HttpServlet
 			
 			if(credentials != null) {
 				
+				credentials.decryptAll();
+				
 				credentials.updateSelectorFields();
 				
 				CFWForm editCredentialsForm = credentials.toForm("cfwEditCredentialsForm"+ID, "Update Credentials");
@@ -320,11 +323,15 @@ public class ServletCredentialsList extends HttpServlet
 					public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
 						
 						CFWCredentials credentials = (CFWCredentials)origin;
-						if(origin.mapRequestParameters(request) 
-						&& CFW.DB.Credentials.update(credentials)) {
+						
+						
+						if(origin.mapRequestParameters(request)){
 							
+							credentials.encryptAll();
 							
-							CFW.Messages.addSuccessMessage("Updated!");
+							if(CFW.DB.Credentials.update(credentials)) {
+								CFW.Messages.addSuccessMessage("Updated!");
+							}
 							
 							generateSharedMessages(credentials);
 							
