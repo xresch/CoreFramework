@@ -41,6 +41,15 @@ public class CFWSalterDefault implements CFWSalterInterface {
 		, saltDBMSSQL("mssql_DB_PW_Salt")
 		, saltDBOracle("oracle_DB_PW_Salt")
 		, saltDBPostgres("postgres_DB_PW_Salt")
+		
+		, saltDefaultA("salt-default-A-0;6d?{3[H1hCiCCS1GK)P=[Q[d*A/ta:)n86UwG[(7-6ut=VEN*}BF6M1Y5>c?[l-7NQ9c&g[a1*e]j3cN47{_y5-8&%m:}K=M%???1F&/JMs))1ac9H1d8/>{2OZUoe")
+		, saltDefaultB("salt-default-B-s)Ek<oQ0g>[[e-!o27U=<ASww/{I+3/B.2Fi{]z%76FH3Ai9{7KN{9Zj:7+(++==Vy+pq4.?x>.*Wjq>;.=?]30M772).aNn-3<%:H%A;82%/G!?/N0d4?_B3DA]]7//")
+		, saltDefaultC("salt-default-C-YBK!Ho_}77go.&S}5h:e9d2{/373rX}z+.KbEN?X(&&E/<O5%3x[jx[iN,q+_(:SQ6Qd%.ks*N.L7oF:-,3=Z*VE0brsUT0!V[1<%NM4:[CGr7=/}(ga=(Fyz*7b5}qf")
+		, saltDefaultD("salt-default-D-JZ1U:XKfZml>]*/hl?CCb6}&zmd!+)?VV&H<iz:027K=3V?Tp7Dbu7lnEY:5QG5u&8s3:Y-qJ3%mMr)U?/*D4/lVOI)Ik}{PjAF4!u!%?nj3&kuVrLw(EQ90-k[Cw}6(")
+		, saltDefaultE("salt-default-E-TOwL<?41ZI]-L%6D&OC<Job</wT?+rH9-:C(3H<l?p:+bbPjhW&!m46R]9E.,KPMC=bgJ9qq4W:}%T4lz7n[.E&S1u/jm59z7!!wX5{q!zI(0VIY}hNY]i3<v]+R+{YQ")
+		, saltDefaultF("salt-default-F->15f-*?/x734X33JH?8][44VuA,s6K=g)9Q5-N*%0b!TT?kuckTH)JZv+R<mkQTM8(xyef1b>oKYbc+);LP+O8.?U8(sN%A2+(8/3m{NIeXY+e_;vYsf[,Tt1,Lr*!--")
+		, saltDefaultG("salt-default-G-E{yrd+I3h&]W}3TwG<%[mV{vx9LA-x(;,o!&?Sh[H/u4F-23)f{1+zV((_-,ItR>W(7(E.V?0q/pt-%0.*t<A?qP]e1?2JN6LOre0[]69=rAN}>-3154KNAdS>4>1}%(")
+		, saltDefaultH("salt-default-H-0f:&:q2ZZa%bf)i}2]18>?o4B>Wvl{y:9;1lF6N_9+L:Y[8y??PMaV11-1nN0{}2t!>,3U8<!U+/.2:lW>QpPS%nUT/I?,RU:,!]+}&tnb}rlI(I]}}X;9(+<_)2ZBs%")
 		;
 		
 		private String defaultValue;
@@ -183,5 +192,14 @@ public class CFWSalterDefault implements CFWSalterInterface {
 	@Override 	public String dbMSSQLSalt() {		return getSalt(DefaultSalterFields.saltDBMSSQL);	}
 	@Override 	public String dbOracleSalt() {		return getSalt(DefaultSalterFields.saltDBOracle);	}
 	@Override 	public String dbPostgresSalt() {	return getSalt(DefaultSalterFields.saltDBPostgres);	}
+	
+	@Override 	public String defaultASalt() {	return getSalt(DefaultSalterFields.saltDefaultA);	}
+	@Override 	public String defaultBSalt() {	return getSalt(DefaultSalterFields.saltDefaultB);	}
+	@Override 	public String defaultCSalt() {	return getSalt(DefaultSalterFields.saltDefaultC);	}
+	@Override 	public String defaultDSalt() {	return getSalt(DefaultSalterFields.saltDefaultD);	}
+	@Override 	public String defaultESalt() {	return getSalt(DefaultSalterFields.saltDefaultE);	}
+	@Override 	public String defaultFSalt() {	return getSalt(DefaultSalterFields.saltDefaultF);	}
+	@Override 	public String defaultGSalt() {	return getSalt(DefaultSalterFields.saltDefaultG);	}
+	@Override 	public String defaultHSalt() {	return getSalt(DefaultSalterFields.saltDefaultH);	}
 
 }

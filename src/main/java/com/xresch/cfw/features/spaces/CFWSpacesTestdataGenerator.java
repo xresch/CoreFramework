@@ -233,6 +233,8 @@ public class CFWSpacesTestdataGenerator {
 		//----------------------------------
 		// Create next Root
 		createTestdataHierarchy(index+2);
+		
+		CFW.DB.Spaces.resetCaches();
 					
 	}
 	

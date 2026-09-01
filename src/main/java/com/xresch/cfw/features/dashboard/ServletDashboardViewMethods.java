@@ -609,7 +609,7 @@ public class ServletDashboardViewMethods
 				
 				settings.mapJsonFields(JSON_SETTINGS, false, true);
 				
-				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.stringAlphaNumSpecial(6), "n/a-willBeReplacedByJavascript");
+				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.stringAlphaNum(6), "n/a-willBeReplacedByJavascript");
 				
 				form.appendToPayload(json);
 			}else {

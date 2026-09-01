@@ -197,8 +197,13 @@ public class CFWSpace extends CFWObject {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
-	public void initDB() {
+	@Override
+	public boolean createTable() {
 
+		//-------------------------------------
+		// Create The Table
+		boolean result = super.createTable();
+		
 		//-------------------------------------
 		// Create Default Spaces
 		if(CFWDBSpaces.getCount() == 0) {
@@ -247,6 +252,8 @@ public class CFWSpace extends CFWObject {
 			//spaceGlobal.saveSelectorFields();
 			
 		}
+		
+		return result;
 		
 	}
 	

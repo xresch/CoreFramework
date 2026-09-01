@@ -104,4 +104,52 @@ public interface CFWSalterInterface {
 	 * @return salty string for salting
 	 ***********************************************************/
 	public String dbOracleSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String defaultASalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String defaultBSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String defaultCSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String defaultDSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String defaultESalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String defaultFSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String defaultGSalt();
+	
+	/***********************************************************
+	 * Return a constant string used for salting.
+	 * @return salty string for salting
+	 ***********************************************************/
+	public String defaultHSalt();
 }

@@ -108,28 +108,30 @@ public class CFWDBSpaces {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(CFWSpace... items) 	{
-			boolean success = CFWDBDefaultOperations.create(prechecksCreateUpdate, items);
-			resetCaches();
-			return success;
-	}
+//	public static boolean	create(CFWSpace... items) 	{
+//			boolean success = CFWDBDefaultOperations.create(prechecksCreateUpdate, items);
+//			resetCaches();
+//			return success;
+//	}
 	public static boolean 	create(CFWSpace item) { 
 		boolean success = CFWDBDefaultOperations.create(prechecksCreateUpdate, item);
 		resetCaches();
 		return success;
 	}
-	public static Integer createGetPrimaryKey(CFWSpace item) { 
-		Integer primaryKey = CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);
-		resetCaches();
-		return primaryKey;
-	}
-	public static CFWSpace createGetObject(CFWSpace item) { 
-		CFWSpace newObject =CFWDBSpaces.selectByID(
-				CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item)
-			);
-		resetCaches();
-		return newObject;
-	}
+	
+//	public static Integer createGetPrimaryKey(CFWSpace item) { 
+//		Integer primaryKey = CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);
+//		resetCaches();
+//		return primaryKey;
+//	}
+	
+//	public static CFWSpace createGetObject(CFWSpace item) { 
+//		CFWSpace newObject =CFWDBSpaces.selectByID(
+//				CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item)
+//			);
+//		resetCaches();
+//		return newObject;
+//	}
 		
 	//####################################################################################################
 	// UPDATE

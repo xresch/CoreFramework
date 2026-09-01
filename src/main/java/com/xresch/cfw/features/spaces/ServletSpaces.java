@@ -424,7 +424,7 @@ public class ServletSpaces extends HttpServlet
 			
 			//--------------------------------
 			// Create Form
-			CFWForm form = space.toForm("cfwCreateSpaceForm"+CFWRandom.stringAlphaNumSpecial(12),
+			CFWForm form = space.toForm("cfwCreateSpaceForm"+CFWRandom.stringAlphaNum(12),
 																	"{!cfw_core_add!}");
 			
 			form.setFormHandler(new CFWFormHandler() {
