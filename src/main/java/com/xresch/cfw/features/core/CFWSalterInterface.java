@@ -12,6 +12,13 @@ package com.xresch.cfw.features.core;
  ******************************************************************************************/
 public interface CFWSalterInterface {
 
+	/***********************************************************
+	 * Initialize method of the salter.
+	 * This will be called by the framework after a DB connection 
+	 * to the CFW H2 database has been established.
+	 * 
+	 ***********************************************************/
+	public void initialize();
 	
 	/***********************************************************
 	 * Return a constant string used for salting.

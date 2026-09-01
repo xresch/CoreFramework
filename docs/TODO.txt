@@ -186,6 +186,8 @@ DONE
 - Manual: Added links to existing youtube tutorials
 - UI: Timeframe Pickers are now showing a time range instead of "Custom Time" if such time is selected
 - Charts: Improved display of charts types: pie, doughnut, radar, polar
+- Security: Salt strings can now be configured at setup in file ./config/salt.properties.
+- Credentials: Improved encryption by adding secondary level of encryption.
 - Dashboard Widget: New Standard Settings "Button Popup" and "Button Label" to display any widget as a button. Widget content will be loaded in a popup window on button click.
 - Query: Autocomplete: Files can now be autocompleted using "file:..."
 - Query: Autocomplete: Credentials can now be autocompleted using "creds:..."

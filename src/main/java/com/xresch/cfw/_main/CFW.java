@@ -467,10 +467,15 @@ public class CFW {
 		// Initialize Database Server and/or Connection
 		CFW.DB.initializeDB(); 
 		
+
 		//Needed here for Feature management
 		if(mode.contains(MODE_FULL) || mode.contains(MODE_APP) ) {
 			new KeyValuePair().createTable();
 		}
+		
+		//---------------------------
+		// Initialize Salter
+		CFW.Security.salter().initialize();
 			    
 	    //--------------------------------
 	    // Register Components
