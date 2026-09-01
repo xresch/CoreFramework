@@ -1,0 +1,20 @@
+
+<p>This function has the purpose to load the content of a file form the file manager.
+I have no clue why you would ever use this when you also have fileCSV() and fileJson(). If you ever need it, it is ready!</p>
+
+<p>To autocomplete a file you have two possibilities:</p>
+<ul>
+	<li>Place your cursor after the opening brace "fileString(" and hit Ctrl+Space.</li>
+	<li>Place your cursor after "file:{searchTerm}", where searchTerm is a string to filter the list of files, and hit Ctrl+Space.</li>
+</ul>
+
+<p>The following query reads the content of a file:</p>
+<pre><code class="language-cfwquery">| globals
+	myFileContent = fileString({"id": 123, "name":"myFile.txt"} )
+| source empty
+| set
+	myString =  g(myFileContent)</code></pre>
+	
+
+
+

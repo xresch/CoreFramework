@@ -223,6 +223,7 @@ DONE
 	- fieldsMatching
 	- fileCSV
 	- fileJson
+	- fileString
 	- objectLookup
 	- separators
 	

@@ -1872,6 +1872,54 @@ source json data=`
 	/****************************************************************
 	 * 
 	 ****************************************************************/
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testFileString() throws IOException {
+		
+		
+		//--------------------------------
+		// Create File 
+		CFWStoredFile file = new CFWStoredFile();
+		file.id(11223344);
+		file.name("plaintext.txt");
+		InputStream data = new StringBufferInputStream("test 123 xyz");
+		
+		CFW.DB.transactionRollback(); // make sure no transaction is started
+			CFW.DB.StoredFile.createAndStoreData(file, data);
+		CFW.DB.transactionStart(); // make sure a transaction is started
+		
+		//--------------------------------
+		// Test
+		String queryString = """
+| globals
+	myFileContent = fileString(""" + file.id() + """
+			)
+| source empty
+| set
+	myString =  g(myFileContent)
+""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest_30m, latest_now, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		//------------------------------
+		// First Record
+		JsonObject record = queryResults.getRecordAsObject(0);
+		
+		Assertions.assertEquals("test 123 xyz", record.get("myString").getAsString());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
 	@Test
 	public void testFloor() throws IOException {
 		
