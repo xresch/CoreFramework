@@ -331,8 +331,12 @@ public class CFWDBSpaces {
 	 *  Returns a list of spaces with type "ORG".
 	 *****************************************************************************/
 	public static ArrayList<CFWSpace> getSpaceListForUser() {
-		ArrayList<CFWSpace> spaceList = null;
-		int userID = CFW.Context.Request.getUserID();
+		ArrayList<CFWSpace> spaceList = new ArrayList<>();
+		Integer userID = CFW.Context.Request.getUserID();
+		
+		// return empty if null
+		if(userID == null) { return spaceList; }
+		
 		try {
 			// cache to avoid overloading backend systems.
 			spaceList = userSpacelistCache.get(userID, new Callable<ArrayList<CFWSpace>>() {
