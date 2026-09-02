@@ -39,6 +39,8 @@ public class ServletJARResource extends HttpServlet
 							);
 			response.setStatus(HttpServletResponse.SC_OK);
 			
+			if(file.endsWith("svg")) { response.setContentType("image/svg+xml"); }
+			
 			try {
 				response.getOutputStream().write(fontContent);
 			}catch(IOException e) {
