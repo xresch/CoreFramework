@@ -37,55 +37,31 @@ public class CFWJson extends XRJson {
 	private static Gson gsonInstanceEncrypted;
 	
 	static{
+		// this might get executed to late
+		// therefore moving to initialize method
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	public static void initialize() {
 		//Type cfwobjectListType = new TypeToken<LinkedHashMap<CFWObject>>() {}.getType();
-
-		gsonInstance = createGsonBuilderBase()
-				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
-				.serializeNulls()
-				.setStrictness(Strictness.LENIENT)
-				.create();
+		addTypeAdapter(CFWChartSettings.class, new SerializerCFWChartSettings());
+		addTypeAdapter(CFWParameter.class, new SerializerCFWParameter());
+		addTypeAdapter(CFWSchedule.class, new SerializerCFWSchedule());
+		addTypeAdapter(CFWTimeframe.class, new SerializerCFWTimeframe());
+		addTypeAdapter(JSONResponse.class, new SerializerJSONResponse());
+		addTypeAdapter(EnhancedJsonObject.class, new SerializerEnhancedJsonObject());
+		addTypeAdapter(CFWObject.class, new SerializerCFWObject(false));
 		
-		gsonInstancePretty = createGsonBuilderBase()
-				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
-				.serializeNulls()
-				.setStrictness(Strictness.LENIENT)
-				.setPrettyPrinting()
-				.create();
+		initializeJsonInstances();
 		
 		gsonInstanceEncrypted = createGsonBuilderBase()
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(true))
 				.serializeNulls()
 				.setStrictness(Strictness.LENIENT)
 				.create();
-		
-		
-		exposedOnlyInstance = createGsonBuilderBase()
-				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(true))
-				.excludeFieldsWithoutExposeAnnotation()
-				.serializeNulls()
-				.setStrictness(Strictness.LENIENT)
-				.create();
 	}
-			
-
-	
-	/*************************************************************************************
-	 * 
-	 *************************************************************************************/
-	protected static GsonBuilder createGsonBuilderBase() {
-		return new GsonBuilder()
-				.registerTypeAdapter(BigDecimal.class, new TypeAdapterBigDecimal())
-				//.registerTypeHierarchyAdapter(BigDecimal.class, new SerializerBigDecimal())
-				.registerTypeHierarchyAdapter(CFWChartSettings.class, new SerializerCFWChartSettings())
-				.registerTypeHierarchyAdapter(CFWParameter.class, new SerializerCFWParameter())
-				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
-				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
-				.registerTypeHierarchyAdapter(JSONResponse.class, new SerializerJSONResponse())
-				.registerTypeHierarchyAdapter(EnhancedJsonObject.class, new SerializerEnhancedJsonObject())
-				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
-			;
-	}
-
 	
 	/****************************************************************
 	 * Return a JSON element containing values of the fields of this 

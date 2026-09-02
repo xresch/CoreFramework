@@ -363,6 +363,9 @@ public class CFW {
 	 * 
 	 ***********************************************************************/
 	private static void preAppStart() {
+		
+		CFW.JSON.initialize();
+		
 		loadSalter();
 	}
 	

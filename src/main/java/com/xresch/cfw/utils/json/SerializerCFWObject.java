@@ -55,7 +55,7 @@ public class SerializerCFWObject implements JsonSerializer<CFWObject> {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public JsonElement serialize(CFWObject object, Type type, JsonSerializationContext context) {
-		
+
 		JsonObject result = new JsonObject();
 		
 		for(CFWField field : object.getFields().values()) {
@@ -67,6 +67,7 @@ public class SerializerCFWObject implements JsonSerializer<CFWObject> {
 		}
 		
 		LinkedHashMap<Integer, CFWObject> childrenMap = object.getChildObjects();
+		
 		if(!childrenMap.isEmpty()) {
 			JsonArray children = new JsonArray();
 			for (CFWObject child : object.getChildObjects().values()) {
