@@ -9,56 +9,57 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
-import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
-import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
+import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.features.usermgmt.User.UserFields;
+import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2022
- * @license Org Manager License
+ * @author Reto Scheiwiller, (c) Copyright 2026
+ * @license MIT
  **************************************************************************************************************/
-public class CFWSpaceAdminGroupsMap extends CFWObject {
+public class CFWSpaceEditorMap extends CFWObject {
 	
-	public static final String TABLE_NAME = "CFW_SPACES_ADMINGROUPS_MAP";
+	public static final String TABLE_NAME = "CFW_SPACES_EDITOR_MAP";
 	
-	enum CFWSpaceAdminGroupsMapFields{
-		  PK_ID 
-		, FK_ID_ROLE
+	enum CFWSpaceEditorMapFields{
+		PK_ID 
+		, FK_ID_USER
 		, FK_ID_SPACE
 	}
 
-	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceAdminGroupsMapFields.PK_ID)
+	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceEditorMapFields.PK_ID)
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the mapping.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 		
-	private CFWField<Integer> foreignKeySpace = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceAdminGroupsMapFields.FK_ID_SPACE)
+	private CFWField<Integer> foreignKeySpace = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceEditorMapFields.FK_ID_SPACE)
 			.setForeignKeyCascade(this, CFWSpace.class, CFWSpaceFields.PK_ID)
 			.setDescription("The id of the space.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
-	private CFWField<Integer> foreignKeyRole = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceAdminGroupsMapFields.FK_ID_ROLE)
-			.setForeignKeyCascade(this, Role.class, RoleFields.PK_ID)
-			.setDescription("The id of the role.")
+	private CFWField<Integer> foreignKeyUser = CFWField.newInteger(FormFieldType.HIDDEN, CFWSpaceEditorMapFields.FK_ID_USER)
+			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
+			.setDescription("The id of the user that is allowed to cfw_spaces the space.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 
 	
-	public CFWSpaceAdminGroupsMap() {
+	public CFWSpaceEditorMap() {
 		initializeFields();
 	}
 	
-	public CFWSpaceAdminGroupsMap(ResultSet result) throws SQLException {
+	public CFWSpaceEditorMap(ResultSet result) throws SQLException {
 		initializeFields();
 		this.mapResultSet(result);	
 	}
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeySpace, foreignKeyRole);
+		this.addFields(id, foreignKeySpace, foreignKeyUser);
 	}
 	
 	/**************************************************************************************
@@ -70,16 +71,16 @@ public class CFWSpaceAdminGroupsMap extends CFWObject {
 				
 		String[] inputFields = 
 				new String[] {
-						CFWSpaceAdminGroupsMapFields.PK_ID.toString(), 
-						CFWSpaceAdminGroupsMapFields.FK_ID_ROLE.toString(),
-						CFWSpaceAdminGroupsMapFields.FK_ID_SPACE.toString(),
+						CFWSpaceEditorMapFields.PK_ID.toString(), 
+						CFWSpaceEditorMapFields.FK_ID_USER.toString(),
+						CFWSpaceEditorMapFields.FK_ID_SPACE.toString(),
 				};
 		
 		String[] outputFields = 
 				new String[] {
-						CFWSpaceAdminGroupsMapFields.PK_ID.toString(), 
-						CFWSpaceAdminGroupsMapFields.FK_ID_ROLE.toString(),
-						CFWSpaceAdminGroupsMapFields.FK_ID_SPACE.toString(),
+						CFWSpaceEditorMapFields.PK_ID.toString(), 
+						CFWSpaceEditorMapFields.FK_ID_USER.toString(),
+						CFWSpaceEditorMapFields.FK_ID_SPACE.toString(),
 				};
 
 		//----------------------------------
@@ -98,6 +99,7 @@ public class CFWSpaceAdminGroupsMap extends CFWObject {
 		return apis;
 	}
 	
+	
 	public Integer id() {
 		return id.getValue();
 	}
@@ -106,17 +108,17 @@ public class CFWSpaceAdminGroupsMap extends CFWObject {
 		return foreignKeySpace.getValue();
 	}
 	
-	public CFWSpaceAdminGroupsMap foreignKeySpace(Integer value) {
+	public CFWSpaceEditorMap foreignKeySpace(Integer value) {
 		this.foreignKeySpace.setValue(value);
 		return this;
 	}	
 	
-	public Integer foreignKeyRole() {
-		return foreignKeyRole.getValue();
+	public Integer foreignKeyUser() {
+		return foreignKeyUser.getValue();
 	}
 	
-	public CFWSpaceAdminGroupsMap foreignKeyRole(Integer value) {
-		this.foreignKeyRole.setValue(value);
+	public CFWSpaceEditorMap foreignKeyUser(Integer value) {
+		this.foreignKeyUser.setValue(value);
 		return this;
 	}	
 	

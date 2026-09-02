@@ -171,7 +171,7 @@ public class ServletSpaces extends HttpServlet
 		Integer selectedSpaceID = CFW.Context.Request.getSelectedSpaceID();
 		
 		boolean isAdminForSelectedSpace = 
-				   CFW.DB.SpaceAdminMap.checkIsCurrentUserAdminOfSelectedSpace(selectedSpaceID)
+				   CFW.DB.SpaceAdminMap.checkIsCurrentUserEditorOfSelectedSpace(selectedSpaceID)
 				|| CFW.DB.SpaceAdminGroupsMap.checkIsCurrentUserAdminByGroupOfSelectedSpace(selectedSpaceID);
 		
 		jsonResponse.addCustomAttribute("isAdminForSelectedSpace", isAdminForSelectedSpace);
@@ -409,7 +409,7 @@ public class ServletSpaces extends HttpServlet
 		// Create ContextSettings Form
 		if(
 			  ( spaceType == CFWSpaceType.ROOT_SPACE && checkCanCreateSpaces() )
-			|| CFW.DB.SpaceAdminMap.checkIsCurrentUserAdminOfSelectedSpace(spaceid)
+			|| CFW.DB.SpaceAdminMap.checkIsCurrentUserEditorOfSelectedSpace(spaceid)
 		) {
 			
 			//--------------------------------

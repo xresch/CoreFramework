@@ -9,7 +9,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
-import com.xresch.cfw.features.spaces.CFWSpaceAdminMap.CFWSpaceAdminMapFields;
+import com.xresch.cfw.features.spaces.CFWSpaceEditorMap.CFWSpaceEditorMapFields;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -19,11 +19,11 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2026
  * @license MIT
  **************************************************************************************************************/
-public class CFWDBSpaceAdminMap {
+public class CFWDBSpaceEditorMap {
 
-	private static final String TABLE_NAME = new CFWSpaceAdminMap().getTableName();
+	private static final String TABLE_NAME = new CFWSpaceEditorMap().getTableName();
 	
-	private static final Logger logger = CFWLog.getLogger(CFWDBSpaceAdminMap.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBSpaceEditorMap.class.getName());
 	
 	/********************************************************************************************
 	 * Adds the user to the specified space.
@@ -32,7 +32,7 @@ public class CFWDBSpaceAdminMap {
 	 * @return return true if space was added, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean assignAdminToSpace(User user, CFWSpace space) {
+	public static boolean assignEditorToSpace(User user, CFWSpace space) {
 		
 		if(user == null) {
 			new CFWLog(logger)
@@ -60,8 +60,8 @@ public class CFWDBSpaceAdminMap {
 		}
 		
 		String insertUserSQL = "INSERT INTO "+TABLE_NAME+" ("
-				  + CFWSpaceAdminMapFields.FK_ID_USER +", "
-				  + CFWSpaceAdminMapFields.FK_ID_SPACE
+				  + CFWSpaceEditorMapFields.FK_ID_USER +", "
+				  + CFWSpaceEditorMapFields.FK_ID_SPACE
 				  + ") VALUES (?,?);";
 		
 		boolean success = CFWDB.preparedExecute(insertUserSQL, 
@@ -70,7 +70,7 @@ public class CFWDBSpaceAdminMap {
 				);
 		
 		if(success) {
-			new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceAdminMap.class, "Add Admin to Space: "+space.name()+", User: "+user.username());
+			new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceEditorMap.class, "Add Admin to Space: "+space.name()+", User: "+user.username());
 		}
 
 		return success;
@@ -83,7 +83,7 @@ public class CFWDBSpaceAdminMap {
 	 * @return return true if user was added, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean assignAdminToSpace(int userID, int spaceID) {
+	public static boolean assignEditorToSpace(int userID, int spaceID) {
 		
 		
 		if(userID < 0 || spaceID < 0) {
@@ -92,7 +92,7 @@ public class CFWDBSpaceAdminMap {
 			return false;
 		}
 		
-		if(checkIsAdminAssignedToSpace(userID, spaceID)) {
+		if(checkIsEditorAssignedToSpace(userID, spaceID)) {
 			new CFWLog(logger)
 				.warn("The user '"+userID+"' is already part of the space '"+spaceID+"'.");
 			return false;
@@ -101,7 +101,7 @@ public class CFWDBSpaceAdminMap {
 		CFWSpace space = CFW.DB.Spaces.selectByID(spaceID);
 		User user = CFW.DB.Users.selectByID(userID);
 		
-		return assignAdminToSpace(user, space);
+		return assignEditorToSpace(user, space);
 	}
 	
 	
@@ -112,23 +112,25 @@ public class CFWDBSpaceAdminMap {
 	 * @return return true if space was added, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean updateAdminSpacesAssignments(CFWSpace space, LinkedHashMap<String,String> usersKeyLabel) {
+	public static boolean updateEditorSpacesAssignments(CFWSpace space, LinkedHashMap<String,String> usersKeyLabel) {
 						
 		//----------------------------------------
 		// Clean all and Add all New
-		
-		// only returns true if anything was updated. Therefore cannot include in check.
-		boolean hasCleared = new CFWSQL(new CFWSpaceAdminMap())
-						.delete()
-						.where(CFWSpaceAdminMapFields.FK_ID_SPACE, space.id())
-						.executeDelete();
-		if(hasCleared) {
-			new CFWLog(logger).audit(CFWAuditLogAction.CLEAR, CFWSpaceAdminMap.class, "Clear Space Admins for Space: "+space.name());
-		}
-		
 		boolean isSuccess = true;
-		for(String userID : usersKeyLabel.keySet()) {
-			isSuccess &= assignAdminToSpace(Integer.parseInt(userID), space.id());
+		if(usersKeyLabel != null) {
+			// only returns true if anything was updated. Therefore cannot include in check.
+			boolean hasCleared = new CFWSQL(new CFWSpaceEditorMap())
+							.delete()
+							.where(CFWSpaceEditorMapFields.FK_ID_SPACE, space.id())
+							.executeDelete();
+			if(hasCleared) {
+				new CFWLog(logger).audit(CFWAuditLogAction.CLEAR, CFWSpaceEditorMap.class, "Clear Space Admins for Space: "+space.name());
+			}
+			
+			
+			for(String userID : usersKeyLabel.keySet()) {
+				isSuccess &= assignEditorToSpace(Integer.parseInt(userID), space.id());
+			}
 		}
 
 		return isSuccess;
@@ -164,12 +166,12 @@ public class CFWDBSpaceAdminMap {
 		
 		String removeUserFromCFWSpaceSQL = "DELETE FROM "+TABLE_NAME
 				+" WHERE "
-				  + CFWSpaceAdminMapFields.FK_ID_USER +" = ? "
+				  + CFWSpaceEditorMapFields.FK_ID_USER +" = ? "
 				  + " AND "
-				  + CFWSpaceAdminMapFields.FK_ID_SPACE +" = ? "
+				  + CFWSpaceEditorMapFields.FK_ID_SPACE +" = ? "
 				  + ";";
 		
-		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceAdminMap.class, "Remove User from Space: "+space.name()+", User: "+user.username());
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, CFWSpaceEditorMap.class, "Remove User from Space: "+space.name()+", User: "+user.username());
 		
 		return CFWDB.preparedExecute(removeUserFromCFWSpaceSQL, 
 				user.id(),
@@ -185,7 +187,7 @@ public class CFWDBSpaceAdminMap {
 	 ********************************************************************************************/
 	public static boolean removeUserFromSpace(int userID, int spaceID) {
 		
-		if(!checkIsAdminAssignedToSpace(userID, spaceID)) {
+		if(!checkIsEditorAssignedToSpace(userID, spaceID)) {
 			new CFWLog(logger)
 				.warn("The user '"+userID+"' is not assigned to the space '"+ spaceID+"' and cannot be removed.");
 			return false;
@@ -206,7 +208,7 @@ public class CFWDBSpaceAdminMap {
 	public static boolean checkIsUserAssignedToSpace(User user, CFWSpace space) {
 		
 		if(user != null && space != null) {
-			return checkIsAdminAssignedToSpace(user.id(), space.id());
+			return checkIsEditorAssignedToSpace(user.id(), space.id());
 		}else {
 			new CFWLog(logger)
 				.severe("The user and space cannot be null. User: '"+user+"', CFWSpace: '"+space+"'");
@@ -221,17 +223,17 @@ public class CFWDBSpaceAdminMap {
 	 * @param user to check
 	 * @return true if exists, false otherwise or in case of exception.
 	 ****************************************************************/
-	public static boolean checkIsAdminAssignedToSpace(Integer userid, Integer spaceid) {
+	public static boolean checkIsEditorAssignedToSpace(Integer userid, Integer spaceid) {
 		
 		if(userid == null || spaceid == null) {
 			return false;
 		}
 		
-		return 0 != new CFWSQL(new CFWSpaceAdminMap())
+		return 0 != new CFWSQL(new CFWSpaceEditorMap())
 			.queryCache()
 			.selectCount()
-			.where(CFWSpaceAdminMapFields.FK_ID_USER.toString(), userid)
-			.and(CFWSpaceAdminMapFields.FK_ID_SPACE.toString(), spaceid)
+			.where(CFWSpaceEditorMapFields.FK_ID_USER.toString(), userid)
+			.and(CFWSpaceEditorMapFields.FK_ID_SPACE.toString(), spaceid)
 			.executeCount();
 
 	}
@@ -239,25 +241,25 @@ public class CFWDBSpaceAdminMap {
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	public static boolean checkIsCurrentUserAdminOfSelectedSpace(String orgid) {
+	public static boolean checkIsCurrentUserEditorOfSelectedSpace(String orgid) {
 		
 		if(Strings.isNullOrEmpty(orgid)) { return false;}
 		
-		return checkIsCurrentUserAdminOfSelectedSpace(Integer.parseInt(orgid));
+		return checkIsCurrentUserEditorOfSelectedSpace(Integer.parseInt(orgid));
 		
 	}
 		
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	public static boolean checkIsCurrentUserAdminOfSelectedSpace(Integer spaceid) {
+	public static boolean checkIsCurrentUserEditorOfSelectedSpace(Integer spaceid) {
 		
 		if( CFW.Context.Request.hasPermission(FeatureSpaces.PERMISSION_SPACES_ADMIN)) {
 			return true;
 		}
 		
 		int userid = CFW.Context.Request.getUserID();
-		if( checkIsAdminAssignedToSpace(userid, spaceid) ) {
+		if( checkIsEditorAssignedToSpace(userid, spaceid) ) {
 			return true;
 		}
 		
@@ -270,7 +272,7 @@ public class CFWDBSpaceAdminMap {
 	 * @param space
 	 * @return ResultSet
 	 ****************************************************************/
-	public static LinkedHashMap<String, String> selectAdminsForSpaceAsKeyLabel(int spaceID) {
+	public static LinkedHashMap<String, String> selectEditorsForSpaceAsKeyLabel(int spaceID) {
 		
 		ArrayList<CFWObject> userList =  new CFWSQL(new User())
 				.queryCache()
@@ -406,10 +408,10 @@ public class CFWDBSpaceAdminMap {
 	 ****************************************************************/
 	public static boolean toogleUserAssignedToSpace(int userID, int spaceID) {
 		
-		if(checkIsAdminAssignedToSpace(userID, spaceID)) {
+		if(checkIsEditorAssignedToSpace(userID, spaceID)) {
 			return removeUserFromSpace(userID, spaceID);
 		}else {
-			return assignAdminToSpace(userID, spaceID);
+			return assignEditorToSpace(userID, spaceID);
 		}
 
 	}

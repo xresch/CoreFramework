@@ -20,7 +20,7 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
-import com.xresch.cfw.features.spaces.CFWSpaceAdminMap.CFWSpaceAdminMapFields;
+import com.xresch.cfw.features.spaces.CFWSpaceEditorMap.CFWSpaceEditorMapFields;
 import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.logging.CFWLog;
@@ -450,7 +450,7 @@ public class CFWSpace extends CFWObject {
 		// Initialize Variables
 		LinkedHashMap<String,String> selectedValue = new LinkedHashMap<>();
 		 if(spaceID != null ) {
-				selectedValue = CFW.DB.SpaceAdminMap.selectAdminsForSpaceAsKeyLabel(spaceID);
+				selectedValue = CFW.DB.SpaceAdminMap.selectEditorsForSpaceAsKeyLabel(spaceID);
 		}
 		 
 		//--------------------------------------
@@ -565,7 +565,7 @@ public class CFWSpace extends CFWObject {
 					break;
 					
 				case JSON_EDITORS:
-					success &= CFW.DB.SpaceAdminMap.updateAdminSpacesAssignments(this, selectedValues);
+					success &= CFW.DB.SpaceAdminMap.updateEditorSpacesAssignments(this, selectedValues);
 					break;
 					
 				case JSON_EDITOR_GROUPS:

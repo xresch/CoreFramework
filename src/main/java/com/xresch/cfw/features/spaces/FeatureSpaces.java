@@ -133,8 +133,8 @@ public class FeatureSpaces extends CFWAppFeature {
 		ArrayList<CFWObject> objectArray = new ArrayList<>();
 		objectArray.add(new CFWSpaceUserMap());
 		objectArray.add(new CFWSpaceUserGroupsMap());
-		objectArray.add(new CFWSpaceAdminMap());
-		objectArray.add(new CFWSpaceAdminGroupsMap());
+		objectArray.add(new CFWSpaceEditorMap());
+		objectArray.add(new CFWSpaceEditorGroupsMap());
 		
     	for(CFWObject object : objectArray) {
     		if(object.getTableName() != null) {
