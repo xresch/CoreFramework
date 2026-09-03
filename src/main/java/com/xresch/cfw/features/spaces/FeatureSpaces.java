@@ -340,6 +340,29 @@ public class FeatureSpaces extends CFWAppFeature {
 		return array;
 	}
 	
+	/***********************************************************************
+	 * Adds information for the space to the given objects in the array.
+	 * 
+	 * @param array containing CFWObjects with field FK_ID_SPACE
+	 * @returns the array for chaining
+	 * 
+	 ***********************************************************************/
+	public static <T extends CFWObject> ArrayList<T> addSpacesInfoToList(ArrayList<T> array) {
+		for(CFWObject object : array) {
+
+			int spaceID = ( (CFWField<Integer>)object.getField(FK_ID_SPACE) ).getValue();
+			CFWSpace space = CFW.DB.Spaces.getFromCache(spaceID);
+			if(space != null) {
+				object.addField(
+					CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, "SPACE_ABBREV")
+							.setValue(space.abbreviation())
+				);
+			}
+		}
+		
+		return array;
+	}
+	
 	/**********************************************************************************
 	 * Returns a partial query which will filter by the column "FK_ID_SPACE" and returns
 	 * entities:

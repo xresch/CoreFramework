@@ -3,9 +3,14 @@ package com.xresch.cfw.features.usermgmt;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -13,6 +18,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.spaces.CFWSpace;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -34,6 +40,14 @@ public class CFWDBUser {
 		  , UserFields.USERNAME.toString()
 		};
 	
+	// userID and User
+	private static Cache<Integer, User> userCache = CFW.Caching.addCache("CFW User Cache", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(100)
+				.maximumSize(10000)
+				.expireAfterAccess(8, TimeUnit.HOURS)
+			);
+		
 	//####################################################################################################
 	// Preckeck Initialization
 	//####################################################################################################
@@ -72,6 +86,13 @@ public class CFWDBUser {
 			return true;
 		}
 	};
+	
+	//####################################################################################################
+	// CACHE
+	//####################################################################################################
+	public static void	invalidateCache(int userID) 		{ 
+		userCache.invalidate(userID);
+	}
 	
 	//####################################################################################################
 	// CREATE
@@ -131,42 +152,54 @@ public class CFWDBUser {
 	
 	/***************************************************************
 	 * Select a user by it's ID.
+	 * This method is cached.
 	 * 
 	 * @param id of the User
 	 * @return Returns a user or null if not found or in case of exception.
 	 ****************************************************************/
 	public static User selectByID(int id) {
-			
-		return (User)new CFWSQL(new User())
-				.queryCache()
-				.select()
-				.where(UserFields.PK_ID.toString(), id)
-				.getFirstAsObject();
+		User user = null;
 		
+		try {
+			user = userCache.get(id, new Callable<User>() {
+				@Override
+				public User call() throws Exception {
+					return (User)new CFWSQL(new User())
+							.queryCache()
+							.select()
+							.where(UserFields.PK_ID.toString(), id)
+							.getFirstAsObject();
+				}
+			});
+
+			
+			
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while loading widget from DB or Cache: "+e.getMessage(), e);
+		}
+
+		return user;
 	}
 	
 	/***************************************************************
-	 * Select the username for the given ID.
+	 * Select a username by it's ID.
+	 * This method is cached.
 	 * 
 	 * @param id of the User
 	 * @return username or null if not found or in case of exception.
 	 ****************************************************************/
 	public static String selectUsernameByID(int id) {
 		
+		User user = selectByID(id);
 		
-		User user = (User)new CFWSQL(new User())
-				.queryCache()
-				.select(UserFields.USERNAME)
-				.where(UserFields.PK_ID.toString(), id)
-				.getFirstAsObject()
-				;
-		
-		if(user == null) {
-			return null;
+		if(user != null) {
+			return user.username();
 		}
 		
-		return user.username();
+		return null;
 	}
+	
+
 	
 	/***************************************************************
 	 * Select a user by it's ID and return it as a JSON string.
@@ -370,6 +403,8 @@ public class CFWDBUser {
 							.update(UserFields.USERNAME);
 		}
 		
+		invalidateCache(user.id());
+		
 		return resultUpdate && resultRename;
 		
 	}
@@ -396,7 +431,9 @@ public class CFWDBUser {
 		}
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, "User", "Username: "+user.username());
-
+		
+		invalidateCache(id);
+		
 		return new User()
 				.queryCache(CFWDBUser.class, "deleteByID")
 				.delete()

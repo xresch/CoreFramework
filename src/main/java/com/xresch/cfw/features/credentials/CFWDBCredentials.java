@@ -4,10 +4,13 @@ import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.Normalizer.Form;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -15,7 +18,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
@@ -55,6 +60,25 @@ public class CFWDBCredentials {
 			CFWCredentialsFields.PK_ID.toString()
 		  , CFWCredentialsFields.NAME.toString()
 		};
+	
+	private static final Object[] nonCriticalfieldsForList = new String[] {
+			CFWCredentialsFields.PK_ID.toString(), 
+			CFWCredentialsFields.FK_ID_SPACE.toString(),
+			CFWCredentialsFields.FK_ID_OWNER.toString(),
+			CFWCredentialsFields.NAME.toString(),
+			CFWCredentialsFields.ACCOUNT.toString(),
+			CFWCredentialsFields.DESCRIPTION.toString(),
+			CFWCredentialsFields.TAGS.toString(),
+			CFWCredentialsFields.SALT.toString(),
+			CFWCredentialsFields.IS_SHARED.toString(),
+			CFWCredentialsFields.JSON_SHARE_WITH_USERS.toString(),
+			CFWCredentialsFields.JSON_SHARE_WITH_GROUPS.toString(),
+			CFWCredentialsFields.JSON_EDITORS.toString(),
+			CFWCredentialsFields.JSON_EDITOR_GROUPS.toString(),
+			CFWCredentialsFields.TIME_CREATED.toString(),
+			CFWCredentialsFields.LAST_UPDATED.toString(),	
+			CFWCredentialsFields.IS_ARCHIVED.toString(),
+	};
 	
 	// SpaceID and List of Tags
 	public static HashMap<Integer, TreeSet<String>> cachedTags = new HashMap<>();
@@ -239,7 +263,30 @@ public class CFWDBCredentials {
 		return CFWDBDefaultOperations.selectFirstBySpaced(cfwObjectClass, CFWCredentialsFields.NAME.toString(), name);
 	}
 	
+	/***************************************************************
+	 * Decrypt the data in the array, removes the salt and adds the 
+	 * name of the owner.
+	 * 
+	 * @return Returns same array for chaining
+	 ****************************************************************/
+	public static ArrayList<CFWCredentials> decryptAllAndAddOwner(ArrayList<CFWCredentials> array) {
 		
+		for(CFWCredentials creds : array) {
+			creds.decryptAll();
+			creds.removeField(CFWCredentialsFields.SALT);
+			
+			int ownerID = creds.foreignKeyOwner();
+			String ownerName = CFW.DB.Users.selectUsernameByID(ownerID);
+			
+			creds.addField(
+				CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, "OWNER")
+						.setValue(ownerName)
+			);
+			
+		}
+		
+		return array;
+	}
 	/***************************************************************
 	 * Return a list of all user credentials as json string.
 	 * 
@@ -247,17 +294,20 @@ public class CFWDBCredentials {
 	 ****************************************************************/
 	public static String getUserCredentialsListAsJSON() {
 		
-		JsonArray array = new CFWSQL(new CFWCredentials())
+		ArrayList<CFWCredentials> array = new CFWSQL(new CFWCredentials())
 				.queryCacheSpaced()
-				.select()
+				.select(nonCriticalfieldsForList)
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, false)
 				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
-				.getAsJSONArray();
+				.getAsObjectListConvert(CFWCredentials.class);
+		
 		
 		return CFW.JSON.toJSON(
-					FeatureSpaces.addSpacesInfoToJSON(array)
+					decryptAllAndAddOwner(
+						FeatureSpaces.addSpacesInfoToList(array)
+					)
 				);
 	}
 	
@@ -268,17 +318,19 @@ public class CFWDBCredentials {
 	 ****************************************************************/
 	public static String getUserArchivedListAsJSON() {
 		
-		JsonArray array = new CFWSQL(new CFWCredentials())
+		ArrayList<CFWCredentials> array = new CFWSQL(new CFWCredentials())
 				.queryCacheSpaced()
-				.select()
+				.select(nonCriticalfieldsForList)
 				.where(CFWCredentialsFields.FK_ID_OWNER.toString(), CFW.Context.Request.getUser().id())
 				.and(CFWCredentialsFields.IS_ARCHIVED, true)
 				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
-				.getAsJSONArray();
+				.getAsObjectListConvert(CFWCredentials.class);
 		
 		return CFW.JSON.toJSON(
-				FeatureSpaces.addSpacesInfoToJSON(array)
+				decryptAllAndAddOwner(
+					FeatureSpaces.addSpacesInfoToList(array)
+				)
 			);
 	}
 		
@@ -291,17 +343,19 @@ public class CFWDBCredentials {
 	public static String getAdminCredentialsListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
-			JsonArray array = new CFWSQL(new CFWCredentials())
+			ArrayList<CFWCredentials> array = new CFWSQL(new CFWCredentials())
 				.queryCacheSpaced()
-				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-				.select()
+				//.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+				.select(nonCriticalfieldsForList)
 				.where(CFWCredentialsFields.IS_ARCHIVED, false)
 				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
-				.getAsJSONArray();
+				.getAsObjectListConvert(CFWCredentials.class);
 			
 			return CFW.JSON.toJSON(
-					FeatureSpaces.addSpacesInfoToJSON(array)
+					decryptAllAndAddOwner(
+						FeatureSpaces.addSpacesInfoToList(array)
+					)
 				);
 		}else {
 			CFW.Messages.accessDenied();
@@ -317,17 +371,20 @@ public class CFWDBCredentials {
 	public static String getAdminArchivedListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
-			JsonArray array = new CFWSQL(new CFWCredentials())
+			
+			ArrayList<CFWCredentials> array = new CFWSQL( new CFWCredentials() )
 				.queryCacheSpaced()
-				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
-				.select()
+				//.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+				.select(nonCriticalfieldsForList)
 				.where(CFWCredentialsFields.IS_ARCHIVED, true)
 				.and().append(FeatureSpaces.getSQLFilter())
 				.orderby(CFWCredentialsFields.NAME.toString())
-				.getAsJSONArray();
+				.getAsObjectListConvert(CFWCredentials.class);
 			
 			return CFW.JSON.toJSON(
-					FeatureSpaces.addSpacesInfoToJSON(array)
+					decryptAllAndAddOwner(
+						FeatureSpaces.addSpacesInfoToList(array)
+					)
 				);
 		}else {
 			CFW.Messages.accessDenied();
@@ -348,7 +405,7 @@ public class CFWDBCredentials {
 		
 		//---------------------
 		// Shared with User
-		CFWSQL query =  new CFWSQL(new CFWCredentials())
+		CFWSQL query = new CFWSQL(new CFWCredentials() )
 			.loadSQLResource(FeatureCredentials.PACKAGE_RESOURCES, "SQL_getSharedCredentialsListAsJSON.sql", 
 					userID,
 					userID,
@@ -361,13 +418,15 @@ public class CFWDBCredentials {
 		//-------------------------
 		// Union with Shared Groups
 		query.union()
-			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+			//.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWCredentialsFields.FK_ID_SPACE
 				  , CFWCredentialsFields.PK_ID
+				  , CFWCredentialsFields.FK_ID_OWNER
 				  , CFWCredentialsFields.NAME
 				  , CFWCredentialsFields.ACCOUNT
 				  , CFWCredentialsFields.DESCRIPTION
 				  , CFWCredentialsFields.TAGS
+				  , CFWCredentialsFields.SALT
 				  )
 			.where(CFWCredentialsFields.IS_SHARED, true)
 			.and(CFWCredentialsFields.IS_ARCHIVED, false)
@@ -388,13 +447,16 @@ public class CFWDBCredentials {
 		//-------------------------
 		// Union with Editor Roles
 		query.union()
-			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+			//.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(CFWCredentialsFields.FK_ID_SPACE
 					, CFWCredentialsFields.PK_ID
+					, CFWCredentialsFields.FK_ID_OWNER
 					, CFWCredentialsFields.NAME
 					, CFWCredentialsFields.ACCOUNT
 					, CFWCredentialsFields.DESCRIPTION
 					, CFWCredentialsFields.TAGS
+					, CFWCredentialsFields.SALT
+					
 					)
 			.where(CFWCredentialsFields.IS_ARCHIVED, false)
 			.and().append(FeatureSpaces.getSQLFilter())
@@ -414,18 +476,20 @@ public class CFWDBCredentials {
 		// Grab Results
 		
 		// IMPORTANT: Do not change to CFWObjects as you will lose the fields OWNER and IS_FAVED
-		JsonArray sharedBoards = query
+		ArrayList<CFWCredentials> sharedCreds = query
 			.custom("ORDER BY NAME")
-			.getAsJSONArray();
+			.getAsObjectListConvert(CFWCredentials.class);
 		
 		//-------------------------
 		// Add IS_EDITOR
 		
 		// TODO a bit of a hack, need to be done with SQL after database structure change
-		for(JsonElement boardElement : sharedBoards) {
-			JsonObject board = boardElement.getAsJsonObject();
-			board.addProperty("IS_EDITOR"
-					, checkCanEdit(board.get(CFWCredentialsFields.PK_ID.toString()).getAsInt())
+		for(CFWCredentials creds : sharedCreds) {
+			
+			boolean canEdit = checkCanEdit(creds.id());
+			creds.addField( 
+					CFWField.newBoolean(FormFieldType.UNMODIFIABLE_TEXT, "IS_EDITOR")
+					.setValue(canEdit)
 				);
 			
 		}
@@ -433,7 +497,9 @@ public class CFWDBCredentials {
 		//-------------------------
 		// Return
 		return CFW.JSON.toJSON(
-				FeatureSpaces.addSpacesInfoToJSON(sharedBoards)
+				decryptAllAndAddOwner(
+					FeatureSpaces.addSpacesInfoToList(sharedCreds)
+				)
 			);
 	}
 	

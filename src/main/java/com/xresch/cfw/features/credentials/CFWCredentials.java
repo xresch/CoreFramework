@@ -63,6 +63,7 @@ public class CFWCredentials extends CFWObject {
 		, SECRET
 		, DOMAIN
 		, HOSTNAME
+		, PORT
 		, URL
 		, DATA
 		, CUSTOM
@@ -138,6 +139,11 @@ public class CFWCredentials extends CFWObject {
 	private CFWField<String> hostname = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.HOSTNAME)
 			.setDescription("(Optional)The hostname of the credentials.")
 			.enableEncryption(CFW.Security.salter().credentialsHostnameSalt())
+			;
+	
+	private CFWField<String> port = CFWField.newString(FormFieldType.NUMBER, CFWCredentialsFields.PORT)
+			.setDescription("(Optional)The port of the credentials.")
+			.enableEncryption(CFW.Security.salter().defaultESalt())
 			;
 	
 	private CFWField<String> url = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.URL)
@@ -239,6 +245,7 @@ public class CFWCredentials extends CFWObject {
 				, salt
 				, domain
 				, hostname
+				, port
 				, url
 				, data
 				, custom
@@ -534,6 +541,7 @@ public class CFWCredentials extends CFWObject {
 		result.addProperty("secret", secret.getValue());
 		result.addProperty("domain", domain.getValue());
 		result.addProperty("hostname", hostname.getValue());
+		result.addProperty("port", port.getValue());
 		result.addProperty("url", url.getValue());
 		result.addProperty("data", data.getValue());
 		result.addProperty("custom", custom.getValue());
@@ -549,9 +557,16 @@ public class CFWCredentials extends CFWObject {
 		
 		String salt = this.salt.getValue();
 		
+		encryptField(account, salt);
 		encryptField(password, salt);
 		encryptField(token, salt);
 		encryptField(secret, salt);
+		encryptField(domain, salt);
+		encryptField(hostname, salt);
+		encryptField(port, salt);
+		encryptField(url, salt);
+		encryptField(data, salt);
+		encryptField(custom, salt);
 	}
 	
 	/******************************************************************
@@ -577,9 +592,16 @@ public class CFWCredentials extends CFWObject {
 		
 		String salt = this.salt.getValue();
 		
+		decryptField(account, salt);
 		decryptField(password, salt);
 		decryptField(token, salt);
 		decryptField(secret, salt);
+		decryptField(domain, salt);
+		decryptField(hostname, salt);
+		decryptField(port, salt);
+		decryptField(url, salt);
+		decryptField(data, salt);
+		decryptField(custom, salt);
 	}
 	
 	/******************************************************************
@@ -590,6 +612,8 @@ public class CFWCredentials extends CFWObject {
 	private void decryptField(CFWField<String> field, String salt) {
 		
 		String currentValue = field.getValue();
+		
+		if(currentValue == null) { return; }
 		
 		if(currentValue.startsWith(SECONDARY_ENCRYPT_PREFIX) ) {
 			
@@ -648,46 +672,6 @@ public class CFWCredentials extends CFWObject {
 		this.description.setValue(description);
 		return this;
 	}
-	
-	public String getPasswordDecrypted() {
-		String salt = this.salt.getValue();
-		String decryptedValue = CFW.Security.decryptValue(password.getValue(), salt);
-		return decryptedValue;
-	}
-	
-	public CFWCredentials setPasswordEncrypted(String value) {
-		String salt = this.salt.getValue();
-		String encryptedValue = CFW.Security.encryptValue(value, salt);
-		this.password.setValue(encryptedValue);
-		return this;
-	}
-	
-	public String getTokenDecrypted() {
-		String salt = this.salt.getValue();
-		String decryptedValue = CFW.Security.decryptValue(token.getValue(), salt);
-		return decryptedValue;
-	}
-	
-	public CFWCredentials setTokenEncrypted(String value) {
-		String salt = this.salt.getValue();
-		String encryptedValue = CFW.Security.encryptValue(value, salt);
-		this.token.setValue(encryptedValue);
-		return this;
-	}
-	
-	public String getSecretDecrypted() {
-		String salt = this.salt.getValue();
-		String decryptedValue = CFW.Security.decryptValue(secret.getValue(), salt);
-		return decryptedValue;
-	}
-	
-	public CFWCredentials setSecretEncrypted(String value) {
-		String salt = this.salt.getValue();
-		String encryptedValue = CFW.Security.encryptValue(value, salt);
-		this.secret.setValue(encryptedValue);
-		return this;
-	}
-	
 
 	public ArrayList<String> tags() {
 		return tags.getValue();
