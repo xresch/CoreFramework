@@ -144,6 +144,7 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 				if(credentials == null) {
 					 credentials = new CFWCredentials();
 					 this.getContext().addMessageWarning("Credentials '" + credsValue.getAsString() + "' could not be found.");
+					 return true;
 				}
 				
 				if( !CFW.DB.Credentials.hasUserAccessToCredentials(credentials.id()) ){
@@ -197,7 +198,7 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 		CFWCredentials credentials = fetchCredentialsFromDB(credsValue);
 
 		//-----------------------------------
-		// Fetch & Create Result
+		// Fetch & Create Result	
 		
 		if(credentials == null) {
 			 credentials = new CFWCredentials();
@@ -227,7 +228,9 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 			}
 		}
 		
-		credentials.decryptAll();
+		if(credentials != null) {
+			credentials.decryptAll();
+		}
 		
 		return credentials;
 	}

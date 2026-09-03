@@ -287,6 +287,7 @@ public class CFWDBCredentials {
 		
 		return array;
 	}
+	
 	/***************************************************************
 	 * Return a list of all user credentials as json string.
 	 * 
@@ -482,8 +483,6 @@ public class CFWDBCredentials {
 		
 		//-------------------------
 		// Add IS_EDITOR
-		
-		// TODO a bit of a hack, need to be done with SQL after database structure change
 		for(CFWCredentials creds : sharedCreds) {
 			
 			boolean canEdit = checkCanEdit(creds.id());
@@ -491,7 +490,6 @@ public class CFWDBCredentials {
 					CFWField.newBoolean(FormFieldType.UNMODIFIABLE_TEXT, "IS_EDITOR")
 					.setValue(canEdit)
 				);
-			
 		}
 		
 		//-------------------------
@@ -529,7 +527,8 @@ public class CFWDBCredentials {
 	/***************************************************************
 	 * 
 	 ***************************************************************/
-	public static boolean hasUserAccessToCredentials(int credentialsID) {
+	public static boolean hasUserAccessToCredentials(Integer credentialsID) {
+		if(credentialsID == null) { return false; }
 		return  hasUserAccessToCredentials(""+credentialsID);
 	}
 	

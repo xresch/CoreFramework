@@ -517,7 +517,7 @@ public  class CFWDBDefaultOperations {
 		
 		try {
 			return (O)cfwObjectClass.newInstance()
-					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.selectFirstBy"+column)
+					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.selectFirstBySpaced"+column)
 					.select()
 					.where(column, value)
 					.and().append(FeatureSpaces.getSQLFilterInclusive())

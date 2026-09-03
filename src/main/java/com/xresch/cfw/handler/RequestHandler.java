@@ -143,7 +143,9 @@ public class RequestHandler extends HandlerWrapper
     			if ( CFW.DB.Spaces.checkCurrentUserHasAccessToSpace(spaceIDParsed) ) {
     				CFW.Context.Request.setSpaceIDForRequest(spaceIDParsed);
     			}else {
-    				throw new Exception("User does not have access to space with id: "+spaceIDParsed);
+    				if(CFW.Context.Session.getSessionData().isLoggedIn()) {
+    					throw new Exception("User does not have access to space with id: "+spaceIDParsed);
+    				}
     			}
 	    		
 	    	}
