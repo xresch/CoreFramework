@@ -128,6 +128,7 @@ public class CFWCredentials extends CFWObject {
 	
 	private CFWField<String> salt = CFWField.newString(FormFieldType.NONE, CFWCredentialsFields.SALT)
 			.setDescription("The salt for the encrypting the password.")
+			.disableSanitization()
 			.setValue(CFW.Random.stringAlphaNumSpecial(32))
 			;
 	
