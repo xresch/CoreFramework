@@ -2315,6 +2315,11 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 				return this.changeValue(timeframe); 
 			}
 			
+			else if(valueClass == CFWStoredFileReferences.class){ 
+				CFWStoredFileReferences reference = new CFWStoredFileReferences(stringValue);
+				return this.changeValue(reference); 
+			}
+			
 			else {
 				new CFWLog(logger)
 					.severe("The choosen type is not supported: "+valueClass.getName());

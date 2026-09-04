@@ -16,6 +16,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
+import com.xresch.cfw.datahandling.CFWStoredFileReferences;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -50,6 +51,7 @@ public class CFWJson extends XRJson {
 		addTypeAdapter(CFWParameter.class, new SerializerCFWParameter());
 		addTypeAdapter(CFWSchedule.class, new SerializerCFWSchedule());
 		addTypeAdapter(CFWTimeframe.class, new SerializerCFWTimeframe());
+		addTypeAdapter(CFWStoredFileReferences.class, new SerializerCFWStoredFileReferences());
 		addTypeAdapter(JSONResponse.class, new SerializerJSONResponse());
 		addTypeAdapter(EnhancedJsonObject.class, new SerializerEnhancedJsonObject());
 		addTypeAdapter(CFWObject.class, new SerializerCFWObject(false));

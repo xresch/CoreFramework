@@ -33,6 +33,7 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWChartSettings;
 import com.xresch.cfw.datahandling.CFWSchedule;
+import com.xresch.cfw.datahandling.CFWStoredFileReferences;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
@@ -812,7 +813,9 @@ public class DBInterface {
 					else if (currentValue instanceof LinkedHashMap)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
 					else if (  currentValue instanceof CFWChartSettings
 							|| currentValue instanceof CFWSchedule
-							|| currentValue instanceof CFWTimeframe)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
+							|| currentValue instanceof CFWTimeframe
+							|| currentValue instanceof CFWStoredFileReferences
+							)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
 					else if (currentValue.getClass().isEnum()) 		{ prepared.setString(i, currentValue.toString());}
 					else { throw new RuntimeException("Unsupported database field type: "+ currentValue.getClass().getName());}
 				}
