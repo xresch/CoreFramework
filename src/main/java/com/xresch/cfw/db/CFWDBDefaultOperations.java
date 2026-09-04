@@ -274,7 +274,7 @@ public  class CFWDBDefaultOperations {
 		String cacheName = String.join("-", fieldsToIgnore);
 		
 		return object
-				.queryCache(object.getClass(), "CFWDBDefaultOperations.updateWithout-"+cacheName)
+				//.queryCache(object.getClass(), "CFWDBDefaultOperations.updateWithout-"+cacheName) // if order of fields change it breaks the query.
 				.updateWithout(fieldsToIgnore);
 		
 	}

@@ -600,7 +600,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 			if(value instanceof BigDecimal) {
 				this.addAttribute("value", ((BigDecimal) value).stripTrailingZeros().toPlainString() ); 
 			}else if( !(value instanceof ArrayList) ) {
-				this.addAttribute("value", value.toString().replace("\"", "&quot;")); 
+				this.addAttribute("value", this.getValue().toString().replace("\"", "&quot;")); 
 			}else {
 				StringBuilder builder = new StringBuilder();
 				ArrayList<Object> array = (ArrayList<Object>)value;
@@ -833,7 +833,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		// Set Selected Value
 		String selectedValue = "";
 		if(value != null) {
-			selectedValue = value.toString();
+			selectedValue = this.getValue().toString();
 		}else if (valueLabelOptions != null && !valueLabelOptions.isEmpty()) {
 			selectedValue = valueLabelOptions.keySet().toArray()[0].toString();
 		}	
@@ -918,7 +918,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		
 		this.removeAttribute("value");
 		
-		String stringVal = (value == null) ? "" : value.toString();
+		String stringVal = (value == null) ? "" : this.getValue().toString();
 		
 		html.append("<select class=\""+cssClasses+"\" "+this.getAttributesString()+" >");
 		
@@ -1015,7 +1015,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"colorpicker\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
-			((CFWForm)this.parent).javascript.append("cfw_initializeColorPickerField('"+name+"', '"+value+"');\r\n");
+			((CFWForm)this.parent).javascript.append("cfw_initializeColorPickerField('"+name+"', '"+ this.getValue() +"');\r\n");
 		}
 				
 	}
@@ -1051,7 +1051,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		
 		//---------------------------------
 		// Set initial value
-		String epochTime = this.toEpochTimeString(this.value);
+		String epochTime = this.toEpochTimeString(this.getValue());
 		this.addAttribute("value", epochTime);
 		
 		//---------------------------------
@@ -1078,7 +1078,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"timeframepicker\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
-			((CFWForm)this.parent).javascript.append("cfw_initializeTimeframePicker('"+name+"', "+CFW.JSON.toJSON(value)+", null);\r\n");
+			((CFWForm)this.parent).javascript.append("cfw_initializeTimeframePicker('"+name+"', "+CFW.JSON.toJSON(this.getValue())+", null);\r\n");
 		}
 				
 	}
@@ -1094,7 +1094,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		
 		if(this.parent instanceof CFWForm) {
 			boolean isMultiple = false; 
-			((CFWForm)this.parent).javascript.append("cfw_initializeFilePicker('"+name+"', "+isMultiple+",   "+CFW.JSON.toJSON(value)+", null);\r\n");
+			((CFWForm)this.parent).javascript.append("cfw_initializeFilePicker('"+name+"', "+isMultiple+",   "+CFW.JSON.toJSON(this.getValue())+", null);\r\n");
 		}
 				
 	}
@@ -1107,7 +1107,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		
 		this.removeAttribute("value");
 		
-		String stringVal = (value == null) ? "" : value.toString();
+		String stringVal = (value == null) ? "" : this.getValue().toString();
 		
 		html.append("<select class=\""+cssClasses+"\" "+this.getAttributesString()+" >");
 		
@@ -1157,7 +1157,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"chartsettings\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
-			((CFWForm)this.parent).javascript.append("cfw_initializeChartSettingsField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
+			((CFWForm)this.parent).javascript.append("cfw_initializeChartSettingsField('"+name+"', "+CFW.JSON.toJSON(this.getValue())+");\r\n");
 		}
 				
 	}
@@ -1170,7 +1170,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		this.removeAttribute("value");
 		String inputValue = "";
 		if(this.value != null) {
-			inputValue = this.value.toString();
+			inputValue = this.getValue().toString();
 		}
 		html.append("<textarea class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+">"+inputValue+"</textarea>");
 		
@@ -1191,7 +1191,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"schedule\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
-			((CFWForm)this.parent).javascript.append("cfw_initializeScheduleField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
+			((CFWForm)this.parent).javascript.append("cfw_initializeScheduleField('"+name+"', "+CFW.JSON.toJSON(this.getValue())+");\r\n");
 		}
 				
 	}
@@ -1240,7 +1240,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 			//------------------------------------
 			// Initialize Selector
 			if(type.equals(FormFieldType.TAGS_SELECTOR)) {
-				form.javascript.append("cfw_initializeTagsSelectorField('"+name+"', "+maxTags+", "+CFW.JSON.toJSON(value)+");\r\n");
+				form.javascript.append("cfw_initializeTagsSelectorField('"+name+"', "+maxTags+", "+CFW.JSON.toJSON(this.getValue())+");\r\n");
 			}else {
 				form.javascript.append("cfw_initializeTagsField('"+name+"', "+maxTags+");\r\n");
 			}
@@ -1266,7 +1266,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"valuelabel\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
-			((CFWForm)this.parent).javascript.append("cfw_initializeValueLabelField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
+			((CFWForm)this.parent).javascript.append("cfw_initializeValueLabelField('"+name+"', "+CFW.JSON.toJSON(this.getValue())+");\r\n");
 		}
 				
 	}
@@ -1288,9 +1288,9 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		
 		String stringValue = "[]";
 		if(value instanceof ArrayList) {
-			stringValue = CFW.JSON.toJSON(value);
+			stringValue = CFW.JSON.toJSON(this.getValue());
 		}else if(value != null) {
-			stringValue = value.toString();
+			stringValue = this.getValue().toString();
 		}
 		
 		if(this.parent instanceof CFWForm) {
@@ -1316,7 +1316,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		
 		if(this.parent instanceof CFWForm) {
 			String optionsJSON = CFW.JSON.toJSON(this.getOptions());
-			String valuesJSON = CFW.JSON.toJSON(value);
+			String valuesJSON = CFW.JSON.toJSON(this.getValue());
 			((CFWForm)this.parent).javascript.append("cfw_initializeCheckboxesField('"+name+"',"+optionsJSON+", "+valuesJSON+");\r\n");
 		}
 				
@@ -1333,7 +1333,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		this.removeAttribute("value");
 		String inputValue = "";
 		if(this.value != null) {
-			inputValue = this.value.toString();
+			inputValue = this.getValue().toString();
 		}
 		html.append("<textarea class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+">"+inputValue+"</textarea>");
 		
@@ -1348,8 +1348,8 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	private void createPasswordField(StringBuilder html, String cssClasses) {
 		
 		if(this.value != null && !value.toString().isEmpty()) {
-			String placeholderName = PASSWORD_STUB_PREFIX + CFWRandom.stringAlphaNum(7);
-			pwCache.put(placeholderName, this.value.toString());
+			String placeholderName = PASSWORD_STUB_PREFIX + CFWRandom.stringAlphaNum(24);
+			pwCache.put(placeholderName, this.getValue().toString());
 			this.addAttribute("value", placeholderName);
 		}
 		html.append("<input type=\"password\" class=\"form-control "+cssClasses+"\" autocomplete=\"new-password\" "+this.getAttributesString()+"/>");
@@ -2056,24 +2056,28 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		|| value == null ) {
 			return (T)value;
 		}else {
-			
+			T encryptedValue = (T)value;
 			//------------------------------------------
 			// First Encryption: Salt of Field
-			T encryptedValue = encrypt( (T)value, encryptionSalt, ENCRYPT_PREFIX_ONE);
+			if( ! value.toString().startsWith(ENCRYPT_PREFIX) ) {
+				encryptedValue = encrypt( encryptedValue, encryptionSalt, ENCRYPT_PREFIX_ONE);
+			}
 			
 			//------------------------------------------
 			// Second Encryption: Salt of Parent
-			CFWField<String> saltField = this.relatedCFWObject.getSaltField();
-			
-			if(saltField != null) {
-				String secondSalt = saltField.getValue();
+			if( ! value.toString().startsWith(ENCRYPT_PREFIX_SECOND) ) {
+				CFWField<String> saltField = this.relatedCFWObject.getSaltField();
 				
-				if(secondSalt != null) {
-					encryptedValue = encrypt(
-							  encryptedValue
-							, secondSalt.getBytes()
-							, ENCRYPT_PREFIX_SECOND
-						);
+				if(saltField != null) {
+					String secondSalt = saltField.getValue();
+					
+					if(secondSalt != null) {
+						encryptedValue = encrypt(
+								  encryptedValue
+								, secondSalt.getBytes()
+								, ENCRYPT_PREFIX_SECOND
+							);
+					}
 				}
 			}
 			
@@ -2087,7 +2091,8 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	@SuppressWarnings("unchecked")
 	private T encrypt(T value, byte[] salt, String encryptPrefix) {
 		if(salt == null 
-		|| value == null ) {
+		|| value == null
+		|| value.toString().startsWith(encryptPrefix) ) {
 			return (T)value;
 		}else {
 			

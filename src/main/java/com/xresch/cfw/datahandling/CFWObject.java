@@ -14,6 +14,8 @@ import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.db.CFWSQL;
@@ -21,7 +23,6 @@ import com.xresch.cfw.db.CFWSQL.CFWSQLReferentialAction;
 import com.xresch.cfw.db.CFWSQL.ForeignKeyDefinition;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.ResultSetUtils;
 import com.xresch.cfw.utils.json.SerializerCFWObject;
 
 /**************************************************************************************************************
@@ -1014,6 +1015,75 @@ public class CFWObject {
 
 		return clone;
 		
+	}
+	
+	/****************************************************************
+	 * Decrypts the values of a JsonObject that has the same fields 
+	 * as this object.
+	 * The provided JsonObject will need at least the field that is 
+	 * marked as the saltField for this CFWObject.
+	 * 
+	 ****************************************************************/
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void decryptJSONObject(JsonObject object) {
+		
+		//-------------------------------
+		// Retrieve salt from object
+		CFWField saltField = this.getSaltField();
+		
+		if(saltField == null) { return; }
+		String saltFieldname = saltField.getName();
+		
+		if(object.has(saltFieldname)) {
+			JsonElement objectValue = object.get(saltFieldname);
+			
+			if(objectValue != null
+			&& objectValue.isJsonPrimitive()
+			){ 
+				JsonPrimitive primitive = objectValue.getAsJsonPrimitive();
+				if(primitive.isString()) {
+					saltField.setValue(objectValue.getAsString());
+				}
+			}else {
+				return; // do nothing;
+			}
+		}else {
+			return; // do nothing
+		}
+		
+		//-------------------------------
+		// Decrypt Values
+		for(Entry<String, CFWField> entry : this.getFields().entrySet()) {
+			
+			CFWField field = entry.getValue();
+			
+			//-------------------------------
+			// Check encryption enabled
+			if( ! field.isEncryptionEnabled() ) { continue; }
+			
+			//-------------------------------
+			// Get Object Value
+			String fieldname = entry.getKey();
+			JsonElement objectValue = object.get(fieldname);
+			
+			if(objectValue != null
+			&& objectValue.isJsonPrimitive()
+			){ 
+				JsonPrimitive primitive = objectValue.getAsJsonPrimitive();
+				
+				if(primitive.isString()) {
+					
+					//---------------------------
+					// Decrypt Value
+					CFWField<String> stringField = ((CFWField<String>)field);
+					
+					stringField.setValue(primitive.getAsString());
+					object.addProperty(fieldname, stringField.getValue());
+				}
+			}
+
+			
+		}
 	}
 	
 	
