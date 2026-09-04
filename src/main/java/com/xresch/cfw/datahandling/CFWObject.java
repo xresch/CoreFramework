@@ -36,7 +36,11 @@ public class CFWObject {
 	//------------------------
 	// General
 	@SuppressWarnings("rawtypes")
+	// Fieldname and Field
 	private LinkedHashMap<String, CFWField> fields = new LinkedHashMap<String, CFWField>();
+	
+	private CFWField<String> saltField = null; // field whose value is used for salting other fields
+	
 	private CFWHierarchyConfig hierarchyConfig = null;
 	protected  CFWObject parent;
 	protected  LinkedHashMap<Integer, CFWObject> childObjects = new LinkedHashMap<Integer, CFWObject>();
@@ -186,6 +190,7 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
+	@SuppressWarnings("unchecked")
 	public CFWObject addField(CFWField<?> field) {
 		
 		if(field == null) { return this; } // do nothing if field is null
@@ -193,6 +198,10 @@ public class CFWObject {
 		if(!fields.containsKey(field.getName())) {
 			fields.put(field.getName(), field);
 			field.setRelatedCFWObject(this);
+			
+			if(field.isSaltField()) {
+				this.saltField = (CFWField<String>)field;
+			}
 		}else {
 			new CFWLog(logger)
 				.severe("The field with name '"+field.getName()+"' was already added to this object. Check the naming of the field.", new Exception());
@@ -213,9 +222,15 @@ public class CFWObject {
 	 ****************************************************************/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public CFWObject addFieldAfter(CFWField<?> field, Object fieldname) {
-				
+		
 		//---------------------------
-		// Insert at beginning of null
+		// Set Salt Field
+		if(field.isSaltField()) {
+			this.saltField = (CFWField<String>)field;
+		}
+		
+		//---------------------------
+		// Insert at beginning if null
 		if(fieldname == null) {
 			LinkedHashMap<String, CFWField> tempFields = (LinkedHashMap<String, CFWField>)fields.clone();
 			fields.clear();
@@ -254,6 +269,7 @@ public class CFWObject {
 				field.setRelatedCFWObject(this);
 			}
 		}
+		
 		
 		return this;
 	}
@@ -296,7 +312,18 @@ public class CFWObject {
 	 ****************************************************************/
 	@SuppressWarnings("rawtypes")
 	public void addFields(LinkedHashMap<String, CFWField> fields) {
-		this.fields.putAll(fields);
+		for(CFWField field : fields.values()) {
+			this.addField(field);
+		}
+	}
+		
+	/****************************************************************
+	 * Sets the field used for secondary encryption of other fields
+	 * that have encryption enabled.
+	 ****************************************************************/
+	@SuppressWarnings("rawtypes")
+	public CFWField<String> getSaltField() {
+		return this.saltField;
 	}
 	
 	/****************************************************************
@@ -365,6 +392,16 @@ public class CFWObject {
 	@SuppressWarnings("rawtypes")
 	public LinkedHashMap<String, CFWField> getFields(){
 		return fields;
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	public boolean hasField(Object fieldname){
+		
+		if(fieldname == null) { return false; }
+		
+		return fields.containsKey(fieldname.toString());
 	}
 	
 	/****************************************************************

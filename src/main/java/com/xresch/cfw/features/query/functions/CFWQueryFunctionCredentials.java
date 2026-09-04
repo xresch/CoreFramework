@@ -227,11 +227,7 @@ public class CFWQueryFunctionCredentials extends CFWQueryFunction {
 				credentials = CFW.DB.Credentials.selectByID(credsID);
 			}
 		}
-		
-		if(credentials != null) {
-			credentials.decryptAll();
-		}
-		
+				
 		return credentials;
 	}
 

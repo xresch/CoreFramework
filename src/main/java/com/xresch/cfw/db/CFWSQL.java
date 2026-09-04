@@ -167,7 +167,7 @@ public class CFWSQL {
 	 * Adds the value of the field, encrypts it if necessary.
 	 ****************************************************************/
 	private void addFieldValue(CFWField field) {
-		if(!field.persistEncrypted()) {
+		if(!field.isEncryptionEnabled()) {
 			this.values.add(field.getValue());
 		}else {
 			this.values.add(field.getValueEncrypted());

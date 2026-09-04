@@ -72,12 +72,14 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 						.build();
 	
 	//--------------------------------------------------
-	// Encryption Constants
+	// Encryption
 	// IMPORTANT!!! Do not change these values, you will
 	// break any application already using this mechanism.
-	private static String ENCRYPT_PREFIX = "cfwenc:";
-	private static String ENCRYPT_ALGORITHM = "AES";
-	
+	private static final String ENCRYPT_PREFIX = "cfwenc";						// used to check if value is encrypted
+	private static final String ENCRYPT_PREFIX_ONE = ENCRYPT_PREFIX+":";		// encryption based on field salt
+	private static final String ENCRYPT_PREFIX_SECOND = ENCRYPT_PREFIX+"2:";	// encryption based on parent salt
+	private static final String ENCRYPT_ALGORITHM = "AES";
+	private boolean isSaltField = false;
 
 	//--------------------------------
 	// General
@@ -1583,10 +1585,37 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	 * 
 	 ******************************************************************************************************/
 	public CFWField<T> enableEncryption(String encryptionSalt) {
-		if( String.class.isAssignableFrom(this.getValueClass()) ){
+		if( valueClass == String.class ){
 			this.encryptionSalt = Arrays.copyOf(encryptionSalt.getBytes(), 32);
+		}else {
+			new CFWLog(logger)
+				.severe("Encryption can only be enabled for fields of type string.", new Exception());
 		}
 		return this;
+	}
+	
+	/******************************************************************************************************
+	 * Sets this field as the salt field used for a secondary level of encryption.
+	 * 
+	 * @return instance for chaining
+	 ******************************************************************************************************/
+	@SuppressWarnings("unchecked")
+	public CFWField<T> setAsSaltField() {
+		if(String.class.isAssignableFrom(valueClass)) {
+			this.isSaltField = true;
+		}else {
+			new CFWLog(logger)
+				.severe("Cannot use field '"+this.name+"' as salt field as it must be of type CFWField<String>", new Exception());
+		}
+		
+		return this;
+	}
+	
+	/******************************************************************************************************
+	 * @return true if this field is set as a salt field, false otherwise.
+	 ******************************************************************************************************/
+	public boolean isSaltField() {
+		return this.isSaltField;
 	}
 	
 	/******************************************************************************************************
@@ -2001,8 +2030,20 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	/******************************************************************************************************
 	 * Returns true if this value should be stored encrypted when writing it to the database.
 	 ******************************************************************************************************/
-	public boolean persistEncrypted() {
+	public boolean isEncryptionEnabled() {
 		return encryptionSalt != null;
+	}
+	
+	/******************************************************************************************************
+	 * @returns true if this field's value is encrypted, false otherwise
+	 ******************************************************************************************************/
+	public boolean isValueEncrypted() {
+		
+		if(this.encryptionSalt == null
+		|| value == null
+		|| valueClass != String.class) { return false; }
+		
+		return value.toString().startsWith(ENCRYPT_PREFIX);
 	}
 	
 	/******************************************************************************************************
@@ -2015,11 +2056,46 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		|| value == null ) {
 			return (T)value;
 		}else {
+			
+			//------------------------------------------
+			// First Encryption: Salt of Field
+			T encryptedValue = encrypt( (T)value, encryptionSalt, ENCRYPT_PREFIX_ONE);
+			
+			//------------------------------------------
+			// Second Encryption: Salt of Parent
+			CFWField<String> saltField = this.relatedCFWObject.getSaltField();
+			
+			if(saltField != null) {
+				String secondSalt = saltField.getValue();
+				
+				if(secondSalt != null) {
+					encryptedValue = encrypt(
+							  encryptedValue
+							, secondSalt.getBytes()
+							, ENCRYPT_PREFIX_SECOND
+						);
+				}
+			}
+			
+			return (T)encryptedValue;
+		}
+    }
+	/******************************************************************************************************
+	 * Returns the value encrypted.
+	 * Will be ignored 
+	 ******************************************************************************************************/
+	@SuppressWarnings("unchecked")
+	private T encrypt(T value, byte[] salt, String encryptPrefix) {
+		if(salt == null 
+		|| value == null ) {
+			return (T)value;
+		}else {
+			
 			String encryptedValue = null;
 			try { 
 				//---------------------------
 				// Prepare Cipher
-				Key key = new SecretKeySpec(encryptionSalt, ENCRYPT_ALGORITHM);
+				Key key = new SecretKeySpec(salt, ENCRYPT_ALGORITHM);
 		        Cipher cipher = Cipher.getInstance(ENCRYPT_ALGORITHM);
 		        cipher.init(Cipher.ENCRYPT_MODE, key);
 		      
@@ -2027,7 +2103,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		      	// Encode Value
 		        byte[] encodedBytes = cipher.doFinal(value.toString().getBytes());
 		        encryptedValue = Base64.getEncoder().encodeToString(encodedBytes);
-		        encryptedValue = ENCRYPT_PREFIX + encryptedValue;
+		        encryptedValue = encryptPrefix + encryptedValue;
 		       
 			}catch (Exception e) {
 				new CFWLog(logger)
@@ -2047,15 +2123,57 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		|| !value.toString().startsWith(ENCRYPT_PREFIX)) {
 			return (T)value;
 		}else {
+			T decryptedValue = null;
+			
+			try {
+				
+				decryptedValue = (T)value;
+				//------------------------------------------
+				// First Decryption: Salt of Parent
+				CFWField<String> saltField = this.relatedCFWObject.getSaltField();
+				
+				if(saltField != null) {
+					String secondSalt = saltField.getValue();
+					
+					if(secondSalt != null) {
+						decryptedValue = decrypt(
+								  decryptedValue
+								, secondSalt.getBytes()
+								, ENCRYPT_PREFIX_SECOND
+							);
+					}
+				}
+				
+				//------------------------------------------
+				// Second Encryption: Salt of Field
+				decryptedValue = decrypt(decryptedValue, encryptionSalt, ENCRYPT_PREFIX_ONE);
+				
+			} catch (Exception e) {
+				new CFWLog(logger)
+					.severe("Could not decrypt value.", e);
+			}
+			
+			return (T)decryptedValue;
+		}
+    }
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	private T decrypt(T value, byte[] salt, String encryptPrefix) {
+		if(salt == null 
+		|| value == null
+		|| !value.toString().startsWith(encryptPrefix)) {
+			return (T)value;
+		}else {
 			String decryptedValue = null;
 			try {
-				Key key = new SecretKeySpec(encryptionSalt, ENCRYPT_ALGORITHM);
+				Key key = new SecretKeySpec(salt, ENCRYPT_ALGORITHM);
 		        Cipher cipher;
 	
-					cipher = Cipher.getInstance(ENCRYPT_ALGORITHM);
+				cipher = Cipher.getInstance(ENCRYPT_ALGORITHM);
 	
 		        cipher.init(Cipher.DECRYPT_MODE, key);
-		        String encryptedValue = value.toString().replaceFirst(ENCRYPT_PREFIX, "");
+		        String encryptedValue = value.toString().replaceFirst(encryptPrefix, "");
 		        byte[] decryptedBytes = Base64.getDecoder().decode(encryptedValue);
 		        byte[] decodedValue = cipher.doFinal(decryptedBytes);
 		        decryptedValue = new String(decodedValue);
@@ -2082,7 +2200,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		// Decryption
 		if(this.encryptionSalt != null
 		&& value != null
-		&& value.toString().startsWith(ENCRYPT_PREFIX)) {
+		&& value.toString().startsWith(ENCRYPT_PREFIX_ONE)) {
 			value = decryptValue(value);
 		}
 		
@@ -2256,7 +2374,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		// Decryption
 		if(this.encryptionSalt != null
 		&& value != null
-		&& value.toString().startsWith(ENCRYPT_PREFIX)) {
+		&& value.toString().startsWith(ENCRYPT_PREFIX_ONE)) {
 			value = decryptValue(value);
 		}
 		
@@ -2309,8 +2427,15 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		return this;
 	}
 	
+	/******************************************************************************************************
+	 * returns the value of this field, might decrypt the value if neccessary.
+	 * 
+	 ******************************************************************************************************/
 	@SuppressWarnings("unchecked")
 	public T getValue() {
+		
+		if( isValueEncrypted() ) { value = decryptValue((T)value); }
+
 		return (T)value;
 	}
 	

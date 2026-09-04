@@ -34,8 +34,6 @@ import com.xresch.cfw.validation.LengthValidator;
  **************************************************************************************************************/
 public class CFWCredentials extends CFWObject {
 	
-	private static final String SECONDARY_ENCRYPT_PREFIX = "credsenc:";
-	
 	public static final String TABLE_NAME = "CFW_CREDENTIALS";
 	
 	public static final String FIELDNAME_SHARE_WITH_USERS = "JSON_SHARE_WITH_USERS";
@@ -106,6 +104,13 @@ public class CFWCredentials extends CFWObject {
 			.addValidator(new LengthValidator(1, 255))
 			;
 	
+	private CFWField<String> salt = CFWField.newString(FormFieldType.NONE, CFWCredentialsFields.SALT)
+			.setDescription("The salt for the encrypting the password.")
+			.disableSanitization()
+			.setValue(CFW.Random.stringAlphaNumSpecial(32))
+			.setAsSaltField() // enable secondary level of encryption
+			;
+	
 	private CFWField<String> account = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.ACCOUNT)
 			.setDescription("(Optional)The account or username of the credentials.")
 			.enableEncryption(CFW.Security.salter().credentialsAccountSalt())
@@ -125,13 +130,7 @@ public class CFWCredentials extends CFWObject {
 			.setDescription("(Optional)The secret of the credentials.")
 			.enableEncryption(CFW.Security.salter().credentialsSecretSalt()) // !!! IMPORTANT !!! never change this string! 
 			;
-	
-	private CFWField<String> salt = CFWField.newString(FormFieldType.NONE, CFWCredentialsFields.SALT)
-			.setDescription("The salt for the encrypting the password.")
-			.disableSanitization()
-			.setValue(CFW.Random.stringAlphaNumSpecial(32))
-			;
-	
+		
 	private CFWField<String> domain = CFWField.newString(FormFieldType.TEXT, CFWCredentialsFields.DOMAIN)
 			.setDescription("(Optional)The domain of the credentials.")
 			.enableEncryption(CFW.Security.salter().credentialsDomainSalt())
@@ -239,11 +238,11 @@ public class CFWCredentials extends CFWObject {
 				, foreignKeyOwner
 				, name
 				, description
+				, salt
 				, account
 				, password
 				, token
 				, secret
-				, salt
 				, domain
 				, hostname
 				, port
@@ -549,84 +548,6 @@ public class CFWCredentials extends CFWObject {
 		
 		return result;
 	}
-	
-	/******************************************************************
-	 * Encrypts all the fields with the salt of this credentials instance.
-	 * 
-	 ******************************************************************/
-	public void encryptAll() {
-		
-		String salt = this.salt.getValue();
-		
-		encryptField(account, salt);
-		encryptField(password, salt);
-		encryptField(token, salt);
-		encryptField(secret, salt);
-		encryptField(domain, salt);
-		encryptField(hostname, salt);
-		encryptField(port, salt);
-		encryptField(url, salt);
-		encryptField(data, salt);
-		encryptField(custom, salt);
-	}
-	
-	/******************************************************************
-	 * Encrypts the defined field with the specified salt.
-	 * This will create a secondary encryption on top of the fields
-	 * encryption.
-	 ******************************************************************/
-	private void encryptField(CFWField<String> field, String salt) {
-		
-		String currentValue = field.getValue();
-		
-		if( ! currentValue.startsWith(SECONDARY_ENCRYPT_PREFIX) ) {
-			String encrypted = CFW.Security.encryptValue(currentValue, salt);
-			field.setValue(SECONDARY_ENCRYPT_PREFIX + encrypted);
-		}
-	}
-	
-	/******************************************************************
-	 * Decrypts all the fields with the salt of this credentials instance.
-
-	 ******************************************************************/
-	public void decryptAll() {
-		
-		String salt = this.salt.getValue();
-		
-		decryptField(account, salt);
-		decryptField(password, salt);
-		decryptField(token, salt);
-		decryptField(secret, salt);
-		decryptField(domain, salt);
-		decryptField(hostname, salt);
-		decryptField(port, salt);
-		decryptField(url, salt);
-		decryptField(data, salt);
-		decryptField(custom, salt);
-	}
-	
-	/******************************************************************
-	 * Encrypts the defined field with the specified salt.
-	 * This will remove the secondary encryption on top of the fields
-	 * encryption.
-	 ******************************************************************/
-	private void decryptField(CFWField<String> field, String salt) {
-		
-		String currentValue = field.getValue();
-		
-		if(currentValue == null) { return; }
-		
-		if(currentValue.startsWith(SECONDARY_ENCRYPT_PREFIX) ) {
-			
-			String decrypted = CFW.Security.decryptValue(
-					currentValue.replaceFirst(SECONDARY_ENCRYPT_PREFIX, "")
-					, salt
-				);
-			field.setValue(decrypted);
-		}
-		
-	}
-	
 	
 	
 	public Integer fkidSpace() {

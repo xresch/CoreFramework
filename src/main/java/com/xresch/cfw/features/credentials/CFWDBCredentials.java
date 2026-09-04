@@ -269,10 +269,10 @@ public class CFWDBCredentials {
 	 * 
 	 * @return Returns same array for chaining
 	 ****************************************************************/
-	public static ArrayList<CFWCredentials> decryptAllAndAddOwner(ArrayList<CFWCredentials> array) {
+	public static ArrayList<CFWCredentials> prepareResults(ArrayList<CFWCredentials> array) {
 		
 		for(CFWCredentials creds : array) {
-			creds.decryptAll();
+
 			creds.removeField(CFWCredentialsFields.SALT);
 			
 			int ownerID = creds.foreignKeyOwner();
@@ -306,7 +306,7 @@ public class CFWDBCredentials {
 		
 		
 		return CFW.JSON.toJSON(
-					decryptAllAndAddOwner(
+					prepareResults(
 						FeatureSpaces.addSpacesInfoToList(array)
 					)
 				);
@@ -329,7 +329,7 @@ public class CFWDBCredentials {
 				.getAsObjectListConvert(CFWCredentials.class);
 		
 		return CFW.JSON.toJSON(
-				decryptAllAndAddOwner(
+				prepareResults(
 					FeatureSpaces.addSpacesInfoToList(array)
 				)
 			);
@@ -354,7 +354,7 @@ public class CFWDBCredentials {
 				.getAsObjectListConvert(CFWCredentials.class);
 			
 			return CFW.JSON.toJSON(
-					decryptAllAndAddOwner(
+					prepareResults(
 						FeatureSpaces.addSpacesInfoToList(array)
 					)
 				);
@@ -383,7 +383,7 @@ public class CFWDBCredentials {
 				.getAsObjectListConvert(CFWCredentials.class);
 			
 			return CFW.JSON.toJSON(
-					decryptAllAndAddOwner(
+					prepareResults(
 						FeatureSpaces.addSpacesInfoToList(array)
 					)
 				);
@@ -495,7 +495,7 @@ public class CFWDBCredentials {
 		//-------------------------
 		// Return
 		return CFW.JSON.toJSON(
-				decryptAllAndAddOwner(
+				prepareResults(
 					FeatureSpaces.addSpacesInfoToList(sharedCreds)
 				)
 			);
