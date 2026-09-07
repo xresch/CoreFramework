@@ -1,5 +1,7 @@
 package com.xresch.cfw.datahandling;
 
+import java.io.OutputStream;
+
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -98,6 +100,45 @@ public class CFWStoredFileReferences {
 	public JsonObject get(int index) {
 		return dbfileData.get(index).getAsJsonObject();
 		
+	}
+	
+	/***************************************************************************************
+	 * Returns the data of the specified file as a string or null if the file could not be found
+	 ***************************************************************************************/
+	public String getDataAsString(int index) {
+		
+		if(index < dbfileData.size()) {
+			JsonObject object = dbfileData.get(index).getAsJsonObject();
+			
+			int id = object.get("id").getAsInt();
+			CFWStoredFile file = CFW.DB.StoredFile.selectByID(id);
+			
+			if(file != null) {
+				return CFW.DB.StoredFile.retrieveDataAsString(file);
+			}
+		}
+		
+		return null;
+	}
+	
+	/***************************************************************************************
+	 * Writes the data of the specified file in the outputStream or null if the file could not be found
+	 * @return true if written, false otherwise
+	 ***************************************************************************************/
+	public boolean getData(int index, OutputStream out) {
+		
+		if(index < dbfileData.size()) {
+			JsonObject object = dbfileData.get(index).getAsJsonObject();
+			
+			int id = object.get("id").getAsInt();
+			CFWStoredFile file = CFW.DB.StoredFile.selectByID(id);
+			
+			if(file != null) {
+				return CFW.DB.StoredFile.retrieveData(file, out);
+			}
+		}
+		
+		return true;
 	}
 	
 	/***************************************************************************************

@@ -347,7 +347,8 @@ public class CFWDBStoredFile {
 		return CFWDBDefaultOperations.selectFirstByWithout(cfwObjectClass, CFWStoredFileFields.PK_ID.toString(), id, CFWStoredFileFields.DATA.toString());
 	}
 	
-	public static CFWStoredFile selectByID(int id ) {
+	public static CFWStoredFile selectByID(Integer id ) {
+		if(id == null) { return null; }
 		return CFWDBDefaultOperations.selectFirstByWithout(cfwObjectClass, CFWStoredFileFields.PK_ID.toString(), id, CFWStoredFileFields.DATA.toString());
 	}
 		
