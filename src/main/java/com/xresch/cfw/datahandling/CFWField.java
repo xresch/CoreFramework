@@ -137,7 +137,8 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		DATETIMEPICKER, 
 		TIMEFRAMEPICKER,
 		TIMEZONEPICKER,
-		FILEPICKER,
+		FILEPICKER_SINGLE,
+		FILEPICKER_MULTI,
 		TAGS, 
 		// Input Order of elements messed up by client side when containing numbers in keys (numbers will be sorted and listed first)
 		TAGS_SELECTOR,
@@ -413,7 +414,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	
 	public static CFWField<CFWStoredFileReferences> newFilepicker(String fieldName){
 		if( fieldnameStartsWithJSON(fieldName) ) {
-			return new CFWField<CFWStoredFileReferences>(CFWStoredFileReferences.class, FormFieldType.FILEPICKER, fieldName)
+			return new CFWField<CFWStoredFileReferences>(CFWStoredFileReferences.class, FormFieldType.FILEPICKER_SINGLE, fieldName)
 					.setColumnDefinition("VARCHAR");
 		}
 		return null;
@@ -656,88 +657,37 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		this.removeAttribute("class");
 		this.addAttribute("id", name);
 		switch(finalFieldType) {
-			case TEXT:  			html.append("<input type=\"text\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
-									break;
-			
-			case NUMBER:  			html.append("<input type=\"number\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
-									break;
-			
-			case TEXTAREA: 			createTextArea(html, cssClasses);
-									break;
-			
+			case TEXT:  			html.append("<input type=\"text\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>"); break;
+			case NUMBER:  			html.append("<input type=\"number\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>"); break;
+			case TEXTAREA: 			createTextArea(html, cssClasses); break;
 			case UNMODIFIABLE_TEXT: String label = this.getAttributeValue("value");
 									html.append("<span class=\"d-flex align-items-center "+cssClasses+"\" "+this.getAttributesString()+">"+label+"</span>");
 									html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
 									break;
-			
-			case SELECT:  			createSelect(html, cssClasses);
-									break;	
-			
-			case CHECKBOXES:		createCheckboxField(html, cssClasses);
-									break;	
-			
-			case HIDDEN:  			html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
-									break;
-			
-			case BOOLEAN:  			createBooleanSwitch(html, cssClasses);
-									break;	
-									
-			case CUSTOM_LIST:		createCustomListField(html, cssClasses);
-									break;	
-									
-			case VALUE_LABEL:		createValueLabelField(html, cssClasses);
-									break;				
-									
-			case WYSIWYG: 			createWYSIWYG(html, cssClasses);
-									break;						
-			
-			case LIST:  			createList(html, cssClasses);
-									break;
-									
-			case EMAIL:  			html.append("<input type=\"email\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
-									break;
-								
-			case COLORPICKER:  		createColorPicker(html, cssClasses);
-									break;
-			
-			case DATEPICKER:  		createDatePicker(html, cssClasses);
-									break;
-			
-			case DATETIMEPICKER:  	createDateTimePicker(html, cssClasses);
-									break;
-									
-			case TIMEFRAMEPICKER:	createTimeframePicker(html, cssClasses);
-									break;
-									
-			case TIMEZONEPICKER: 	createTimezoneSelect(html, cssClasses);
-									break;	
-									
-			case FILEPICKER:		createFilePicker(html, cssClasses);
-									break;
-			
-			case SCHEDULE:		  	createSchedule(html, cssClasses);
-									break;
-			
-			case CHART_SETTINGS:	createChartSettings(html, cssClasses);
-									break;
-			
-			case QUERY_EDITOR:		createQueryEditor(html, cssClasses);
-									break;
-			
-			case LANGUAGE:  		createLanguageSelect(html, cssClasses);
-									break;	
-									
-			case TAGS:			  	createTagsField(html, cssClasses+" cfw-tags", FormFieldType.TAGS);
-									break;
-									
-			case TAGS_SELECTOR:		createTagsField(html, cssClasses+" cfw-tags-selector", FormFieldType.TAGS_SELECTOR);
-									break;						
-									
-			case PASSWORD:  		createPasswordField(html, cssClasses);
-									break;
-			
-			case NONE:				//do nothing
-									break;
+			case SELECT:  			createSelect(html, cssClasses); break;	
+			case CHECKBOXES:		createCheckboxField(html, cssClasses); break;	
+			case HIDDEN:  			html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>"); break;
+			case BOOLEAN:  			createBooleanSwitch(html, cssClasses); break;						
+			case CUSTOM_LIST:		createCustomListField(html, cssClasses); break;						
+			case VALUE_LABEL:		createValueLabelField(html, cssClasses); break;								
+			case WYSIWYG: 			createWYSIWYG(html, cssClasses); break;						
+			case LIST:  			createList(html, cssClasses); break;				
+			case EMAIL:  			html.append("<input type=\"email\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>"); break;
+			case COLORPICKER:  		createColorPicker(html, cssClasses); break;
+			case DATEPICKER:  		createDatePicker(html, cssClasses); break;		
+			case DATETIMEPICKER:  	createDateTimePicker(html, cssClasses); break;					
+			case TIMEFRAMEPICKER:	createTimeframePicker(html, cssClasses); break;				
+			case TIMEZONEPICKER: 	createTimezoneSelect(html, cssClasses); break;						
+			case FILEPICKER_SINGLE:	createFilePicker(html, cssClasses, false); break;
+			case FILEPICKER_MULTI:	createFilePicker(html, cssClasses, true); break;
+			case SCHEDULE:		  	createSchedule(html, cssClasses); break;
+			case CHART_SETTINGS:	createChartSettings(html, cssClasses); break;
+			case QUERY_EDITOR:		createQueryEditor(html, cssClasses); break;
+			case LANGUAGE:  		createLanguageSelect(html, cssClasses); break;	
+			case TAGS:			  	createTagsField(html, cssClasses+" cfw-tags", FormFieldType.TAGS); break;
+			case TAGS_SELECTOR:		createTagsField(html, cssClasses+" cfw-tags-selector", FormFieldType.TAGS_SELECTOR); break;												
+			case PASSWORD:  		createPasswordField(html, cssClasses);break;
+			case NONE:				/* do nothing */ break;
 			
 		}
 		
@@ -1086,15 +1036,15 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	/***********************************************************************************
 	 * Create FilePicker
 	 ***********************************************************************************/
-	private void createFilePicker(StringBuilder html, String cssClasses) {
+	private void createFilePicker(StringBuilder html, String cssClasses, boolean isMultiple) {
 				
 		//---------------------------------
 		// Create Field
 		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"filepicker\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
-			boolean isMultiple = false; 
-			((CFWForm)this.parent).javascript.append("cfw_initializeFilePicker('"+name+"', "+isMultiple+",   "+CFW.JSON.toJSON(this.getValue())+", null);\r\n");
+			boolean doReplaceExisting = ! isMultiple; 
+			((CFWForm)this.parent).javascript.append("cfw_initializeFilePicker('"+name+"', "+isMultiple+",   "+CFW.JSON.toJSON(this.getValue())+", "+doReplaceExisting+");\r\n");
 		}
 				
 	}
@@ -2699,6 +2649,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getDate(colName), true); }
 					else if( CFWChartSettings.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName), true); }
 					else if( CFWSchedule.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName), true); }
+					else if( CFWStoredFileReferences.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName), true); }
 					else if( CFWTimeframe.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName), true); }
 					else if( ArrayList.class.isAssignableFrom(current.getValueClass()))  { 
 						Array array = result.getArray(colName);
@@ -2756,6 +2707,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		
 		if( CFWChartSettings.class.isAssignableFrom(clazz)
 		  || CFWSchedule.class.isAssignableFrom(clazz)
+		  || CFWStoredFileReferences.class.isAssignableFrom(clazz)
 		  || CFWTimeframe.class.isAssignableFrom(clazz) 
 		  || LinkedHashMap.class.isAssignableFrom(clazz) 
 		  ){ return "'"+this.getValue().toString().replace("'", "''")+"'"; }
