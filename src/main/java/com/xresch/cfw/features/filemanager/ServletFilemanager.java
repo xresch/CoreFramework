@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.filemanager;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
@@ -389,16 +390,19 @@ public class ServletFilemanager extends HttpServlet
 					public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
 						
 						CFWStoredFile storedfile = (CFWStoredFile)origin;
-						if(origin.mapRequestParameters(request) 
-						&& CFW.DB.StoredFile.update(storedfile)) {
+						if( origin.mapRequestParameters(request) ) {
+								
+							storedfile.lastUpdated( new Timestamp(System.currentTimeMillis()) );
 							
-							
-							CFW.Messages.addSuccessMessage("Updated!");
-							
-							generateSharedMessages(storedfile);
-							
-							storedfile.saveSelectorFields();
-							
+							if(CFW.DB.StoredFile.update(storedfile)) {
+								
+								CFW.Messages.addSuccessMessage("Updated!");
+								
+								generateSharedMessages(storedfile);
+								
+								storedfile.saveSelectorFields();
+								
+							}
 						}
 						
 					}

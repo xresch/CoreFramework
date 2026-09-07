@@ -1216,7 +1216,19 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"valuelabel\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
-			((CFWForm)this.parent).javascript.append("cfw_initializeValueLabelField('"+name+"', "+CFW.JSON.toJSON(this.getValue())+");\r\n");
+			
+			//-----------------------------------
+			// Support Objects and Strings
+			String valueString = "";
+			if( ! (value instanceof String) ) {
+				valueString = CFW.JSON.toJSON( this.getValue() );
+			}else {
+				valueString = (String)this.getValue();
+			}
+			
+			//-----------------------------------
+			// Add Javascript
+			((CFWForm)this.parent).javascript.append("cfw_initializeValueLabelField('"+name+"', " + valueString + ");\r\n");
 		}
 				
 	}

@@ -2,6 +2,7 @@ package com.xresch.cfw.features.filemanager;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -11,13 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import com.google.common.base.Strings;
-import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWStoredFileReferences;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.logging.SysoutInterceptor;
 import com.xresch.cfw.response.JSONResponse;
 
 /**************************************************************************************************************
@@ -115,7 +114,19 @@ public class ServletStreamFileUpload extends HttpServlet
 					Integer id = reference.getID(0);
 					if(id != null) {
 						
+
 						CFWStoredFile existingFile = CFW.DB.StoredFile.selectByID(id);
+
+						//-----------------------------------------
+						// Fallback to Create New File
+						if(existingFile == null) {
+							createNewFile(jsonResponse, name, extension, size, type, lastModified, dataInputStream);
+							CFW.Localization.writeLocalized(request, response);
+							return;
+						}
+						
+						//-----------------------------------------
+						// Update existing
 						setStoredFileData(existingFile, name, extension, size, type, lastModified);
 
 						//--------------------------
@@ -125,6 +136,7 @@ public class ServletStreamFileUpload extends HttpServlet
 						//--------------------------
 						// Update File Details
 						if(success) {
+							existingFile.lastUpdated( new Timestamp(System.currentTimeMillis()) );
 							CFW.DB.StoredFile.update(existingFile);
 						}
 						
@@ -147,19 +159,7 @@ public class ServletStreamFileUpload extends HttpServlet
 			
 				//-----------------------------------------
 				// Create New File
-				CFWStoredFile newFile = new CFWStoredFile();
-				newFile.foreignKeyOwner(CFW.Context.Request.getUserID());
-				setStoredFileData(newFile, name, extension, size, type, lastModified);
-				
-				boolean success = CFW.DB.StoredFile.createAndStoreData(newFile, dataInputStream);
-				
-				CFWStoredFileReferences reference = new CFWStoredFileReferences(newFile);
-				
-				if(success) {	jsonResponse.addAlert(MessageType.SUCCESS, "File upload finished: "+name); }
-				else {			jsonResponse.addAlert(MessageType.ERROR, "File upload failed: "+name); }
-				
-				jsonResponse.setPayload( reference.getAsJsonArray() );
-				jsonResponse.setSuccess(success);
+				createNewFile(jsonResponse, name, extension, size, type, lastModified, dataInputStream);
 			}
 			
 		}else {
@@ -172,6 +172,33 @@ public class ServletStreamFileUpload extends HttpServlet
 
         
     }
+	
+	/******************************************************************
+	 * Create New File
+	 ******************************************************************/
+	private void createNewFile(
+			JSONResponse jsonResponse
+			, String name
+			, String extension
+			, String size
+			, String type
+			,String lastModified
+			, InputStream dataInputStream
+		) {
+		CFWStoredFile newFile = new CFWStoredFile();
+		newFile.foreignKeyOwner(CFW.Context.Request.getUserID());
+		setStoredFileData(newFile, name, extension, size, type, lastModified);
+		
+		boolean success = CFW.DB.StoredFile.createAndStoreData(newFile, dataInputStream);
+		
+		CFWStoredFileReferences reference = new CFWStoredFileReferences(newFile);
+		
+		if(success) {	jsonResponse.addAlert(MessageType.SUCCESS, "File upload finished: "+name); }
+		else {			jsonResponse.addAlert(MessageType.ERROR, "File upload failed: "+name); }
+		
+		jsonResponse.setPayload( reference.getAsJsonArray() );
+		jsonResponse.setSuccess(success);
+	}
 	
 	/******************************************************************
 	 *

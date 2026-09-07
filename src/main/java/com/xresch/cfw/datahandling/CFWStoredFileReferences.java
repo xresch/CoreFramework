@@ -121,23 +121,33 @@ public class CFWStoredFileReferences {
 		return null;
 	}
 	
+	
+	/***************************************************************************************
+	 * @return CFWStoredFile the stored file for the reference, null if not found.
+	 ***************************************************************************************/
+	public CFWStoredFile getStoredFile(int index) {
+		
+		if(index < dbfileData.size()) {
+			JsonObject object = dbfileData.get(index).getAsJsonObject();
+			int id = object.get("id").getAsInt();
+			return CFW.DB.StoredFile.selectByID(id);
+		}
+		
+		return null;
+		
+	}
 	/***************************************************************************************
 	 * Writes the data of the specified file in the outputStream or null if the file could not be found
 	 * @return true if written, false otherwise
 	 ***************************************************************************************/
 	public boolean getData(int index, OutputStream out) {
 		
-		if(index < dbfileData.size()) {
-			JsonObject object = dbfileData.get(index).getAsJsonObject();
-			
-			int id = object.get("id").getAsInt();
-			CFWStoredFile file = CFW.DB.StoredFile.selectByID(id);
-			
-			if(file != null) {
-				return CFW.DB.StoredFile.retrieveData(file, out);
-			}
-		}
+		CFWStoredFile file = getStoredFile(index);
 		
+		if(file != null) {
+			return CFW.DB.StoredFile.retrieveData(file, out);
+		}
+
 		return true;
 	}
 	
