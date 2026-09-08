@@ -22,11 +22,12 @@
  * @license MIT-License
  **************************************************************************************************************/
  :root {
-	--cfw-green: #28a438;
-	--cfw-limegreen: #89bb35;
-	--cfw-yellow: #efbf00;
-	--cfw-orange: #eb8905;
-	--cfw-red: #c70707;
+ 
+	--cfw-green: light-dark(#31c237,#28a438);
+	--cfw-limegreen: light-dark(#a0dd3a, #89bb35);
+	--cfw-yellow: light-dark(#ffd530, #efbf00);
+	--cfw-orange: light-dark(#ff9d18, #eb8905);
+	--cfw-red: light-dark(#eb1717, #c70707);
 	
 	--cfw-blue: #0c62c0;
     --cfw-indigo: #6610f2;

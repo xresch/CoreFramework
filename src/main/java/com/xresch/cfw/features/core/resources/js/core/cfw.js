@@ -362,6 +362,7 @@ var CFW = {
 		loadLocalization: cfw_loadLocalization,
 	},
 	colors: {
+		lightDark: cfw_colors_lightDark,
 		colorizeElement: cfw_colors_colorizeElement,
 		RGB2HEX: cfw_colors_RGB2HEX,
 		colorToRGBA: cfw_colors_colorToRGBA,

@@ -1241,7 +1241,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 		
 	var htmlString =
 		'<div class="grid-stack-item-content card d-flex '+titleposClass+'" data-type="'+widgetObject.TYPE+'">'
-		+'	<div role="button" class="cfw-dashboard-widget-actionicons text-cfw-lightgray show-on-edit">'
+		+'	<div role="button" class="cfw-dashboard-widget-actionicons show-on-edit">'
 		+'		<div role="button" class="actionicon-delete '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_remove(\''+merged.guid+'\')"><i class="fas fa-times"></i></div>'
 		+'		<div role="button" class="actionicon-duplicate '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_duplicate(\''+merged.guid+'\')"><i class="fas fa-clone"></i></div>'
 		+'		<div role="button" class="actionicon-edit '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_edit(\''+merged.guid+'\')"><i class="fas fa-pen"></i></div>'

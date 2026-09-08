@@ -9,6 +9,27 @@
 // contains original value + Alpha and RGBA value
 var CACHE_COLOR_TO_RGBA = {};
 
+	
+/************************************************************************************************
+ * Checks based on the html-tag's color-scheme attribute if the theme is using light or dark mode, then
+ * returns the respective value.
+ * 
+ * @param lightValue 
+ * @param darkValue
+ * 
+ * @return the value matching the theme color scheme 
+ ************************************************************************************************/
+function cfw_colors_lightDark(lightValue, darkValue){
+	const colorScheme = $('html').css('color-scheme');
+	
+	if( ! CFW.utils.isNullOrEmpty(colorScheme)
+	&& colorScheme.trim().toLowerCase() == "dark" ){
+		return darkValue;
+	}
+	
+	return lightValue;
+}
+
 /*************************************************************
  * Adds coloring to the element based on the records value and
  * the value added in the fields bgstylefield and textstylefield.

@@ -283,7 +283,7 @@ function cfw_renderer_chart(renderDef) {
 		// the color of the x-axes grid lines
 		xcolor: null,
 		// the color of the y-axes grid lines
-		ycolor: 'rgba(190,190,190, 0.2)',
+		ycolor: null,
 		// the minimum unit used to display time: millisecond|second|minute|hour|day|week|month|quarter|year
 		xminunit: 'millisecond',
 		// the momentjs format used to parse the time, or a function(value) that returns a value that can be parsed by moment
@@ -784,7 +784,7 @@ function cfw_renderer_chart_setGlobals() {
 	
 	Chart.defaults.responsive = true; 
 	Chart.defaults.maintainAspectRatio = false;
-	Chart.defaults.color = "rgba(190,190,190, 1.0)";
+	Chart.defaults.color = CFW.colors.lightDark("rgba(60,60,60, 1.0)", "rgba(190,190,190, 1.0)");
 
 	Chart.defaults.plugins.legend.display = false;
 	Chart.defaults.plugins.legend.position =  'bottom';
