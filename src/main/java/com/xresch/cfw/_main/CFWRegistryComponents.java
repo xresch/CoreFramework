@@ -1,6 +1,8 @@
 package com.xresch.cfw._main;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.caching.FileAssembly;
@@ -10,8 +12,8 @@ import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemFooter;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenu;
-import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuDivider;
+import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItemUser;
 
 
@@ -54,6 +56,8 @@ public class CFWRegistryComponents {
 	private static FileAssembly assemblyGlobalJavascript = new FileAssembly("js_assembly_global", "js");
 	private static FileAssembly assemblyGlobalCSS = new FileAssembly("css_assembly_global", "css");
 	
+	// Theme filename without ".css" and FileDefinition
+	private static TreeMap<String, FileDefinition> bootstrapThemes = new TreeMap<>();
 	
 
 	
@@ -62,6 +66,42 @@ public class CFWRegistryComponents {
 	 ***********************************************************************/ 
 	public static void addGlobalCSSFile(FileDefinition.HandlingType type, String path, String filename){
 		assemblyGlobalCSS.addFile(type, path, filename);
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/ 
+	public static void addBootstrapTheme(FileDefinition.HandlingType type, String path, String filename){
+		
+		FileDefinition fileDef = new FileDefinition(type, path, filename);
+		
+		if( ! bootstrapThemes.containsKey(filename) ) {
+			String filenameNoCss = filename.replaceAll(".css", "");
+			bootstrapThemes.put(filenameNoCss, fileDef);
+		}else {
+			new CFWLog(logger).severe("A theme with this filename has already been added: "+filename);
+		}
+		
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/ 
+	public static FileDefinition getBootstrapTheme(String filename){
+		String filenameNoCss = filename.replaceAll(".css", "");
+		
+		return bootstrapThemes.get(filenameNoCss);
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/ 
+	public static ArrayList<String> getThemeOptions(){
+
+		ArrayList<String> options = new ArrayList<>();
+		options.addAll(bootstrapThemes.keySet());
+		
+		return options;
 	}
 	
 	/***********************************************************************

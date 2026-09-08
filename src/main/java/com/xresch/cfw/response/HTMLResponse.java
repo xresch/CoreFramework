@@ -49,7 +49,7 @@ public class HTMLResponse extends AbstractHTMLResponse {
 		if(themeName.equals("custom")) {
 			this.addCSSFileTheme(HandlingType.FILE, "./resources/css", "bootstrap-theme-custom.css");
 		}else {
-			this.addCSSFileTheme(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "bootstrap-theme-"+themeName+".css");
+			this.addCSSFileTheme( CFW.Registry.Components.getBootstrapTheme(themeName) );
 		}
 		
 		String codeThemeName = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_CODE_THEME);

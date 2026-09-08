@@ -18,7 +18,7 @@ function cfw_config_changeToPanels(){
 		 var panelSettings = {
 					cardstyle: null,
 					textstyle: null,
-					textstyleheader: 'white',
+					textstyleheader: null,
 					title: category,
 					narrow: true,
 					body: $('<div>'),

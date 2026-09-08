@@ -122,6 +122,10 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 		assemblyCSSTheme.addFile(type, path, filename);
 	}
 	
+	public void addCSSFileTheme(FileDefinition fileDef){
+		assemblyCSSTheme.addFile(fileDef);
+	}
+	
 	public void addCSSFile(FileDefinition.HandlingType type, String path, String filename){
 		assemblyCSSCustom.addFile(type, path, filename);
 	}

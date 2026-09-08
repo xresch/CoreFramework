@@ -176,6 +176,11 @@ public class Configuration extends CFWObject {
 		this.type.setValue(type.toString());
 		return this;
 	}
+	
+	public Configuration type(String type) {
+		this.type.setValue(type);
+		return this;
+	}
 
 	public String value() {
 		return value.getValue();

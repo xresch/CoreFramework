@@ -42,6 +42,7 @@
 }
 
 html {
+  color-scheme: light;
   font-family: sans-serif;
   line-height: 1.15;
   -webkit-text-size-adjust: 100%;
@@ -4144,6 +4145,7 @@ input[type="button"].btn-block {
 }
 
 .navbar {
+  background-color: black;
   position: relative;
   display: -ms-flexbox;
   display: flex;

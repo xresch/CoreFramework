@@ -135,8 +135,7 @@ public class FeatureConfig extends CFWAppFeature {
 		CFW.DB.Config.oneTimeCreate(
 			new Configuration(CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_THEME)
 				.description("Set the application look and feel. 'Slate' is the default and recommended theme, all others are not 100% tested. For custom the file has to be placed under ./resources/css/bootstrap-theme-custom.css.")
-				.type(FormFieldType.SELECT)
-				.options(THEME_OPTIONS_ARRAY)
+				.type(FormFieldType.THEMEPICKER)
 				.value("slate-edged")
 		);
 		

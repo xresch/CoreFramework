@@ -235,7 +235,7 @@ button:disabled {
 	padding: 5px;
 	border: 3px solid rgba(2, 2, 2, 0.9);
     /* backdrop-filter: blur(4px); Don't do this here, will create issues with expanding elements to fullscreen */
-    background-color: rgba(0, 0, 0, 0.70);
+    background-color: light-dark(rgba(240, 240, 240, 1.0), rgba(0, 0, 0, 0.70));
 	box-shadow: 0 0 9px rgba(255, 255, 255, 0.66);
 }
 
@@ -943,6 +943,7 @@ button:disabled {
 .cfw-switch-slider {
 	display:flex;
 	min-width: 126px!important;
+	color: white;
 }
 .switch-off .cfw-switch-slider {
   -webkit-transform: translateX(-50px);

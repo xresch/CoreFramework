@@ -133,6 +133,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		CUSTOM_LIST,
 		WYSIWYG, 
 		COLORPICKER,
+		THEMEPICKER,
 		DATEPICKER, 
 		DATETIMEPICKER, 
 		TIMEFRAMEPICKER,
@@ -674,6 +675,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 			case LIST:  			createList(html, cssClasses); break;				
 			case EMAIL:  			html.append("<input type=\"email\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>"); break;
 			case COLORPICKER:  		createColorPicker(html, cssClasses); break;
+			case THEMEPICKER:  		createThemePicker(html, cssClasses); break;
 			case DATEPICKER:  		createDatePicker(html, cssClasses); break;		
 			case DATETIMEPICKER:  	createDateTimePicker(html, cssClasses); break;					
 			case TIMEFRAMEPICKER:	createTimeframePicker(html, cssClasses); break;				
@@ -968,6 +970,18 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 			((CFWForm)this.parent).javascript.append("cfw_initializeColorPickerField('"+name+"', '"+ this.getValue() +"');\r\n");
 		}
 				
+	}
+	
+	/***********************************************************************************
+	 * Create Select
+	 ***********************************************************************************/
+	private void createThemePicker(StringBuilder html, String cssClasses) {
+		
+		
+		
+		this.setOptions( CFW.Registry.Components.getThemeOptions() );
+		
+		createSelect(html, cssClasses);
 	}
 	
 	/***********************************************************************************

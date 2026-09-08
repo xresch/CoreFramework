@@ -257,8 +257,9 @@ public class CFWDBConfig {
 			// Update Available Options
 			Configuration configToUpdate = CFW.DB.Config.selectBy(config.category(), config.name());
 			if( configToUpdate != null ) {
-				configToUpdate.options(config.options());
-				configToUpdate.update(ConfigFields.OPTIONS);
+				configToUpdate.options( config.options() );
+				configToUpdate.type( config.type() );
+				configToUpdate.update(ConfigFields.OPTIONS, ConfigFields.TYPE);
 			}
 			
 		}

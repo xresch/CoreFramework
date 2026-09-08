@@ -99,43 +99,63 @@ public class FeatureCore extends CFWAppFeature {
 		CFW.Registry.Components.addGlobalCSSFile(HANDLE_JAR, CSS_PATH, "cfw.css");
 		CFW.Registry.Components.addGlobalCSSFile(FileDefinition.HandlingType.FILE, "./resources/css", "custom.css");
 		
+		//----------------------------------
+		// Register Themes
+		String THEME_PATH = CSS_PATH + ".themes";
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "bootstrap.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "darkblue.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "flatly.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "lumen.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "materia.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "minty.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "pulse.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "sandstone.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "simplex.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "slate.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "slate-edged.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "spacelab.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "superhero.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "united.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "warm-edged.css");
+		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "warm-soft.css");
+		
 		//------------------------------------------
 		// Register Global Javascript
 		
 		//JQuery and Bootstrap
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "jquery-3.6.0.min.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "jquery-ui-1.12.3.min.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "bootstrap.bundle.min.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "bootstrap-tagsinput.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "jquery-3.6.0.min.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "jquery-ui-1.12.3.min.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "bootstrap.bundle.min.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "bootstrap-tagsinput.js");
 		
 		//Various
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "summernote-bs4.min.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "highlight.min.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "lodash-full-4.17.15.min.js");
-		//CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-2.93.min.js"); 
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-v4.4.1.umd.js"); 
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-plugin-zoom-v2.2.0.js"); 
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-plugin-annotation-v3.1.0.min.js"); 
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "moment-v2.29.4.min.js"); // required by ChartJS
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-adapter-moment-v1.0.1.js"); // required by ChartJS
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "summernote-bs4.min.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "highlight.min.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "lodash-full-4.17.15.min.js");
+		//CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-2.93.min.js"); 
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-v4.4.1.umd.js"); 
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-plugin-zoom-v2.2.0.js"); 
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-plugin-annotation-v3.1.0.min.js"); 
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "moment-v2.29.4.min.js"); // required by ChartJS
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-adapter-moment-v1.0.1.js"); // required by ChartJS
 		
 		//CFW
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_components.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_colors.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_fields.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_format.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_http.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_tutorial.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_ui.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_utils.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_components.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_colors.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_fields.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_format.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_http.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_tutorial.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_ui.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw_utils.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.core", "cfw.js");
 		
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_dataviewer.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_chart.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_csv.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_properties.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_texttable.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_dataviewer.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_chart.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_csv.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_properties.js");
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_texttable.js");
 		
 		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.FILE, "./resources/js", "custom.js");
 		
