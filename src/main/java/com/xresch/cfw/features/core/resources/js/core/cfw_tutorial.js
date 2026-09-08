@@ -16,7 +16,7 @@ function cfw_tutorial_bundleStart(jqueryObjectOrId){
 	// Add Button to Menubar 
 	if($('#cfwMenuButtons-Tutorials').length == 0){
 		var tutsButton = $('<li class="cfw-button-menuitem">'
-			+'<a class="dropdown-item" onclick="cfw_tutorial_drawStartpage()" id="cfwMenuButtons-Tutorials">'
+			+'<a class="dropdown-item" href="" onclick="cfw_tutorial_drawStartpage()" id="cfwMenuButtons-Tutorials">'
 				+'<div class="cfw-fa-box">'
 					+'<i class="fas fa-graduation-cap"></i>'
 				+'</div><span class="cfw-menuitem-label">Tutorials</span></a>'

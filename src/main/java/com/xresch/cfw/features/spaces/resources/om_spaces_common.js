@@ -100,7 +100,7 @@ function cfw_spaces_createSpaceSelector(callbackFunction, selectedSpaceID, isDis
 				let icon = cfw_spaces_getFilterIcon(filterInclusive);
 				
 				let filterButton = $('<li class="cfw-button-menuitem" title="Toggle if you want to see only items in this space, or all items accessible from this space.">'
-						+ '<a class="dropdown-item" id="cfwMenuButtons-filterSpace" onclick="cfw_spaces_toogleFilter(this)">'
+						+ '<a class="dropdown-item" id="cfwMenuButtons-filterSpace" href="" onclick="cfw_spaces_toogleFilter(this)">'
 						    + '<div class="cfw-fa-box"><i class="fas '+icon+'"></i></div>'
 							+ '<span class="cfw-menuitem-label">Space Filter</span>'
 						+ '</a>'
