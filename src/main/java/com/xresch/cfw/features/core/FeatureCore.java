@@ -55,6 +55,8 @@ public class FeatureCore extends CFWAppFeature {
 	
 	public static final String CONFIG_BROWSER_RESOURCE_MAXAGE = "Browser Resource Max Age";
 	
+	public static final String DEFAULT_THEME = "dark-slate-edged";
+	
 	private static final LinkedHashMap<String, String> CHART_TYPES = new LinkedHashMap<>();
 	static {
 		CHART_TYPES.put("area"			, "Area");
@@ -102,22 +104,22 @@ public class FeatureCore extends CFWAppFeature {
 		//----------------------------------
 		// Register Themes
 		String THEME_PATH = CSS_PATH + ".themes";
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "bootstrap.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "darkblue.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "flatly.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "lumen.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "materia.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "minty.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "pulse.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "sandstone.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "simplex.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "slate.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "slate-edged.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "spacelab.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "superhero.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "united.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "warm-edged.css");
-		CFW.Registry.Components.addBootstrapTheme(HANDLE_JAR, THEME_PATH, "warm-soft.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-blue.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-slate.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, DEFAULT_THEME+".css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-superhero.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-warm-edged.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-warm-soft.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-bootstrap.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-flatly.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-lumen.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-materia.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-minty.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-pulse.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-sandstone.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-simplex.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-spacelab.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-united.css");
 		
 		//------------------------------------------
 		// Register Global Javascript

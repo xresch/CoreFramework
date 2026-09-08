@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemFooter;
@@ -69,9 +70,10 @@ public class CFWRegistryComponents {
 	}
 	
 	/***********************************************************************
+	 * Adds a bootstrap.css theme to the list of themes.
 	 * 
 	 ***********************************************************************/ 
-	public static void addBootstrapTheme(FileDefinition.HandlingType type, String path, String filename){
+	public static void addTheme(FileDefinition.HandlingType type, String path, String filename){
 		
 		FileDefinition fileDef = new FileDefinition(type, path, filename);
 		
@@ -87,10 +89,15 @@ public class CFWRegistryComponents {
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/ 
-	public static FileDefinition getBootstrapTheme(String filename){
-		String filenameNoCss = filename.replaceAll(".css", "");
+	public static FileDefinition getTheme(String themeName){
 		
-		return bootstrapThemes.get(filenameNoCss);
+		String filenameNoCss = themeName.replaceAll(".css", "");
+		if(bootstrapThemes.containsKey(filenameNoCss)) {
+			return bootstrapThemes.get(filenameNoCss);
+		}else {
+			//fallback to default theme
+			return bootstrapThemes.get(FeatureCore.DEFAULT_THEME);
+		}
 	}
 	
 	/***********************************************************************
@@ -99,6 +106,7 @@ public class CFWRegistryComponents {
 	public static ArrayList<String> getThemeOptions(){
 
 		ArrayList<String> options = new ArrayList<>();
+		options.add("");
 		options.addAll(bootstrapThemes.keySet());
 		
 		return options;

@@ -188,6 +188,7 @@ DONE
 - Charts: Improved display of charts types: pie, doughnut, radar, polar
 - Security: Salt strings can now be configured at setup in file ./config/salt.properties.
 - Credentials: Improved encryption by adding secondary level of encryption.
+- Dashboard: New option "Theme" allows you to override the theme used for the dashboard.
 - Dashboard Widget: New Standard Settings "Button Popup" and "Button Label" to display any widget as a button. Widget content will be loaded in a popup window on button click.
 - Dashboard Widget: Fixed table text color cannot be changed by widget foreground color
 - Query: Autocomplete: Files can now be autocompleted using "file:..."

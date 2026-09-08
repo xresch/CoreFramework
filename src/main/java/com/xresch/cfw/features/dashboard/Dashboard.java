@@ -70,6 +70,7 @@ public class Dashboard extends CFWObject {
 		, LAST_UPDATED
 		, IS_PUBLIC
 		, START_FULLSCREEN
+		, THEME
 		, IS_DELETABLE
 		, IS_RENAMABLE 
 		, IS_ARCHIVED
@@ -184,6 +185,10 @@ public class Dashboard extends CFWObject {
 			.setValue(false)
 			;
 	
+	private CFWField<String> theme = CFWField.newString(FormFieldType.THEMEPICKER, DashboardFields.THEME)
+			.setDescription("The theme that should be used to display the dashboard.");
+	
+	
 	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, DashboardFields.IS_DELETABLE.toString())
 			.setDescription("Flag to define if the dashboard can be deleted or not.")
 			.setValue(true)
@@ -253,6 +258,7 @@ public class Dashboard extends CFWObject {
 				, lastUpdated
 				, isPublic
 				, startFullscreen
+				, theme
 				, isDeletable
 				, isRenamable
 				, isArchived
@@ -359,6 +365,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.LAST_UPDATED.toString(),
 						DashboardFields.IS_PUBLIC.toString(),
 						DashboardFields.START_FULLSCREEN.toString(),
+						DashboardFields.THEME.toString(),
 						DashboardFields.IS_DELETABLE.toString(),
 						DashboardFields.IS_RENAMABLE.toString(),		
 						DashboardFields.IS_ARCHIVED.toString(),		
@@ -756,6 +763,15 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard startFullscreen(boolean value) {
 		this.startFullscreen.setValue(value);
+		return this;
+	}
+	
+	public String theme() {
+		return theme.getValue();
+	}
+	
+	public Dashboard theme(String value) {
+		this.theme.setValue(value);
 		return this;
 	}
 	

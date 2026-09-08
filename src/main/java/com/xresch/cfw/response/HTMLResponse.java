@@ -25,6 +25,9 @@ public class HTMLResponse extends AbstractHTMLResponse {
 	
 	private static final Logger logger = CFWLog.getLogger(HTMLResponse.class.getName());
 	
+	private String themeName = null;
+	
+	
 	/*******************************************************************************
 	 * 
 	 *******************************************************************************/
@@ -42,23 +45,35 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				this.pageTitle = menuTitle + ": " + this.pageTitle;
 			}
 		}
-		
+				
 		//------------------------------------------
-		// CSS
-		String themeName = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_THEME);
-		if(themeName.equals("custom")) {
-			this.addCSSFileTheme(HandlingType.FILE, "./resources/css", "bootstrap-theme-custom.css");
-		}else {
-			this.addCSSFileTheme( CFW.Registry.Components.getBootstrapTheme(themeName) );
-		}
-		
+		// Code Theme
 		String codeThemeName = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_CODE_THEME);
 		this.addCSSFileTheme(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "highlightjs_"+codeThemeName+".css");
 	}
-		
+	
+	
+	/*******************************************************************************
+	 * 
+	 *******************************************************************************/	
 	@Override
 	public StringBuilder buildResponse() {
 		
+		//------------------------------------------
+		// CSS Theme
+		if(Strings.isNullOrEmpty(themeName)) {
+			themeName = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_THEME);
+		}
+		
+		if(themeName.equals("custom")) {
+			this.addCSSFileTheme(HandlingType.FILE, "./resources/css", "bootstrap-theme-custom.css");
+		}else {
+
+			this.addCSSFileTheme( CFW.Registry.Components.getTheme(themeName) );
+		}
+		
+		//------------------------------------------
+		// Create Page
 		StringBuilder buildedPage = new StringBuilder();
 		
 		buildedPage.append("<!DOCTYPE html>\n");
@@ -192,6 +207,14 @@ public class HTMLResponse extends AbstractHTMLResponse {
 		buildedPage.append("</html>");
 		
 		return buildedPage;
+	}
+	
+	/*******************************************************************************
+	 * Overrides the theme that should be used for this HTML response.
+	 *******************************************************************************/
+	public HTMLResponse setTheme(String themeName) {
+		this.themeName = themeName;
+		return this;
 	}
 
 }

@@ -1792,6 +1792,8 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	 ******************************************************************************************************/
 	public CFWField<T> setOptions(ArrayList<String> options) {
 		LinkedHashMap<Object,Object> optionsMap = new LinkedHashMap<Object,Object>();
+		
+
 		if(options != null) {
 			for(Object option : options) {
 				optionsMap.put(option, option);

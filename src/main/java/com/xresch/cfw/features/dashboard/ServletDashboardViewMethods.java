@@ -175,6 +175,7 @@ public class ServletDashboardViewMethods
 				// Add Page Data
 				html.setPageTitle(dashboard.name());
 				html.addJavascriptData("dashboardName",  dashboard.name());
+				html.setTheme(dashboard.theme());
 				
 				if(currentUser != null) {
 					html.addJavascriptData("dashboardIsFaved",  CFW.DB.DashboardFavorites.checkIsDashboardFavedByUser(dashboard, currentUser));
