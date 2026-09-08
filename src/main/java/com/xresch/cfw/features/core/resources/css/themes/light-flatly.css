@@ -2272,7 +2272,7 @@ input[type="button"].btn-block {
   background-color: transparent;
   border: 0; }
   .dropdown-item:hover, .dropdown-item:focus {
-    color: #fff;
+    color: #fff !important;
     text-decoration: none;
     background-color: #2C3E50; }
   .dropdown-item.active, .dropdown-item:active {
