@@ -297,7 +297,7 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable, callbackFu
 	
   	//--------------------------------
 	// Add Filter
-	let filterField = $('<input type="text" class="form-control-sm w-fill ml-1 mr-1"'
+	let filterField = $('<input type="text" class="form-control form-control-sm w-fill ml-1 mr-1"'
 								+' placeholder="Filter..."'
 								+' onkeyup="cfw_filterSelect(this, event, \''+fieldID+'\')">');
 	

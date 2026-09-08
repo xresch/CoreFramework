@@ -171,6 +171,7 @@ DONE
 ------- current -------
 - NEW FEATURE: Spaces! Adding multi-client capabilities to most of the existing Features. All entities that have existed will be found under the space "[DEF] Default"
 - NEW FEATURE: CHARTS ARE NOW ZOOMABLE!
+- NEW FEATURE: You can now add custom Bootstrap 4 themes in the folder ./resources/css/themes
 
 - BREAKING CHANGE: Query Command Source: stopped "each" parameter from being added to metadata, use function sourceEach() to retrieve value 
 - BREAKING CHANGE: Refactoring of CFW.Utils.Text to CFW.Text
@@ -188,7 +189,7 @@ DONE
 - Charts: Improved display of charts types: pie, doughnut, radar, polar
 - Security: Salt strings can now be configured at setup in file ./config/salt.properties.
 - Credentials: Improved encryption by adding secondary level of encryption.
-- Dashboard: New option "Theme" allows you to override the theme used for the dashboard.
+- Dashboard: New option "Theme" allows you to override the theme used to display the dashboard.
 - Dashboard Widget: New Standard Settings "Button Popup" and "Button Label" to display any widget as a button. Widget content will be loaded in a popup window on button click.
 - Dashboard Widget: Fixed table text color cannot be changed by widget foreground color
 - Query: Autocomplete: Files can now be autocompleted using "file:..."

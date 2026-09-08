@@ -89,7 +89,7 @@ function cfw_spaces_createSpaceSelector(callbackFunction, selectedSpaceID, isDis
 				
 				inputField.parent().find("button") // remove classes added by initialize Select
 					  .removeClass()
-					  .addClass("dropdown-toggle " + disabledString)
+					  .addClass("form-control form-control-sm dropdown-toggle " + disabledString)
 					  .attr('disabled', isDisabled);
 				
 				CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, inputField.val(), "session");

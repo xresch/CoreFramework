@@ -65,6 +65,11 @@ pre {
     tab-size: 4;
 }
 
+input {
+    caret-color: black; /* Fix white on white caret in dark themes*/
+}
+
+
 /*************************************************************************
  * Bootstrap Theme extensions
  *************************************************************************/

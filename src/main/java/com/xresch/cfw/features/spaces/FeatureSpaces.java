@@ -156,10 +156,10 @@ public class FeatureSpaces extends CFWAppFeature {
 		//-----------------------------------------
 		// 
 		//-----------------------------------------
-		if(CFWDBSpaces.getCount() == 3) {
-			//createTestdataLarge();
-			new CFWSpacesTestdataGenerator(true).generateHierarchy();
-		}
+//		if(CFWDBSpaces.getCount() == 3) {
+//			//createTestdataLarge();
+//			new CFWSpacesTestdataGenerator(true).generateHierarchy();
+//		}
     			
 		//-----------------------------------------
 		// 

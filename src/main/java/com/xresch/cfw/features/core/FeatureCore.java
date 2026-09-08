@@ -2,6 +2,7 @@ package com.xresch.cfw.features.core;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
@@ -105,8 +106,10 @@ public class FeatureCore extends CFWAppFeature {
 		// Register Themes
 		String THEME_PATH = CSS_PATH + ".themes";
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-blue.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-cyborg.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-slate.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, DEFAULT_THEME+".css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-solar.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-superhero.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-warm-edged.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-warm-soft.css");
@@ -120,6 +123,18 @@ public class FeatureCore extends CFWAppFeature {
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-simplex.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-spacelab.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-united.css");
+		
+		String themeFolder = "./resources/css/themes";
+		
+		Set<String> themeFiles = CFW.Files.listFilesInFolder(themeFolder, false);
+		
+		if(themeFiles != null) {
+			for(String theme : themeFiles) {
+				if(theme.endsWith(".css")) {
+					CFW.Registry.Components.addTheme(HandlingType.FILE, "./resources/css/themes", theme);
+				}
+			}
+		}
 		
 		//------------------------------------------
 		// Register Global Javascript
