@@ -189,6 +189,7 @@ DONE
 - Security: Salt strings can now be configured at setup in file ./config/salt.properties.
 - Credentials: Improved encryption by adding secondary level of encryption.
 - Dashboard Widget: New Standard Settings "Button Popup" and "Button Label" to display any widget as a button. Widget content will be loaded in a popup window on button click.
+- Dashboard Widget: Fixed table text color cannot be changed by widget foreground color
 - Query: Autocomplete: Files can now be autocompleted using "file:..."
 - Query: Autocomplete: Credentials can now be autocompleted using "creds:..."
 - Query: Command chart - chart series can now have custom colors using option "colors"
