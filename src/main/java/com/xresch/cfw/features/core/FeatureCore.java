@@ -106,24 +106,24 @@ public class FeatureCore extends CFWAppFeature {
 		// Register Themes
 		String THEME_PATH = CSS_PATH + ".themes";
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-blue.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-cyborg.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-performator.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-slate.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-cyborg-black.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-orange-edged.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-orange-soft.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-performator-purple.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-slate-gray.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, DEFAULT_THEME+".css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-solar.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-superhero.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-warm-edged.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-warm-soft.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-solar-green.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-superhero-blue.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-bootstrap.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-flatly.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-lumen.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-materia.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-minty.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-pulse.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-minty-green.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-pulse-purple.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-sandstone.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-simplex.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-spacelab.css");
-		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-united.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-simplex-red.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-spacelab-blue.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "light-united-orange.css");
 		
 		String themeFolder = "./resources/css/themes";
 		
