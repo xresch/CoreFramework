@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
@@ -868,14 +869,9 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	 ***********************************************************************************/
 	private void createLanguageSelect(StringBuilder html, String cssClasses) {
 		
-		this.removeAttribute("value");
-		
-		String stringVal = (value == null) ? "" : this.getValue().toString();
-		
-		html.append("<select class=\""+cssClasses+"\" "+this.getAttributesString()+" >");
-		
+
 		//-----------------------------------
-		// handle options
+		// Create Options
 		String languages[] = Locale.getISOLanguages();
 		Locale userLocale = CFW.Localization.getUsersPreferredLocale();
 		
@@ -888,28 +884,18 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 			
 		}
 		
-
-		//Add empty option
-		html.append("<option value=\"\">&nbsp;</option>");
-		
+		//-----------------------------------
+		// Reverse Label/Value
+		LinkedHashMap<String,String> reversed = new LinkedHashMap<>();
 		for(Entry<String, String> entry : sortedByLocale.entrySet()) {
-			
-			String currentLabel = entry.getKey();
-			String optionValue = entry.getValue();
-			
-			if(optionValue.toString().equals(stringVal)) {
-				html.append("<option value=\""+optionValue+"\" selected>")
-					.append(currentLabel)
-				.append("</option>");
-			}else {
-				html.append("<option value=\""+optionValue+"\">")
-					.append(currentLabel)
-				.append("</option>");
-			}
+			reversed.put(entry.getValue(), entry.getKey());
 		}
 		
+		this.setOptions(reversed);
 		
-		html.append("</select>");
+		//-----------------------------------
+		// Create Options
+		this.createSelect(html, cssClasses);
 	}
 	
 	/***********************************************************************************
@@ -1833,6 +1819,22 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 	 ******************************************************************************************************/
 	public CFWField<T> setOptions(HashMap valueLabelPairs) {
 		this.valueLabelOptions = valueLabelPairs;
+		return this;
+	}
+	
+	/******************************************************************************************************
+	 * Set values for selection fields. First element in the map will be the value of the field, the second
+	 * will be used as the label for the option.
+	 * This will reset any options set with setOptions().
+	 * 
+	 * @param map with value/label pairs
+	 * @return instance for chaining
+	 ******************************************************************************************************/
+	public CFWField<T> setOptions(Map<?,?> valueLabelPairs) {
+		
+		LinkedHashMap<?,?> map = new LinkedHashMap<>(valueLabelPairs);
+		
+		this.valueLabelOptions = map;
 		return this;
 	}
 	
