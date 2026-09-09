@@ -1822,21 +1822,6 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		return this;
 	}
 	
-	/******************************************************************************************************
-	 * Set values for selection fields. First element in the map will be the value of the field, the second
-	 * will be used as the label for the option.
-	 * This will reset any options set with setOptions().
-	 * 
-	 * @param map with value/label pairs
-	 * @return instance for chaining
-	 ******************************************************************************************************/
-	public CFWField<T> setOptions(Map<?,?> valueLabelPairs) {
-		
-		LinkedHashMap<?,?> map = new LinkedHashMap<>(valueLabelPairs);
-		
-		this.valueLabelOptions = map;
-		return this;
-	}
 	
 	/******************************************************************************************************
 	 * Adds the specified flags for this field.
