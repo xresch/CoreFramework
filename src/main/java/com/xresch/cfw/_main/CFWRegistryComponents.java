@@ -103,11 +103,14 @@ public class CFWRegistryComponents {
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/ 
-	public static ArrayList<String> getThemeOptions(){
+	public static LinkedHashMap<String,String> getThemeOptions(){
 
-		ArrayList<String> options = new ArrayList<>();
-		options.add("");
-		options.addAll(bootstrapThemes.keySet());
+		LinkedHashMap<String,String> options = new LinkedHashMap<>();
+		options.put("", "Default");
+		
+		for(String name : bootstrapThemes.keySet()) {
+			options.put(name, name);
+		}
 		
 		return options;
 	}
