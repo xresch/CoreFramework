@@ -400,7 +400,8 @@ public class CFWSpace extends CFWObject {
 								if(isRootSpace) {
 									return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());	
 								}else {
-									return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());	
+									
+									return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults(), spaceID);	
 								}
 								
 									
@@ -467,7 +468,7 @@ public class CFWSpace extends CFWObject {
 						if(isRootSpace) {
 							return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());	
 						}else {
-							return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults());	
+							return CFW.DB.Users.autocompleteUserSpaced(searchValue, this.getMaxResults(), spaceID);	
 						}
 						
 					}

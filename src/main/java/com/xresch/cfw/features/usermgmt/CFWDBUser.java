@@ -573,6 +573,9 @@ public class CFWDBUser {
 		return new AutocompleteResult(autocompleteList);
 	}
 	
+	
+	
+	
 	/****************************************************************
 	 * Returns a AutocompleteResult with users that can be found in
 	 * any space that have have same Root Space as the currently 
@@ -583,19 +586,34 @@ public class CFWDBUser {
 	 * @return AutocompleteResult
 	 ****************************************************************/
 	public static AutocompleteResult autocompleteUserSpaced(String searchValue, int maxResults) {
+		int spaceID = CFW.Context.Request.getSelectedSpaceID();
+		
+		return autocompleteUserSpaced(searchValue, maxResults, spaceID);
+		
+	}
+	
+	/****************************************************************
+	 * Returns a AutocompleteResult with users that can be found in
+	 * any space that have have same Root Space as the currently 
+	 * selected space.
+	 * 
+	 * @param searchValue
+	 * @param maxResults
+	 * @return AutocompleteResult
+	 ****************************************************************/
+	public static AutocompleteResult autocompleteUserSpaced(String searchValue, int maxResults, int spaceID) {
 		
 		if(Strings.isNullOrEmpty(searchValue)) {
 			return new AutocompleteResult();
 		}
 		
-		int SpaceID = CFW.Context.Request.getSelectedSpaceID();
 		String likeString = "%"+searchValue.toLowerCase()+"%";
 		ArrayList<CFWObject> userList = 
 			new CFWSQL(new User())
 				.queryCache()
 				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE
 								, "sql_autocompleteUserForSpace.sql"
-								, SpaceID
+								, spaceID
 								, likeString
 								, likeString
 								, likeString
