@@ -10,7 +10,6 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIRequestHandler;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.utils.CFWUtilsArray;
 
 /**************************************************************************************************************
  * 
@@ -21,6 +20,7 @@ public class APIDashboardImport extends APIDefinition{
 	
 	private static final String KEEP_OWNER = "KEEP_OWNER";
 	private static final String OVERRIDE_EXISTING = "OVERRIDE_EXISTING";
+	private static final String OVERRIDE_BACKUP = "OVERRIDE_BACKUP";
 	private static final String JSON_DATA = "JSON_DATA";
 	
 	private static final String[] inputFieldnames = new String[] {};
@@ -57,12 +57,14 @@ public class APIDashboardImport extends APIDefinition{
 				// Create Response
 				String keepOwner = request.getParameter(KEEP_OWNER);
 				String overrideExisting = request.getParameter(OVERRIDE_EXISTING);
+				String overrideBackup = request.getParameter(OVERRIDE_BACKUP);
 				String jsonData = request.getParameter(JSON_DATA);
 				json.getContent().append( 
 						CFW.DB.Dashboards.importByJson(
 								jsonData
 								, Boolean.parseBoolean(keepOwner)
 								, Boolean.parseBoolean(overrideExisting)
+								, Boolean.parseBoolean(overrideBackup)
 								) 
 						);
 				
@@ -97,6 +99,15 @@ public class APIDashboardImport extends APIDefinition{
 		
 		instance.addField(overrideExisting);
 		this.addInputFields(overrideExisting);
+		
+		//-----------------------------
+		// Override Existing
+		CFWField<Boolean> overrideBackup = CFWField.newBoolean(FormFieldType.BOOLEAN, OVERRIDE_BACKUP)
+				.setDescription("If true, will create a backup version before overriding the dashboard.")
+				.setValue(true);
+		
+		instance.addField(overrideBackup);
+		this.addInputFields(overrideBackup);
 		
 		//-----------------------------
 		// JSON Data

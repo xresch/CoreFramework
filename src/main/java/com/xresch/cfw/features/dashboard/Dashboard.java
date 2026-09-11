@@ -99,6 +99,7 @@ public class Dashboard extends CFWObject {
 			.setValue(null);
 	
 	private CFWField<String> uuid = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardFields.UUID)
+			.setLabel("UUID")
 			.setDescription("The unique ID of the dashboard. Used for updating dashboards when they exist on import and identifying same dashboard over multiple systems.")
 			.setValue(UUID.randomUUID().toString());
 	

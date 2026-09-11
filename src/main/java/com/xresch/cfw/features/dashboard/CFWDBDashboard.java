@@ -674,18 +674,18 @@ public class CFWDBDashboard {
 		}
 	}
 	
-	/***************************************************************
+	/***************************************************************************************
 	 * Import an jsonArray exported with getJsonArrayForExport().
 	 * @param json json object or array string
 	 *   - Array of Dashboards:  [{ ... dashboardFields ...}, { ... dashboardFields ...}]	
 	 *   - Object with dashboards: { dashboards: [ ...] }
 	 *   - Object with Payload(One of above):  { payload: <objectOrArray> }
-	 * @param overrideExisting if the dashboard with the given ID exists, override the existing
-	 * dashboard
+	 * @param overrideExisting if the dashboard with the given ID exists, override the existing dashboard
+	 * @param overrideBackup if true, will create a backup before overriding a dashboard
 	 *     	
 	 * @return Returns a JSON array string.
-	 ****************************************************************/
-	public static boolean importByJson(String json, boolean keepOwner, boolean overrideExisting) {
+	 ****************************************************************************************/
+	public static boolean importByJson(String json, boolean keepOwner, boolean overrideExisting, boolean overrideBackup) {
 
 		//-----------------------------
 		// Resolve JSON Array
@@ -697,10 +697,10 @@ public class CFWDBDashboard {
 		}else if(element.isJsonObject()) {
 			JsonObject object = element.getAsJsonObject();
 			if(object.has("payload")) {
-				return importByJson(object.get("payload").toString(), keepOwner, overrideExisting);
+				return importByJson(object.get("payload").toString(), keepOwner, overrideExisting, overrideBackup);
 				
 			}if(object.has("dashboards")) {
-				return importByJson(object.get("dashboards").toString(), keepOwner, overrideExisting);
+				return importByJson(object.get("dashboards").toString(), keepOwner, overrideExisting, overrideBackup);
 				
 			}else {
 				new CFWLog(logger)
@@ -846,11 +846,12 @@ public class CFWDBDashboard {
 						
 						//---------------------------------
 						// Create backup version
-						success &= (null != CFW.DB.Dashboards.createDuplicate(stringID, true) );
-						
-						//---------------------------------
-						// Select with Version Group not Null
-						existing = CFW.DB.Dashboards.selectByID(stringID);
+						if(overrideBackup) {
+							success &= (null != CFW.DB.Dashboards.createDuplicate(stringID, true) );
+							
+							// Select with Version Group not Null
+							existing = CFW.DB.Dashboards.selectByID(stringID);
+						}
 						
 						//----------------------------					
 						// Update

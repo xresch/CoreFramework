@@ -211,7 +211,7 @@ public class ServletDashboardList extends HttpServlet
 				switch(item) {
 
 					case "dashboards": 	String jsonString = request.getParameter("jsonString");
-										CFW.DB.Dashboards.importByJson(jsonString, false, false);
+										CFW.DB.Dashboards.importByJson(jsonString, false, false, false);
 										CFW.Messages.addInfoMessage("Import finished!");
 										break;  
 										
