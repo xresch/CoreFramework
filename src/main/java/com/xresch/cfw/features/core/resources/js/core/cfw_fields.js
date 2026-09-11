@@ -244,6 +244,23 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable, callbackFu
 		`
 		;
 	
+	
+	let functionCreateOption = function(value, label){
+		
+		let finalLabel = '&nbsp;';
+		if( !CFW.utils.isNullOrEmpty(label) ) {
+				finalLabel = label;
+		}
+		
+		let noApostrophe = value
+								.replaceAll('"', '&quot;')
+								.replaceAll("'", "\\'")
+								;
+												
+		return ' <a class="dropdown-item filterable" onclick="cfw_setSelectValue(\''+fieldID+'\', \''+noApostrophe+'\')">'+finalLabel+'</a>';
+	
+	}
+	
 	//--------------------------
 	// Create Options
 	let containsSelectedValue = false;
@@ -253,28 +270,29 @@ function cfw_initializeSelect(fieldID, valueLabelOptions, filterable, callbackFu
 			
 			if(selectedValue == currentOption.value){ containsSelectedValue = true; }
 			
-			let label = '&nbsp;';
-			if( !CFW.utils.isNullOrEmpty(currentOption.label) ) {
-					label = currentOption.label;
-			}
-			let noApostrophe = currentOption.value
-										.replaceAll('"', '&quot;')
-										.replaceAll("'", "\\'")
-										;
-										
-			dropdownHTML += ' <a class="dropdown-item filterable" onclick="cfw_setSelectValue(\''+fieldID+'\', \''+noApostrophe+'\')">'+label+'</a>';
+			dropdownHTML += functionCreateOption(currentOption.value, currentOption.label);
+		}
+	}
+	
+	
+	
+	//--------------------------------
+	// Select first if not Selected
+	if( ! containsSelectedValue 
+	&& valueLabelOptions != null
+	&& valueLabelOptions.length > 0
+	){
+		
+		if( CFW.utils.isNullOrEmpty(selectedValue) ){
+			selectedValue = valueLabelOptions[0].value;
+		}else{
+			let label = 'Currently Selected Value(&quot;'+selectedValue+'&quot;)';
+			valueLabelOptions.push({value: selectedValue, label: label})
+			dropdownHTML += functionCreateOption(selectedValue, label);
 		}
 	}
 	
 	dropdownHTML += '</div> </div>';
-	
-	//--------------------------------
-	// Select first if not Selected
-	if( ! containsSelectedValue
-	&& valueLabelOptions != null
-	&& valueLabelOptions.length > 0 ){
-		selectedValue = valueLabelOptions[0].value;
-	}
 	
 	//--------------------------------
 	// Finishing Touch
