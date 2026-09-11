@@ -154,6 +154,8 @@ public class CFWDBDashboardWidget {
 		
 		if(CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, auditLogFieldnames, cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id) ) {
 			removeFromCache(id);
+			
+			
 			return deleteJobsForWidget(id);
 			
 		}

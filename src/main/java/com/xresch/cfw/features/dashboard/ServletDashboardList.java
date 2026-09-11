@@ -211,7 +211,7 @@ public class ServletDashboardList extends HttpServlet
 				switch(item) {
 
 					case "dashboards": 	String jsonString = request.getParameter("jsonString");
-										CFW.DB.Dashboards.importByJson(jsonString, false);
+										CFW.DB.Dashboards.importByJson(jsonString, false, false);
 										CFW.Messages.addInfoMessage("Import finished!");
 										break;  
 										
@@ -256,7 +256,7 @@ public class ServletDashboardList extends HttpServlet
 	private void deleteDashboard(JSONResponse jsonResponse, String ID) {
 		// TODO Auto-generated method stub
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
-			jsonResponse.setSuccess(CFW.DB.Dashboards.deleteByID(ID));
+			jsonResponse.setSuccess(CFW.DB.Dashboards.deleteByID(ID, true));
 		}else {
 			jsonResponse.setSuccess(CFW.DB.Dashboards.deleteByIDForCurrentUser(ID));
 		}

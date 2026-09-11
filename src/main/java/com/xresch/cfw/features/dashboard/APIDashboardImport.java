@@ -20,6 +20,7 @@ import com.xresch.cfw.utils.CFWUtilsArray;
 public class APIDashboardImport extends APIDefinition{
 	
 	private static final String KEEP_OWNER = "KEEP_OWNER";
+	private static final String OVERRIDE_EXISTING = "OVERRIDE_EXISTING";
 	private static final String JSON_DATA = "JSON_DATA";
 	
 	private static final String[] inputFieldnames = new String[] {};
@@ -55,8 +56,15 @@ public class APIDashboardImport extends APIDefinition{
 				//----------------------------------
 				// Create Response
 				String keepOwner = request.getParameter(KEEP_OWNER);
+				String overrideExisting = request.getParameter(OVERRIDE_EXISTING);
 				String jsonData = request.getParameter(JSON_DATA);
-				json.getContent().append( CFW.DB.Dashboards.importByJson(jsonData, Boolean.parseBoolean(keepOwner)) );
+				json.getContent().append( 
+						CFW.DB.Dashboards.importByJson(
+								jsonData
+								, Boolean.parseBoolean(keepOwner)
+								, Boolean.parseBoolean(overrideExisting)
+								) 
+						);
 				
 				json.setSuccess(true);
 
@@ -80,6 +88,15 @@ public class APIDashboardImport extends APIDefinition{
 		
 		instance.addField(keepOwner);
 		this.addInputFields(keepOwner);
+		
+		//-----------------------------
+		// Override Existing
+		CFWField<Boolean> overrideExisting = CFWField.newBoolean(FormFieldType.BOOLEAN, OVERRIDE_EXISTING)
+				.setDescription("If true, will override if the dashboard already exists with the same UUID.")
+				.setValue(false);
+		
+		instance.addField(overrideExisting);
+		this.addInputFields(overrideExisting);
 		
 		//-----------------------------
 		// JSON Data

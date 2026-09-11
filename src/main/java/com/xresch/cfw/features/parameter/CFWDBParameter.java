@@ -11,7 +11,9 @@ import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
+import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterFields;
 import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterMode;
 import com.xresch.cfw.features.parameter.CFWParameter.CFWParameterScope;
@@ -102,7 +104,27 @@ public class CFWDBParameter {
 	public static boolean 	deleteByID(String id) 				{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, cfwObjectClass, CFWParameterFields.PK_ID.toString(), Integer.parseInt(id)); }
 	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, cfwObjectClass, CFWParameterFields.PK_ID.toString(), id); }
 	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(prechecksDeleteUpdate, cfwObjectClass, itemIDs); }
+	
+	/***************************************************************
+	 * Deletes all parameters for the selected dashboard.
+	 * 
+	 * @return Returns true if successful, false otherwise.
+	 ****************************************************************/
+	public static boolean deleteParamsForDashboard(String dashboardID) {
 		
+		 ArrayList<Integer> idsToDelete =  new CFWSQL(new CFWParameter())
+				.queryCache()
+				.select(CFWParameterFields.PK_ID)
+				.where(CFWParameterFields.FK_ID_DASHBOARD, dashboardID)
+				.getAsIntegerArrayList(CFWParameterFields.PK_ID);
+		
+		 boolean success = true;
+		 for(Integer id : idsToDelete) {
+			 success &= deleteByID(id);
+		 }
+		 
+		 return success;
+	}
 	//####################################################################################################
 	// SELECT
 	//####################################################################################################

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +53,7 @@ public class Dashboard extends CFWObject {
 		  PK_ID
 		, FK_ID_SPACE  // from FeatureSpaces.FK_ID_SPACE
 		, FK_ID_USER
+		, UUID
 		, NAME
 		, DESCRIPTION
 		, TAGS
@@ -95,6 +97,10 @@ public class Dashboard extends CFWObject {
 			.setDescription("The user id of the owner of the dashboard.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
+	
+	private CFWField<String> uuid = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardFields.UUID)
+			.setDescription("The unique ID of the dashboard. Used for updating dashboards when they exist on import and identifying same dashboard over multiple systems.")
+			.setValue(UUID.randomUUID().toString());
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, DashboardFields.NAME)
 			.setColumnDefinition("VARCHAR(255)")
@@ -243,6 +249,7 @@ public class Dashboard extends CFWObject {
 		this.setTableName(TABLE_NAME);
 		this.addFields(
 				  id
+				, uuid
 				, fkidSpace
 				, foreignKeyOwner
 				, name
@@ -338,6 +345,7 @@ public class Dashboard extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						DashboardFields.PK_ID.toString(), 
+						DashboardFields.UUID.toString(),
 						DashboardFields.FK_ID_SPACE.toString(), 
 						DashboardFields.VERSION.toString(),
 //						DashboardFields.CATEGORY.toString(),
@@ -348,6 +356,7 @@ public class Dashboard extends CFWObject {
 		String[] outputFields = 
 				new String[] {
 						DashboardFields.PK_ID.toString(), 
+						DashboardFields.UUID.toString(), 
 						DashboardFields.FK_ID_SPACE.toString(), 
 						DashboardFields.FK_ID_USER.toString(),
 						DashboardFields.VERSION_GROUP.toString(),
@@ -619,6 +628,20 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard id(Integer id) {
 		this.id.setValue(id);
+		return this;
+	}
+	
+	public String uuid() {
+		return uuid.getValue();
+	}
+	
+	public Dashboard uuid(String uuid) {
+		this.uuid.setValue(uuid);
+		return this;
+	}
+	
+	public Dashboard generateNewUUID() {
+		this.uuid.setValue(UUID.randomUUID().toString());
 		return this;
 	}
 	

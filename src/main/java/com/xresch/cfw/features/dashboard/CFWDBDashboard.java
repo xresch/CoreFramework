@@ -97,6 +97,11 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
+	public static boolean create(Dashboard item) { 
+		updateTags(item); 
+		return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, item);
+	}
+	
 	public static Integer createGetPrimaryKey(Dashboard item) { 
 		updateTags(item); 
 		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item);
@@ -118,7 +123,7 @@ public class CFWDBDashboard {
 		if(Strings.isNullOrEmpty(duplicate.versionGroup()) ) {
 			duplicate.versionGroup(UUID.randomUUID().toString());
 			duplicate.update(DashboardFields.VERSION_GROUP);
-		}
+		}		
 		
 		int originalID = duplicate.id();
 		
@@ -135,68 +140,70 @@ public class CFWDBDashboard {
 			
 		}else {
 			duplicate.foreignKeyOwner(id);
+			duplicate.generateNewUUID();
 			duplicate.name(duplicate.name()+"(Copy)");
 			duplicate.version(0);
 			duplicate.versionGroup(UUID.randomUUID().toString());
 			duplicate.isShared(false);
 		}
 		
-		CFW.DB.transactionStart();
+		boolean isStarted = CFW.DB.transactionIsStarted();
+		if(!isStarted) { CFW.DB.transactionStart(); }
 		
-		Integer newID = duplicate.insertGetPrimaryKey();
-		
-		if(newID != null) {
+			Integer newID = duplicate.insertGetPrimaryKey();
 			
-				duplicate.id(newID);
-				//-----------------------------------------
-				// Save Selector Fields
-				//-----------------------------------------
-				boolean success = true;
-				success &= duplicate.saveSelectorFields();
-				if(!success) {
-					CFW.DB.transactionRollback();
-					new CFWLog(logger).severe("Error while saving selector fields for duplicate.");
-					return null;
-				}
-				//-----------------------------------------
-				// Duplicate Widgets
-				//-----------------------------------------
-				ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
+			if(newID != null) {
 				
-				for(DashboardWidget widgetToCopy : widgetList) {
-					widgetToCopy.id(null);
-					widgetToCopy.foreignKeyDashboard(newID);
-					
-					if(!widgetToCopy.insert()) {
+					duplicate.id(newID);
+					//-----------------------------------------
+					// Save Selector Fields
+					//-----------------------------------------
+					boolean success = true;
+					success &= duplicate.saveSelectorFields();
+					if(!success) {
 						CFW.DB.transactionRollback();
-						new CFWLog(logger).severe("Error while duplicating widget.");
+						new CFWLog(logger).severe("Error while saving selector fields for duplicate.");
 						return null;
 					}
-				}
-				
-				//-----------------------------------------
-				// Duplicate Parameters
-				//-----------------------------------------
-				ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForDashboard(dashboardID);
-				
-				for(CFWParameter paramToCopy : parameterList) {
+					//-----------------------------------------
+					// Duplicate Widgets
+					//-----------------------------------------
+					ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
 					
-					paramToCopy.id(null);
-					paramToCopy.foreignKeyDashboard(newID);
-					
-					if(!paramToCopy.insert()) {
-						CFW.DB.transactionRollback();
-						new CFWLog(logger).severe("Error while duplicating dashboard parameter.");
-						return null;
+					for(DashboardWidget widgetToCopy : widgetList) {
+						widgetToCopy.id(null);
+						widgetToCopy.foreignKeyDashboard(newID);
+						
+						if(!widgetToCopy.insert()) {
+							CFW.DB.transactionRollback();
+							new CFWLog(logger).severe("Error while duplicating widget.");
+							return null;
+						}
 					}
-
-				}
-				
-			CFW.DB.transactionCommit();
+					
+					//-----------------------------------------
+					// Duplicate Parameters
+					//-----------------------------------------
+					ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForDashboard(dashboardID);
+					
+					for(CFWParameter paramToCopy : parameterList) {
+						
+						paramToCopy.id(null);
+						paramToCopy.foreignKeyDashboard(newID);
+						
+						if(!paramToCopy.insert()) {
+							CFW.DB.transactionRollback();
+							new CFWLog(logger).severe("Error while duplicating dashboard parameter.");
+							return null;
+						}
+	
+					}
+					
+	
+				CFW.Messages.addSuccessMessage("Dashboard duplicated successfully.");
+			}
 			
-			CFW.Messages.addSuccessMessage("Dashboard duplicated successfully.");
-		}
-			
+		if(!isStarted) { CFW.DB.transactionCommit(); }
 		
 		
 		return newID;
@@ -253,18 +260,39 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean deleteByID(String id) {
+	public static boolean deleteByID(String id, boolean deleteVersions) {
+		
+		Dashboard dashboard = CFW.DB.Dashboards.selectByID(id);
 		
 		boolean success = true;
-		CFW.DB.transactionStart();
 		
+		boolean isStarted = CFW.DB.transactionIsStarted();
+		if (!isStarted) {CFW.DB.transactionStart();}
+			
+			if(deleteVersions) {
+				success &= deleteVersionsIfCurrent(dashboard);
+			}
 			// delete widgets and related jobs first to not have jobs unrelated to widgets.
 			success &= CFW.DB.DashboardWidgets.deleteWidgetsForDashboard(id); 
 			success &= CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, DashboardFields.PK_ID.toString(), id); 
 		
-		CFW.DB.transactionEnd(success);
+		if (!isStarted) {CFW.DB.transactionEnd(success);}
 
 		return success;
+	}
+	
+	/** Deletes all versions if it is the current version. */
+	private static boolean deleteVersionsIfCurrent(Dashboard dashboard) {
+		
+		if(dashboard.version() != 0) { return true; }
+		
+		return new CFWSQL(new Dashboard())
+				.queryCache()
+				.delete()
+				.where(DashboardFields.VERSION_GROUP, dashboard.versionGroup())
+				.and().not().is(DashboardFields.PK_ID, dashboard.id())
+				.executeDelete();
+
 	}
 
 	
@@ -272,7 +300,7 @@ public class CFWDBDashboard {
 	public static boolean deleteByIDForCurrentUser(String id)	{ 
 		
 		if(isDashboardOfCurrentUser(id)) {
-			return deleteByID(id);
+			return deleteByID(id, true);
 		}else {
 			CFW.Messages.noPermission();
 			return false;
@@ -308,6 +336,15 @@ public class CFWDBDashboard {
 	
 	public static Dashboard selectFirstByName(String name) { 
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardFields.NAME.toString(), name);
+	}
+	
+	public static Dashboard selectCurrentVersionByUUID(String uuid) { 
+		return (Dashboard) new CFWSQL(new Dashboard())
+				.queryCache()
+				.select()
+				.where(DashboardFields.UUID.toString(), uuid)
+				.and(DashboardFields.VERSION, 0)
+				.getFirstAsObject();
 	}
 		
 
@@ -643,10 +680,12 @@ public class CFWDBDashboard {
 	 *   - Array of Dashboards:  [{ ... dashboardFields ...}, { ... dashboardFields ...}]	
 	 *   - Object with dashboards: { dashboards: [ ...] }
 	 *   - Object with Payload(One of above):  { payload: <objectOrArray> }
+	 * @param overrideExisting if the dashboard with the given ID exists, override the existing
+	 * dashboard
 	 *     	
 	 * @return Returns a JSON array string.
 	 ****************************************************************/
-	public static boolean importByJson(String json, boolean keepOwner) {
+	public static boolean importByJson(String json, boolean keepOwner, boolean overrideExisting) {
 
 		//-----------------------------
 		// Resolve JSON Array
@@ -658,10 +697,10 @@ public class CFWDBDashboard {
 		}else if(element.isJsonObject()) {
 			JsonObject object = element.getAsJsonObject();
 			if(object.has("payload")) {
-				return importByJson(object.get("payload").toString(), keepOwner);
+				return importByJson(object.get("payload").toString(), keepOwner, overrideExisting);
 				
 			}if(object.has("dashboards")) {
-				return importByJson(object.get("dashboards").toString(), keepOwner);
+				return importByJson(object.get("dashboards").toString(), keepOwner, overrideExisting);
 				
 			}else {
 				new CFWLog(logger)
@@ -791,13 +830,56 @@ public class CFWDBDashboard {
 				
 				//-----------------------------
 				// Create Dashboard
-				Integer newDashboardID = CFW.DB.Dashboards.createGetPrimaryKey(dashboard);
-				if(newDashboardID == null) {
-					new CFWLog(logger)
-						.severe("Dashboard '"+dashboard.name()+"' could not be imported.");
-					continue;
+				Integer newDashboardID = null;
+				if(overrideExisting
+				&& ! Strings.isNullOrEmpty(dashboard.uuid())
+				&& checkExistsByUUID(dashboard) ){
+					
+					boolean success = true;
+					
+					CFW.DB.transactionStart();
+					
+						//----------------------------
+						// Get Existing
+						Dashboard existing = CFW.DB.Dashboards.selectCurrentVersionByUUID(dashboard.uuid());
+						String stringID = ""+existing.id();
+						
+						//---------------------------------
+						// Create backup version
+						success &= (null != CFW.DB.Dashboards.createDuplicate(stringID, true) );
+						
+						//---------------------------------
+						// Select with Version Group not Null
+						existing = CFW.DB.Dashboards.selectByID(stringID);
+						
+						//----------------------------					
+						// Update
+						dashboard.versionGroup(existing.versionGroup());
+						dashboard.id(existing.id());
+						newDashboardID = existing.id();
+						
+						// delete existing 
+						success &= CFW.DB.Dashboards.deleteByID(stringID, false);
+						
+						// recreate with same ID
+						success &= CFW.DB.Dashboards.create(dashboard);
+						
+					CFW.DB.transactionEnd(success);
+					
+				}else {
+					//----------------------------
+					// Create New 
+					dashboard.generateNewUUID();
+					newDashboardID = CFW.DB.Dashboards.createGetPrimaryKey(dashboard);
+					if(newDashboardID == null) {
+						new CFWLog(logger)
+							.severe("Dashboard '"+dashboard.name()+"' could not be imported.");
+						continue;
+					}
 				}
 				
+				//-----------------------------
+				// Save Selector Fields
 				dashboard.saveSelectorFields();
 				
 				//-----------------------------
@@ -1211,9 +1293,19 @@ public class CFWDBDashboard {
 	// CHECKS
 	//####################################################################################################
 	public static boolean checkExistsByName(String itemName) {	return CFWDBDefaultOperations.checkExistsBy(cfwObjectClass, DashboardFields.NAME.toString(), itemName); }
+	
 	public static boolean checkExistsByName(Dashboard item) {
 		if(item != null) {
 			return checkExistsByName(item.name());
+		}
+		return false;
+	}
+	
+	public static boolean checkExistsByUUID(String uuid) {	return CFWDBDefaultOperations.checkExistsBy(cfwObjectClass, DashboardFields.UUID.toString(), uuid); }
+	
+	public static boolean checkExistsByUUID(Dashboard item) {
+		if(item != null) {
+			return checkExistsByUUID(item.uuid());
 		}
 		return false;
 	}
