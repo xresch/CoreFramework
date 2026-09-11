@@ -2349,7 +2349,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		// Decryption
 		if(this.encryptionSalt != null
 		&& value != null
-		&& value.toString().startsWith(ENCRYPT_PREFIX_ONE)) {
+		&& value.toString().startsWith(ENCRYPT_PREFIX)) {
 			value = decryptValue(value);
 		}
 		

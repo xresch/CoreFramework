@@ -6843,7 +6843,7 @@ button.bg-success:focus {
 }
 
 .bg-info {
-  background-color: #268bd2 !important;
+  background: #268bd2 linear-gradient(42deg, #114970, #268bd2) repeat-x;
 }
 
 a.bg-info:hover, a.bg-info:focus,
