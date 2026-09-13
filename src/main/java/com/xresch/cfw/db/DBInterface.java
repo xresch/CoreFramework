@@ -673,7 +673,7 @@ public class DBInterface {
 			
 			cfwResult.connection(conn)
 				     .isSilent(isSilent)
-					 .isResultSet(true) 
+					 .resultSet(result) 
 					 .preparedStatement(prepared) 
 					 .sqlString(sql)
 					 .values(values) 

@@ -41,7 +41,7 @@ public class GenericJDBCEnvironment extends AbstractContextSettings {
 			.setDescription("The Connection URL for the database, including protocol.(for example: jdbc:sqlserver://servername:1433;databaseName=AdventureWorks)")
 			.disableSanitization()
 			.enableEncryption(CFW.Security.salter().dbJDBCSalt())
-			.setValue("jbdc:{databasename}://{server}:{port};{parameters}");
+			.setValue("jdbc:{databasename}://{server}:{port};{parameters}");
 	
 	private CFWField<String> dbUser = CFWField.newString(FormFieldType.TEXT, GenericJDBCEnvironmentFields.DB_USER)
 			.setDescription("The name of the user for accessing the database.")

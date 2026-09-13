@@ -25,6 +25,7 @@ public class CFWResultSet {
 	private int updateCount = -999;
 	private Connection connection;
 	private PreparedStatement prepared;
+	private ResultSet result;
 	
 	
 	private boolean isSuccess = false;
@@ -88,13 +89,27 @@ public class CFWResultSet {
 	/***********************************************************************************
 	 *
 	 ***********************************************************************************/
+	public CFWResultSet resultSet(ResultSet result) {
+		this.isResultSet = true;
+		this.result = result;
+		return this;
+	}
+	
+	/***********************************************************************************
+	 *
+	 ***********************************************************************************/
 	public ResultSet getResultSet() {
 		if(prepared == null || !isResultSet) {
 			return null;
 		}
 		
+		
 		try {
-			return prepared.getResultSet();
+			if(result == null) {
+				result  = prepared.getResultSet();
+			}
+			
+			return result;
 			
 		} catch (SQLException e) {
 
