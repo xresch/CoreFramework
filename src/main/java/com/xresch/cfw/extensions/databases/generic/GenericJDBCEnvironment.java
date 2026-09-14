@@ -124,7 +124,7 @@ public class GenericJDBCEnvironment extends AbstractContextSettings {
 	public boolean isDBDefined() {
 		if(dbDriver.getValue() != null
 		&& dbConnectionURL.getValue() != null
-		&& dbUser.getValue() != null) {
+		){
 			return true;
 		}
 		

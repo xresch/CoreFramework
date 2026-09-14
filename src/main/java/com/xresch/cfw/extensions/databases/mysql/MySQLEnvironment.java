@@ -157,8 +157,7 @@ public class MySQLEnvironment extends AbstractContextSettings {
 	
 	public boolean isDBDefined() {
 		if(dbHost.getValue() != null
-		&& dbPort.getValue() != null
-		&& dbUser.getValue() != null) {
+		&& dbPort.getValue() != null) {
 			return true;
 		}
 		

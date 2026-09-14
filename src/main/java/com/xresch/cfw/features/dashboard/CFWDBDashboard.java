@@ -109,6 +109,18 @@ public class CFWDBDashboard {
 	
 	/**********************************************************************************
 	 * 
+	 * @param dashboard the dashboard to add a UUID to if not already set.
+	 * @return dashboard input parameter for chaining
+	 **********************************************************************************/
+	public static Dashboard addUUID(Dashboard dashboard) { 
+		if(Strings.isNullOrEmpty(dashboard.uuid()) ) {
+			dashboard.generateNewUUID();
+		}	
+		return dashboard;
+	}
+	
+	/**********************************************************************************
+	 * 
 	 * @param dashboardID¨the id of the dashboard that should be duplicated.
 	 * @param forVersioning true if this duplicate should be for versioning
 	 * @return
@@ -216,6 +228,7 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	public static boolean update(Dashboard item) { 
 		updateTags(item); 
+		addUUID(item);
 		item.lastUpdated(new Timestamp(System.currentTimeMillis()));
 		return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item); 
 	}
@@ -227,6 +240,8 @@ public class CFWDBDashboard {
 	public static boolean updateLastUpdated(int dashboardID){ 
 		Dashboard toUpdate = new Dashboard().id(dashboardID)
 				.lastUpdated(new Timestamp(System.currentTimeMillis()));
+		
+		addUUID(toUpdate);
 		
 		return new CFWSQL(toUpdate)
 			.update(DashboardFields.LAST_UPDATED)
