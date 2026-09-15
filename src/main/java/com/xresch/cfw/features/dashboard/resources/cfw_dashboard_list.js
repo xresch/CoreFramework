@@ -748,8 +748,9 @@ function cfw_dashboardlist_printDashboards(data, type){
 					if(JSDATA.userid == record.FK_ID_USER 
 					|| CFW.hasPermission('Dashboard Admin')
 					|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
+						let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 						htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
-							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong> and add it to your dashboards.\', \'Do it!\', \'cfw_dashboardlist_duplicate('+id+');\')">'
+							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+encodedName+'\\\'</strong> and add it to your dashboards.\', \'Do it!\', \'cfw_dashboardlist_duplicate('+id+');\')">'
 							+ '<i class="fas fa-clone"></i>'
 							+ '</button>';
 					}else{
@@ -803,8 +804,9 @@ function cfw_dashboardlist_printDashboards(data, type){
 						color = "btn-success";
 					}
 					
+					let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 					htmlString += '<button class="btn '+color+' btn-sm" alt="'+title+'" title="'+title+'" '
-						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Do it!\', \'cfw_dashboardlist_archive('+id+', '+!isArchived+');\')">'
+						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+encodedName+'\\\'</strong>?\', \'Do it!\', \'cfw_dashboardlist_archive('+id+', '+!isArchived+');\')">'
 						+ '<i class="fa '+icon+'"></i>'
 						+ '</button>';
 				}else{
@@ -820,8 +822,9 @@ function cfw_dashboardlist_printDashboards(data, type){
 		|| type == 'adminarchived'){
 			actionButtons.push(
 				function (record, id){
+					let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 					return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the dashboard <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Delete\', \'cfw_dashboardlist_delete('+id+');\')">'
+							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the dashboard <strong>\\\''+encodedName+'\\\'</strong>?\', \'Delete\', \'cfw_dashboardlist_delete('+id+');\')">'
 							+ '<i class="fa fa-trash"></i>'
 							+ '</button>';
 

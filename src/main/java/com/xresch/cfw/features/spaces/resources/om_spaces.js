@@ -215,8 +215,9 @@ function om_spaces_printList(data){
 		// Duplicate Button
 		/*actionButtons.push(
 			function (record, id){
+				let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 				return '<button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
-						+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>.\', \'Do it!\', \'om_spaces_duplicate('+id+');\')">'
+						+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+encodedName+'\\\'</strong>.\', \'Do it!\', \'om_spaces_duplicate('+id+');\')">'
 						+ '<i class="fas fa-clone"></i>'
 						+ '</button>';
 		});*/

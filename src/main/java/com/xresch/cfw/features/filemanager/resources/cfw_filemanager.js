@@ -692,9 +692,9 @@ function cfw_filemanager_printStoredFile(data, type){
 						icon = "fa-trash-restore" ;
 						color = "btn-success";
 					}
-					
+					let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 					htmlString += '<button class="btn '+color+' btn-sm" alt="'+title+'" title="'+title+'" '
-						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Do it!\', \'cfw_filemanager_archive('+id+', '+!isArchived+');\')">'
+						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+encodedName+'\\\'</strong>?\', \'Do it!\', \'cfw_filemanager_archive('+id+', '+!isArchived+');\')">'
 						+ '<i class="fa '+icon+'"></i>'
 						+ '</button>';
 				}else{
@@ -710,8 +710,9 @@ function cfw_filemanager_printStoredFile(data, type){
 		|| type == 'adminarchived'){
 			actionButtons.push(
 				function (record, id){
+					let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 					return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the storedfile <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Delete\', \'cfw_filemanager_delete('+id+');\')">'
+							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the storedfile <strong>\\\''+encodedName+'\\\'</strong>?\', \'Delete\', \'cfw_filemanager_delete('+id+');\')">'
 							+ '<i class="fa fa-trash"></i>'
 							+ '</button>';
 

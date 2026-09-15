@@ -390,7 +390,7 @@ function cfw_storedQuerylist_showVersions(id){
 							}
 							
 							var versionID = record.PK_ID;
-							var name = record.NAME.replace(/\"/g,'&quot;');
+							let name = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 							return `<button class="btn btn-danger btn-sm" alt="Switch" title="Delete"
 								onclick="
 									CFW.ui.confirmExecute('Do you want to delete the version <strong>${versionID}</strong> with name <strong>${name}</strong>?'
@@ -657,8 +657,9 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 					if(JSDATA.userid == record.FK_ID_OWNER 
 					|| CFW.hasPermission('Query Store: Admin')
 					|| record.IS_EDITOR ){
+						let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 						htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
-							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong> and add it to your storedQuery.\', \'Do it!\', \'cfw_storedQuerylist_duplicate('+id+');\')">'
+							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+encodedName+'\\\'</strong> and add it to your storedQuery.\', \'Do it!\', \'cfw_storedQuerylist_duplicate('+id+');\')">'
 							+ '<i class="fas fa-clone"></i>'
 							+ '</button>';
 					}else{
@@ -711,9 +712,9 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 						icon = "fa-trash-restore" ;
 						color = "btn-success";
 					}
-					
+					let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 					htmlString += '<button class="btn '+color+' btn-sm" alt="'+title+'" title="'+title+'" '
-						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Do it!\', \'cfw_storedQuerylist_archive('+id+', '+!isArchived+');\')">'
+						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+encodedName+'\\\'</strong>?\', \'Do it!\', \'cfw_storedQuerylist_archive('+id+', '+!isArchived+');\')">'
 						+ '<i class="fa '+icon+'"></i>'
 						+ '</button>';
 				}else{
@@ -729,8 +730,9 @@ function cfw_storedQuerylist_printStoredQuery(data, type){
 		|| type == 'adminarchived'){
 			actionButtons.push(
 				function (record, id){
+					let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 					return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the storedQuery <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Delete\', \'cfw_storedQuerylist_delete('+id+');\')">'
+							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the storedQuery <strong>\\\''+encodedName+'\\\'</strong>?\', \'Delete\', \'cfw_storedQuerylist_delete('+id+');\')">'
 							+ '<i class="fa fa-trash"></i>'
 							+ '</button>';
 

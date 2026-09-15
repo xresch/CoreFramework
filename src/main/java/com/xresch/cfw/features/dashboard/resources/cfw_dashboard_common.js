@@ -245,7 +245,7 @@ function cfw_dashboardcommon_showVersions(id){
 							}
 							
 							var versionID = record.PK_ID;
-							var name = record.NAME.replace(/\"/g,'&quot;');
+							let name = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
 							return `<button class="btn btn-danger btn-sm" alt="Switch" title="Delete"
 								onclick="
 									CFW.ui.confirmExecute('Do you want to delete the version <strong>${versionID}</strong> with name <strong>${name}</strong>?'
