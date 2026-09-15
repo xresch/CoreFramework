@@ -547,6 +547,22 @@ public class CFWSQL {
 	/****************************************************************
 	 * Begins a SELECT statement including all fields except the 
 	 * ones specified by the parameter.
+	 * @param fieldnames will be converted using toString() method
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWSQL selectWithout(Object ...fieldnames) {
+		
+		String[] stringArray = new String[fieldnames.length];
+		
+		for(int i = 0; i < fieldnames.length; i++){
+			stringArray[i] = (fieldnames[i] != null) ? fieldnames[i].toString() : "";
+		}
+		
+		return selectWithout(stringArray);
+	}
+	/****************************************************************
+	 * Begins a SELECT statement including all fields except the 
+	 * ones specified by the parameter.
 	 * @param fieldnames
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
@@ -1967,6 +1983,21 @@ public class CFWSQL {
 		
 		if(this.execute(true)) {
 			return ResultSetUtils.getFirstAsInteger(result);
+		}
+		
+		return null;
+	}
+	
+	/****************************************************************
+	 * Executes the query and returns the first value of the first
+	 * column as String.
+	 * Useful for getting a single value from the database.
+	 * @return string value, or null in case of errors or not found
+	 ****************************************************************/
+	public String getFirstAsString() {
+		
+		if(this.execute(true)) {
+			return ResultSetUtils.getFirstAsString(result);
 		}
 		
 		return null;

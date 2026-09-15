@@ -85,6 +85,34 @@ public class ResultSetUtils {
 		
 	}
 	
+	/****************************************************************
+	 * Executes the query and returns the first value of the first
+	 * column as String.
+	 * Useful for getting a single value from the database.
+	 * @return string value, or null in case of errors or not found
+	 ****************************************************************/
+	public static String getFirstAsString(ResultSet result) {
+		
+		try {
+			if(result.next()) {
+				
+				return result.getString(1);
+				
+			}else {
+				return null;
+			}
+		}catch (SQLException e) {
+			new CFWLog(logger)
+			.severe("Error reading integer from database.", e);
+			
+		}finally {
+			CFWDB.close(result);
+		}
+		
+		return null;
+		
+	}
+	
 	/***************************************************************************
 	 * Converts a ResultSet into an array list of CFWObjects.
 	 * @return list of object, empty if results set is null or an error occurs.
