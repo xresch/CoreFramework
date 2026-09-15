@@ -51,6 +51,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		, LIST
 		, LOWERCASE
 		, NONE
+		, NUMBER
 		, PERCENT
 		, POSTFIX
 		, PREFIX
@@ -310,6 +311,22 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield LIKES_TIRAMISU=none"
 			)
 		);
+		
+		//------------------------------------------------
+		// Percent
+		//------------------------------------------------
+		formatterDefinitionArray.put(FieldFormatterName.NUMBER.toString(),
+				instance.new FormatterDefinition(
+						FieldFormatterName.NUMBER.toString(), 
+						"Formats values as a number, aligned right with separators and optional coloring.",
+						new Object[][] {
+							  new Object[] {"color", false, "Toggle if the values should be colored red/green. (Options, false,true or 'reverse')"}
+						}
+						).example(
+								"#Formats value as number and not colored."
+										+"\r\n| source random | formatfield VALUE=[number, false]"
+								)
+				);
 
 		//------------------------------------------------
 		// Percent

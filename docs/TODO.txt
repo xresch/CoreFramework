@@ -206,6 +206,7 @@ DONE
 - Query: Command formatdisplay - width and height parameters are working more reliable
 - Query: Command formatboxplot - width and height parameters are working more reliable
 - Query: Command formatfield - added whitespace formatter
+- Query: Command formatfield - added number formatter
 - Query: Command formatfield - align formatter only applies to table views
 - Query: Command formatfield - percent formatter does not automatically highlight boolean values
 - Query: Command globals & meta - multidisplay can display columns with variable width. See manual of the commands for example queries.

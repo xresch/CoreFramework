@@ -193,6 +193,7 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'list': 				cfw_query_formatList(resultSpan, value, current[1], current[2], current[3]); break;
 				case 'lowercase': 			cfw_query_formatLowercase(resultSpan); break;
 				case 'none': 				cfw_query_formatNone(resultSpan, value); break;
+				case 'number': 				cfw_query_formatNumber(resultSpan, value, current[1]); break;
 				case 'percent': 			cfw_query_formatPercent(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'prefix': 				cfw_query_formatPrefix(resultSpan, value, current[1]); break;
 				case 'postfix': 			cfw_query_formatPostfix(resultSpan, value, current[1]); break;
@@ -630,6 +631,51 @@ function cfw_query_formatNone(span, value){
 /*******************************************************************************
  * 
  ******************************************************************************/
+function cfw_query_formatNumber(span, value, color){
+	
+	//-----------------------------
+	// Checks
+	if(value == null){
+		return cfw_query_formatShowNulls(span, value, true);
+	}
+	
+	//-----------------------------
+	// set defaults
+	
+	span.removeClass('text-left text-center');
+	span.addClass('text-right w-100-cell');
+
+	if(value != null){
+		span.text(CFW.format.numberSeparators(value, "'", 3));
+	}
+	
+	//------------------------------
+	// Add Styles
+	if(color != false){
+		
+		let reverse = (color != true); // color can be "reverse"
+		
+		greenThreshold = ! reverse ? 1 : -1;
+		redThreshold = ! reverse ? -1 : 1;
+		span.addClass('font-weight-bold');
+			
+		var style = CFW.colors.getSplitThresholdStyle(value, greenThreshold, redThreshold, false);
+		
+		style = (style == CFW.style.notevaluated) ? "" : style;
+	
+
+		CFW.colors.colorizeElement(span, style, "bg");
+
+	}
+	
+
+
+
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 function cfw_query_formatPercent(span, value, greenThreshold, redThreshold, type, neutralColor){
 	
 	//------------------------------
@@ -710,9 +756,7 @@ function cfw_query_formatSeparators(span, value, separator, eachDigit ){
 	// set defaults
 	if(separator == null )	{ separator = "'"; }
 	if(eachDigit == null )	{ eachDigit = 3; }
-	
-	span.addClass('text-right');
-	
+		
 	let valueToProcess = value;
 	
 	let stringValue = span.text();
