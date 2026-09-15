@@ -71,6 +71,10 @@ input {
     color: #2e2e2e;
 }
 
+select {
+    background-color: white; /* Fix dark input in dark themes */
+    color: #2e2e2e;
+}
 
 /*************************************************************************
  * Bootstrap Theme extensions
