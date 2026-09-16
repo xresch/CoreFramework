@@ -211,21 +211,16 @@ function cfw_apitokenmgmt_printTokenList(data){
 			 	textstylefield: null,
 			 	titlefields: ['TOKEN'],
 			 	titleformat: '{0}',
-			 	visiblefields: ['PK_ID', 'SPACE_ABBREV', 'TOKEN', 'DESCRIPTION', 'IS_ACTIVE', 'JSON_RESPONSIBLE_USERS', 'CREATED_BY'],
+			 	visiblefields: ['PK_ID', 'SPACE_ABBREV', 'TOKEN', 'DESCRIPTION', 'IS_ACTIVE', 'JSON_RESPONSIBLE_USERS', 'JSON_PERMISSIONS_OF_USER', 'CREATED_BY'],
 			 	labels: {
 			 		PK_ID: "ID",
 					SPACE_ABBREV: 'Space',
-			 		JSON_RESPONSIBLE_USERS: "Responsible Users"
+			 		JSON_RESPONSIBLE_USERS: "Responsible Users",
+			 		JSON_PERMISSIONS_OF_USER: "User Permissions Of"
 			 	},
 			 	customizers: {
-			 		JSON_RESPONSIBLE_USERS: function(record, value) { 
-			 			let html = ''; 
-			 			for(key in value){
-			 				html += '<span class="badge badge-primary m-1">'+value[key]+'</span>'
-			 			}
-			 			return html;
-			 			 
-			 		},
+			 		JSON_RESPONSIBLE_USERS: CFW.customizer.badgesFromArray,
+			 		JSON_PERMISSIONS_OF_USER: CFW.customizer.badgesFromArray,
 			 		IS_ACTIVE: function(record, value) { return '<span class="badge badge-'+((value == true)? 'success' : 'danger') +'">'+value+'</span>'; },
 			 	},
 				actions: actionButtons,				

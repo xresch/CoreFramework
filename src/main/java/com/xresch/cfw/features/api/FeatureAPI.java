@@ -44,6 +44,9 @@ public class FeatureAPI extends CFWAppFeature {
 				(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("API")
 					.faicon("fas fa-code")
 					.addPermission(PERMISSION_CFW_API)
+					.addPermission(PERMISSION_CFW_APITOKEN_MGMT)
+					.addPermission(PERMISSION_CFW_API_ADMIN_SPACE)
+					.addPermission(PERMISSION_CFW_API_ADMIN_GLOBAL)
 					.href("/app/api")	
 					.addAttribute("id", "cfwMenuTools-API")
 				, null);
@@ -61,7 +64,7 @@ public class FeatureAPI extends CFWAppFeature {
 		
 		CFW.DB.Permissions.oneTimeCreate(
 			new Permission(PERMISSION_CFW_API, FeatureUserManagement.CATEGORY_USER)
-				.description("User can access the API."),
+				.description("User can access the API user interface in the web browser."),
 				true,
 				false
 			);

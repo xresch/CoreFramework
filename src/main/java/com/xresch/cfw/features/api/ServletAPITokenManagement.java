@@ -13,6 +13,7 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.api.APIToken.APITokenFields;
 import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -166,6 +167,10 @@ public class ServletAPITokenManagement extends HttpServlet
 		token.permissionsOfUser(CFW.Context.Request.getUserAsSelection());
 		token.responsibleUsers(CFW.Context.Request.getUserAsSelection());
 		
+		//---------------------------------
+		// Disable Fields for non-admins
+		disableUserSelectionForNonAdmins(token);
+				
 		CFWForm createTokenForm = token.toForm("cfwCreateTokenForm", "Create Token");
 		
 		createTokenForm.setFormHandler(new CFWFormHandler() {
@@ -186,17 +191,29 @@ public class ServletAPITokenManagement extends HttpServlet
 			}
 		});
 	}
+
+	private void disableUserSelectionForNonAdmins(APIToken token) {
+		if( ! CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN_GLOBAL) 
+		&&  ! CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN_SPACE) ) {
+			token.getField(APITokenFields.JSON_PERMISSIONS_OF_USER).isDisabled(true);
+			token.getField(APITokenFields.JSON_RESPONSIBLE_USERS).isDisabled(true);
+		}
+	}
 	
 	/******************************************************************
 	 *
 	 ******************************************************************/
 	private void createEditForm(JSONResponse json, String ID) {
 
-		APIToken Token = APITokenDBMethods.selectByID(Integer.parseInt(ID));
+		APIToken token = APITokenDBMethods.selectByID(Integer.parseInt(ID));
 		
-		if(Token != null) {
+		//---------------------------------
+		// Disable Fields for non-admins
+		disableUserSelectionForNonAdmins(token);
+		
+		if(token != null) {
 			
-			CFWForm editTokenForm = Token.toForm("cfwEditTokenForm"+ID, "Update Token");
+			CFWForm editTokenForm = token.toForm("cfwEditTokenForm"+ID, "Update Token");
 			
 			editTokenForm.setFormHandler(new CFWFormHandler() {
 				

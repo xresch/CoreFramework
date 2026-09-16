@@ -157,6 +157,20 @@ public class ServletAPI extends HttpServlet
 		}
 		
 	}
+	
+	
+	/***************************************************************************************************
+	 * 
+	 * @param request
+	 * @param response
+	 ****************************************************************************************************/
+	private boolean hasAPIAccess() {
+		return CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)
+		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_APITOKEN_MGMT)
+		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN_SPACE)
+		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API_ADMIN_GLOBAL);
+	}
+	
 	/*****************************************************************
 	 * This method will be used when no api token was provided,
 	 * therefore it is assumed the user is logged in and has a session.
@@ -164,7 +178,7 @@ public class ServletAPI extends HttpServlet
 	protected void handleSessionBasedAPI( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
 	{
 
-		if(CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)) {
+		if(hasAPIAccess()) {
 			String apiName = request.getParameter("apiName");
 			String data = request.getParameter("overviewdata");
 			
@@ -213,7 +227,7 @@ public class ServletAPI extends HttpServlet
 		
 		HTMLResponse html = new HTMLResponse("API");
 		
-		if(CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)) {
+		if(hasAPIAccess()){
 
 			//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".js", "cfw_apioverview.js"));
 			FeatureSpaces.addSpacesCommonJS(html);

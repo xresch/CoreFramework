@@ -495,11 +495,16 @@ function cfw_initializeTagsSelectorField(fieldID, maxTags, values){
 //		}
 	});
 	
+	
 	//----------------------------------
 	// Add Classes
 	var bootstrapTagsinput = $(id+'-tagsinput').closest('.bootstrap-tagsinput');
 	if(tagsfield.hasClass('form-control-sm')){
 		bootstrapTagsinput.addClass('bootstrap-tagsinput-sm')
+	}
+	
+	if( CFW.utils.isTrue(tagsfield.prop('disabled')) ){
+		bootstrapTagsinput.addClass('bg-cfw-gray');
 	}
 	
 	if(tagsfield.closest('form').hasClass('form-inline')){
