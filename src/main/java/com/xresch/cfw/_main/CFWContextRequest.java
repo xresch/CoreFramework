@@ -163,6 +163,23 @@ public class CFWContextRequest {
 	}
 	
 	/**************************************************************************
+	 * Returns a map containing theid and user Label that can be used as a 
+	 * default for a tags selector.
+	 * 
+	 * @returns map with id and username, or empty map if there is no user logged in.
+	 **************************************************************************/
+	public static LinkedHashMap<String,String> getUserAsSelection() {
+		if(getContext().sessionData != null
+		&& getContext().sessionData.getUser() != null) {
+			User user = getContext().sessionData.getUser();
+			LinkedHashMap<String,String> userMap = new LinkedHashMap<>();
+			userMap.put(user.id()+"", user.createUserLabel());
+			return userMap;
+		}
+		return new LinkedHashMap<>();
+	}
+	
+	/**************************************************************************
 	 * Returns null if there is no space selected.
 	 **************************************************************************/
 	public static boolean getFilterSpaceInclusive() {

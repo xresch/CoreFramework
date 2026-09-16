@@ -1,9 +1,9 @@
 package com.xresch.cfw.features.api;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -95,7 +95,21 @@ public class APITokenDBMethods {
 	}
 	
 	public static APIToken selectFirstByToken(String token) { 
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenFields.TOKEN.toString(), token);
+		
+		APIToken temp = new APIToken();
+		temp.token(token);
+		
+		String encrypted = temp.tokenEncrypted();
+		
+		return (APIToken) new CFWSQL(new APIToken())
+				.queryCache()
+				.select()
+				.where()
+				.custom("(")
+					.is(APITokenFields.TOKEN, token) // needed for backwards compatibility
+					.or(APITokenFields.TOKEN, encrypted)
+				.custom(")")
+				.getFirstAsObject();
 	}
 	
 	
@@ -118,14 +132,17 @@ public class APITokenDBMethods {
 		
 		//---------------------------------
 		// Fetch Data and Obfuscate
-		JsonArray array = sql.getAsJSONArray();
+		ArrayList<APIToken> tokenList = sql.getAsObjectListConvert(APIToken.class);
 		
-		for(JsonElement e : array) {
-			JsonObject object = e.getAsJsonObject();
+		JsonArray array = new JsonArray();
+		for(APIToken current : tokenList) {
+			JsonObject object = current.toJSONElement().getAsJsonObject();
 			
 			String token = object.get( APITokenFields.TOKEN.toString()).getAsString();
 			String obfuscated = CFW.Security.maskString(token, 66);
 			object.addProperty(APITokenFields.TOKEN.toString(), obfuscated);
+			
+			array.add(object);
 		}
 		
 		//---------------------------------
@@ -137,11 +154,20 @@ public class APITokenDBMethods {
 	
 	public static boolean checkIsTokenActive(String token) {
 		
+		APIToken temp = new APIToken();
+		temp.token(token);
+		
+		String encrypted = temp.tokenEncrypted();
+		
 		return 0 < new CFWSQL(new APIToken())
 				.queryCache()
 				.selectCount()
 				.where(APITokenFields.IS_ACTIVE, true)
-				.and(APITokenFields.TOKEN, token)
+				.and()
+				.custom("(")
+					.is(APITokenFields.TOKEN, token) // needed for backwards compatibility
+					.or(APITokenFields.TOKEN, encrypted)
+				.custom(")")
 				.executeCount();
 		
 	}

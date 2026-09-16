@@ -82,6 +82,11 @@ public class ServletAPI extends HttpServlet
 		JSONResponse json = new JSONResponse();
 		APIToken apiToken = APITokenDBMethods.selectFirstByToken(token);
 		
+		if(apiToken == null) {
+			CFW.Messages.addErrorMessage("This the API token does not exist.");
+			json.setSuccess(false);
+			return;
+		}
 		//------------------------------------------
 		// Set Space
 		int spaceID = apiToken.fkidSpace();

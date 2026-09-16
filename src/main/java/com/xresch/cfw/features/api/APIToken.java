@@ -14,6 +14,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.credentials.CFWCredentials.CFWCredentialsFields;
 import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
@@ -35,6 +36,7 @@ public class APIToken extends CFWObject {
 		FK_ID_SPACE,  // from FeatureSpaces.FK_ID_SPACE
 		FK_ID_CREATOR,
 		TOKEN,
+		SALT,
 		DESCRIPTION,
 		IS_ACTIVE,
 		JSON_RESPONSIBLE_USERS,
@@ -58,7 +60,16 @@ public class APIToken extends CFWObject {
 	private CFWField<String> token = CFWField.newString(FormFieldType.TEXT, APITokenFields.TOKEN)
 			.setDescription("The token which can be used to access the API.")
 			.addValidator(new LengthValidator(1, 512))
+			.enableEncryption(CFW.Security.salter().defaultHSalt())
 			.setValue(CFW.Random.stringAlphaNum(32));
+	
+	// Note: Can only salt once, else it would be really hard to actually check in the DB if the Token exists
+//	private CFWField<String> salt = CFWField.newString(FormFieldType.NONE, APITokenFields.SALT)
+//			.setDescription("The salt for the encrypting the password.")
+//			.disableSanitization()
+//			.setValue(CFW.Random.stringAlphaNumSpecial(32))
+//			.setAsSaltField() // enable secondary level of encryption
+//			;
 	
 	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, APITokenFields.DESCRIPTION)
 			.setDescription("An optional description for the token.")
@@ -185,6 +196,10 @@ public class APIToken extends CFWObject {
 		
 	public String token() {
 		return token.getValue();
+	}
+	
+	public String tokenEncrypted() {
+		return token.getValueEncrypted();
 	}
 	
 	public APIToken token(String name) {

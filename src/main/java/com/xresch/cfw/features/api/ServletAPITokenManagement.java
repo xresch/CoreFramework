@@ -161,8 +161,12 @@ public class ServletAPITokenManagement extends HttpServlet
 	 *
 	 ******************************************************************/
 	private void createForms() {
-				
-		CFWForm createTokenForm = new APIToken().toForm("cfwCreateTokenForm", "Create Token");
+		APIToken token = new APIToken();
+		
+		token.permissionsOfUser(CFW.Context.Request.getUserAsSelection());
+		token.responsibleUsers(CFW.Context.Request.getUserAsSelection());
+		
+		CFWForm createTokenForm = token.toForm("cfwCreateTokenForm", "Create Token");
 		
 		createTokenForm.setFormHandler(new CFWFormHandler() {
 			
