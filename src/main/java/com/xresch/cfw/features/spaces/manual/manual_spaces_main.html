@@ -8,10 +8,6 @@ There are currently two types of spaces:
 	<li><b>Space:&nbsp;</b>A regular space that can be part of a Root Space or any other Space. </li>
 </ul>
 
-<p>
-For Example, you could create a Root Space for every company and use Regular Spaces to define projects.
-</p>
-
 <h2>Behavior</h2>
 Spaces have the following characteristics, which will determine their behaviour:
 <ul>
@@ -59,6 +55,17 @@ The following spaces are created by default:
 
 
 
+<h2>Structuring</h2>
+<p>
+Following some considerations about how to structure your spaces:
+</p>
+<ul>
+	<li><b>Default only:&nbsp;</b>If you use the application within the same company, the simplest way is to keep everything in the default space. </li>
+	<li><b>Default with Teams:&nbsp;</b>Another way is to use the Default space, and add sub-spaces to it for different teams. This gives you the possibility to still move spaces around in the same root space. </li>
+	<li><b>Companies and Projects&nbsp;</b>If you server multiple companies, you could create a Root Space for every company and use Regular Spaces to define projects.</li>
+</ul>
+
+
 
 <h2>Selecting and Filtering</h2>
 <p>
@@ -69,5 +76,31 @@ Next to the Space Selector is a filter symbol, when clicking on it, you can swit
 <ul>
 	<li><b>Inclusive (gray icon):&nbsp;</b> Lists of different features will show what is contained in the selected space, plus everything from other spaces you can access and make use of. </li>
 	<li><b>Exclusive (yellow icon):&nbsp;</b> Shows only what is contained in the selected space.</li>
+</ul>
+
+
+
+
+<h2>Deletion of Spaces</h2>
+<p>
+Spaces cannot be deleted and only disabled, what hides a space from selection dropdowns. 
+Reason for this is that someone can move, for example, Item A (e.g. a Query) from Space A to Space B, while item A could still have dependencies to Space A.
+If Space A would now be deleted, Item A would lose it's dependencies and would cease to work for not very obvious reasons.
+<br/><br/>
+Another reason are the the default spaces, which could not be restored of deleted. 
+There is also the circumstance that for backward compatibility with older version, Roles have been made part of the Default Space.
+If someone would delete the default space, the Roles would be deleted too, what would block the access for every user.
+
+</p>
+
+
+
+<h2>Moving of Spaces</h2>
+<p>
+Following are the rules for moving spaces:
+</p>
+<ul>
+	<li><b>Root Space:&nbsp;</b> Root Spaces cannot be moved to other spaces as they have to stay root spaces.</li>
+	<li><b>Regular Spaces:&nbsp;</b> Regular spaces can be moved in the hierarchy within the same Root Space. This allows for a strict separation of access. Also they cannot be moved to other Root Spaces as this could cause a lot of confusion regarding dependencies. </li>
 </ul>
 
