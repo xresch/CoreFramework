@@ -328,320 +328,320 @@ function cfw_credentialslist_printCredentials(data, type){
 	//--------------------------------
 	// Table
 	
-	if(data.payload != undefined){
+	if(data.payload == undefined){
+		CFW.ui.addAlert('error', 'Something went wrong and no credentials can be displayed.');
+		return;
+	}
 		
-		var resultCount = data.payload.length;
-		if(resultCount == 0){
-			CFW.ui.addToastInfo("Hmm... seems there aren't any credentials in the list.");
-		}
-		
-		//-----------------------------------
-		// Prepare Columns
-		var showFields = [];
-		if(type == 'mycredentials' 
-		|| type == 'myarchived'){
-			showFields = ['PK_ID', 'SPACE_ABBREV', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
-		}else if ( type == 'sharedcredentials'
-				|| type == 'favedcredentials'){
-			showFields = ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS'];
-		}else if (type == 'admincredentials'
-				||type == 'adminarchived' ){
-			showFields = ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
-		}
-		
-		//======================================
-		// Prepare actions
-		
-		var actionButtons = [ ];		
-		
-		//-------------------------
-		// Edit Button
-		actionButtons.push(
-			function (record, id){ 
-				var htmlString = '';
-				if(JSDATA.userid == record.FK_ID_OWNER 
-				|| type == 'admincredentials'
-				|| (record.IS_EDITOR) ){
-					htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
-						+'onclick="cfw_credentialslist_editCredentials('+id+')");">'
-						+ '<i class="fa fa-pen"></i>'
-						+ '</button>';
-				}else{
-					htmlString += '&nbsp;';
-				}
-				return htmlString;
-			});
-		
-		
-		//-------------------------
-		// Change Owner Button
-		if(type == 'mycredentials'
-		|| type == 'admincredentials'){
+	var resultCount = data.payload.length;
+	if(resultCount == 0){
+		CFW.ui.addToastInfo("Hmm... seems there aren't any credentials in the list.");
+	}
+	
+	//-----------------------------------
+	// Prepare Columns
+	var showFields = [];
+	if(type == 'mycredentials' 
+	|| type == 'myarchived'){
+		showFields = ['PK_ID', 'SPACE_ABBREV', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
+	}else if ( type == 'sharedcredentials'
+			|| type == 'favedcredentials'){
+		showFields = ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS'];
+	}else if (type == 'admincredentials'
+			||type == 'adminarchived' ){
+		showFields = ['PK_ID', 'SPACE_ABBREV', 'OWNER', 'NAME', 'ACCOUNT', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
+	}
+	
+	//======================================
+	// Prepare actions
+	
+	var actionButtons = [ ];		
+	
+	//-------------------------
+	// Edit Button
+	actionButtons.push(
+		function (record, id){ 
+			var htmlString = '';
+			if(JSDATA.userid == record.FK_ID_OWNER 
+			|| type == 'admincredentials'
+			|| (record.IS_EDITOR) ){
+				htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+					+'onclick="cfw_credentialslist_editCredentials('+id+')");">'
+					+ '<i class="fa fa-pen"></i>'
+					+ '</button>';
+			}else{
+				htmlString += '&nbsp;';
+			}
+			return htmlString;
+		});
+	
+	
+	//-------------------------
+	// Change Owner Button
+	if(type == 'mycredentials'
+	|| type == 'admincredentials'){
 
-					actionButtons.push(
-						function (record, id){
-							var htmlString = '<button class="btn btn-primary btn-sm" alt="Change Owner" title="Change Owner" '
-									+'onclick="cfw_credentialslist_changeCredentialsOwner('+id+');">'
-									+ '<i class="fas fa-user-edit"></i>'
-									+ '</button>';
-							
-							return htmlString;
-						});
-				}
-		
-		//-------------------------
-		// Duplicate Button
-		if( (type != 'myarchived' && type != 'adminarchived' )
-			&& (
-			   CFW.hasPermission('Credentials: Creator')
-			|| CFW.hasPermission('Credentials: Admin')
-			)
-		){
-			actionButtons.push(
-				function (record, id){
-					
-					// IMPORTANT: Do only allow duplicate if the user can edit the credentials,
-					// else this would create a security issue.
-					var htmlString = '';
-					if(JSDATA.userid == record.FK_ID_OWNER 
-					|| CFW.hasPermission('Credentials: Admin')
-					|| record.IS_EDITOR ){
-						let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
-						htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
-							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+encodedName+'\\\'</strong> and add it to your credentials.\', \'Do it!\', \'cfw_credentialslist_duplicate('+id+');\')">'
-							+ '<i class="fas fa-clone"></i>'
-							+ '</button>';
-					}else{
-						htmlString += '&nbsp;';
-					}
-					
-					return htmlString;
-				});
-		}
-		
-		//-------------------------
-		// Archive / Restore Button
+				actionButtons.push(
+					function (record, id){
+						var htmlString = '<button class="btn btn-primary btn-sm" alt="Change Owner" title="Change Owner" '
+								+'onclick="cfw_credentialslist_changeCredentialsOwner('+id+');">'
+								+ '<i class="fas fa-user-edit"></i>'
+								+ '</button>';
+						
+						return htmlString;
+					});
+			}
+	
+	//-------------------------
+	// Duplicate Button
+	if( (type != 'myarchived' && type != 'adminarchived' )
+		&& (
+		   CFW.hasPermission('Credentials: Creator')
+		|| CFW.hasPermission('Credentials: Admin')
+		)
+	){
 		actionButtons.push(
 			function (record, id){
+				
+				// IMPORTANT: Do only allow duplicate if the user can edit the credentials,
+				// else this would create a security issue.
 				var htmlString = '';
 				if(JSDATA.userid == record.FK_ID_OWNER 
-				|| type == 'adminarchived'
-				|| type == 'admincredentials'
-				){
-					let isArchived = record.IS_ARCHIVED;
-					let confirmMessage = "Do you want to archive the credentials";
-					let title = "Archive";
-					let icon = "fa-folder-open";
-					let color =  "btn-danger";
-					
-					if(isArchived){
-						confirmMessage = "Do you want to restore the credentials";
-						title = "Restore";
-						icon = "fa-trash-restore" ;
-						color = "btn-success";
-					}
+				|| CFW.hasPermission('Credentials: Admin')
+				|| record.IS_EDITOR ){
 					let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
-					htmlString += '<button class="btn '+color+' btn-sm" alt="'+title+'" title="'+title+'" '
-						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+encodedName+'\\\'</strong>?\', \'Do it!\', \'cfw_credentialslist_archive('+id+', '+!isArchived+');\')">'
-						+ '<i class="fa '+icon+'"></i>'
+					htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
+						+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+encodedName+'\\\'</strong> and add it to your credentials.\', \'Do it!\', \'cfw_credentialslist_duplicate('+id+');\')">'
+						+ '<i class="fas fa-clone"></i>'
 						+ '</button>';
 				}else{
 					htmlString += '&nbsp;';
 				}
+				
 				return htmlString;
 			});
+	}
 	
-
-		//-------------------------
-		// Delete Button
-		if(type == 'myarchived'
-		|| type == 'adminarchived'){
-			actionButtons.push(
-				function (record, id){
-					let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
-					return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the credentials <strong>\\\''+encodedName+'\\\'</strong>?\', \'Delete\', \'cfw_credentialslist_delete('+id+');\')">'
-							+ '<i class="fa fa-trash"></i>'
-							+ '</button>';
-
-				});
-		}
-
-		
-		//-------------------------
-		// Sharing Details View
-		sharingDetailsView = null;
-		
-		if(type == 'mycredentials'
-		|| type == 'admincredentials'){
-			sharingDetailsView = 
-				{ 
-					label: 'Sharing Details',
-					name: 'table',
-					renderdef: {
-						visiblefields: [ "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
-						labels: {
-							SPACE_ABBREV: 'Space',
-					 		PK_ID: "ID",
-					 		IS_SHARED: 'Shared',
-					 		JSON_SHARE_WITH_USERS: 'Shared User', 
-						 	JSON_SHARE_WITH_GROUPS: 'Shared Groups', 
-						 	JSON_EDITORS: 'Editors', 
-						 	JSON_EDITOR_GROUPS: 'Editor Groups'
-					 	},
-						rendererSettings: {
-							table: {filterable: false},
-						},
-					}
-				};
-			
-			if(type == 'admincredentials'){
-				sharingDetailsView.renderdef.visiblefields.unshift("OWNER");
+	//-------------------------
+	// Archive / Restore Button
+	actionButtons.push(
+		function (record, id){
+			var htmlString = '';
+			if(JSDATA.userid == record.FK_ID_OWNER 
+			|| type == 'adminarchived'
+			|| type == 'admincredentials'
+			){
+				let isArchived = record.IS_ARCHIVED;
+				let confirmMessage = "Do you want to archive the credentials";
+				let title = "Archive";
+				let icon = "fa-folder-open";
+				let color =  "btn-danger";
+				
+				if(isArchived){
+					confirmMessage = "Do you want to restore the credentials";
+					title = "Restore";
+					icon = "fa-trash-restore" ;
+					color = "btn-success";
+				}
+				let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
+				htmlString += '<button class="btn '+color+' btn-sm" alt="'+title+'" title="'+title+'" '
+					+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+encodedName+'\\\'</strong>?\', \'Do it!\', \'cfw_credentialslist_archive('+id+', '+!isArchived+');\')">'
+					+ '<i class="fa '+icon+'"></i>'
+					+ '</button>';
+			}else{
+				htmlString += '&nbsp;';
 			}
-		}
+			return htmlString;
+		});
 
-		//-----------------------------------
-		// Render Data
+
+	//-------------------------
+	// Delete Button
+	if(type == 'myarchived'
+	|| type == 'adminarchived'){
+		actionButtons.push(
+			function (record, id){
+				let encodedName = record.NAME.replaceAll('"','&quot;').replaceAll("'","\\'");
+				return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
+						+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the credentials <strong>\\\''+encodedName+'\\\'</strong>?\', \'Delete\', \'cfw_credentialslist_delete('+id+');\')">'
+						+ '<i class="fa fa-trash"></i>'
+						+ '</button>';
+
+			});
+	}
+
+	
+	//-------------------------
+	// Sharing Details View
+	sharingDetailsView = null;
+	
+	if(type == 'mycredentials'
+	|| type == 'admincredentials'){
+		sharingDetailsView = 
+			{ 
+				label: 'Sharing Details',
+				name: 'table',
+				renderdef: {
+					visiblefields: [ "NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
+					labels: {
+						SPACE_ABBREV: 'Space',
+				 		PK_ID: "ID",
+				 		IS_SHARED: 'Shared',
+				 		JSON_SHARE_WITH_USERS: 'Shared User', 
+					 	JSON_SHARE_WITH_GROUPS: 'Shared Groups', 
+					 	JSON_EDITORS: 'Editors', 
+					 	JSON_EDITOR_GROUPS: 'Editor Groups'
+				 	},
+					rendererSettings: {
+						table: {filterable: false},
+					},
+				}
+			};
 		
-		var badgeCustomizerFunction = function(record, value) { 
- 			var badgesHTML = '<div class="maxvw-25">';
- 			
- 			for(id in value){
- 				badgesHTML += '<span class="badge badge-primary m-1">'+value[id]+'</span>';
- 			}
- 			badgesHTML += '</div>';
- 			
- 			return badgesHTML;
- 			 
- 		};
- 		
-		var storeID = 'credentials-'+type;
+		if(type == 'admincredentials'){
+			sharingDetailsView.renderdef.visiblefields.unshift("OWNER");
+		}
+	}
+
+	//-----------------------------------
+	// Render Data
+	
+	var badgeCustomizerFunction = function(record, value) { 
+		var badgesHTML = '<div class="maxvw-25">';
 		
-		var rendererSettings = {
-			 	idfield: 'PK_ID',
-			 	bgstylefield: null,
-			 	textstylefield: null,
-			 	titlefields: ['NAME'],
-			 	titleformat: null,
-			 	visiblefields: showFields,
-			 	labels: {
-			 		PK_ID: "ID",
-			 		IS_SHARED: 'Shared',
-					SPACE_ABBREV: 'Space'
-			 	},
-			 	customizers: {
-						
-					IS_SHARED: function(record, value) { 
-			 			var isShared = value;
-			 			if(isShared){
-								return '<span class="badge badge-success m-1">true</span>';
-						}else{
-							return '<span class="badge badge-danger m-1">false</span>';
-						} 
-			 		},
-			 		TAGS: badgeCustomizerFunction,
-			 		TIME_CREATED: function(record, value) { 
-			 			if(value == null) return "&nbsp;";
-			 			if(isNaN(value)){
-			 				return value; 
-			 			}else{
-			 				return CFW.format.epochToTimestamp(parseInt(value)); 
-			 			}
-			 			
-			 		},
-			 		JSON_SHARE_WITH_USERS: badgeCustomizerFunction, 
-			 		JSON_SHARE_WITH_GROUPS: badgeCustomizerFunction, 
-			 		JSON_EDITORS: badgeCustomizerFunction, 
-			 		JSON_EDITOR_GROUPS: badgeCustomizerFunction
-			 	},
-				actions: actionButtons,
+		for(id in value){
+			badgesHTML += '<span class="badge badge-primary m-1">'+value[id]+'</span>';
+		}
+		badgesHTML += '</div>';
+		
+		return badgesHTML;
+		 
+	};
+	
+	var storeID = 'credentials-'+type;
+	
+	var rendererSettings = {
+		 	idfield: 'PK_ID',
+		 	bgstylefield: null,
+		 	textstylefield: null,
+		 	titlefields: ['NAME'],
+		 	titleformat: null,
+		 	visiblefields: showFields,
+		 	labels: {
+		 		PK_ID: "ID",
+		 		IS_SHARED: 'Shared',
+				SPACE_ABBREV: 'Space'
+		 	},
+		 	customizers: {
+					
+				IS_SHARED: function(record, value) { 
+		 			var isShared = value;
+		 			if(isShared){
+							return '<span class="badge badge-success m-1">true</span>';
+					}else{
+						return '<span class="badge badge-danger m-1">false</span>';
+					} 
+		 		},
+		 		TAGS: badgeCustomizerFunction,
+		 		TIME_CREATED: function(record, value) { 
+		 			if(value == null) return "&nbsp;";
+		 			if(isNaN(value)){
+		 				return value; 
+		 			}else{
+		 				return CFW.format.epochToTimestamp(parseInt(value)); 
+		 			}
+		 			
+		 		},
+		 		JSON_SHARE_WITH_USERS: badgeCustomizerFunction, 
+		 		JSON_SHARE_WITH_GROUPS: badgeCustomizerFunction, 
+		 		JSON_EDITORS: badgeCustomizerFunction, 
+		 		JSON_EDITOR_GROUPS: badgeCustomizerFunction
+		 	},
+			actions: actionButtons,
 //				bulkActions: {
 //					"Edit": function (elements, records, values){ alert('Edit records '+values.join(',')+'!'); },
 //					"Delete": function (elements, records, values){ $(elements).remove(); },
 //				},
 //				bulkActionsPos: "both",
-				data: data.payload,
-				rendererSettings: {
-					dataviewer:{
-						storeid: 'credentials-'+type,
-						renderers: [
-							{	label: 'Table',
-								name: 'table',
-								renderdef: {
-									labels: {
-										PK_ID: "ID",
-			 							IS_SHARED: 'Shared'
-									},
-									rendererSettings: {
-										table: {filterable: false, narrow: true},
-										
-									},
-								}
-							},
-							{	label: 'Bigger Table',
-								name: 'table',
-								renderdef: {
-									labels: {
-										PK_ID: "ID",
-			 							IS_SHARED: 'Shared'
-									},
-									rendererSettings: {
-										table: {filterable: false},
-									},
-								}
-							},
-							sharingDetailsView,
-							{	label: 'Panels',
-								name: 'panels',
-								renderdef: {}
-							},
-							{	label: 'Cards',
-								name: 'cards',
-								renderdef: {}
-							},
-							{	label: 'Tiles',
-								name: 'tiles',
-								renderdef: {
-									visiblefields: showFields,
-									rendererSettings: {
-										tiles: {
-											popover: false,
-											border: '2px solid black'
-										},
-									},
+			data: data.payload,
+			rendererSettings: {
+				dataviewer:{
+					storeid: 'credentials-'+type,
+					renderers: [
+						{	label: 'Table',
+							name: 'table',
+							renderdef: {
+								labels: {
+									PK_ID: "ID",
+		 							IS_SHARED: 'Shared'
+								},
+								rendererSettings: {
+									table: {filterable: false, narrow: true},
 									
-								}
-							},
-							{	label: 'CSV',
-								name: 'csv',
-								renderdef: {
-									visiblefields: null
-								}
-							},
-							{	label: 'XML',
-								name: 'xml',
-								renderdef: {
-									visiblefields: null
-								}
-							},
-							{	label: 'JSON',
-								name: 'json',
-								renderdef: {}
+								},
 							}
-						],
-					},
-					table: {filterable: false}
+						},
+						{	label: 'Bigger Table',
+							name: 'table',
+							renderdef: {
+								labels: {
+									PK_ID: "ID",
+		 							IS_SHARED: 'Shared'
+								},
+								rendererSettings: {
+									table: {filterable: false},
+								},
+							}
+						},
+						sharingDetailsView,
+						{	label: 'Panels',
+							name: 'panels',
+							renderdef: {}
+						},
+						{	label: 'Cards',
+							name: 'cards',
+							renderdef: {}
+						},
+						{	label: 'Tiles',
+							name: 'tiles',
+							renderdef: {
+								visiblefields: showFields,
+								rendererSettings: {
+									tiles: {
+										popover: false,
+										border: '2px solid black'
+									},
+								},
+								
+							}
+						},
+						{	label: 'CSV',
+							name: 'csv',
+							renderdef: {
+								visiblefields: null
+							}
+						},
+						{	label: 'XML',
+							name: 'xml',
+							renderdef: {
+								visiblefields: null
+							}
+						},
+						{	label: 'JSON',
+							name: 'json',
+							renderdef: {}
+						}
+					],
 				},
-			};
-				
+				table: {filterable: false}
+			},
+		};
+			
+	
+	var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
+	
+	parent.append(renderResult);
 		
-		var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
-		
-		parent.append(renderResult);
-		
-	}else{
-		CFW.ui.addAlert('error', 'Something went wrong and no credentials can be displayed.');
-	}
 }
 
 /******************************************************************
@@ -654,18 +654,19 @@ function cfw_credentialslist_initialDraw(){
 	// Increase Width
 	$('#cfw-container').css('max-width', '100%');
 	
-	
-
+	//-------------------------------------------
+	// Create Selector and Draw
+	cfw_spaces_createSpaceSelector(function(spaceid){ /* do nothing */ });
+		
 	//-------------------------------------------
 	// Create Tabs
 	cfw_credentialslist_createTabs();
 
 
 	//-------------------------------------------
-	// Create Selector and Draw
-	cfw_spaces_createSpaceSelector(function(spaceid){
-			cfw_credentialslist_draw(null);
-		});
+	// Draw
+	cfw_credentialslist_draw(null);
+
 		
 }
 

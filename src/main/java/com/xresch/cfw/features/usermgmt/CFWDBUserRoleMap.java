@@ -297,14 +297,14 @@ public class CFWDBUserRoleMap {
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static HashMap<Integer, Role> selectAllRolesForUser(User user) {
+	public static HashMap<Integer, Role> selectAllRolesAndGroupsForUser(User user) {
 		if( user == null) {
 			new CFWLog(logger)
 				.severe("The user cannot be null");
 			return null;
 		}
 		
-		return selectAllRolesForUser(user.id());
+		return selectAllRolesAndGroupsForUser(user.id());
 	}
 	
 	/***************************************************************
@@ -312,7 +312,7 @@ public class CFWDBUserRoleMap {
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static HashMap<Integer, Role> selectAllRolesForUser(Integer userID) {
+	public static HashMap<Integer, Role> selectAllRolesAndGroupsForUser(Integer userID) {
 		
 		HashMap<Integer, Role> result = new HashMap<Integer, Role>();
 		try {

@@ -11,11 +11,11 @@ var CFW_SPACE_SELECT_ID = 'om-global-space-selector';
 /******************************************************************
  * Creates a select field containing the orgs the user can select.
  *
- * @param callbackFunction callback function that will be called with the
- * last selected org id, or null if the user has no org.
+ * @param callBeforeFunction callbefore function that will be called with the
+ * last selected space id before the page is refreshed, or null if the user has no org.
  * 
  ******************************************************************/
-function cfw_spaces_createSpaceSelector(callbackFunction, selectedSpaceID, isDisabled){
+function cfw_spaces_createSpaceSelector(callBeforeFunction, selectedSpaceID, isDisabled){
 	
 	//-------------------------------
 	// Reset if exists
@@ -27,91 +27,96 @@ function cfw_spaces_createSpaceSelector(callbackFunction, selectedSpaceID, isDis
 	//-------------------------------
 	// Create Selector
 	let params = {action: "fetch", item: "spacesforuser"};
-	CFW.http.getJSON(URL_CFWSPACES, params, 
-		function(data) {
-			
-			if(CFW.utils.isNullOrEmpty(selectedSpaceID) ) {
-				selectedSpaceID = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE, 1, "session");
-			}
-
-			if(data.success 
-			&& data.payload != null
-			&& data.payload.length > 0){
+	
+	$.ajaxSetup({async: false});
+	
+		CFW.http.getJSON(URL_CFWSPACES, params, 
+			function(data) {
 				
-				//------------------------------
-				// Create Base Field
-				let disabledString = '';
-				if(isDisabled != null 
-				&& isDisabled == true){ 
-					disabledString = ' disabled'; 
-				}; 
-				
-				let inputField = $('<input id="'+CFW_SPACE_SELECT_ID+'" ' + disabledString + '>');
-				inputField.data('callbackFunction', callbackFunction)
-				
-				let lastSelectedSpaceExists = false;
-				
-				//------------------------------
-				// Create Select Options
-				let valueLabelOptions = [];
-				for(var index in data.payload){
-					currentSpace = data.payload[index];
-					
-					valueLabelOptions.push( { 
-						  "value": ""+currentSpace.PK_ID
-						, "label": currentSpace.BREADCRUMBS
-					});
-					//select.append('<option value="'+currentSpace.PK_ID+'">'+ indendation + currentSpace.NAME + '</option>')
-					
-					if(currentSpace.PK_ID == selectedSpaceID){
-						lastSelectedSpaceExists = true;
-						inputField.attr('value', selectedSpaceID);
-					}
+				if(CFW.utils.isNullOrEmpty(selectedSpaceID) ) {
+					selectedSpaceID = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE, 1, "session");
 				}
-				
-				valueLabelOptions = _.sortBy(valueLabelOptions, ['label']);
-								
-				//------------------------------
-				// Set Selection
-				if(!lastSelectedSpaceExists){
-					inputField.attr('value', "");
-				}
-				
-				//------------------------------
-				// Create Dropdown Menu
-				let navitem = $('<li class="dropdown-item pl-0" style="width: auto">');
-				navitem.append(inputField);
-				$('#cfw-navbar-right').prepend(navitem);
-				
-				cfw_initializeSelect(CFW_SPACE_SELECT_ID, valueLabelOptions, true, function(){
-					cfw_spaces_onSpaceSelectorChange();
-				});
-				
-				inputField.parent().find("button") // remove classes added by initialize Select
-					  .removeClass()
-					  .addClass("form-control form-control-sm dropdown-toggle " + disabledString)
-					  .attr('disabled', isDisabled);
-				
-				CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, inputField.val(), "session");
-				
-				//------------------------------
-				// Create filter button
-				let filterInclusive = JSDATA.filterSpaceInclusive;
-				let icon = cfw_spaces_getFilterIcon(filterInclusive);
-				
-				let filterButton = $('<li class="cfw-button-menuitem" title="Toggle if you want to see only items in this space, or all items accessible from this space.">'
-						+ '<a class="dropdown-item" id="cfwMenuButtons-filterSpace" href="" onclick="cfw_spaces_toogleFilter(this)">'
-						    + '<div class="cfw-fa-box"><i class="fas '+icon+'"></i></div>'
-							+ '<span class="cfw-menuitem-label">Space Filter</span>'
-						+ '</a>'
-					+ '</li>');
+	
+				if(data.success 
+				&& data.payload != null
+				&& data.payload.length > 0){
+					
+					//------------------------------
+					// Create Base Field
+					let disabledString = '';
+					if(isDisabled != null 
+					&& isDisabled == true){ 
+						disabledString = ' disabled'; 
+					}; 
+					
+					let inputField = $('<input id="'+CFW_SPACE_SELECT_ID+'" ' + disabledString + '>');
+					inputField.data('callBeforeFunction', callBeforeFunction)
+					
+					let lastSelectedSpaceExists = false;
+					
+					//------------------------------
+					// Create Select Options
+					let valueLabelOptions = [];
+					for(var index in data.payload){
+						currentSpace = data.payload[index];
 						
-				$('#cfw-navbar-right').prepend(filterButton);
-			}
-			
-			cfw_spaces_onSpaceSelectorChange();
-			
-	});
+						valueLabelOptions.push( { 
+							  "value": ""+currentSpace.PK_ID
+							, "label": currentSpace.BREADCRUMBS
+						});
+						//select.append('<option value="'+currentSpace.PK_ID+'">'+ indendation + currentSpace.NAME + '</option>')
+						
+						if(currentSpace.PK_ID == selectedSpaceID){
+							lastSelectedSpaceExists = true;
+							inputField.attr('value', selectedSpaceID);
+						}
+					}
+					
+					valueLabelOptions = _.sortBy(valueLabelOptions, ['label']);
+									
+					//------------------------------
+					// Set Selection
+					if(!lastSelectedSpaceExists){
+						inputField.attr('value', "");
+					}
+					
+					//------------------------------
+					// Create Dropdown Menu
+					let navitem = $('<li class="dropdown-item pl-0" style="width: auto">');
+					navitem.append(inputField);
+					$('#cfw-navbar-right').prepend(navitem);
+					
+					cfw_initializeSelect(CFW_SPACE_SELECT_ID, valueLabelOptions, true, function(){
+						cfw_spaces_onSpaceSelectorChange();
+						window.location.reload();
+					});
+					
+					inputField.parent().find("button") // remove classes added by initialize Select
+						  .removeClass()
+						  .addClass("form-control form-control-sm dropdown-toggle " + disabledString)
+						  .attr('disabled', isDisabled);
+					
+					CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, inputField.val(), "session");
+					
+					//------------------------------
+					// Create filter button
+					let filterInclusive = JSDATA.filterSpaceInclusive;
+					let icon = cfw_spaces_getFilterIcon(filterInclusive);
+					
+					let filterButton = $('<li class="cfw-button-menuitem" title="Toggle if you want to see only items in this space, or all items accessible from this space.">'
+							+ '<a class="dropdown-item" id="cfwMenuButtons-filterSpace" href="" onclick="cfw_spaces_toogleFilter(this)">'
+							    + '<div class="cfw-fa-box"><i class="fas '+icon+'"></i></div>'
+								+ '<span class="cfw-menuitem-label">Space Filter</span>'
+							+ '</a>'
+						+ '</li>');
+							
+					$('#cfw-navbar-right').prepend(filterButton);
+				}
+				
+				cfw_spaces_onSpaceSelectorChange();
+				
+		});
+	$.ajaxSetup({async: true});
 }
 
 /******************************************************************
@@ -120,15 +125,15 @@ function cfw_spaces_createSpaceSelector(callbackFunction, selectedSpaceID, isDis
 function cfw_spaces_onSpaceSelectorChange(){
 	let select = $('#'+CFW_SPACE_SELECT_ID);
 	
-	let callbackFunction = select.data('callbackFunction');
+	let callBeforeFunction = select.data('callBeforeFunction');
 	let selectedSpace = select.val();
 	CFW.cache.storeValue(CFW_LAST_SELECTED_SPACE, selectedSpace, "session");
 	
 	console.log("cfw_spaces_onSpaceSelectorChange")
 	CFW.http.getJSON(URL_CFWSPACES, { action: "update", item: "selectedspaceid", spaceid: selectedSpace});
 	
-	if(callbackFunction != null){
-		callbackFunction(selectedSpace);
+	if(callBeforeFunction != null){
+		callBeforeFunction(selectedSpace);
 	}
 	
 }

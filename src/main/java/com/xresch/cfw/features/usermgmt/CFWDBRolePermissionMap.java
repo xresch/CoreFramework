@@ -2,6 +2,7 @@ package com.xresch.cfw.features.usermgmt;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -19,8 +20,10 @@ import com.xresch.cfw.features.usermgmt.Permission.PermissionFields;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.RolePermissionMap.RolePermissionMapFields;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.ResultSetUtils;
+import com.xresch.cfw.logging.CFWLog;
+import com.xresch.xrutils.data.XRRecord;
+import com.xresch.xrutils.database.XRResultSetUtils;
 
 /**************************************************************************************************************
  * 
@@ -33,7 +36,9 @@ public class CFWDBRolePermissionMap {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBRolePermissionMap.class.getName());
 	
-	// Cache<UserID, HashMap<PermissionName, PermissionObject>>
+	// Cache<UserID, HashMap<SpaceID + PermissionName, PermissionObject>>
+	//   >> Groups will be added as "SpaceID + PermissionName" for each space and subspace where a group is available
+	//   >> Roles will be added as "SpaceID + PermissionName" and "PermissionName" as they are global
 	// Cached to make loading permissions of API Tokens more efficient
 	private static Cache<Integer, HashMap<String, Permission>> userPermissionsCache = CFW.Caching.addCache("CFW User Permissions", 
 			CacheBuilder.newBuilder()
@@ -319,6 +324,16 @@ public class CFWDBRolePermissionMap {
 	 * @param role
 	 * @return Hashmap with permissions(key=role name), or null on exception
 	 ****************************************************************/
+	public static String createPermissionIDSpaced(int spaceID, String permissionName) {
+		//                !*!*!* IMPORTANT: *!*!*!
+		// If you ever thange this, also change it in method cfw.js >> cfw_hasPermission()
+		return spaceID + "-" + permissionName;
+	}
+	/***************************************************************
+	 * Retrieve the permissions for the specified user.
+	 * @param role
+	 * @return Hashmap with permissions(key=role name), or null on exception
+	 ****************************************************************/
 	public static HashMap<String, Permission> selectPermissionsForUser(int userID) {
 		
 		HashMap<String, Permission> userPermissions = new HashMap<>();
@@ -329,18 +344,29 @@ public class CFWDBRolePermissionMap {
 				public HashMap<String, Permission> call() throws Exception {
 					ResultSet result = selectPermissionsForUserResultSet(userID);
 					
+					//-----------------------------
+					// Create Permission Map
 					HashMap<String, Permission> permissionMap = new HashMap<String, Permission>(); 
-					try {
-						while(result != null && result.next()) {
-							Permission permission = new Permission(result);
-							permissionMap.put(permission.name(), permission);
+
+					ArrayList<XRRecord> records = XRResultSetUtils.toRecordList(result);
+					
+					for(XRRecord record : records) {
+						Permission permission = new Permission();
+						
+						permission.id(record.getInt(PermissionFields.PK_ID));
+						permission.name(record.getString(PermissionFields.NAME));
+						permission.category(record.getString(PermissionFields.CATEGORY));
+						permission.description(record.getString(PermissionFields.DESCRIPTION));
+						
+						int spaceID = record.getInt("SPACE_ID");
+						String permissionIDSpaced = createPermissionIDSpaced(spaceID, permission.name());
+						
+						permissionMap.put(permissionIDSpaced, permission); // Spaced evaluation
+						
+						boolean isGroup = record.getBoolean(RoleFields.IS_GROUP);
+						if( ! isGroup ) {
+							permissionMap.put(permission.name(), permission); // Global evaluation
 						}
-					} catch (SQLException e) {
-						new CFWLog(logger)
-						.severe("Error while selecting permissions for the user with id '"+userID+"'.", e);
-						return null;
-					}finally {
-						CFWDB.close(result);
 					}
 					
 					return permissionMap;
@@ -379,14 +405,27 @@ public class CFWDBRolePermissionMap {
 	public static ResultSet selectPermissionsForUserResultSet(int userID) {
 		
 		return new CFWSQL(new User())
-				.queryCache(CFWDBRolePermissionMap.class, "selectPermissionsForUserResultSet")
+				.queryCache()
 				.custom(
-					"SELECT P.* "
-					+"FROM CFW_PERMISSION P "
-					+"JOIN CFW_ROLE_PERMISSION_MAP AS GP ON GP.FK_ID_PERMISSION = P.PK_ID "
-					+"JOIN CFW_USER_ROLE_MAP AS UG ON UG.FK_ID_ROLE = GP.FK_ID_ROLE "
-					+"WHERE UG.FK_ID_USER = ?;", 
-					userID)
+"""
+SELECT 
+	  P.*
+	, R.NAME AS "ROLE_NAME"
+	, R.IS_GROUP
+	, S.PK_ID AS "SPACE_ID"
+	, S.NAME AS "SPACE_NAME"
+FROM CFW_PERMISSION P
+JOIN CFW_ROLE_PERMISSION_MAP AS GP 
+  ON GP.FK_ID_PERMISSION = P.PK_ID 
+JOIN CFW_USER_ROLE_MAP AS UG 
+  ON UG.FK_ID_ROLE = GP.FK_ID_ROLE 
+JOIN CFW_ROLE AS R 
+  ON GP.FK_ID_ROLE  = R.PK_ID
+JOIN CFW_SPACES AS S
+  ON (R.FK_ID_SPACE  = S.PK_ID OR ARRAY_CONTAINS(S.H_LINEAGE, R.FK_ID_SPACE) )
+WHERE UG.FK_ID_USER = ?;
+"""
+					,userID)
 				.getResultSet();
 		
 	}
@@ -399,6 +438,7 @@ public class CFWDBRolePermissionMap {
 	 ****************************************************************/
 	public static ResultSet getPermissionOverview() {
 		
+		
 		return new CFWSQL(new Permission())
 				.queryCache()
 				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE, "sql_permissionOverviewAllUsers.sql")
@@ -409,12 +449,31 @@ public class CFWDBRolePermissionMap {
 	/***************************************************************
 	 * Retrieve the permission overview for the specified user.
 	 ****************************************************************/
-	public static JsonArray getPermissionOverview(User user) {
+	public static JsonArray getPermissionOverviewForAudit(User user) {
 		
-		return new CFWSQL(new Permission())
+		return new CFWSQL(new User())
 				.queryCache()
-				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE, "sql_permissionOverviewForUser.sql", user.id())
+				.custom(
+"""
+SELECT 
+	  S.ABBREVIATION AS "SPACE"
+	, P.NAME AS "PERMISSION"
+	, R.NAME AS "ROLE_OR_GROUP"
+	, NOT(R.IS_GROUP) AS "Is_Global(=From_Role)"
+FROM CFW_PERMISSION P
+JOIN CFW_ROLE_PERMISSION_MAP AS GP 
+  ON GP.FK_ID_PERMISSION = P.PK_ID 
+JOIN CFW_USER_ROLE_MAP AS UG 
+  ON UG.FK_ID_ROLE = GP.FK_ID_ROLE 
+JOIN CFW_ROLE AS R 
+  ON GP.FK_ID_ROLE  = R.PK_ID
+JOIN CFW_SPACES AS S
+  ON (R.FK_ID_SPACE  = S.PK_ID OR ARRAY_CONTAINS(S.H_LINEAGE, R.FK_ID_SPACE) )
+WHERE UG.FK_ID_USER = ?;
+"""
+				, user.id())
 				.getAsJSONArray();
+
 		
 	}
 		

@@ -486,7 +486,7 @@ public class CFWDBStoredFile {
 			.and().append(FeatureSpaces.getSQLFilter())
 			.and().custom("(");
 		
-		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
+		Integer[] roleArray = CFW.Context.Request.getUserRolesAndGroups().keySet().toArray(new Integer[] {});
 		for(int i = 0 ; i < roleArray.length; i++ ) {
 			int roleID = roleArray[i];
 			if(i > 0) {
@@ -950,7 +950,7 @@ public class CFWDBStoredFile {
 		//--------------------------------------
 		// Check User has Editor Role
 		if(storedfile.editorGroups() != null) {
-			for(int roleID : CFW.Context.Request.getUserRoles().keySet()) {
+			for(int roleID : CFW.Context.Request.getUserRolesAndGroups().keySet()) {
 				if (storedfile.editorGroups().containsKey(""+roleID)) {
 					return true;
 				}

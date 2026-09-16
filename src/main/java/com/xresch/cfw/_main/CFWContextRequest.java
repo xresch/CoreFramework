@@ -222,9 +222,9 @@ public class CFWContextRequest {
 	/**************************************************************************
 	 * 
 	 **************************************************************************/
-	public static HashMap<Integer, Role> getUserRoles() {
+	public static HashMap<Integer, Role> getUserRolesAndGroups() {
 		if(getContext().sessionData != null) {
-			return getContext().sessionData.getUserRoles();
+			return getContext().sessionData.getUserRolesAndGroups();
 		}
 		return new HashMap<Integer, Role>();
 	}
@@ -238,7 +238,7 @@ public class CFWContextRequest {
 			return true;
 		}
 		
-		if(getUserRoles() != null && getUserRoles().containsKey(roleID)) {
+		if(getUserRolesAndGroups() != null && getUserRolesAndGroups().containsKey(roleID)) {
 			return true;
 		}
 
@@ -265,7 +265,15 @@ public class CFWContextRequest {
 			return true;
 		}
 		
-		if(getUserPermissions() != null && getUserPermissions().containsKey(permissionName)) {
+		int spaceID = getSelectedSpaceID();
+		String permissionIDSpaced = CFW.DB.RolePermissionMap.createPermissionIDSpaced(spaceID, permissionName);
+		
+		HashMap<String, Permission> permissions = getUserPermissions();
+		if(permissions != null 
+		&& (   permissions.containsKey(permissionName) // Check Role (Global)
+		    || permissions.containsKey(permissionIDSpaced) // Check Group (Spaced)
+		   )
+		){
 			return true;
 		}
 

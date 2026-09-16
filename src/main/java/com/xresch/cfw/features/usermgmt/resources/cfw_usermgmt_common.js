@@ -414,9 +414,9 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 			var booleanCustomizer = function(record, value) { 
 				if(value == null){
 					return "&nbsp;";
-				}else if(value == true){
+				}else if(value === true){
 					return '<span class="badge badge-success">'+value+'</span>'; 
-				}else if(value == false){
+				}else if(value === false){
 					return '<span class="badge badge-danger">'+value+'</span>'; 
 				}else{
 					return value;
@@ -443,7 +443,7 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 					actions: [],					
 					rendererSettings: {
 						table: {
-							filterable: false,
+							filterable: true,
 							narrow: true,							
 						},
 						

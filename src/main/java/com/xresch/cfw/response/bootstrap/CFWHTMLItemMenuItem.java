@@ -86,12 +86,13 @@ public class CFWHTMLItemMenuItem extends CFWHTMLItem {
 		if(permissions.size() > 0) {
 
 			boolean hasPermission = false;
-			HashMap<String, Permission> usersPermissions = CFW.Context.Request.getUserPermissions();
+
 			for(String permission : permissions) {
-				if(usersPermissions != null && usersPermissions.containsKey(permission)) {
+				if(CFW.Context.Request.hasPermission(permission)) {
 					hasPermission = true;
 					break;
 				}
+					
 			}
 			
 			if(!hasPermission) {

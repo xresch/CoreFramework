@@ -432,6 +432,8 @@ function cfw_apioverview_initialDraw(){
  ******************************************************************/
 function cfw_apioverview_draw(){
 	
+	$("#cfw-container").html("");
+	
 	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 

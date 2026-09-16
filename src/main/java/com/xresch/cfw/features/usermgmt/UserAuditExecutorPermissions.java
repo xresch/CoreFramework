@@ -19,7 +19,7 @@ public class UserAuditExecutorPermissions implements UserAuditExecutor {
 		
 		//---------------------------------
 		// Fetch Data
-		return CFW.DB.RolePermissionMap.getPermissionOverview(user);
+		return CFW.DB.RolePermissionMap.getPermissionOverviewForAudit(user);
 		
 
 		

@@ -29,16 +29,21 @@ Spaces have the following characteristics, which will determine their behaviour:
 	
 	<li><b>Is Enabled:&nbsp;</b>If a space is set to disabled, it will not show up in the space selector and it's entities will not show up for selection.
 	Disabling a space will not break functionality. If an entity was selected/used while the space was enabled, this entity will stay selected/used until someone changes it.</li>
-	
-	<li><b>Position in the Hierarchy:&nbsp;</b>The position in the hierarchy influences the access:
-		<ul>
-			<li><b>Editing Access:&nbsp;</b> Direction is top-down, editors can access any space that is below the one they are an editor for. They cannot edit spaces higher in the hierarchy. </li>
-			<li><b>Entity Access:&nbsp;</b> Direction is bottom-up, users can access entities(Credentials, Dashboards etc...) that are in spaces above the one they are assigned too, but not in spaces below. 
-			This is true even if the user is not an assigned user of a parent space.
-			This allows to share entities with sub spaces, and to create sub spaces and move entities into them without breaking functionality. </li>
-		</ul>
-	 </li>
 </ul>
+
+<h2>Position in the Hierarchy</h2>	
+<p>The position in the hierarchy influences what can be accessed and how.</p>
+<ul>
+	<li><b>Space Access [fix]:&nbsp;</b> Granting access to a space will grant access to only that space, not to higher or lower spaces. </li>
+	<li><b>Space Editing Access [top-down]:&nbsp;</b> Editors can edit spaces that are below the one they are an editor for. They cannot edit spaces higher in the hierarchy. They cannot edit the entities(Dashboards, Credentials etc...) inside spaces until they are explicitly added to that space. (What they can do anytime themselves) </li>
+	<li><b>Group Permission Propagation [top-down]:&nbsp;</b> Group Permission that a user receives in one space will automatically apply to any of it's sub-spaces. This simplifies permission management for larger spaces with many subspaces. </li>
+	<li><b>Role Permission Propagation [global]:&nbsp;</b> Role Permission that a user receives are global and apply to any space. Therefore, only admins with access to the global user management can grant roles to users. </li>
+	<li><b>Entity Access [bottom-up]:&nbsp;</b> Users can access entities(Dashboards, Credentials etc...) that are in spaces above the one they are assigned too, but not in spaces below. 
+	This is true even if the user is not an assigned user of a parent space.
+	This allows to share entities with sub spaces, and to create sub spaces and move entities into them without breaking functionality. </li>
+</ul>
+
+
 
 <h2>Default Spaces</h2>
 <p>

@@ -1074,6 +1074,10 @@ function cfw_dashboardlist_initialDraw(){
 	$('#cfw-container').css('max-width', '100%');
 	
 	//-------------------------------------------
+	// Create Selector and Draw
+	cfw_spaces_createSpaceSelector(function(spaceid){ /* do nothing */ });
+		
+	//-------------------------------------------
 	// Create Tabs
 	cfw_dashboardlist_createTabs();
 	
@@ -1081,12 +1085,10 @@ function cfw_dashboardlist_initialDraw(){
 	// Register Tutorials
 	cfw_dashboardlist_tutorialsRegister()
 	
-
 	//-------------------------------------------
-	// Create Selector and Draw
-	cfw_spaces_createSpaceSelector(function(spaceid){
-			cfw_dashboardlist_draw(null);
-		});
+	// Draw
+	cfw_dashboardlist_draw(null);
+
 			
 }
 

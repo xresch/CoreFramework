@@ -343,7 +343,7 @@ public class CFWDBCredentials {
 	 ****************************************************************/
 	public static String getAdminCredentialsListAsJSON() {
 		
-		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+		if(CFW.Context.Request.hasPermissionSpaced(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
 			ArrayList<CFWCredentials> array = new CFWSQL(new CFWCredentials())
 				.queryCacheSpaced()
 				//.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
@@ -371,7 +371,7 @@ public class CFWDBCredentials {
 	 ****************************************************************/
 	public static String getAdminArchivedListAsJSON() {
 		
-		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+		if(CFW.Context.Request.hasPermissionSpaced(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
 			
 			ArrayList<CFWCredentials> array = new CFWSQL( new CFWCredentials() )
 				.queryCacheSpaced()
@@ -434,7 +434,7 @@ public class CFWDBCredentials {
 			.and().append(FeatureSpaces.getSQLFilter())
 			.and().custom("(");
 		
-		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
+		Integer[] roleArray = CFW.Context.Request.getUserRolesAndGroups().keySet().toArray(new Integer[] {});
 		for(int i = 0 ; i < roleArray.length; i++ ) {
 			int roleID = roleArray[i];
 			if(i > 0) {
@@ -539,7 +539,7 @@ public class CFWDBCredentials {
 
 		// -----------------------------------
 		// Check User is Admin
-		if (CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+		if (CFW.Context.Request.hasPermissionSpaced(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
 			return true;
 		}
 
@@ -630,6 +630,7 @@ public class CFWDBCredentials {
 					user.id(), 
 					likeID,
 					likeID)
+			//.and().append(FeatureSpaces.getSQLFilterInclusive())
 			.getAsJSONArray();
 	}
 	
@@ -645,6 +646,7 @@ public class CFWDBCredentials {
 				.queryCache()
 				.loadSQLResource(FeatureCredentials.PACKAGE_RESOURCES, "SQL_permissionAuditByUsersGroups.sql", 
 						user.id())
+				//.and().append(FeatureSpaces.getSQLFilterInclusive())
 				.getAsJSONArray();
 	}
 	
@@ -858,14 +860,14 @@ public class CFWDBCredentials {
 		// or listed in editors
 		if( credentials.foreignKeyOwner().equals(user.id())
 		|| ( credentials.editors() != null && credentials.editors().containsKey(user.id().toString()) )
-		|| CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+		|| CFW.Context.Request.hasPermissionSpaced(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
 			return true;
 		}
 		
 		//--------------------------------------
 		// Check User has Editor Role
 		if(credentials.editorGroups() != null) {
-			for(int roleID : CFW.Context.Request.getUserRoles().keySet()) {
+			for(int roleID : CFW.Context.Request.getUserRolesAndGroups().keySet()) {
 				if (credentials.editorGroups().containsKey(""+roleID)) {
 					return true;
 				}

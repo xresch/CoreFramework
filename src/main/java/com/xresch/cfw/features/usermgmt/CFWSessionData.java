@@ -41,7 +41,7 @@ public class CFWSessionData implements Serializable {
 	private String sessionID = null;
 	private int spaceID = FeatureSpacesDefaults.DEFAULT.id();
 	private boolean filterSpaceInclusive = true;
-	private HashMap<Integer, Role> userRoles = new HashMap<>();
+	private HashMap<Integer, Role> userRolesAndGroups = new HashMap<>();
 	private HashMap<String, Permission> userPermissions = new HashMap<>();
 	
 	private HashMap<String, String> customProperties = new HashMap<>();
@@ -83,7 +83,7 @@ public class CFWSessionData implements Serializable {
 		isLoggedIn = false;
 		
 		// make new HashMaps instead of map.clear() to avoid some strange NullPointerExceptions that occurs for some strange reasons and I have absolutely no intention to now go and check why the hell this is happening, as it seems that it is caused by Jetty session handler, which stores a strange state into the database but I have no interest in finding out how to reproduce the issue, so I write this overly lengthy comment just to make sure you have something to laugh when you get to the end of this line. ;-P 
-		userRoles = new HashMap<>();
+		userRolesAndGroups = new HashMap<>();
 		userPermissions = new HashMap<>();
 		customProperties= new HashMap<>();
 		
@@ -162,6 +162,8 @@ public class CFWSessionData implements Serializable {
 	 ***********************************************************************/	
 	public void setSpaceID(int spaceID) {
 		this.spaceID = spaceID;
+		
+		loadMenu(isLoggedIn); // reload menu on space change
 	}
 	
 	/***********************************************************************
@@ -206,8 +208,8 @@ public class CFWSessionData implements Serializable {
 		}
 				
 		// use putAll() to not clear the HashMaps which are cached in classes CFWDBUserRoleMap/CFWDBRolePermissionMap
-		this.userRoles = new HashMap<>();
-		this.userRoles.putAll( CFW.DB.Users.selectRolesForUser(userID) );
+		this.userRolesAndGroups = new HashMap<>();
+		this.userRolesAndGroups.putAll( CFW.DB.Users.selectAllRolesAndGroupsForUser(userID) );
 		this.userPermissions = new HashMap<>();
 		this.userPermissions.putAll( CFW.DB.Users.selectPermissionsForUser(userID) );
 
@@ -234,8 +236,8 @@ public class CFWSessionData implements Serializable {
 	/***********************************************************************
 	 * 
 	 ***********************************************************************/
-	public HashMap<Integer, Role> getUserRoles() {
-		return userRoles;
+	public HashMap<Integer, Role> getUserRolesAndGroups() {
+		return userRolesAndGroups;
 	}
 
 	/***********************************************************************

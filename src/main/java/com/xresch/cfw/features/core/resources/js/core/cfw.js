@@ -184,10 +184,26 @@ function  cfw_hasPermission(permissionName){
 	cfw_http_fetchAndCacheData("/app/usermanagement/permissions", null, "userPermissions")
 	$.ajaxSetup({async: true});
 	
-	if(CFW.cache.data["userPermissions"] != null
-	&& CFW.cache.data["userPermissions"].payload.includes(permissionName)){
-		return true;
+	if(CFW.cache.data["userPermissions"] != null){
+	
+		//-------------------------------
+		// Check Roles [Global]
+		if(CFW.cache.data["userPermissions"].payload.includes(permissionName)){
+			return true;
+		}
+		
+		//-------------------------------
+		// Check Groups [Spaced]
+		if(typeof cfw_spaces_getSelectedSpace === 'function'){
+			let spaceid = cfw_spaces_getSelectedSpace();
+			
+			if(CFW.cache.data["userPermissions"].payload.includes( spaceid +"-"+permissionName)){
+				return true;
+			}
+		}
 	}
+	
+
 	
 	return false;
 }

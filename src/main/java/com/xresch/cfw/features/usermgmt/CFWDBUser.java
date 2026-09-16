@@ -330,9 +330,9 @@ public class CFWDBUser {
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static HashMap<Integer, Role> selectRolesForUser(int userID) {
+	public static HashMap<Integer, Role> selectAllRolesAndGroupsForUser(int userID) {
 		
-		return CFW.DB.UserRoleMap.selectAllRolesForUser(userID);
+		return CFW.DB.UserRoleMap.selectAllRolesAndGroupsForUser(userID);
 	
 	}
 	/***************************************************************
@@ -340,9 +340,9 @@ public class CFWDBUser {
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static HashMap<Integer, Role> selectRolesForUser(User user) {
+	public static HashMap<Integer, Role> selectAllRolesAndGroupsForUser(User user) {
 		
-		return CFW.DB.UserRoleMap.selectAllRolesForUser(user);
+		return CFW.DB.UserRoleMap.selectAllRolesAndGroupsForUser(user);
 	
 	}
 	

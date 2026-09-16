@@ -400,7 +400,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//--------------------------------------
 		// Test selectRolesForUser()
 		System.out.println("================= Test selectRolesForUser() =================");
-		HashMap<Integer, Role> roles = CFW.DB.Users.selectRolesForUser(testuserB);
+		HashMap<Integer, Role> roles = CFW.DB.Users.selectAllRolesAndGroupsForUser(testuserB);
 		
 		Assertions.assertEquals(2, roles.size(), "Testuser2 is part of 2 roles.");
 		Assertions.assertTrue(roles.containsKey(testroleA.id()), "User is part of testroleA.");

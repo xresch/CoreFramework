@@ -54,6 +54,9 @@ public class ServletCredentialsList extends HttpServlet
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
+		String action = request.getParameter("action");
+		
+		
 		HTMLResponse html = new HTMLResponse("Credentials List");
 		
 		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_VIEWER)
@@ -62,7 +65,6 @@ public class ServletCredentialsList extends HttpServlet
 			
 			createForms();
 			
-			String action = request.getParameter("action");
 			
 			if(action == null) {
 
@@ -81,7 +83,10 @@ public class ServletCredentialsList extends HttpServlet
 				handleDataRequest(request, response);
 			}
 		}else {
-			CFWMessages.accessDenied();
+			if(request.getParameter("action") != null) {
+				new JSONResponse();
+			}
+			CFWMessages.noPermission();
 		}
         
     }

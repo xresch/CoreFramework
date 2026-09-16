@@ -323,7 +323,7 @@ public class CFWDBContextSettings {
 		}else {
 			//--------------------------------------
 			// Filter by Roles
-			Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
+			Integer[] roleArray = CFW.Context.Request.getUserRolesAndGroups().keySet().toArray(new Integer[] {});
 			for(int i = 0 ; i < roleArray.length; i++ ) {
 				int roleID = roleArray[i];
 	
