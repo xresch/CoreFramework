@@ -5,86 +5,6 @@
  * @license MIT-License
  **************************************************************************************************************/
 
-/******************************************************************
- * 
- ******************************************************************/
-function cfw_usermgmt_formatAuditResults(parent, item){
-	
-	if(Array.isArray(item)){
-		
-		//------------------------------------
-		// Handle Arrays
-		for(key in item){
-			cfw_usermgmt_formatAuditResults(parent, item[key]);
-		} 
-	}else{
-
-		//------------------------------------
-		// Handle Items
-		if(item['cfw-Type'] == "User"){
-			parent.append('<h1><b>User:</b> '+item.username+'</h1>');
-			for(key in item.children){
-				cfw_usermgmt_formatAuditResults(parent, item.children[key]);
-			}
-		}else if(item['cfw-Type'] == "Audit"){
-			parent.append('<h3><b>Audit:</b> '+item.name+'</h3>');
-			parent.append('<p>'+item.description+'</p>');
-			
-			//-----------------------------------
-			// Handle Empty Results
-			if(item.auditResult == null || item.auditResult.length == 0){
-				parent.append('<span class="badge badge-info">No results found for this audit.</span>');
-				return;
-			}
-			
-			//-----------------------------------
-			// Add customizer
-			var booleanCustomizer = function(record, value) { 
-				if(value == null){
-					return "&nbsp;";
-				}else if(value == true){
-					return '<span class="badge badge-success">'+value+'</span>'; 
-				}else if(value == false){
-					return '<span class="badge badge-danger">'+value+'</span>'; 
-				}else{
-					return value;
-				}
-			}
-				
-			var customizers = {};
-			for(key in item.auditResult[0]){
-				customizers[key] = booleanCustomizer;
-			}
-			
-			//-----------------------------------
-			// Render Data
-			var rendererSettings = {
-					data: item.auditResult,
-				 	idfield: 'PK_ID',
-				 	bgstylefield: null,
-				 	textstylefield: null,
-				 	titlefields: null,
-				 	titleformat: '{0}',
-				 	visiblefields: null,
-				 	labels: { PK_ID: "ID" },
-				 	customizers: customizers,
-					actions: [],					
-					rendererSettings: {
-						table: {
-							filterable: false,
-							narrow: true,							
-						},
-						
-					},
-				};
-			
-			var renderResult = CFW.render.getRenderer('table').render(rendererSettings);	
-			
-			parent.append(renderResult);
-			
-		}
-	}
-}
 
 /*********************************************************************************
 * Creates a printView by opening a new window and returns a divElement where you 
@@ -155,30 +75,7 @@ function cfw_usermgmt_editUser(userID){
 	
 }
 
-/******************************************************************
- * Edit user
- ******************************************************************/
-function cfw_usermgmt_auditUser(userID){
-	
-	var allDiv = $('<div id="cfw-usermgmt">');	
 
-	//-----------------------------------
-	// User Details
-	//-----------------------------------
-	var auditDiv = $('<div id="cfw-usermgmt-audit">');		
-	
-	CFW.ui.showModalMedium("User Audit", auditDiv);
-	
-	//-----------------------------------
-	// Load Form
-	//-----------------------------------
-	CFW.http.getJSON(CFW_USERMGMT_URL, {action: "fetch", item: "useraudit", id: userID}, function(data){
-		if(data.payload != null){
-			cfw_usermgmt_formatAuditResults(auditDiv, data.payload);
-		}
-	});
-	
-}
 
 /******************************************************************
  * ResetPassword

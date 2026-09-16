@@ -338,7 +338,9 @@ public class CFWRegistryComponents {
 			if(userMenuItems.size() > 0) {
 				userParentMenu.addChild(new CFWHTMLItemMenuDivider());
 			}
-		
+			
+			//---------------------------------
+			// Change Password
 			if(!sessionData.getUser().isForeign()) {
 				userParentMenu.addChild(
 						new CFWHTMLItemMenuItem("Change Password")
@@ -346,8 +348,20 @@ public class CFWRegistryComponents {
 							.href("/app/changepassword")
 							.addAttribute("id", "cfwMenuUser-ChangePassword")
 						);
+				
 			}
 			
+			//---------------------------------
+			// Logout 
+			userParentMenu.addChild(
+				new CFWHTMLItemMenuItem("Permissions")
+					.faicon("fas fa-lock-open")
+					.href("/app/usermanagement/permissions?audit=true")
+					.addAttribute("id", "cfwMenuUser-Permissions")
+				);
+			
+			//---------------------------------
+			// Logout 
 			userParentMenu.addChild(
 				new CFWHTMLItemMenuItem("Logout")
 					.faicon("fas fa-sign-out-alt")

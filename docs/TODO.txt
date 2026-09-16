@@ -172,6 +172,7 @@ DONE
 - NEW FEATURE: Spaces! Adding multi-client capabilities to most of the existing Features. All entities that have existed will be found under the space "[DEF] Default"
 - NEW FEATURE: CHARTS ARE NOW ZOOMABLE!
 - NEW FEATURE: You can now add custom Bootstrap 4 themes in the folder ./resources/css/themes
+- NEW FEATURE: User can now audit their own permissions using Navbar >> Username >> Permissions
 
 - BREAKING CHANGE: Query Command Source: stopped "each" parameter from being added to metadata, use function sourceEach() to retrieve value 
 - BREAKING CHANGE: Refactoring of CFW.Utils.Text to CFW.Text

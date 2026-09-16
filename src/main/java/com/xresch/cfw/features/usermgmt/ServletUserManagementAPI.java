@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.Context;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.datahandling.CFWField;
@@ -59,182 +60,198 @@ public class ServletUserManagementAPI extends HttpServlet {
 		String userID, roleID, permissionID;
 		
 		//-------------------------------------------
+		// Validate Input
+		//-------------------------------------------
+		if (action == null) {
+			CFW.Messages.addErrorMessage("Parameter 'action' was not specified.");
+			return;
+		}else {
+			action = action.toLowerCase();
+		}
+		
+		//-------------------------------------------
 		// Fetch Data
 		//-------------------------------------------
 		JSONResponse jsonResponse = new JSONResponse();
 		StringBuilder content = jsonResponse.getContent();
 
-		
 		//-------------------------------------------
 		// Fetch Data
 		//-------------------------------------------
 		boolean isManager = CFW.Context.Request.hasPermission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT);
 		boolean isGrouper = CFW.Context.Request.hasPermission(FeatureUserManagement.PERMISSION_GROUPS_USER);
+		
+		//-------------------------------------------
+		// Check User Audit
+		//-------------------------------------------
+		if(action.equalsIgnoreCase("fetch")
+		&& item.equalsIgnoreCase("useraudit")) {
+			
+			boolean isSelf = ( Integer.parseInt(ID) == CFW.Context.Request.getUserID() );
+			
+			if(!isManager && !isSelf) { CFW.Messages.noPermission(); return; }
+			
+			content.append(CFWRegistryAudit.auditUser(ID));
+			return;
+		}
+		
+		//-------------------------------------------
+		// Check All Other
+		//-------------------------------------------
 		if(!isManager && !isGrouper ) {
 			CFW.Messages.accessDenied();
 		}else {
 			
-			if (action == null) {
-				CFW.Messages.addErrorMessage("Parameter 'action' was not specified.");
-				//content.append("{\"error\": \"Type was not specified.\"}");
-			}else {
-	
-				switch(action.toLowerCase()) {
-					
-					case "fetch": 			
-						switch(item.toLowerCase()) {
-							case "users": 			if(!isManager) { CFW.Messages.noPermission(); return; }
-													content.append(CFW.DB.Users.getUserListAsJSON());
-										  			break;
-										  		
-							case "user": 			if(!isManager) { CFW.Messages.noPermission(); return; }
-													content.append(CFW.DB.Users.getUserAsJSON(ID));
-					  								break;	
-					  								
-							case "usersforrole": 	content.append(CFW.DB.Roles.getUsersForRoleAsJSON(ID));
-													break;						
-					  													
-							case "roles": 			if(!isManager) { CFW.Messages.noPermission(); return; }
-													content.append(CFW.DB.Roles.getUserRoleListAsJSON());
-							  			   			break;
+			switch(action.toLowerCase()) {
+				
+				case "fetch": 			
+					switch(item.toLowerCase()) {
+						case "users": 			if(!isManager) { CFW.Messages.noPermission(); return; }
+												content.append(CFW.DB.Users.getUserListAsJSON());
+									  			break;
+									  		
+						case "user": 			if(!isManager) { CFW.Messages.noPermission(); return; }
+												content.append(CFW.DB.Users.getUserAsJSON(ID));
+				  								break;	
+				  								
+						case "usersforrole": 	content.append(CFW.DB.Roles.getUsersForRoleAsJSON(ID));
+												break;						
+				  													
+						case "roles": 			if(!isManager) { CFW.Messages.noPermission(); return; }
+												content.append(CFW.DB.Roles.getUserRoleListAsJSON());
+						  			   			break;
 
-							case "role": 			if(!isManager) { CFW.Messages.noPermission(); return; }
-													content.append(CFW.DB.Roles.getUserRolesAsJSON(ID));
-													break;	
-																				
-							case "groups": 			if(!isManager) { CFW.Messages.noPermission(); return; }
-													content.append(CFW.DB.Roles.getGroupListAsJSON());
-													break;	
-							
-							// for groups page
-							case "mygroups": 		Integer id = CFW.Context.Request.getUserID();
-													content.append(CFW.DB.Roles.getGroupsThatUserCanEditAsJSON(id));
-													break;	
-													
-							// for groups page						
-							case "allgroups": 		if(!isManager && !isGrouper ) { CFW.Messages.noPermission(); return; }
-													content.append(CFW.DB.Roles.getAllGroupListForSpaceAsJSON());
-													break;	
-													
-							case "permissions":		if(!isManager) { CFW.Messages.noPermission(); return; }
-													content.append(CFW.DB.Permissions.getUserPermissionListAsJSON());
-		  			   								break;  
-		  			   		
-							case "useraudit":		if(!isManager) { CFW.Messages.noPermission(); return; }
-													content.append(CFWRegistryAudit.auditUser(ID));
- 													break;  
- 													
-							case "fullaudit":		if(!isManager) { CFW.Messages.noPermission(); return; }
-													content.append(CFWRegistryAudit.auditAllUsers());
-													break;  	
-													
-							default: 				CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
+						case "role": 			if(!isManager) { CFW.Messages.noPermission(); return; }
+												content.append(CFW.DB.Roles.getUserRolesAsJSON(ID));
+												break;	
+																			
+						case "groups": 			if(!isManager) { CFW.Messages.noPermission(); return; }
+												content.append(CFW.DB.Roles.getGroupListAsJSON());
+												break;	
+						
+						// for groups page
+						case "mygroups": 		Integer id = CFW.Context.Request.getUserID();
+												content.append(CFW.DB.Roles.getGroupsThatUserCanEditAsJSON(id));
+												break;	
+												
+						// for groups page						
+						case "allgroups": 		if(!isManager && !isGrouper ) { CFW.Messages.noPermission(); return; }
+												content.append(CFW.DB.Roles.getAllGroupListForSpaceAsJSON());
+												break;	
+												
+						case "permissions":		if(!isManager) { CFW.Messages.noPermission(); return; }
+												content.append(CFW.DB.Permissions.getUserPermissionListAsJSON());
+	  			   								break;  	  			
+												
+						case "fullaudit":		if(!isManager) { CFW.Messages.noPermission(); return; }
+												content.append(CFWRegistryAudit.auditAllUsers());
+												break;  	
+												
+						default: 				CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
+												break;
+					}
+					break;
+				
+				case "fetchpartial": 
+					String pagesize = request.getParameter("pagesize");
+					String pagenumber = request.getParameter("pagenumber");
+					String filterquery = request.getParameter("filterquery");
+					String sortby = request.getParameter("sortby");
+					String isAscendingString = request.getParameter("isascending");
+					String userOrRoleID = request.getParameter("id");
+					
+					boolean isAscending = (isAscendingString == null || isAscendingString.equals("true")) ? true : false;
+					
+					switch(item.toLowerCase()) {
+						case "userrolemap": 	
+							if(!isManager) { CFW.Messages.noPermission(); return; }
+							content.append(CFW.DB.UserRoleMap.getUserRoleMapForUserAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
+						break;	
+						
+						case "usergroupmap": 	
+							content.append(CFW.DB.UserRoleMap.getUserGroupMapForUserAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
+						break;	
+						
+						case "rolepermissionmap": 	
+							content.append(CFW.DB.RolePermissionMap.getPermissionMapForRoleAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
+						break;	
+					}
+					break;
+				case "delete": 			
+					switch(item.toLowerCase()) {
+						case "users": 		if(!isManager) { CFW.Messages.noPermission(); return; }
+											jsonResponse.setSuccess(CFW.DB.Users.deleteMultipleByID(IDs));
+									  		break;
+									  
+						case "roles": 		if(!isManager) { CFW.Messages.noPermission(); return; }
+											jsonResponse.setSuccess(CFW.DB.Roles.deleteMultipleByID(IDs));
+											break;  
+											
+						case "groups": 		jsonResponse.setSuccess(CFW.DB.Roles.deleteMultipleByID(IDs));
+											break;  
+											
+						case "permissions": if(!isManager) { CFW.Messages.noPermission(); return; }
+											jsonResponse.setSuccess(CFW.DB.Permissions.deleteMultipleByID(IDs));
+	  			   							break;  
+	  			   							
+						default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
+											break;
+					}
+					break;
+				
+				case "update": 			
+					switch(item.toLowerCase()) {
+						case "userrolemap":  		if(!isManager) { CFW.Messages.noPermission(); return; }
+							  						//fallthrough next case
+							  
+						case "usergroupmap": 
+													userID = request.getParameter("itemid");
+													roleID = request.getParameter("listitemid");
+													jsonResponse.setSuccess(CFW.DB.UserRoleMap.toogleUserInRole(userID, roleID));
+													SessionTracker.updateUserRights(Integer.parseInt(userID));
 													break;
-						}
-						break;
-					
-					case "fetchpartial": 
-						String pagesize = request.getParameter("pagesize");
-						String pagenumber = request.getParameter("pagenumber");
-						String filterquery = request.getParameter("filterquery");
-						String sortby = request.getParameter("sortby");
-						String isAscendingString = request.getParameter("isascending");
-						String userOrRoleID = request.getParameter("id");
+													
+						case "rolepermissionmap": 	if(!isManager) { CFW.Messages.noPermission(); return; }
+													roleID = request.getParameter("itemid");
+													permissionID = request.getParameter("listitemid");
+													jsonResponse.setSuccess(CFW.DB.RolePermissionMap.tooglePermissionInRole(permissionID, roleID));
+													break;
+		
+						default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
+											break;
+					}
+					break;
+				
+				case "getform": 			
+					switch(item.toLowerCase()) {
+						case "edituser": 	if(!isManager) { CFW.Messages.noPermission(); return; }
+											createEditUserForm(jsonResponse, ID);
+											break;
 						
-						boolean isAscending = (isAscendingString == null || isAscendingString.equals("true")) ? true : false;
+						case "editrole": 	if(!isManager) { CFW.Messages.noPermission(); return; }
+											createEditRoleForm(jsonResponse, ID);
+											break;
 						
-						switch(item.toLowerCase()) {
-							case "userrolemap": 	
-								if(!isManager) { CFW.Messages.noPermission(); return; }
-								content.append(CFW.DB.UserRoleMap.getUserRoleMapForUserAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
-							break;	
-							
-							case "usergroupmap": 	
-								content.append(CFW.DB.UserRoleMap.getUserGroupMapForUserAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
-							break;	
-							
-							case "rolepermissionmap": 	
-								content.append(CFW.DB.RolePermissionMap.getPermissionMapForRoleAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
-							break;	
-						}
-						break;
-					case "delete": 			
-						switch(item.toLowerCase()) {
-							case "users": 		if(!isManager) { CFW.Messages.noPermission(); return; }
-												jsonResponse.setSuccess(CFW.DB.Users.deleteMultipleByID(IDs));
-										  		break;
-										  
-							case "roles": 		if(!isManager) { CFW.Messages.noPermission(); return; }
-												jsonResponse.setSuccess(CFW.DB.Roles.deleteMultipleByID(IDs));
-												break;  
-												
-							case "groups": 		jsonResponse.setSuccess(CFW.DB.Roles.deleteMultipleByID(IDs));
-												break;  
-												
-							case "permissions": if(!isManager) { CFW.Messages.noPermission(); return; }
-												jsonResponse.setSuccess(CFW.DB.Permissions.deleteMultipleByID(IDs));
-		  			   							break;  
-		  			   							
-							default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
-												break;
-						}
-						break;
-					
-					case "update": 			
-						switch(item.toLowerCase()) {
-							case "userrolemap":  		if(!isManager) { CFW.Messages.noPermission(); return; }
-								  						//fallthrough next case
-								  
-							case "usergroupmap": 
-														userID = request.getParameter("itemid");
-														roleID = request.getParameter("listitemid");
-														jsonResponse.setSuccess(CFW.DB.UserRoleMap.toogleUserInRole(userID, roleID));
-														SessionTracker.updateUserRights(Integer.parseInt(userID));
-														break;
-														
-							case "rolepermissionmap": 	if(!isManager) { CFW.Messages.noPermission(); return; }
-														roleID = request.getParameter("itemid");
-														permissionID = request.getParameter("listitemid");
-														jsonResponse.setSuccess(CFW.DB.RolePermissionMap.tooglePermissionInRole(permissionID, roleID));
-														break;
-			
-							default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
-												break;
-						}
-						break;
-					
-					case "getform": 			
-						switch(item.toLowerCase()) {
-							case "edituser": 	if(!isManager) { CFW.Messages.noPermission(); return; }
-												createEditUserForm(jsonResponse, ID);
-												break;
-							
-							case "editrole": 	if(!isManager) { CFW.Messages.noPermission(); return; }
-												createEditRoleForm(jsonResponse, ID);
-												break;
-							
-							case "editgroup": 	createEditGroupForm(jsonResponse, ID);
-												break;
-												
-							case "changeowner": createChangeGroupOwnerForm(jsonResponse, ID);
-												break;
-							
-							case "resetpw": 	if(!isManager) { CFW.Messages.noPermission(); return; }
-												createResetPasswordForm(jsonResponse, ID);
-							break;
-							
-							default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
-												break;
-						}
-						break;
-						
-					default: 				CFW.Messages.addErrorMessage("The value of action '"+action+"' is not supported.");
+						case "editgroup": 	createEditGroupForm(jsonResponse, ID);
 											break;
 											
-				}
-							
+						case "changeowner": createChangeGroupOwnerForm(jsonResponse, ID);
+											break;
+						
+						case "resetpw": 	if(!isManager) { CFW.Messages.noPermission(); return; }
+											createResetPasswordForm(jsonResponse, ID);
+						break;
+						
+						default: 			CFW.Messages.addErrorMessage("The value of item '"+item+"' is not supported.");
+											break;
+					}
+					break;
+					
+				default: 				CFW.Messages.addErrorMessage("The value of action '"+action+"' is not supported.");
+										break;
+										
 			}
-		
+
 		}
 	}
 	
