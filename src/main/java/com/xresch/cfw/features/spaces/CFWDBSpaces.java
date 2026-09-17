@@ -512,7 +512,7 @@ public class CFWDBSpaces {
 		
 		return new CFWSQL(new CFWSpace())
 			.queryCache()
-			.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE, "sql_permissionAuditByUser.sql", 
+			.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE, "sql_permissionAuditUserAccess.sql", 
 					  likeID
 					, likeID
 					, userID
