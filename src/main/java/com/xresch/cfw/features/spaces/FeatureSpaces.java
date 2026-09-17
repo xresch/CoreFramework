@@ -11,14 +11,11 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.CFWSQL.CFWSQLReferentialAction;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
-import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
-import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
 import com.xresch.cfw.features.usermgmt.CFWPermissionChangeListener;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
@@ -102,6 +99,10 @@ public class FeatureSpaces extends CFWAppFeature {
 		//CFW.Registry.Objects.addCFWObject(CFWSpaceAdminMap.class);		
 		//CFW.Registry.Objects.addCFWObject(CFWSpaceAdminGroupsMap.class);		
 		
+		//----------------------------------
+    	// Register Audit
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorSpaceUserAccess());	
+		
 		//-------------------------------------
     	// Register Manual 
 		CFW.Registry.Manual.addManualPage(null, new ManualPage("Spaces")
@@ -111,6 +112,7 @@ public class FeatureSpaces extends CFWAppFeature {
 				.addPermission(PERMISSION_SPACES_ADMIN)
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_spaces_main.html")
 			);
+		
 		//-------------------------------------
     	// Register User Change Listener
 		FeatureUserManagement.registerChangeListener(new CFWPermissionChangeListener() {

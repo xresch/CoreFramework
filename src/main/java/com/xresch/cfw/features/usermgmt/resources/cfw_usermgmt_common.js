@@ -380,28 +380,28 @@ function cfw_usermgmt_changeGroupOwner(id){
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_usermgmt_formatAuditResults(parent, item){
+function cfw_usermgmt_formatAuditResults(parent, item, doDataViewer){
 	var toc = $('<div id="toc">');
 	parent.append(toc);
 	
 	var auditResults = $('<div id="auditResults">');
 	parent.append(auditResults);
 
-	cfw_usermgmt_formatAuditResultsPrintAudits(auditResults, item);
+	cfw_usermgmt_formatAuditResultsPrintAudits(auditResults, item, doDataViewer);
 	
 	CFW.ui.toc(auditResults, toc);
 }
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_usermgmt_formatAuditResultsPrintAudits(parent, item){
+function cfw_usermgmt_formatAuditResultsPrintAudits(parent, item, doDataViewer){
 	
 	if(Array.isArray(item)){
 		
 		//------------------------------------
 		// Handle Arrays
 		for(key in item){
-			cfw_usermgmt_formatAuditResultsPrintAudits(parent, item[key]);
+			cfw_usermgmt_formatAuditResultsPrintAudits(parent, item[key], doDataViewer);
 		} 
 	}else{
 
@@ -410,7 +410,7 @@ function cfw_usermgmt_formatAuditResultsPrintAudits(parent, item){
 		if(item['cfw-Type'] == "User"){
 			parent.append('<h1><b>User:</b> '+item.username+'</h1>');
 			for(key in item.children){
-				cfw_usermgmt_formatAuditResultsPrintAudits(parent, item.children[key]);
+				cfw_usermgmt_formatAuditResultsPrintAudits(parent, item.children[key], doDataViewer);
 			}
 		}else if(item['cfw-Type'] == "Audit"){
 			parent.append('<h3><b>Audit:</b> '+item.name+'</h3>');
@@ -463,11 +463,16 @@ function cfw_usermgmt_formatAuditResultsPrintAudits(parent, item){
 							filterable: true,
 							narrow: true,							
 						},
-						
+						dataviewer:{
+							defaultsize: 10,
+							renderers: CFW.render.createDataviewerDefaults()
+						}
+							
 					},
 				};
 			
-			var renderResult = CFW.render.getRenderer('table').render(rendererSettings);	
+			let renderer = (doDataViewer) ? 'dataviewer' : 'table';
+			let renderResult = CFW.render.getRenderer(renderer).render(rendererSettings);	
 			
 			parent.append(renderResult);
 			
@@ -500,7 +505,7 @@ function cfw_usermgmt_auditUser(userID, doInline){
 	//-----------------------------------
 	CFW.http.getJSON(CFW_USERMGMT_URL, {action: "fetch", item: "useraudit", id: userID}, function(data){
 		if(data.payload != null){
-			cfw_usermgmt_formatAuditResults(auditDiv, data.payload);
+			cfw_usermgmt_formatAuditResults(auditDiv, data.payload, true);
 		}
 	});
 	

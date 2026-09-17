@@ -649,50 +649,6 @@ public class CFWDBStoredFile {
 		return false;
 	}
 	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	public static JsonArray permissionAuditByUser(User user) {
-		
-		//-----------------------------------
-		// Check User is Admin
-		HashMap<String, Permission> permissions = CFW.DB.Permissions.selectPermissionsForUser(user);
-		
-		if( permissions.containsKey(FeatureFilemanager.PERMISSION_STOREDFILE_ADMIN) ) {
-			JsonObject adminObject = new JsonObject();
-			adminObject.addProperty("Message", "The user is Stored File Administrator and has access to every Stored File.");
-			JsonArray adminResult = new JsonArray(); 
-			adminResult.add(adminObject);
-			return adminResult;
-		}
-		
-		//-----------------------------------
-		// Check User is Shared/Editor
-		String likeID = "%\""+user.id()+"\":%";
-		
-		return new CFWSQL(new CFWStoredFile())
-			.queryCache()
-			.loadSQLResource(FeatureFilemanager.PACKAGE_RESOURCES, "SQL_permissionAuditByUser.sql", 
-					user.id(), 
-					likeID,
-					likeID)
-			.getAsJSONArray();
-	}
-	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	public static JsonArray permissionAuditByUsersGroups(User user) {
-		
-		//-----------------------------------
-		// Check User is Shared/Editor
-		
-		return new CFWSQL(new CFWStoredFile())
-				.queryCache()
-				.loadSQLResource(FeatureFilemanager.PACKAGE_RESOURCES, "SQL_permissionAuditByUsersGroups.sql", 
-						user.id())
-				.getAsJSONArray();
-	}
 	
 	/***************************************************************
 	 * 

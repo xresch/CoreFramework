@@ -5,9 +5,13 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.credentials.CFWCredentials;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonAdmin;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonUserDirect;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonUserGroups;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -66,8 +70,10 @@ public class FeatureStoredQuery extends CFWAppFeature {
 		
 		//----------------------------------
     	// Register Audit
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorStoredQueryUserDirect());
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorStoredQueryUserGroups());
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonUserDirect(new CFWStoredQuery(), "Stored Queries"));
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonUserGroups(new CFWStoredQuery(), "Stored Queries"));
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonAdmin(PERMISSION_STOREDQUERY_ADMIN, "Stored Queries") );
+				
 						
 		//----------------------------------
     	// Manual

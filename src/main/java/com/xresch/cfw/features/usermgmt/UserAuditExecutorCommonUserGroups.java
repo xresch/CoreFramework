@@ -35,8 +35,8 @@ public class UserAuditExecutorCommonUserGroups implements UserAuditExecutor {
 	public String description() {
 		return "<p>Checks on which " + objectName + " the users has access by being part of a group. If you miss access:</p>"
 				+"<ul>"
-					+"<li><b>Space:</b>Check if you have access to the space, one of its sub spaces or the space is global.</li>"
-					+"<li><b>Is Shared:</b>Check with the owner of the " + objectName +" if the credential is set to be shared.</li>"
+					+"<li><b>Space:&nbsp;</b>Check if you have access to the space, one of its sub spaces or the space is global.</li>"
+					+"<li><b>Is Shared:&nbsp;</b>Check with the owner of the " + objectName +" if the credential is set to be shared.</li>"
 				+"</ul>";
 	}
 	

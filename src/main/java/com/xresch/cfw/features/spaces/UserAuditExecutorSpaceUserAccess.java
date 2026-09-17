@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.query.store;
+package com.xresch.cfw.features.spaces;
 
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
@@ -11,16 +11,16 @@ import com.xresch.cfw.features.usermgmt.UserAuditExecutor;
  * @license MIT-License
  **************************************************************************************************************/
 
-public class UserAuditExecutorStoredQueryUserDirect implements UserAuditExecutor {
+public class UserAuditExecutorSpaceUserAccess implements UserAuditExecutor {
 
 	@Override
 	public String name() {
-		return "StoredQuery(Direct)";
+		return "Space Access";
 	}
 	
 	@Override
 	public String description() {
-		return "Checks on which storedQuery the users has direct access(not by being part of a group).";
+		return "Checks on which Spaces the user has been granted access to. Does not list any parent spaces who's entities he can access because of inheritance.";
 	}
 	
 	@Override
@@ -28,7 +28,7 @@ public class UserAuditExecutorStoredQueryUserDirect implements UserAuditExecutor
 		
 		//---------------------------------
 		// Fetch Data
-		return CFW.DB.StoredQuery.permissionAuditByUser(user);
+		return CFW.DB.Spaces.permissionAuditByUser(user);
 	
 	}
 }

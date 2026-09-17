@@ -16,8 +16,12 @@ import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.parameter.FeatureParameter;
+import com.xresch.cfw.features.query.store.CFWStoredQuery;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonAdmin;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonUserDirect;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonUserGroups;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
@@ -79,8 +83,9 @@ public class FeatureFilemanager extends CFWAppFeature {
 		
 		//----------------------------------
     	// Register Audit
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorStoredFileUserDirect());
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorStoredFileUserGroups());
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonUserDirect(new CFWStoredFile(), "Files"));
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonUserGroups(new CFWStoredFile(), "Files"));
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonAdmin(PERMISSION_STOREDFILE_ADMIN, "Files") );
 				
 		//----------------------------------
     	// Register Menu				

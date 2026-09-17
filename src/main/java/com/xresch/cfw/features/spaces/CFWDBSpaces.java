@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.spaces;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
@@ -24,6 +25,8 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceFields;
 import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
 import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
+import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -484,6 +487,42 @@ public class CFWDBSpaces {
 		}
 		return false;
 		
+	}
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public static JsonArray permissionAuditByUser(User user) {
+		
+		//-----------------------------------
+		// Check User is Admin
+		HashMap<String, Permission> permissions = CFW.DB.Permissions.selectPermissionsForUser(user);
+		
+		if( permissions.containsKey(FeatureSpaces.PERMISSION_SPACES_ADMIN) ) {
+			JsonObject adminObject = new JsonObject();
+			adminObject.addProperty("Message", "The user is Space Administrator and has access to every Space.");
+			JsonArray adminResult = new JsonArray(); 
+			adminResult.add(adminObject);
+			return adminResult;
+		}
+		
+		//-----------------------------------
+		// Check User is Shared/Editor
+		int userID = user.id();
+		String likeID = "%\""+user.id()+"\":%";
+		
+		return new CFWSQL(new CFWSpace())
+			.queryCache()
+			.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE, "sql_permissionAuditByUser.sql", 
+					  likeID
+					, likeID
+					, userID
+					, userID
+					, userID
+					, userID
+					, userID
+					, userID
+					)
+			.getAsJSONArray();
 	}
 	
 	/*****************************************************************************
