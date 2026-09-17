@@ -381,7 +381,7 @@ function cfw_usermgmt_changeGroupOwner(id){
  * 
  ******************************************************************/
 function cfw_usermgmt_formatAuditResults(parent, item, doDataViewer){
-	var toc = $('<div id="toc">');
+	var toc = $('<div id="audit-toc">');
 	parent.append(toc);
 	
 	var auditResults = $('<div id="auditResults">');
@@ -503,11 +503,14 @@ function cfw_usermgmt_auditUser(userID, doInline){
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	CFW.http.getJSON(CFW_USERMGMT_URL, {action: "fetch", item: "useraudit", id: userID}, function(data){
-		if(data.payload != null){
-			cfw_usermgmt_formatAuditResults(auditDiv, data.payload, true);
-		}
-	});
+	window.setTimeout( 
+	function(){
+		CFW.http.getJSON(CFW_USERMGMT_URL, {action: "fetch", item: "useraudit", id: userID}, function(data){
+			if(data.payload != null){
+				cfw_usermgmt_formatAuditResults(auditDiv, data.payload, true);
+			}
+		});
+	}, 300); // Give the Modal 300 milliseconds to display. Needed for Table of contents to load properly.
 	
 }
 
