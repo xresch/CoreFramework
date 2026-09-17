@@ -36,7 +36,6 @@ public class APIToken extends CFWObject {
 		FK_ID_SPACE,  // from FeatureSpaces.FK_ID_SPACE
 		FK_ID_CREATOR,
 		TOKEN,
-		SALT,
 		DESCRIPTION,
 		IS_ACTIVE,
 		JSON_RESPONSIBLE_USERS,
