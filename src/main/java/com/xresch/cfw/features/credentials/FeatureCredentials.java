@@ -14,6 +14,8 @@ import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonAdmin;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonUserDirect;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonUserGroups;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
@@ -73,8 +75,8 @@ public class FeatureCredentials extends CFWAppFeature {
 		
 		//----------------------------------
     	// Register Audit
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCredentialsUserDirect());
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCredentialsUserGroups());
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonUserDirect(new CFWCredentials(), "Credentials"));
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonUserGroups(new CFWCredentials(), "Credentials"));
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonAdmin(PERMISSION_CREDENTIALS_ADMIN, "Credentials") );
 				
 		//----------------------------------

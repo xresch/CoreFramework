@@ -476,16 +476,11 @@ function cfw_usermgmt_executeFullAudit(){
 						parent.append(printButton);
 					}
 					
-					
-					var toc = $('<div id="toc">');
-					parent.append(toc);
-					
 					var auditResults = $('<div id="auditResults">');
 					parent.append(auditResults);
 	
 					cfw_usermgmt_formatAuditResults(auditResults, data.payload);
-					
-					CFW.ui.toc(auditResults, toc);
+
 					
 				}
 			})

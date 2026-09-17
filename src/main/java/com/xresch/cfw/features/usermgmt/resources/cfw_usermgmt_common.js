@@ -381,13 +381,27 @@ function cfw_usermgmt_changeGroupOwner(id){
  * 
  ******************************************************************/
 function cfw_usermgmt_formatAuditResults(parent, item){
+	var toc = $('<div id="toc">');
+	parent.append(toc);
+	
+	var auditResults = $('<div id="auditResults">');
+	parent.append(auditResults);
+
+	cfw_usermgmt_formatAuditResultsPrintAudits(auditResults, item);
+	
+	CFW.ui.toc(auditResults, toc);
+}
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_usermgmt_formatAuditResultsPrintAudits(parent, item){
 	
 	if(Array.isArray(item)){
 		
 		//------------------------------------
 		// Handle Arrays
 		for(key in item){
-			cfw_usermgmt_formatAuditResults(parent, item[key]);
+			cfw_usermgmt_formatAuditResultsPrintAudits(parent, item[key]);
 		} 
 	}else{
 
@@ -396,7 +410,7 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 		if(item['cfw-Type'] == "User"){
 			parent.append('<h1><b>User:</b> '+item.username+'</h1>');
 			for(key in item.children){
-				cfw_usermgmt_formatAuditResults(parent, item.children[key]);
+				cfw_usermgmt_formatAuditResultsPrintAudits(parent, item.children[key]);
 			}
 		}else if(item['cfw-Type'] == "Audit"){
 			parent.append('<h3><b>Audit:</b> '+item.name+'</h3>');
@@ -438,7 +452,10 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 				 	titlefields: null,
 				 	titleformat: '{0}',
 				 	visiblefields: null,
-				 	labels: { PK_ID: "ID" },
+				 	labels: { 
+						PK_ID: "ID",
+						FK_ID_SPACE: "SpaceID" 
+					},
 				 	customizers: customizers,
 					actions: [],					
 					rendererSettings: {

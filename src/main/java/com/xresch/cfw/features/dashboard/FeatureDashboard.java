@@ -12,6 +12,7 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.credentials.CFWCredentials;
 import com.xresch.cfw.features.dashboard.widgets.ManualPageWidget;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
@@ -44,6 +45,9 @@ import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonAdmin;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonUserDirect;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorCommonUserGroups;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItem;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemDynamic;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenuItem;
@@ -167,10 +171,10 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 		//----------------------------------
     	// Register Audit
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorDashboardUserDirect());
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorDashboardUserGroups());
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorWidgetPermissions());
-		
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonUserDirect(new Dashboard(), "Dashboards"));
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonUserGroups(new Dashboard(), "Dashboards"));
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorCommonAdmin(PERMISSION_DASHBOARD_ADMIN, "Dashboards") );
+				
     	//----------------------------------
     	// Register Job Tasks
 		CFW.Registry.Jobs.registerTask(new CFWJobTaskWidgetTaskExecutor());

@@ -603,40 +603,6 @@ public class CFWDBCredentials {
 		return false;
 	}
 	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	public static JsonArray permissionAuditByUser(User user) {
-				
-		//-----------------------------------
-		// Check User is Shared/Editor
-		String likeID = "%\""+user.id()+"\":%";
-		
-		return new CFWSQL(new CFWCredentials())
-			.queryCache()
-			.loadSQLResource(FeatureCredentials.PACKAGE_RESOURCES, "SQL_permissionAuditByUser.sql", 
-					user.id(), 
-					likeID,
-					likeID)
-			.and().append(FeatureSpaces.getSQLFilterInclusiveByUser(user.id()))
-			.getAsJSONArray();
-	}
-	
-	/***************************************************************
-	 * 
-	 ***************************************************************/
-	public static JsonArray permissionAuditByUsersGroups(User user) {
-		
-		//-----------------------------------
-		// Check User is Shared/Editor
-		
-		return new CFWSQL(new CFWCredentials())
-				.queryCache()
-				.loadSQLResource(FeatureCredentials.PACKAGE_RESOURCES, "SQL_permissionAuditByUsersGroups.sql", 
-						user.id())
-				.and().append(FeatureSpaces.getSQLFilterInclusiveByUser(user.id()))
-				.getAsJSONArray();
-	}
 	
 	/***************************************************************
 	 * 
