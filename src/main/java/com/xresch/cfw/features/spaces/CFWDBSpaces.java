@@ -252,7 +252,7 @@ public class CFWDBSpaces {
 	
 	
 	/*****************************************************************************
-	 *  Returns a list of spaces with type "ORG".
+	 *  Returns a list of spaces for the current user.
 	 *****************************************************************************/
 	public static LinkedHashMap<Integer,String> getSpaceListForUserOptions() {
 		
@@ -326,13 +326,18 @@ public class CFWDBSpaces {
 		
 		
 	}
-		
 	/*****************************************************************************
 	 *  Returns a list of spaces with type "ORG".
 	 *****************************************************************************/
 	public static ArrayList<CFWSpace> getSpaceListForUser() {
+		return  getSpaceListForUser(CFW.Context.Request.getUserID());
+	}
+		
+	/*****************************************************************************
+	 *  Returns a list of spaces with type "ORG".
+	 *****************************************************************************/
+	public static ArrayList<CFWSpace> getSpaceListForUser(Integer userID) {
 		ArrayList<CFWSpace> spaceList = new ArrayList<>();
-		Integer userID = CFW.Context.Request.getUserID();
 		
 		// return empty if null
 		if(userID == null) { return spaceList; }

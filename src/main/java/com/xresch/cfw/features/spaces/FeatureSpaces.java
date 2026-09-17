@@ -446,6 +446,33 @@ public class FeatureSpaces extends CFWAppFeature {
 	}
 	
 	/**********************************************************************************
+	 * Returns a partial query which will filter the rows by the column "FK_ID_SPACE"
+	 * and returns entities:
+	 * <ul>
+	 *   <li>In any space the user has been granted access to.</li>
+	 *   <li>In parent spaces of the user has been granted access to.</li>
+	 *   <li>In global spaces of Type SPACE within the same parent chain of the users spaces.</li>
+	 *   <li>In global spaces of Type ROOT_SPACE.</li>
+	 * </ul>  
+	 * 
+	 * @param userID to filter by
+	 * 
+	 * @return  CFWSQL partial SQL 
+	 **********************************************************************************/
+	public static CFWSQL getSQLFilterInclusiveByUser(int userID) {
+		
+			return new CFWSQL(null)
+					.queryCache()   
+					.loadSQLResource(FeatureSpaces.PACKAGE_RESOURCE
+							, "sql_getSQLFilterInclusiveByUser.sql"
+							, userID
+							, userID
+							, userID
+							, userID
+							);
+	}
+	
+	/**********************************************************************************
 	 * Returns a partial query which will filter by the column "FK_ID_SPACE" and returns
 	 * entities belonging to the given space id. 
 	 * 

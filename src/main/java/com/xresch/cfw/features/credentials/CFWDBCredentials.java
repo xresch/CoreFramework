@@ -343,7 +343,7 @@ public class CFWDBCredentials {
 	 ****************************************************************/
 	public static String getAdminCredentialsListAsJSON() {
 		
-		if(CFW.Context.Request.hasPermissionSpaced(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
 			ArrayList<CFWCredentials> array = new CFWSQL(new CFWCredentials())
 				.queryCacheSpaced()
 				//.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
@@ -371,7 +371,7 @@ public class CFWDBCredentials {
 	 ****************************************************************/
 	public static String getAdminArchivedListAsJSON() {
 		
-		if(CFW.Context.Request.hasPermissionSpaced(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+		if(CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
 			
 			ArrayList<CFWCredentials> array = new CFWSQL( new CFWCredentials() )
 				.queryCacheSpaced()
@@ -539,7 +539,7 @@ public class CFWDBCredentials {
 
 		// -----------------------------------
 		// Check User is Admin
-		if (CFW.Context.Request.hasPermissionSpaced(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+		if (CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
 			return true;
 		}
 
@@ -607,19 +607,7 @@ public class CFWDBCredentials {
 	 * 
 	 ***************************************************************/
 	public static JsonArray permissionAuditByUser(User user) {
-		
-		//-----------------------------------
-		// Check User is Admin
-		HashMap<String, Permission> permissions = CFW.DB.Permissions.selectPermissionsForUser(user);
-		
-		if( permissions.containsKey(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN) ) {
-			JsonObject adminObject = new JsonObject();
-			adminObject.addProperty("Message", "The user is Credentials Administrator and has access to every credentials.");
-			JsonArray adminResult = new JsonArray(); 
-			adminResult.add(adminObject);
-			return adminResult;
-		}
-		
+				
 		//-----------------------------------
 		// Check User is Shared/Editor
 		String likeID = "%\""+user.id()+"\":%";
@@ -630,7 +618,7 @@ public class CFWDBCredentials {
 					user.id(), 
 					likeID,
 					likeID)
-			//.and().append(FeatureSpaces.getSQLFilterInclusive())
+			.and().append(FeatureSpaces.getSQLFilterInclusiveByUser(user.id()))
 			.getAsJSONArray();
 	}
 	
@@ -646,7 +634,7 @@ public class CFWDBCredentials {
 				.queryCache()
 				.loadSQLResource(FeatureCredentials.PACKAGE_RESOURCES, "SQL_permissionAuditByUsersGroups.sql", 
 						user.id())
-				//.and().append(FeatureSpaces.getSQLFilterInclusive())
+				.and().append(FeatureSpaces.getSQLFilterInclusiveByUser(user.id()))
 				.getAsJSONArray();
 	}
 	
@@ -860,7 +848,7 @@ public class CFWDBCredentials {
 		// or listed in editors
 		if( credentials.foreignKeyOwner().equals(user.id())
 		|| ( credentials.editors() != null && credentials.editors().containsKey(user.id().toString()) )
-		|| CFW.Context.Request.hasPermissionSpaced(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
+		|| CFW.Context.Request.hasPermission(FeatureCredentials.PERMISSION_CREDENTIALS_ADMIN)) {
 			return true;
 		}
 		
