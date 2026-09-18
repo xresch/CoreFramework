@@ -241,8 +241,56 @@ public class CFWDBContextSettings {
 	/***************************************************************
 	 * Returns context settings for the selected type, either all or 
 	 * spaced.
+	 * 
+	 * @param type of the context settings
+	 * @param activeOnly toggle return only active one
+	 * @param filterSpaced toggle filtering by selected space
+	 * 
+	 * @return settings or null if not found or in case of exception.
+	 ****************************************************************/
+	public static AbstractContextSettings getContextSettingsForID(int ID, boolean activeOnly, boolean filterSpaced) {
+				
+		//-------------------------
+		// Prepare SQL
+		CFWSQL sql = new CFWSQL(new ContextSettings())
+				//.queryCache() // cannot cache here
+				.select()
+				.where(ContextSettingsFields.PK_ID, ID)
+				;
+		
+		if(filterSpaced) {
+			sql.and().append(FeatureSpaces.getSQLFilterInclusive());
+		}
+
+		//-------------------------
+		// Execute SQL
+		ContextSettings current = (ContextSettings)sql.getFirstAsObject();
+		
+		//-------------------------
+		// Check
+		if(current == null 
+		|| (activeOnly && !current.isActive()) 
+		){
+			return null;
+		}
+		
+		//-------------------------
+		// Prepare 
+		AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(current.type());
+		
+		typeSettings.mapJsonFields(current.settings(), true, true);
+		typeSettings.setWrapper(current);
+				
+
+		return typeSettings;
+	}
+	
+	/***************************************************************
+	 * Returns context settings for the selected type, either all or 
+	 * spaced.
 	 * @param type of the context settings
 	 * @param activeOnly toggle return only active ones
+	 * @param filterSpaced toggle filtering by selected space
 	 * @return Returns a dashboard or null if not found or in case of exception.
 	 ****************************************************************/
 	public static ArrayList<AbstractContextSettings> getContextSettingsForType(String type, boolean activeOnly, boolean filterSpaced) {
