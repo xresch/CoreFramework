@@ -154,6 +154,19 @@ public class CFWDBStoredFile {
 	}
 	
 	/**********************************************************************************
+	 * Retrieve Data from the DATA column as a a byte array.
+	 * @param item the file the data should be stored to.
+	 * @return byte[]
+	 **********************************************************************************/
+	public static byte[] retrieveDataAsBytes(CFWStoredFile item) { 
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		
+		new CFWSQL(item).executeRetrieveBytes(CFWStoredFileFields.DATA, out);
+		
+		return out.toByteArray();
+	}
+	
+	/**********************************************************************************
 	 * Retrieve a data stream object for the DATA column as a string.
 	 * @param item the file the data should be stored to.
 	 **********************************************************************************/

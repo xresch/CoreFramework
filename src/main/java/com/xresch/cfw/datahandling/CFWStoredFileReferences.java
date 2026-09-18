@@ -121,6 +121,25 @@ public class CFWStoredFileReferences {
 		return null;
 	}
 	
+	/***************************************************************************************
+	 * Returns the data of the specified file as a string or null if the file could not be found
+	 ***************************************************************************************/
+	public byte[] getDataAsBytes(int index) {
+		
+		if(index < dbfileData.size()) {
+			JsonObject object = dbfileData.get(index).getAsJsonObject();
+			
+			int id = object.get("id").getAsInt();
+			CFWStoredFile file = CFW.DB.StoredFile.selectByID(id);
+			
+			if(file != null) {
+				return CFW.DB.StoredFile.retrieveDataAsBytes(file);
+			}
+		}
+		
+		return null;
+	}
+	
 	
 	/***************************************************************************************
 	 * @return CFWStoredFile the stored file for the reference, null if not found.
@@ -160,6 +179,18 @@ public class CFWStoredFileReferences {
 					.getAsJsonObject()
 					.get(MEMBER_ID)
 					.getAsInt()
+					;
+	}
+	
+	/***************************************************************************************
+	 * Get the the Name of the file reference at the specified index.
+	 ***************************************************************************************/
+	public String getName(int index) {
+		return dbfileData
+					.get(index)
+					.getAsJsonObject()
+					.get(MEMBER_NAME)
+					.getAsString()
 					;
 	}
 	
