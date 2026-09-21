@@ -65,7 +65,7 @@ public class ParameterDefinitionSelect extends ParameterDefinition {
 		CFWField settingsField = CFWField.newString(FormFieldType.SELECT, CFWParameterFields.VALUE).allowHTML(true);
 
 		if(parameterValue !=null) {
-			LinkedHashMap<String, String> options = CFW.JSON.fromJsonLinkedHashMap(parameterValue.toString());
+			LinkedHashMap<String, String> options = CFW.JSON.fromJsonToLinkedHashMap(parameterValue.toString());
 			settingsField.setOptions(options);
 		}			
 

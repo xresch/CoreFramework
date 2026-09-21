@@ -162,7 +162,7 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 
 		//--------------------------------------
 		// Attributes
-		LinkedHashMap<String, String> attributes = CFW.JSON.fromJsonLinkedHashMap(attributesString);
+		LinkedHashMap<String, String> attributes = CFW.JSON.fromJsonToLinkedHashMap(attributesString);
 		
 		if(attributes == null) {
 			attributes = new LinkedHashMap<>();

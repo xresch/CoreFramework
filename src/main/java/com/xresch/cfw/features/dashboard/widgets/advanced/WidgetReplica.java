@@ -83,7 +83,7 @@ public class WidgetReplica extends WidgetDefinition {
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 								String JSON_DASHBOARD = request.getParameter("JSON_DASHBOARD");
-								LinkedHashMap<String, String> selectedDashboard = CFW.JSON.fromJsonLinkedHashMap(JSON_DASHBOARD);
+								LinkedHashMap<String, String> selectedDashboard = CFW.JSON.fromJsonToLinkedHashMap(JSON_DASHBOARD);
 								String dashboardID = null;
 								if(selectedDashboard.size() > 0) {
 									dashboardID = selectedDashboard.keySet().iterator().next();

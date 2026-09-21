@@ -415,7 +415,7 @@ public class ServletDashboardList extends HttpServlet
 						
 						String newOwnerJson = request.getParameter(NEW_OWNER);
 						if(form.mapRequestParameters(request)) {
-							LinkedHashMap<String,String> mappedValue = CFW.JSON.fromJsonLinkedHashMap(newOwnerJson);
+							LinkedHashMap<String,String> mappedValue = CFW.JSON.fromJsonToLinkedHashMap(newOwnerJson);
 							String newOwner = mappedValue.keySet().iterator().next();
 	
 							if(!Strings.isNullOrEmpty(newOwner)) {

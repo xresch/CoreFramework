@@ -2255,7 +2255,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 			}
 			
 			else if(valueClass == LinkedHashMap.class){ 
-				LinkedHashMap<String,String> map = CFW.JSON.fromJsonLinkedHashMap(stringValue);
+				LinkedHashMap<String,String> map = CFW.JSON.fromJsonToLinkedHashMap(stringValue);
 				if(map == null) {
 					return this.changeValue(map); 
 				}
@@ -2678,7 +2678,7 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 					}else if( LinkedHashMap.class.isAssignableFrom(current.getValueClass()))  { 
 						String json = result.getString(colName);
 						if(json != null) {
-							current.setValueConvert(CFW.JSON.fromJsonLinkedHashMap(json), true); 
+							current.setValueConvert(CFW.JSON.fromJsonToLinkedHashMap(json), true); 
 						}else {
 							current.setValueConvert(null, true);
 						}

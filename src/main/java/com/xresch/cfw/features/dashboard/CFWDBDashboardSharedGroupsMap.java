@@ -61,7 +61,7 @@ public class CFWDBDashboardSharedGroupsMap {
 		
 		if(Strings.isNullOrEmpty(editorsJSONString) ) { return true; }
 		
-		LinkedHashMap<String, String> selectedValues = CFW.JSON.fromJsonLinkedHashMap(editorsJSONString);
+		LinkedHashMap<String, String> selectedValues = CFW.JSON.fromJsonToLinkedHashMap(editorsJSONString);
 		
 		//-------------------------------------
 		// Insert into Table

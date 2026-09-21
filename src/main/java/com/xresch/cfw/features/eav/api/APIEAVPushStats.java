@@ -95,7 +95,7 @@ public class APIEAVPushStats extends APIDefinition{
 					String entityName = object.get("entity").getAsString();
 					BigDecimal value = object.get("value").getAsBigDecimal();
 					
-					LinkedHashMap<String,String> attributes = CFW.JSON.fromJsonLinkedHashMap(object.get("attributes").getAsJsonObject());
+					LinkedHashMap<String,String> attributes = CFW.JSON.fromJsonToLinkedHashMap(object.get("attributes").getAsJsonObject());
 
 					if(type != null && type.trim().equalsIgnoreCase("counter") ) {
 						CFW.DB.EAVStats.pushStatsCounter(category, entityName, attributes, value.intValue());

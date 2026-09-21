@@ -361,7 +361,7 @@ public class CFWSessionData implements Serializable {
        this.clientIP 			 = (String) ois.readObject();
        this.spaceID 			 = (int) ois.readObject();
        this.filterSpaceInclusive = (boolean) ois.readObject();
-       this.customProperties 	 = CFW.JSON.fromJsonLinkedHashMap((String)ois.readObject());
+       this.customProperties 	 = CFW.JSON.fromJsonToLinkedHashMap((String)ois.readObject());
        
        String username		= (String) ois.readObject();
        if(isLoggedIn && username != null) {

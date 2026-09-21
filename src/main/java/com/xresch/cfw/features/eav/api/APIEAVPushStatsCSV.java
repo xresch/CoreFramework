@@ -87,7 +87,7 @@ public class APIEAVPushStatsCSV extends APIDefinition{
 					String category = object.get("category").getAsString();
 					String entityName = object.get("entity").getAsString();
 					JsonObject attributesObject = object.get("attributes").getAsJsonObject();
-					LinkedHashMap<String,String> attributes = CFW.JSON.fromJsonLinkedHashMap(attributesObject);
+					LinkedHashMap<String,String> attributes = CFW.JSON.fromJsonToLinkedHashMap(attributesObject);
 
 					BigDecimal count = null;
 					BigDecimal min = null;

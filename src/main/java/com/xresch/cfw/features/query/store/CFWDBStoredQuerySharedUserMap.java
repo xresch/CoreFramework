@@ -61,7 +61,7 @@ public class CFWDBStoredQuerySharedUserMap {
 		
 		if(Strings.isNullOrEmpty(jsonString) ) { return true; }
 		
-		LinkedHashMap<String, String> selectedValues = CFW.JSON.fromJsonLinkedHashMap(jsonString);
+		LinkedHashMap<String, String> selectedValues = CFW.JSON.fromJsonToLinkedHashMap(jsonString);
 		
 		//-------------------------------------
 		// Insert into Table
