@@ -1413,8 +1413,9 @@ td .h-100-cell{
 }
 
 .w-fill { 
-	width: -webkit-fill-available;
+	width: -webkit-fill-available !important;
 }
+
 
 .h-fill { 
 	height: -webkit-fill-available;
