@@ -2297,7 +2297,8 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 		// Convert Arrays to String ArrayList
 		if(value.getClass() == Object[].class) {
 
-			if(this.valueSubtypeClass == String.class) {
+			if(this.valueSubtypeClass == String.class
+			|| this.valueSubtypeClass == null ) { //prevents errors on mapping, but might map strangely
 				ArrayList<String> stringArray = new ArrayList<>();
 				for(Object object : (Object[])value ){
 					stringArray.add(object.toString());
