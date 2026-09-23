@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,20 @@ import com.xresch.cfw.tests._master.DBTestMaster;
 public class TestCFWObject extends DBTestMaster{
 	protected static Role testgroupA;
 	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@AfterAll
+	public static void afterAll() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
 	@BeforeAll
-	public static void createTestData() {
+	public static void beforeAll() {
+		CFWDB.transactionStart();
 		
 		//------------------------------
 		// Groups

@@ -2,11 +2,13 @@ package com.xresch.cfw.tests.features.usermgmt;
 
 import java.util.HashMap;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
@@ -33,9 +35,20 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 	
 	protected static Permission permissionC;
 	
-	@BeforeAll
-	public static void fillWithTestData() {
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@AfterAll
+	public static void afterAll() {
+		CFWDB.transactionRollback();
+	}
 		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@BeforeAll
+	public static void beforeAll() {
+		CFWDB.transactionStart();
 
 		//------------------------------
 		// Roles

@@ -2,12 +2,14 @@ package com.xresch.cfw.tests.features.dashboard;
 
 import java.util.LinkedHashMap;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
@@ -45,8 +47,17 @@ public class TestDashboard extends DBTestMaster {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
+	@AfterAll
+	public static void afterAll() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
 	@BeforeAll
-	public static void fillWithTestData() {
+	public static void beforeAll() {
+		CFWDB.transactionStart();
 				
 		//------------------------------
 		// Fetch Permissions

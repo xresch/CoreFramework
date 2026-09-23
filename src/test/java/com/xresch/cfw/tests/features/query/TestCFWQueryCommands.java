@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import org.joda.time.Instant;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
@@ -21,6 +23,22 @@ import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.xrutils.utils.XRTimeUnit;
 
 public class TestCFWQueryCommands extends DBTestMaster{
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@AfterAll
+	public static void afterAll() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@BeforeAll
+	public static void beforeAll() {
+		CFWDB.transactionStart();
+	}
 	
 	/****************************************************************
 	 * 

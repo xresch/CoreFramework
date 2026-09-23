@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.joda.time.Instant;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -39,8 +41,20 @@ public class TestCFWQueryParsing extends DBTestMaster{
 	private static String sourceString ;
 	private static final String PACKAGE = "com.xresch.cfw.tests.features.query.testdata";
 	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@AfterAll
+	public static void afterAll() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
 	@BeforeAll
-	public static void setup() {
+	public static void beforeAll() {
+		CFWDB.transactionStart();
 		
 		FeatureQuery feature = new FeatureQuery();
 		feature.register();

@@ -3,11 +3,13 @@ package com.xresch.cfw.tests.features.contextsettings;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.contextsettings.ContextSettings;
 import com.xresch.cfw.features.contextsettings.FeatureContextSettings;
 import com.xresch.cfw.features.dashboard.Dashboard;
@@ -41,9 +43,19 @@ public class TestContextSettings extends DBTestMaster {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
+	@AfterAll
+	public static void end() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
 	@BeforeAll
 	public static void fillWithTestData() {
-				
+
+		CFWDB.transactionStart();
+		
 		//------------------------------
 		// Fetch Permissions
 		permissionContextSettings = CFW.DB.Permissions.selectByName(FeatureContextSettings.PERMISSION_CONTEXT_SETTINGS);

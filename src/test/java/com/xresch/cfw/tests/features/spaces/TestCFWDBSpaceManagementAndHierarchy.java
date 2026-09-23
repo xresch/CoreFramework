@@ -1,10 +1,29 @@
 package com.xresch.cfw.tests.features.spaces;
 
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@AfterAll
+	public static void afterAll() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@BeforeAll
+	public static void beforeAll() {
+		CFWDB.transactionStart();
+	}
 	
 //	@BeforeAll
 //	public static void fillWithTestData() {

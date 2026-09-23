@@ -19,7 +19,7 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
 
-public class TestCFWQueryTokenizer extends DBTestMaster {
+public class TestCFWQueryTokenizer {
 	
 	
 	/****************************************************************

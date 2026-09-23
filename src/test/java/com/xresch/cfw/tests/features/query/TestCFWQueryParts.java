@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.joda.time.Instant;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
@@ -36,8 +38,21 @@ public class TestCFWQueryParts extends DBTestMaster {
 	private static long earliest = new Instant().minus(1000*60*30).getMillis();
 	private static long latest = new Instant().getMillis();
 	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@AfterAll
+	public static void afterAll() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
 	@BeforeAll
-	public static void setup() {
+	public static void beforeAll() {
+		CFWDB.transactionStart();
+
 		CFW.Files.addAllowedPackage("com.xresch.cfw.tests.features.query.testdata");
 				
 		context.setEarliest(earliest);

@@ -7,14 +7,33 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestSessionData extends DBTestMaster {
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@AfterAll
+	public static void afterAll() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@BeforeAll
+	public static void beforeAll() {
+		CFWDB.transactionStart();
+	}
 	
 	@Test
 	public void testSerialization() throws IOException, ClassNotFoundException {

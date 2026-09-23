@@ -1,21 +1,34 @@
 package com.xresch.cfw.tests.features.config;
 
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestCFWDBConfig extends DBTestMaster {
 
 	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@AfterAll
+	public static void end() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
 	@BeforeAll
 	public static void fillWithTestData() {
-		
+		CFWDB.transactionStart();
 	}
 
 	@Test

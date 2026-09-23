@@ -3,11 +3,13 @@ package com.xresch.cfw.tests.features.query;
 import java.io.IOException;
 
 import org.joda.time.Instant;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonObject;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
@@ -24,8 +26,21 @@ public class TestCFWQueryGeneral extends DBTestMaster{
 	
 	private static long earliest = new Instant().minus(1000*60*30).getMillis();
 	private static long latest = new Instant().getMillis();
+
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@AfterAll
+	public static void afterAll() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
 	@BeforeAll
-	public static void setup() {
+	public static void beforeAll() {
+		CFWDB.transactionStart();
 		
 		FeatureQuery feature = new FeatureQuery();
 		feature.register();

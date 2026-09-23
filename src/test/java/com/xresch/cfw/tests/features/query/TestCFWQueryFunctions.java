@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 import org.joda.time.Instant;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.filemanager.CFWStoredFile;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
@@ -46,8 +48,20 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	// now
 	private static long latest_now = new Instant().getMillis();
 	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@AfterAll
+	public static void afterAll() {
+		CFWDB.transactionRollback();
+	}
+		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
 	@BeforeAll
-	public static void setup() {
+	public static void beforeAll() {
+		CFWDB.transactionStart();
 		
 		//FeatureQuery feature = new FeatureQuery();
 		//feature.register();

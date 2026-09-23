@@ -23,7 +23,6 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.xrutils.database.XRDBInterface;
-import com.xresch.xrutils.database.XRResultSet;
 
 import io.prometheus.client.Counter;
 
@@ -229,104 +228,6 @@ public class DBInterface extends XRDBInterface {
 		
 		return false;
 	}
-		
-	/********************************************************************************************
-	 * Prepares an SQL statement with the provided values.
-	 * 
-	 * @param prepared the statements with ?-placeholders that should be prepared
-	 * @param values the values to be placed in the prepared statement. Supports String, Integer,
-	 *               Boolean, Float, Date, Timestamp, Blob, Clob, Byte
-	 * @throws SQLException 
-	 ********************************************************************************************/
-//	@Override
-//	public void prepareStatement(PreparedStatement prepared, Object... values) throws SQLException{
-//		
-//		try {
-//			if(values != null) {
-//				for(int i = 1; i <= values.length ; i++) {
-//					Object currentValue = values[i-1];
-//					// TODO: Could be a better/faster solution: prepared.setObject(i+1, currentValue);
-//	
-//					if		(currentValue instanceof String) 		{ prepared.setString(i, (String)currentValue); }
-//					else if	(currentValue instanceof StringBuilder) { prepared.setString(i, currentValue.toString() ); }
-//					else if	(currentValue instanceof char[]) 		{ prepared.setString(i, new String((char[])currentValue)); }
-//					else if (currentValue instanceof Integer) 		{ prepared.setInt(i, (Integer)currentValue); }
-//					else if (currentValue instanceof Boolean) 		{ prepared.setBoolean(i, (Boolean)currentValue); }
-//					else if (currentValue == null) 					{ prepared.setNull(i, Types.NULL); }
-//					else if (currentValue instanceof Long) 			{ prepared.setLong(i, (Long)currentValue); }
-//					else if (currentValue instanceof Float) 		{ prepared.setFloat(i, (Float)currentValue); }
-//					else if (currentValue instanceof BigDecimal) 	{ prepared.setBigDecimal(i, (BigDecimal)currentValue); }
-//					else if (currentValue instanceof Date) 			{ prepared.setDate(i, (Date)currentValue); }
-//					else if (currentValue instanceof Timestamp) 	{ prepared.setTimestamp(i, (Timestamp)currentValue); }
-//					else if (currentValue instanceof Blob) 			{ prepared.setBlob(i, (Blob)currentValue); }
-//					else if (currentValue instanceof Clob) 			{ prepared.setClob(i, (Clob)currentValue); }
-//					else if (currentValue instanceof Byte) 			{ prepared.setByte(i, (Byte)currentValue); }
-//					else if (currentValue instanceof ArrayList) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", ((ArrayList)currentValue).toArray() )); }
-//					else if (currentValue instanceof InputStream) 	{ prepared.setBinaryStream(i, (InputStream)currentValue); }
-//					else if (currentValue instanceof Integer[]) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("INTEGER", (Integer[])currentValue)); }
-//					else if (currentValue instanceof Object[]) 		{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", (Object[])currentValue)); }
-//					else if (currentValue instanceof LinkedHashMap)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
-//					else if (currentValue.getClass().isEnum()) 		{ prepared.setString(i, currentValue.toString());}
-//					else if ( prepareCustomTypes(prepared, i, currentValue) )	{ /* prepare successful, do nothing */  }
-//					else { throw new RuntimeException("Unsupported database field type: "+ currentValue.getClass().getName());}
-//				}
-//			}
-//		}catch(Exception e){
-//			//do this to also log below when an error occurs
-//			throw e;
-//		}finally {
-//			if(logger.isLoggable(Level.FINEST) && prepared != null ) {
-//				new CFWLog(logger)
-//					.custom("preparedSQL", prepared.toString())
-//					.finest("Debug: Prepared Statement");
-//			}
-//		}
-//
-//	}
-	
-	/********************************************************************************************
-	 * 
-	 * @param request HttpServletRequest containing session data used for logging information(null allowed).
-	 * @param resultSet which should be closed.
-	 ********************************************************************************************/
-	public void close(Connection conn){
-		
-		try {
-			if(!conn.isClosed()) {
-				removeOpenConnection(conn);
-				conn.close();
-			}
-		} catch (SQLException e) {
-			new CFWLog(logger)
-				.severe("Exception occured while closing connection. ", e);
-		}
-	}
-	/********************************************************************************************
-	 * 
-	 * @param request HttpServletRequest containing session data used for logging information(null allowed).
-	 * @param resultSet which should be closed.
-	 ********************************************************************************************/
-	public void close(ResultSet resultSet){
-		
-		try {
-			if(resultSet != null 
-			&& transactionConnection.get() == null
-			&& resultSet.getStatement() != null 
-			&& !resultSet.getStatement().isClosed()) {
-				
-				removeOpenConnection(resultSet.getStatement().getConnection());
-				
-				if(!resultSet.getStatement().getConnection().isClosed()) {
-					resultSet.getStatement().getConnection().close();
-					resultSet.close();
-				}
-			}
-		} catch (SQLException e) {
-			new CFWLog(logger)
-				.severe("Exception occured while closing ResultSet. ", e);
-		}
-	}
-	
 	
 	/************************************************************************
 	 * Returns the list of available JDBC drivers.
@@ -521,7 +422,7 @@ public class DBInterface extends XRDBInterface {
 		datasource.setUsername(username);
 		datasource.setPassword(password);
 		
-		DBInterface.setDefaultConnectionPoolSettings(datasource);
+		XRDBInterface.setDefaultConnectionPoolSettings(datasource);
 		
 		//----------------------------------
 		// Test connection
