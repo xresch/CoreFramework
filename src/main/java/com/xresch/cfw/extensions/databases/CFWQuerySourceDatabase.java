@@ -3,7 +3,6 @@ package com.xresch.cfw.extensions.databases;
 import java.rmi.AccessException;
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.TimeZone;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.common.base.Strings;
@@ -12,18 +11,16 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.db.CFWResultSet;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.DBInterface;
-import com.xresch.cfw.extensions.influxdb.InfluxDBEnvironment;
-import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
-import com.xresch.cfw.utils.ResultSetUtils.ResultSetAsJsonReader;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
+import com.xresch.xrutils.database.XRResultSet;
+import com.xresch.xrutils.database.XRResultSetAsJsonReader;
 	
 /**************************************************************************************************************
  * 
@@ -224,9 +221,9 @@ public abstract class CFWQuerySourceDatabase extends CFWQuerySource {
 		}
 		
 		//add limiting to getAsJSONArray()
-		CFWResultSet cfwResult = new CFWSQL(dbInterface, null)
+		XRResultSet cfwResult = new CFWSQL(dbInterface, null)
 				.custom(query)
-				.executeCFWResultSet(isQueryOnly);
+				.executeXRResultSet(isQueryOnly);
 		
 		if(!cfwResult.isSuccess()) {
 			return;
@@ -236,7 +233,7 @@ public abstract class CFWQuerySourceDatabase extends CFWQuerySource {
 		// Fetch Query Result
 
 		if(cfwResult.isResultSet()) {
-			ResultSetAsJsonReader resultReader = cfwResult.toJSONReader();
+			XRResultSetAsJsonReader resultReader = cfwResult.toJSONReader();
 			
 			int recordCounter = 0;
 			JsonObject object;

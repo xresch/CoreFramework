@@ -342,7 +342,7 @@ public class CFWDBDashboardFavoriteMap {
 			success = new CFWSQL(new DashboardFavoritesMap())
 					.delete()
 					.where(DashboardFavoritenMapFields.FK_ID_DASHBOARD, toID)
-					.executeCFWResultSet(false)
+					.executeXRResultSet(false)
 					.isSuccess()
 					;
 			
@@ -351,7 +351,7 @@ public class CFWDBDashboardFavoriteMap {
 						+" SET T."+DashboardFavoritenMapFields.FK_ID_DASHBOARD
 						+" = ?", toID)
 				.where(DashboardFavoritenMapFields.FK_ID_DASHBOARD, fromID)
-				.executeCFWResultSet(false)
+				.executeXRResultSet(false)
 				.isSuccess()
 				;
 			

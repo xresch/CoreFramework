@@ -31,6 +31,7 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.ResultSetUtils;
 import com.xresch.cfw.utils.ResultSetUtils.ResultSetAsJsonReader;
+import com.xresch.xrutils.database.XRResultSet;
 
 /**************************************************************************************************************
  * Class used to create SQL statements for a CFWObject.
@@ -1868,7 +1869,7 @@ public class CFWSQL {
 	 * @param queryOnly true
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
-	public CFWResultSet executeCFWResultSet(boolean queryOnly) {
+	public XRResultSet executeXRResultSet(boolean queryOnly) {
 		
 		//----------------------------
 		// Handle Caching
@@ -1877,10 +1878,10 @@ public class CFWSQL {
 		//----------------------------
 		// Execute Statement 
 		if(queryOnly || statement.trim().startsWith("SELECT")) {
-			return dbInterface.preparedExecuteQueryCFWResultSet(false, statement, values.toArray());
+			return dbInterface.preparedExecuteQueryXRResultSet(false, statement, values.toArray());
 
 		}else {
-			return dbInterface.preparedExecuteCFWResultSet(statement, values.toArray());
+			return dbInterface.preparedExecuteXRResultSet(statement, values.toArray());
 		}
 	}
 	
@@ -1915,7 +1916,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public boolean executeRetrieveBytes(Object columnName, OutputStream stream) {
 				
-		CFWResultSet cfwResult = executeRetrieveBytesCFWResultSet(columnName);
+		XRResultSet cfwResult = executeRetrieveBytesXRResultSet(columnName);
 
 		boolean success = cfwResult.streamBytes(columnName, stream);
 		cfwResult.close();
@@ -1930,7 +1931,7 @@ public class CFWSQL {
 	 * @param columnName
 	 * @return CFWResultSet for method chaining
 	 ****************************************************************/
-	public CFWResultSet executeRetrieveBytesCFWResultSet(Object columnName) {
+	public XRResultSet executeRetrieveBytesXRResultSet(Object columnName) {
 		
 		String statement = 
 				  "SELECT "+columnName
@@ -1941,7 +1942,7 @@ public class CFWSQL {
 		ArrayList<Object> values = new ArrayList<Object>();
 		values.add(object.getPrimaryKeyValue());
 		
-		CFWResultSet cfwResult = dbInterface.preparedExecuteCFWResultSet(statement, values.toArray());
+		XRResultSet cfwResult = dbInterface.preparedExecuteXRResultSet(statement, values.toArray());
 		
 		return cfwResult;
 	}

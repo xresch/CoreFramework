@@ -6,11 +6,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -18,8 +15,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWChartSettings;
 import com.xresch.cfw.datahandling.CFWSchedule;
@@ -28,6 +23,7 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.xrutils.database.XRDBInterface;
+import com.xresch.xrutils.database.XRResultSet;
 
 import io.prometheus.client.Counter;
 
@@ -144,175 +140,17 @@ public class DBInterface extends XRDBInterface {
 			
 		}
 	}	
-	
+		
 	/********************************************************************************************
+	 * Returns the result or null if there was any issue.
+	 * Errors will be written to log but not be propagated to client.
 	 * 
 	 * @param sql string with placeholders
 	 * @param values the values to be placed in the prepared statement
-	 * @return int number of updated rows, -1 in case of error
+	 * @throws SQLException 
 	 ********************************************************************************************/
-	public int unpreparedExecuteBatch(String sql){	
-		
-		int totalRows = -1;
-		
-		CFWLog log = new CFWLog(logger).start();
-		Connection conn = null;
-		PreparedStatement prepared = null;
-		
-		try {
-			//-----------------------------------------
-			// Initialize Variables
-			conn = this.getConnection();
-			Statement statement = conn.createStatement();
-			statement.addBatch(sql);
-
-			//-----------------------------------------
-			// Execute
-			int[] resultCounts = statement.executeBatch();
-			
-			for(int i : resultCounts) {
-				if(i >= 0) {
-					totalRows += i;
-				}
-			}
-			increaseDBCallsCount(conn, false);
-			
-		} catch (SQLException e) {
-			increaseDBCallsCount(conn, true);
-			log.severe("Database Error: "+e.getMessage(), e);
-		} finally {
-			try {
-				if(conn != null && transactionConnection.get() == null) { 
-					removeOpenConnection(conn);
-					conn.close(); 
-				}
-				if(prepared != null) { prepared.close(); }
-			} catch (SQLException e) {
-				log.severe("Issue closing resources.", e);
-			}
-			
-		}
-		
-		log.custom("sql", sql).end(Level.FINE);
-		return totalRows;
-	}
-	/********************************************************************************************
-	 * 
-	 * @param sql string with placeholders
-	 * @param values the values to be placed in the prepared statement
-	 * @return int number of updated rows, -99 in case of error
-	 ********************************************************************************************/
-	@Override
-	public int preparedExecuteBatch(String sql, Object... values){	
-		
-		int totalRows = -99;
-		
-		CFWLog log = new CFWLog(logger).start();
-		Connection conn = null;
-		PreparedStatement prepared = null;
-
-		try {
-			//-----------------------------------------
-			// Initialize Variables
-			conn = this.getConnection();
-			prepared = conn.prepareStatement(sql);
-			
-			//-----------------------------------------
-			// Prepare Statement
-			prepareStatement(prepared, values);
-			prepared.addBatch();
-			
-			//-----------------------------------------
-			// Execute
-			int[] resultCounts = prepared.executeBatch();
-
-			totalRows = 0;
-			for(int i : resultCounts) {
-				if(i >= 0) {
-					int currentCount = resultCounts[i];
-					if( currentCount != Statement.SUCCESS_NO_INFO
-					&&  currentCount != Statement.EXECUTE_FAILED) {
-						totalRows += i;
-					}
-				}
-			}
-			increaseDBCallsCount(conn, false);
-
-		} catch (SQLException e) {
-			increaseDBCallsCount(conn, true);
-			log.severe("Database Error: "+e.getMessage(), e);
-		} finally {
-			try {
-				if(conn != null && transactionConnection.get() == null) { 
-					removeOpenConnection(conn);
-					conn.close(); 
-				}
-				if(prepared != null) { prepared.close(); }
-			} catch (SQLException e) {
-				log.severe("Issue closing resources.", e);
-			}
-			
-		}
-		
-		log.custom("sql", sql).end(Level.FINE);
-		return totalRows;
-	}
-	
-	/********************************************************************************************
-	 * Executes the insert and returns the generated Key of the new record. (what is a
-	 * primary key in most cases)
-	 * 
-	 * @param sql string with placeholders
-	 * @param generatedKeyName name of the column of the key to retrieve
-	 * @param values the values to be placed in the prepared statement
-	 * @return generated key, null if not successful
-	 ********************************************************************************************/
-	@Override
-	public Integer preparedInsertGetKey(String sql, String generatedKeyName, Object... values){	
-        
-		CFWLog log = new CFWLog(logger).start();
-		Connection conn = null;
-		PreparedStatement prepared = null;
-
-		Integer generatedID = null;
-		try {
-			//-----------------------------------------
-			// Initialize Variables
-			conn = this.getConnection();
-			prepared = conn.prepareStatement(sql, new String[] {generatedKeyName});
-			
-			//-----------------------------------------
-			// Prepare Statement
-			prepareStatement(prepared, values);
-			
-			//-----------------------------------------
-			// Execute
-			int affectedRows = prepared.executeUpdate();
-
-			if(affectedRows > 0) {
-				ResultSet result = prepared.getGeneratedKeys();
-				result.next();
-				generatedID = result.getInt(generatedKeyName);
-			}
-			increaseDBCallsCount(conn, false);
-		} catch (SQLException e) {
-			increaseDBCallsCount(conn, true);
-			log.severe("Database Error: "+e.getMessage(), e);
-		} finally {
-			try {
-				if(conn != null && transactionConnection.get() == null) { 
-					removeOpenConnection(conn);
-					conn.close(); 
-				}
-				if(prepared != null) { prepared.close(); }
-			} catch (SQLException e) {
-				log.severe("Issue closing resources.", e);
-			}
-			
-		}
-		
-		log.custom("sql", sql).end(Level.FINE);
-		return generatedID;
+	public ResultSet preparedExecuteQuerySilent(String sql, Object... values){
+		return preparedExecuteQuery(true, sql, values);
 	}
 	
 	/********************************************************************************************
@@ -365,144 +203,6 @@ public class DBInterface extends XRDBInterface {
 		log.custom("sql", sql).end(Level.FINE);
 				 
 		return result;
-	}
-	
-	/********************************************************************************************
-	 * Returns the CFWResultSet.
-	 * Note: This adjusted copy of preparedExecuteQuery() is very similar. Because of performance
-	 * it was decided to accept this kind of code redundancy.
-	 * 
-	 * @param isSilent write errors to log but do not propagate to client
-	 * @param sql string with placeholders
-	 * @param values the values to be placed in the prepared statement
-	 ********************************************************************************************/
-	public CFWResultSet preparedExecuteQueryCFWResultSet(boolean isSilent, String sql, Object... values){	
-        
-		CFWLog log = new CFWLog(logger)
-				.start();
-		
-		Connection conn = null;
-		PreparedStatement prepared = null;
-		ResultSet result = null;
-		try {
-			//-----------------------------------------
-			// Initialize Variables
-			conn = this.getConnection();
-			prepared = conn.prepareStatement(sql);
-			
-			//-----------------------------------------
-			// Prepare Statement
-			prepareStatement(prepared, values);
-			
-			//-----------------------------------------
-			// Execute
-			result = prepared.executeQuery();
-			increaseDBCallsCount(conn, false);
-			
-			CFWResultSet cfwResult = new CFWResultSet(this, true);
-			
-			cfwResult.connection(conn)
-				     .isSilent(isSilent)
-					 .resultSet(result) 
-					 .preparedStatement(prepared) 
-					 .sqlString(sql)
-					 .values(values) 
-					 .executionResult(true) 
-					 .updateCount(-1) 
-					 ;
-			
-			return cfwResult;
-			
-		} catch (SQLException e) {
-			increaseDBCallsCount(conn, true);
-			log.silent(isSilent)
-				.severe("Issue executing prepared statement: "+e.getLocalizedMessage(), e);
-			try {
-				if(conn != null && transactionConnection.get() == null) { 
-					removeOpenConnection(conn);
-					conn.close(); 
-				}
-				if(prepared != null) { prepared.close(); }
-			} catch (SQLException e2) {
-				log.silent(isSilent)
-					.severe("Issue closing resources.", e2);
-			}
-		} 
-		
-		log.custom("sql", sql).end(Level.FINE);
-				 
-		return new CFWResultSet(this, false);
-	}
-
-	/********************************************************************************************
-	 * Returns the CFWResultSet.
-	 * Note: This adjusted copy of preparedExecute() is very similar. Because of performance
-	 * it was decided to accept this kind of code redundancy.
-	 * 
-	 * @param request HttpServletRequest containing session data used for logging information(null allowed).
-	 * @param sql string with placeholders
-	 * @param values the values to be placed in the prepared statement
-	 * @return true if update count is > 0, false otherwise
-	 ********************************************************************************************/
-	public CFWResultSet preparedExecuteCFWResultSet(String sql, Object... values){	
-        
-		CFWLog log = new CFWLog(logger).start();
-		Connection conn = null;
-		PreparedStatement prepared = null;
-				
-		try {
-			//-----------------------------------------
-			// Initialize Variables
-			conn = this.getConnection();
-			
-			prepared = conn.prepareStatement(sql);
-			
-			//-----------------------------------------
-			// Prepare Statement
-			prepareStatement(prepared, values);
-			
-			//-----------------------------------------
-			// Execute
-			boolean isResultSet = prepared.execute();
-			int  updateCount = prepared.getUpdateCount();
-			boolean result = false;
-			
-			if(!isResultSet && updateCount > 0) {
-				result = true;
-			}
-			increaseDBCallsCount(conn, false);
-			
-			CFWResultSet cfwResult = new CFWResultSet(this, true);
-			
-			cfwResult.connection(conn)
-					 .isResultSet(isResultSet) 
-					 .preparedStatement(prepared) 
-					 .sqlString(sql)
-					 .values(values) 
-					 .executionResult(result) 
-					 .updateCount(updateCount ) 
-					 ;
-
-			log.custom("sql", sql).end(Level.FINE);
-			return cfwResult;
-			
-		} catch (SQLException e) {
-			increaseDBCallsCount(conn, true);
-			log.severe("Database Error: "+e.getMessage(), e);
-			
-			try {
-				if(conn != null && transactionConnection.get() == null) { 
-					removeOpenConnection(conn);
-					conn.close(); 
-				}
-				if(prepared != null) { prepared.close(); }
-			} catch (SQLException e2) {
-				log.severe("Issue closing resources.", e2);
-			}
-		} 
-		
-		log.custom("sql", sql).end(Level.FINE);
-		return new CFWResultSet(this, false);
 	}
 	
 	/********************************************************************************************

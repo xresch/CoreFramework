@@ -372,7 +372,7 @@ public class CFWDBParameter {
 			success = new CFWSQL(new CFWParameter())
 					.delete()
 					.where(idField, toID)
-					.executeCFWResultSet(false)
+					.executeXRResultSet(false)
 					.isSuccess()
 					;
 			

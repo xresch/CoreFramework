@@ -12,11 +12,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.JSON;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.db.CFWResultSet;
 import com.xresch.cfw.extensions.cli.FeatureCLIExtensions;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.filemanager.CFWStoredFile;
@@ -33,6 +31,7 @@ import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
+import com.xresch.xrutils.database.XRResultSet;
 	
 /**************************************************************************************************************
  * 
@@ -305,7 +304,7 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 			
 			//----------------------------
 			// Excel
-			CFWResultSet cfwResult =CFW.DB.StoredFile.retrieveDataStreamObject(file);
+			XRResultSet cfwResult =CFW.DB.StoredFile.retrieveDataStreamObject(file);
 			InputStream dataSream = cfwResult.getBytesStream(CFWStoredFileFields.DATA.toString());
 			JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(dataSream, sheet, header);
 			cfwResult.close();

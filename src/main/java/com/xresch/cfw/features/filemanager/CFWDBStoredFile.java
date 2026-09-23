@@ -23,7 +23,6 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
-import com.xresch.cfw.db.CFWResultSet;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteItem;
@@ -35,10 +34,10 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.features.spaces.FeatureSpaces;
-import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.xrutils.database.XRResultSet;
 
 /**************************************************************************************************************
  * 
@@ -170,8 +169,8 @@ public class CFWDBStoredFile {
 	 * Retrieve a data stream object for the DATA column as a string.
 	 * @param item the file the data should be stored to.
 	 **********************************************************************************/
-	public static CFWResultSet retrieveDataStreamObject(CFWStoredFile item) { 
-		return new CFWSQL(item).executeRetrieveBytesCFWResultSet(CFWStoredFileFields.DATA);
+	public static XRResultSet retrieveDataStreamObject(CFWStoredFile item) { 
+		return new CFWSQL(item).executeRetrieveBytesXRResultSet(CFWStoredFileFields.DATA);
 	}
 	
 	/**********************************************************************************
