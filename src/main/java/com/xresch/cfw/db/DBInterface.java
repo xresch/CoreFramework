@@ -1,30 +1,20 @@
 package com.xresch.cfw.db;
 
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.sql.Blob;
-import java.sql.Clob;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -37,6 +27,7 @@ import com.xresch.cfw.datahandling.CFWStoredFileReferences;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.xrutils.database.XRDBInterface;
 
 import io.prometheus.client.Counter;
 
@@ -45,15 +36,10 @@ import io.prometheus.client.Counter;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class DBInterface {
+public class DBInterface extends XRDBInterface {
 
 	private static Logger logger = CFWLog.getLogger(DBInterface.class.getName());
 	
-	protected ThreadLocal<ArrayList<Connection>> myOpenConnections = new ThreadLocal<>();
-	protected ThreadLocal<Connection> transactionConnection = new ThreadLocal<>();
-
-	private BasicDataSource pooledSource;
-
 	private static final Counter dbcallCounter = Counter.build()
 	         .name("cfw_db_calls_success_count")
 	         .help("Number of database calls executed successfully through the internal CFW DBInterface.")
@@ -67,47 +53,14 @@ public class DBInterface {
 	         .register();
 	
 	private String InterfaceName = "";
-
-	private static HashMap<String, BasicDataSource> managedConnectionPools = new HashMap<>();
 	
 	public DBInterface(String interfaceName, BasicDataSource pooledSource) {
-		this.pooledSource = pooledSource;
+		super(pooledSource);
+
 		this.InterfaceName = interfaceName;
 	}
 	
-	/********************************************************************************************
-	 * Get the Datasource for this DBInterface.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public DataSource getDatasource() {
-		return pooledSource;
-	}
 	
-	/********************************************************************************************
-	 * Get a connection from the connection pool or returns the current connection used for the 
-	 * transaction.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public Connection getConnection() throws SQLException {
-		
-		//Improve performance, reduce memory overhead
-		if(logger.isLoggable(Level.FINER)) {
-			new CFWLog(logger)
-				.finer("DB Connections Active: "+pooledSource.getNumActive());
-		}
-		
-		if(transactionConnection.get() != null) {
-			return transactionConnection.get();
-		}else {
-			synchronized (pooledSource) {
-				Connection connection = pooledSource.getConnection();
-				addOpenConnection(connection);
-				return connection;
-			}
-		}				
-	}
 	
 	
 	/********************************************************************************************
@@ -117,6 +70,7 @@ public class DBInterface {
 	 * 
 	 * @throws SQLException 
 	 ********************************************************************************************/
+	 @Override
 	public void forceCloseRemainingConnections() {	
 		
 		//--------------------------------------
@@ -169,169 +123,17 @@ public class DBInterface {
 		}
 	}
 	
-	/********************************************************************************************
-	 * Add a connection that was openend to the list of open connections.
-	 * When connections remain after the Servlet returns, they will be closed 
-	 * by the RequestHandler using forceCloseRemainingConnections().
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	protected void addOpenConnection(Connection connection) {	
-		if(myOpenConnections.get() == null) {
-			myOpenConnections.set(new ArrayList<Connection>());
-		}
-		
-		myOpenConnections.get().add(connection);
-	}
 	
-	/********************************************************************************************
-	 * Removes a connection that was openend from the list of open connections.
-	 * When connections remain after the Servlet returns, they will be closed 
-	 * by the RequestHandler using hardCloseRemainingConnections().
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	protected void removeOpenConnection(Connection connection) {	
-		
-		if(myOpenConnections.get() == null) {
-			return;
-		}
-		myOpenConnections.get().remove(connection);
-	}
 	
-	/********************************************************************************************
-	 * Returns if a DB transaction was already started in the current thread.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public boolean transactionIsStarted() {	
-		return transactionConnection.get() != null;
-	}
 	
-	/********************************************************************************************
-	 * Starts a new transaction.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public void transactionStart() {	
-		
-		if(transactionConnection.get() != null) {
-			new CFWLog(logger)
-				.severe("A transaction was already started for this thread. Use commitTransaction() before starting another one.", new Throwable());
-			return;
-		}
-		
-		try {
-			Connection con = this.getConnection();
-			con.setAutoCommit(false);
-			transactionConnection.set(con);
-			addOpenConnection(con);
-			new CFWLog(logger).finer("DB transaction started.");
-			
-		} catch (SQLException e) {
-			new CFWLog(logger)
-				.severe("Error while retrieving DB connection.", e);
-		}
-		
-	}
 	
-	/********************************************************************************************
-	 * Commits a new transaction.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public void transactionEnd(boolean isSuccess) {
-		if(isSuccess) {
-			transactionCommit();
-		}else {
-			transactionRollback();
-		}
-	}
-	/********************************************************************************************
-	 * Commits the transaction started with transactionStart.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public void transactionCommit() {	
-		
-		
-		if(transactionConnection.get() == null) {
-			new CFWLog(logger)
-				.finer("There is no running transaction. Use beginTransaction() before using commit.");
-			return;
-		}
-		
-		Connection con = null;
-		
-		try {
-			con = transactionConnection.get();
-			con.commit();
-			new CFWLog(logger).finer("DB transaction committed.");
-		} catch (SQLException e) {
-			new CFWLog(logger)
-				.severe("Error occured on commit transaction.", e);
-		} finally {
-			transactionConnection.remove();
-			if(con != null) { 
-				try {
-					removeOpenConnection(con);
-					con.setAutoCommit(true);
-					con.close();
-				} catch (SQLException e) {
-					new CFWLog(logger)
-						.severe("Error occured closing DB resources.", e);
-				}
-				
-			}
-		}
-		
-	}
 	
-	/********************************************************************************************
-	 * Rollbacks the transaction.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public void transactionRollback() {	
-		
-		
-		if(transactionConnection.get() == null) {
-			new CFWLog(logger)
-				.finer("There is no running transaction. Use beginTransaction() before using commit.");
-			return;
-		}
-		
-		Connection con = null;
-		
-		try {
-			con = transactionConnection.get();
-			con.rollback();
-			new CFWLog(logger)
-				.finer("DB transaction rolled back.");
-		} catch (SQLException e) {
-			new CFWLog(logger)
-				.severe("Error occured on rollback transaction.", e);
-		} finally {
-			transactionConnection.remove();
-			if(con != null) { 
-				try {
-					con.setAutoCommit(true);
-					con.close();
-					removeOpenConnection(con);
-				} catch (SQLException e) {
-					new CFWLog(logger)
-						.severe("Error occured closing DB resources.", e);
-				}
-				
-			}
-		}
-		
-	}
 	
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
-	private void increaseDBCallsCount(Connection conn, boolean isError) {
+	@Override
+	protected void increaseDBCallsCount(Connection conn, boolean isError) {
 		if(conn != null) {
 			
 			if(!isError) {
@@ -341,61 +143,7 @@ public class DBInterface {
 			}
 			
 		}
-	}
-	/********************************************************************************************
-	 * 
-	 * @param request HttpServletRequest containing session data used for logging information(null allowed).
-	 * @param sql string with placeholders
-	 * @param values the values to be placed in the prepared statement
-	 * @return true if update count is > 0, false otherwise
-	 ********************************************************************************************/
-	public boolean preparedExecute(String sql, Object... values){	
-        
-		CFWLog log = new CFWLog(logger).start();
-		Connection conn = null;
-		PreparedStatement prepared = null;
-
-		boolean result = false;
-		try {
-			//-----------------------------------------
-			// Initialize Variables
-			conn = this.getConnection();
-			
-			prepared = conn.prepareStatement(sql);
-			
-			//-----------------------------------------
-			// Prepare Statement
-			prepareStatement(prepared, values);
-			
-			//-----------------------------------------
-			// Execute
-			boolean isResultSet = prepared.execute();
-
-			if(!isResultSet && prepared.getUpdateCount() > 0) {
-				result = true;
-			}
-			increaseDBCallsCount(conn, false);
-			
-		} catch (SQLException e) {
-			increaseDBCallsCount(conn, true);
-			log.severe("Database Error: "+e.getMessage(), e);
-		} finally {
-			try {
-				if(conn != null && transactionConnection.get() == null) { 
-					removeOpenConnection(conn);
-					conn.close(); 
-				}
-				if(prepared != null) { prepared.close(); }
-			} catch (SQLException e) {
-				log.severe("Issue closing resources.", e);
-			}
-			
-		}
-		
-		log.custom("sql", sql).end(Level.FINE);
-		return result;
-	}
-	
+	}	
 	
 	/********************************************************************************************
 	 * 
@@ -454,6 +202,7 @@ public class DBInterface {
 	 * @param values the values to be placed in the prepared statement
 	 * @return int number of updated rows, -99 in case of error
 	 ********************************************************************************************/
+	@Override
 	public int preparedExecuteBatch(String sql, Object... values){	
 		
 		int totalRows = -99;
@@ -470,7 +219,7 @@ public class DBInterface {
 			
 			//-----------------------------------------
 			// Prepare Statement
-			DBInterface.prepareStatement(prepared, values);
+			prepareStatement(prepared, values);
 			prepared.addBatch();
 			
 			//-----------------------------------------
@@ -518,6 +267,7 @@ public class DBInterface {
 	 * @param values the values to be placed in the prepared statement
 	 * @return generated key, null if not successful
 	 ********************************************************************************************/
+	@Override
 	public Integer preparedInsertGetKey(String sql, String generatedKeyName, Object... values){	
         
 		CFWLog log = new CFWLog(logger).start();
@@ -564,27 +314,6 @@ public class DBInterface {
 		log.custom("sql", sql).end(Level.FINE);
 		return generatedID;
 	}
-	/********************************************************************************************
-	 * Returns the result or null if there was any issue.
-	 * 
-	 * @param sql string with placeholders
-	 * @param values the values to be placed in the prepared statement
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public ResultSet preparedExecuteQuery(String sql, Object... values){
-		return preparedExecuteQuery(false, sql, values);
-	}
-	
-	/********************************************************************************************
-	 * Returns the result or null if there was any issue.
-	 * Errors will be written to log but not be propagated to client.
-	 * @param sql string with placeholders
-	 * @param values the values to be placed in the prepared statement
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public ResultSet preparedExecuteQuerySilent(String sql, Object... values){
-		return preparedExecuteQuery(true, sql, values);
-	}
 	
 	/********************************************************************************************
 	 * Returns the result or null if there was any issue.
@@ -594,7 +323,8 @@ public class DBInterface {
 	 * @param values the values to be placed in the prepared statement
 	 * @throws SQLException 
 	 ********************************************************************************************/
-	private ResultSet preparedExecuteQuery(boolean isSilent, String sql, Object... values){	
+	@Override 
+	protected ResultSet preparedExecuteQuery(boolean isSilent, String sql, Object... values){	
         
 		CFWLog log = new CFWLog(logger)
 				.start();
@@ -610,7 +340,7 @@ public class DBInterface {
 			
 			//-----------------------------------------
 			// Prepare Statement
-			DBInterface.prepareStatement(prepared, values);
+			prepareStatement(prepared, values);
 			
 			//-----------------------------------------
 			// Execute
@@ -662,7 +392,7 @@ public class DBInterface {
 			
 			//-----------------------------------------
 			// Prepare Statement
-			DBInterface.prepareStatement(prepared, values);
+			prepareStatement(prepared, values);
 			
 			//-----------------------------------------
 			// Execute
@@ -776,62 +506,83 @@ public class DBInterface {
 	}
 	
 	/********************************************************************************************
+	 * Prepares custom types for the SQL statement.
 	 * 
-	 * @param request HttpServletRequest containing session data used for logging information(null allowed).
-	 * @param sql string with placeholders
+	 * @param prepared the statements with ?-placeholders that should be prepared
+	 * @param value the value to be placed in the prepared statement. Supports String, Integer,
+	 *               Boolean, Float, Date, Timestamp, Blob, Clob, Byte
+	 * @throws SQLException 
+	 * 
+	 * @return true if value was prepared, false otherwise
+	 ********************************************************************************************/
+	@Override
+	public boolean prepareCustomTypes(PreparedStatement prepared, int index, Object currentValue) throws SQLException{
+		
+		if (  currentValue instanceof CFWChartSettings
+				|| currentValue instanceof CFWSchedule
+				|| currentValue instanceof CFWTimeframe
+				|| currentValue instanceof CFWStoredFileReferences
+		){ 
+			prepared.setString(index, CFW.JSON.toJSON(currentValue)); 
+			return true;
+		}
+		
+		return false;
+	}
+		
+	/********************************************************************************************
+	 * Prepares an SQL statement with the provided values.
+	 * 
+	 * @param prepared the statements with ?-placeholders that should be prepared
 	 * @param values the values to be placed in the prepared statement. Supports String, Integer,
 	 *               Boolean, Float, Date, Timestamp, Blob, Clob, Byte
 	 * @throws SQLException 
 	 ********************************************************************************************/
-	@SuppressWarnings("rawtypes")
-	public static void prepareStatement(PreparedStatement prepared, Object... values) throws SQLException{
-		
-		try {
-			if(values != null) {
-				for(int i = 1; i <= values.length ; i++) {
-					Object currentValue = values[i-1];
-					// TODO: Could be a better/faster solution: prepared.setObject(i+1, currentValue);
-	
-					if		(currentValue instanceof String) 		{ prepared.setString(i, (String)currentValue); }
-					else if	(currentValue instanceof StringBuilder) { prepared.setString(i, currentValue.toString() ); }
-					else if	(currentValue instanceof char[]) 		{ prepared.setString(i, new String((char[])currentValue)); }
-					else if (currentValue instanceof Integer) 		{ prepared.setInt(i, (Integer)currentValue); }
-					else if (currentValue instanceof Boolean) 		{ prepared.setBoolean(i, (Boolean)currentValue); }
-					else if (currentValue == null) 					{ prepared.setNull(i, Types.NULL); }
-					else if (currentValue instanceof Long) 			{ prepared.setLong(i, (Long)currentValue); }
-					else if (currentValue instanceof Float) 		{ prepared.setFloat(i, (Float)currentValue); }
-					else if (currentValue instanceof BigDecimal) 	{ prepared.setBigDecimal(i, (BigDecimal)currentValue); }
-					else if (currentValue instanceof Date) 			{ prepared.setDate(i, (Date)currentValue); }
-					else if (currentValue instanceof Timestamp) 	{ prepared.setTimestamp(i, (Timestamp)currentValue); }
-					else if (currentValue instanceof Blob) 			{ prepared.setBlob(i, (Blob)currentValue); }
-					else if (currentValue instanceof Clob) 			{ prepared.setClob(i, (Clob)currentValue); }
-					else if (currentValue instanceof Byte) 			{ prepared.setByte(i, (Byte)currentValue); }
-					else if (currentValue instanceof ArrayList) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", ((ArrayList)currentValue).toArray() )); }
-					else if (currentValue instanceof InputStream) 	{ prepared.setBinaryStream(i, (InputStream)currentValue); }
-					else if (currentValue instanceof Integer[]) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("INTEGER", (Integer[])currentValue)); }
-					else if (currentValue instanceof Object[]) 		{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", (Object[])currentValue)); }
-					else if (currentValue instanceof LinkedHashMap)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
-					else if (  currentValue instanceof CFWChartSettings
-							|| currentValue instanceof CFWSchedule
-							|| currentValue instanceof CFWTimeframe
-							|| currentValue instanceof CFWStoredFileReferences
-							)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
-					else if (currentValue.getClass().isEnum()) 		{ prepared.setString(i, currentValue.toString());}
-					else { throw new RuntimeException("Unsupported database field type: "+ currentValue.getClass().getName());}
-				}
-			}
-		}catch(Exception e){
-			//do this to also log below when an error occurs
-			throw e;
-		}finally {
-			if(logger.isLoggable(Level.FINEST) && prepared != null ) {
-				new CFWLog(logger)
-					.custom("preparedSQL", prepared.toString())
-					.finest("Debug: Prepared Statement");
-			}
-		}
-
-	}
+//	@Override
+//	public void prepareStatement(PreparedStatement prepared, Object... values) throws SQLException{
+//		
+//		try {
+//			if(values != null) {
+//				for(int i = 1; i <= values.length ; i++) {
+//					Object currentValue = values[i-1];
+//					// TODO: Could be a better/faster solution: prepared.setObject(i+1, currentValue);
+//	
+//					if		(currentValue instanceof String) 		{ prepared.setString(i, (String)currentValue); }
+//					else if	(currentValue instanceof StringBuilder) { prepared.setString(i, currentValue.toString() ); }
+//					else if	(currentValue instanceof char[]) 		{ prepared.setString(i, new String((char[])currentValue)); }
+//					else if (currentValue instanceof Integer) 		{ prepared.setInt(i, (Integer)currentValue); }
+//					else if (currentValue instanceof Boolean) 		{ prepared.setBoolean(i, (Boolean)currentValue); }
+//					else if (currentValue == null) 					{ prepared.setNull(i, Types.NULL); }
+//					else if (currentValue instanceof Long) 			{ prepared.setLong(i, (Long)currentValue); }
+//					else if (currentValue instanceof Float) 		{ prepared.setFloat(i, (Float)currentValue); }
+//					else if (currentValue instanceof BigDecimal) 	{ prepared.setBigDecimal(i, (BigDecimal)currentValue); }
+//					else if (currentValue instanceof Date) 			{ prepared.setDate(i, (Date)currentValue); }
+//					else if (currentValue instanceof Timestamp) 	{ prepared.setTimestamp(i, (Timestamp)currentValue); }
+//					else if (currentValue instanceof Blob) 			{ prepared.setBlob(i, (Blob)currentValue); }
+//					else if (currentValue instanceof Clob) 			{ prepared.setClob(i, (Clob)currentValue); }
+//					else if (currentValue instanceof Byte) 			{ prepared.setByte(i, (Byte)currentValue); }
+//					else if (currentValue instanceof ArrayList) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", ((ArrayList)currentValue).toArray() )); }
+//					else if (currentValue instanceof InputStream) 	{ prepared.setBinaryStream(i, (InputStream)currentValue); }
+//					else if (currentValue instanceof Integer[]) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("INTEGER", (Integer[])currentValue)); }
+//					else if (currentValue instanceof Object[]) 		{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", (Object[])currentValue)); }
+//					else if (currentValue instanceof LinkedHashMap)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
+//					else if (currentValue.getClass().isEnum()) 		{ prepared.setString(i, currentValue.toString());}
+//					else if ( prepareCustomTypes(prepared, i, currentValue) )	{ /* prepare successful, do nothing */  }
+//					else { throw new RuntimeException("Unsupported database field type: "+ currentValue.getClass().getName());}
+//				}
+//			}
+//		}catch(Exception e){
+//			//do this to also log below when an error occurs
+//			throw e;
+//		}finally {
+//			if(logger.isLoggable(Level.FINEST) && prepared != null ) {
+//				new CFWLog(logger)
+//					.custom("preparedSQL", prepared.toString())
+//					.finest("Debug: Prepared Statement");
+//			}
+//		}
+//
+//	}
 	
 	/********************************************************************************************
 	 * 
@@ -1112,79 +863,5 @@ public class DBInterface {
 		return true;
 	}
 	
-	/********************************************************************************************
-	 *
-	 ********************************************************************************************/
-	public static void setDefaultConnectionPoolSettings(BasicDataSource pooledSource) {
-		pooledSource.setMaxConnLifetimeMillis(60*60*1000);
-		pooledSource.setTimeBetweenEvictionRunsMillis(5*60*1000);
-		pooledSource.setInitialSize(10);
-		pooledSource.setMinIdle(10);
-		pooledSource.setMaxIdle(70);
-		pooledSource.setMaxTotal(90);
-		pooledSource.setMaxOpenPreparedStatements(100);
-	}
-	
-	/********************************************************************************************
-	 * Add a connection pool as a managed connection pool.
-	 * The connection pool will show up in the Database Analytics.
-	 * 
-	 ********************************************************************************************/
-	public static void registerManagedConnectionPool(String uniqueName, BasicDataSource datasource) {	
-		
-		if(!managedConnectionPools.containsKey(uniqueName)) {
-			managedConnectionPools.put(uniqueName, datasource);
-		}else {
-			removeManagedConnectionPool(uniqueName);
-			managedConnectionPools.put(uniqueName, datasource);
-			
-			new CFWLog(logger).silent(true).info("A connection pool with the name '"+uniqueName+"' was already registered and was updated.");
-		}
-		
-			
-		
-	}
-	
-	/********************************************************************************************
-	 * Remove connection pool from the managed connection pools.
-	 ********************************************************************************************/
-	public static void removeManagedConnectionPool(String uniqueName) {	
-		BasicDataSource removedPool = managedConnectionPools.remove(uniqueName);	
-		// issue with AWA, to be investigated.
-//		try {
-//			removedPool.close();
-//		} catch (SQLException e) {
-//			new CFWLog(logger).silent(true).severe("Error closing connection pool: "+e.getMessage(), e);
-//		}
-	}
-	
-	/********************************************************************************************
-	 * Remove connection pool from the managed connection pools.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public static JsonArray getConnectionPoolStatsAsJSON() {	
-		
-		JsonArray result = new JsonArray();
-		for(Entry<String, BasicDataSource> entry : managedConnectionPools.entrySet()) {
-			
-			JsonObject stats = new JsonObject();
-			
-			BasicDataSource source = entry.getValue();
-			
-			stats.addProperty("NAME", entry.getKey());
-			stats.addProperty("MAX_CONNECTION_LIFETIME", source.getMaxConnLifetimeMillis());
-			stats.addProperty("EVICTION_INTERVAL", source.getTimeBetweenEvictionRunsMillis());
-			stats.addProperty("MIN_IDLE_CONNECTIONS", source.getMinIdle());
-			stats.addProperty("MAX_IDLE_CONNECTIONS", source.getMaxIdle());
-			stats.addProperty("MAX_TOTAL_CONNECTIONS", source.getMaxTotal());
-			stats.addProperty("IDLE_COUNT", source.getNumIdle());
-			stats.addProperty("ACTIVE_COUNT", source.getNumActive());
-			
-			result.add(stats);
-		}
-		
-		return result;
-	}
 
 }

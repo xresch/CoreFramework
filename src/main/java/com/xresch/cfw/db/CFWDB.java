@@ -362,17 +362,6 @@ public class CFWDB {
 		return db.preparedExecuteQuery(sql, values);
 	}
 	
-	/********************************************************************************************
-	 * 
-	 * @param request HttpServletRequest containing session data used for logging information(null allowed).
-	 * @param sql string with placeholders
-	 * @param values the values to be placed in the prepared statement. Supports String, Integer,
-	 *               Boolean, Float, Date, Timestamp, Blob, Clob, Byte
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public static void prepareStatement(PreparedStatement prepared, Object... values) throws SQLException{
-		DBInterface.prepareStatement(prepared, values);
-	}
 	
 	/********************************************************************************************
 	 * 

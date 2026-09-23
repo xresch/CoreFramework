@@ -115,7 +115,7 @@ public class CFWResultSet {
 
 			new CFWLog(logger).silent(isSilent).severe("Issue executing prepared statement: "+e.getLocalizedMessage(), e);
 			try {
-				if(connection != null && dbInterface.transactionConnection.get() == null ) { 
+				if(connection != null && dbInterface.transactionIsStarted() ) { 
 					dbInterface.removeOpenConnection(connection);
 					connection.close(); 
 				}
@@ -159,7 +159,7 @@ public class CFWResultSet {
 
 			new CFWLog(logger).silent(isSilent).severe("Issue streaming bytes to output stream: "+e.getLocalizedMessage(), e);
 			try {
-				if(connection != null && dbInterface.transactionConnection.get() == null ) { 
+				if(connection != null && dbInterface.transactionIsStarted() ) { 
 					dbInterface.removeOpenConnection(connection);
 					connection.close(); 
 				}
@@ -197,7 +197,7 @@ public class CFWResultSet {
 
 			new CFWLog(logger).silent(isSilent).severe("Issue creating InputStream: "+e.getLocalizedMessage(), e);
 			try {
-				if(connection != null && dbInterface.transactionConnection.get() == null ) { 
+				if(connection != null && dbInterface.transactionIsStarted() ) { 
 					dbInterface.removeOpenConnection(connection);
 					connection.close(); 
 				}
