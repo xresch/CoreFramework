@@ -771,8 +771,13 @@ function cfw_dashboardlist_printDashboards(data, type){
 				function (record, id){
 					if(JSDATA.userid == record.FK_ID_USER 
 					|| type == 'admindashboards'){
+						
+						let encodedName = record.NAME
+												.replaceAll('"','_')
+												.replaceAll("'","_")
+												.replaceAll(' ', '_');
 						return '<a class="btn btn-warning btn-sm text-white" target="_blank" alt="Export" title="Export" '
-							+' href="'+CFW_DASHBOARDLIST_URL+'?action=fetch&item=export&id='+id+'" download="'+record.NAME.replaceAll(' ', '_')+'.json">'
+							+' href="'+CFW_DASHBOARDLIST_URL+'?action=fetch&item=export&id='+id+'" download="' + encodedName + '.json">'
 							+'<i class="fa fa-download"></i>'
 							+ '</a>';
 					}else{
