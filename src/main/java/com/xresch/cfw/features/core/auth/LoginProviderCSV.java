@@ -68,7 +68,7 @@ public class LoginProviderCSV implements LoginProviderInterface {
 
 		//------------------------------
 		// Load File
-		String credentials = CFW.Files.getFileContent(null, CFW.Properties.AUTHENTICATION_CSV_FILE);
+		String credentials = CFW.Files.getFileContent(CFW.Properties.AUTHENTICATION_CSV_FILE);
 		
 		if(credentials == null) {
 			new CFWLog(logger).severe("Credential file could not be loaded: "+CFW.Properties.AUTHENTICATION_CSV_FILE);

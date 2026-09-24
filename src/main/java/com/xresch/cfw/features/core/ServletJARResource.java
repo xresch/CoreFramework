@@ -31,8 +31,8 @@ public class ServletJARResource extends HttpServlet
 		String file = request.getParameter("file");
 		
 		
-		byte[] fontContent = CFW.Files.readPackageResourceAsBytes(pkg, file);
-		if(fontContent != null) {
+		byte[] fileContent = CFW.Files.readPackageResourceAsBytes(pkg, file);
+		if(fileContent != null) {
 			
 			response.addHeader("Cache-Control", "max-age="
 								+ CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_TIMEOUTS, FeatureCore.CONFIG_BROWSER_RESOURCE_MAXAGE)
@@ -42,7 +42,7 @@ public class ServletJARResource extends HttpServlet
 			if(file.endsWith("svg")) { response.setContentType("image/svg+xml"); }
 			
 			try {
-				response.getOutputStream().write(fontContent);
+				response.getOutputStream().write(fileContent);
 			}catch(IOException e) {
 				new CFWLog(logger)
 					.severe("Error writing response.", e);

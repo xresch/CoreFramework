@@ -69,7 +69,7 @@ public class GeneralTestServlet extends HttpServlet
 		//------------------------------
 		// Test cannot read file
 		//------------------------------
-		String cannotReadFile = CFW.Files.getFileContent(request, "./resources/this_file_does_not_exists.txt");
+		String cannotReadFile = CFW.Files.getFileContent("./resources/this_file_does_not_exists.txt");
 
 		//------------------------------
 		// Test Localization

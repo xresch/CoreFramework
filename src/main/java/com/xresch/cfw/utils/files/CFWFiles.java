@@ -96,16 +96,14 @@ public class CFWFiles {
 	 * If it fails to read the file it will handle the exception and
 	 * will add an alert to the given request.
 	 * A file once loaded will 
-	 * 
-	 * @param request the request that is currently handled
 	 * @param path the path 
 	 * @param filename the name of the file 
 	 * 
 	 * @return String content of the file or null if an exception occurred.
 	 * 
 	 ***********************************************************************/
-	public static String getFileContent(HttpServletRequest request, String path, String filename){
-		return getFileContent(request, path + "/" + filename);
+	public static String getFileContent(String path, String filename){
+		return getFileContent(path + "/" + filename);
 	}
 	
 	/***********************************************************************
@@ -113,14 +111,14 @@ public class CFWFiles {
 	 * If it fails to read the file it will handle the exception and
 	 * will add an alert to the given request.
 	 * A file once loaded will 
-	 * 
-	 * @param request the request that is currently handled
 	 * @param path the path 
+	 * @param request the request that is currently handled
 	 * 
 	 * @return String content of the file or null if an exception occurred.
 	 * 
 	 ***********************************************************************/
-	public static String getFileContent(HttpServletRequest request, String path){
+	public static String getFileContent(String path){
+		
 		boolean cacheFiles = CFW.DB.Config.getConfigAsBoolean(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_FILE_CACHING);
 		if( CFWFiles.stringFileCache.asMap().containsKey(path) && cacheFiles){
 			new CFWLog(logger).finest("Read file content from cache");
@@ -143,6 +141,60 @@ public class CFWFiles {
 				
 				// remove UTF-8 byte order mark if present
 				content = content.replace("\uFEFF", "");
+				
+				return content;
+				
+			} catch (IOException e) {
+				//TODO: Localize message
+				new CFWLog(logger)
+					.severe("Could not read file: "+path, e);
+				
+				return null;
+			}
+			
+		}
+	}
+	
+	/***********************************************************************
+	 * Returns the file content of the given file path as a string.
+	 * If it fails to read the file it will handle the exception and
+	 * will add an alert to the given request.
+	 * A file once loaded will 
+	 * @param path the path 
+	 * @param filename the name of the file 
+	 * 
+	 * @return byte[] content of the file or null if an exception occurred.
+	 * 
+	 ***********************************************************************/
+	public static byte[] getFileContentAsBytes(String path, String filename){
+		return getFileContentAsBytes(path + "/" + filename);
+	}
+	
+	/***********************************************************************
+	 * Returns the file content of the given file path as a string.
+	 * If it fails to read the file it will handle the exception and
+	 * will add an alert to the given request.
+	 * A file once loaded will 
+	 * @param path the path 
+	 * @param request the request that is currently handled
+	 * 
+	 * @return byte[] content of the file or null if an exception occurred.
+	 * 
+	 ***********************************************************************/
+	public static byte[] getFileContentAsBytes(String path){
+		
+		boolean cacheFiles = CFW.DB.Config.getConfigAsBoolean(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_FILE_CACHING);
+		
+		if( CFWFiles.byteFileCache.asMap().containsKey(path) && cacheFiles){
+			new CFWLog(logger).finest("Read file content from cache");
+			return CFWFiles.byteFileCache.getIfPresent(path);
+		}else{
+			new CFWLog(logger).finest("Read from disk into cache");
+			
+			try( FileInputStream reader = new FileInputStream(path) ){
+				
+				byte[] content = readBytesFromInputStream(reader);
+				CFWFiles.byteFileCache.put(path, content);
 				
 				return content;
 				
@@ -359,7 +411,7 @@ public class CFWFiles {
 			return null;
 		}
 		
-		StringBuilder stringBuffer = new StringBuilder();
+		//StringBuilder stringBuffer = new StringBuilder();
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		
 		try {
@@ -368,7 +420,7 @@ public class CFWFiles {
 			
 			for (int nChunk = inputStream.read(buffer); nChunk!=-1; nChunk = inputStream.read(buffer))
 			{
-				stringBuffer.append(buffer);
+				//stringBuffer.append(buffer);
 				os.write(buffer);
 			} 
 			 

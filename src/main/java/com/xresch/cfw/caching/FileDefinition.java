@@ -110,7 +110,7 @@ public class FileDefinition {
 	public String readContents(){
 
 		switch(type) {
-			case FILE:			content = CFW.Files.getFileContent(null, path, filename);
+			case FILE:			content = CFW.Files.getFileContent(path, filename);
 								break;
 				
 			case JAR_RESOURCE: 	content = CFW.Files.readPackageResource(path, filename);
@@ -125,6 +125,26 @@ public class FileDefinition {
 		}
 
 		return content;
+	}
+	
+	/**************************************************************************
+	 * Read the contents of the file specified by this File definition and
+	 * returns it as a string.
+	 * @return
+	 **************************************************************************/
+	public byte[] readContentsAsBytes(){
+
+		switch(type) {
+			case FILE:			return CFW.Files.getFileContentAsBytes(path, filename);
+				
+			case JAR_RESOURCE: 	return CFW.Files.readPackageResourceAsBytes(path, filename);
+				
+			case STRING: 		return content.getBytes();
+				
+			default: 			return new byte[] {};
+							
+		}
+		
 	}
 	
 	public String getJavascriptTag(){

@@ -355,7 +355,7 @@ public class CFWHttp {
 			}else {
 				//------------------------------
 				// Load from Disk
-				proxyPACScript = CFW.Files.getFileContent(CFW.Context.Request.getRequest(), CFW.Properties.PROXY_PAC);
+				proxyPACScript = CFW.Files.getFileContent(CFW.Properties.PROXY_PAC);
 				
 				if(proxyPACScript == null || !proxyPACScript.contains("FindProxyForURL")) {
 					CFW.Messages.addErrorMessage("The Proxy .pac-File seems not be in the expected format.");

@@ -107,7 +107,7 @@ public class TestCFWScriptEngine {
 		
 		//--------------------------------
 		// Load PAC Script
-		String proxyPAC = CFW.Files.getFileContent(CFW.Context.Request.getRequest(), CFW.Properties.PROXY_PAC);
+		String proxyPAC = CFW.Files.getFileContent(CFW.Properties.PROXY_PAC);
 		
 		proxyPAC = CFWHttpPacScriptMethods.preparePacScript(proxyPAC);
 		polyglot.addScript("proxypac.js", proxyPAC);
