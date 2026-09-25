@@ -262,6 +262,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFields(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFieldsMatching(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFileCSV(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFileExcel(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFileJson(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFileString(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFirst(null));

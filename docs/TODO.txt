@@ -228,6 +228,7 @@ DONE
 	- distinctStream
 	- fieldsMatching
 	- fileCSV
+	- fileExcel
 	- fileJson
 	- fileString
 	- objectLookup

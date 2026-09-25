@@ -1,0 +1,34 @@
+
+<p>This function has the purpose to load data contained in an Excel file form the file manager.
+This is especially useful for using an Excel file to lookup values. To autocomplete a file you have two possibilities:</p>
+<ul>
+	<li>Place your cursor after the opening brace "fileExcel(" and hit Ctrl+Space.</li>
+	<li>Place your cursor after "file:{searchTerm}", where searchTerm is a string to filter the list of files, and hit Ctrl+Space.</li>
+</ul>
+
+<p>Let's say the file "data.xlsx" contains the following data:</p>
+<pre><code class="language-plain">+------------+-------------+------------------------+----------------+-------+-------+
+| FIRSTNAME  | LASTNAME    | LOCATION               | LIKES_TIRAMISU | VALUE | INDEX |
+|------------|-------------|------------------------|----------------|-------|-------|
+| Victoria   | Fredriksson | Finias                 | false          |    55 |     1 |
+| Artemis    | Eliasson    | Pandaemonium           | true           |    73 |     2 |
+| Venus      | Johansson   | Xibalba                | false          |    69 |     0 |
+| Heracles   | Jonsson     | Dinas Affaraon         | true           |    54 |     3 |
+| Bacchus    | Viklund     | Garden of Eden         | true           |    91 |     4 |
+| ...        | ...         | ...                    | ...            |   ... |   ... |
++------------+-------------+------------------------+----------------+-------+-------+</code></pre>
+
+<p>The following query would read the file content globally as an array, and will check where the field  FIRSTNAME is equals &quot;Venus&quot;, 
+and retrieves the values from the fields LASTNAME, LOCATION and LIKES_TIRAMISU:</p>
+<pre><code class="language-cfwquery">| globals
+	myArray = fileExcel({"id":358,"name":"data.xlsx"}, "data", true)
+| source empty
+| set
+	lastname = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LASTNAME" )
+	location = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LOCATION" )
+	tiramisu = arrayLookup( g(myArray), "FIRSTNAME", "Venus", "LIKES_TIRAMISU" )</code></pre>
+	
+	
+
+
+

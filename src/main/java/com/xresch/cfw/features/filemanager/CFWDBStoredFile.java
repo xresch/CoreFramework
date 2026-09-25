@@ -770,7 +770,7 @@ public class CFWDBStoredFile {
 		
 		//-----------------------------
 		// Add Autocomplete Note
-		result.setHTMLDescription(FeatureSpaces.AUTOCOMPLETE_NOTICE);
+		result.setHTMLDescription(result.getHTMLDescription() + FeatureSpaces.AUTOCOMPLETE_NOTICE);
 		
 		//-----------------------------
 		// Replace "file:" prefix
