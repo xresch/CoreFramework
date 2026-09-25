@@ -21,6 +21,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWStoredFileReferences;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
@@ -316,6 +317,19 @@ public class CFWDBStoredFile {
 			return false;
 		}
 	} 
+	
+	public static boolean deleteMultipleByReferences(CFWStoredFileReferences references) 	{ 
+
+		if(references == null
+		|| references.size() == 0 ) { return true; }
+		
+		boolean success = true;
+		for(int i = 0; i < references.size(); i++) {
+			success &= deleteByID(""+references.getID(i));
+		}
+
+		return success;
+	}
 	
 	public static boolean deleteMultipleByID(String IDs) 	{ 
 
