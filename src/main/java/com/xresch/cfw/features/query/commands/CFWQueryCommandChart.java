@@ -91,6 +91,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	+"<p><b>legendpos:&nbsp;</b>Define where the legend should be displayed: auto, top, bottom, left right. (Default: auto)</p>"	
 	+"<p><b>legendalign:&nbsp;</b>Define how the legend should be aligned: start, center, end. (Default: center)</p>"	
 	+"<p><b>pointradius:&nbsp;</b>Radius of the points drawn in charts. (Default: 1)</p>"	
+	+"<p><b>pointlabels:&nbsp;</b>Toggle if the value should be displayed on points. (Default: false)</p>"	
 	+"<p><b>tension:&nbsp;</b>The tension of the lines, used to make lines smoother. (Value between 0-1, Default: 0)</p>"	
 	+"<p><b>spangaps:&nbsp;</b>Set to true to connect lines if there is a gap in the data.</p>"	
 	+"<p><b>colors:&nbsp;</b>Allows you to define an array of colors used for the series.</p>"	

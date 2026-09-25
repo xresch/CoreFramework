@@ -9,6 +9,7 @@ var CFW_RENDERER_CHART_ZOOM_CALLBACKS = [];
  * Register Plugins
  ******************************************************************/
 Chart.register('chartjs-plugin-annotation');
+Chart.register(ChartDataLabels);
 
 /******************************************************************
  * 
@@ -268,12 +269,14 @@ function cfw_renderer_chart(renderDef) {
 		ymin: 0,
 		// The suggested maximum value for the y axis 
 		ymax: null,
-		//the type of the x axis: linear|logarithmic|category|time
+		// the type of the x axis: linear|logarithmic|category|time
 		xtype: 'time',
-		//the type of the y axis: linear|logarithmic|category|time
+		// the type of the y axis: linear|logarithmic|category|time
 		ytype: 'linear',
-		//the radius for the points shown on line and area charts
+		// the radius for the points shown on line and area charts
 		pointradius: 0,
+		// toggle if the value should be displayed on points
+		pointlabels: false,
 		//the tension of the line from 0 to 1 (default: 0)
 		tension: 0,
 		// the padding of the chart
@@ -922,6 +925,19 @@ function cfw_renderer_chart_createChartOptions(settings) {
 				},
 				annotation: {
 					annotations: settings.annotations
+				},
+				datalabels: {
+					color: CFW.colors.lightDark("black", "white"),
+	                display: settings.pointlabels,
+	                align: (!settings.swapaxes) ? 'top' : 'right',
+	                anchor: 'auto',
+					clamp: true,
+	                formatter: (value) => CFW.format.numbersInThousands(
+													(!settings.swapaxes) ? value.y : value.x
+													, 1
+													, false
+													, false
+												)
 				},
 				zoom: {
 					zoom: {

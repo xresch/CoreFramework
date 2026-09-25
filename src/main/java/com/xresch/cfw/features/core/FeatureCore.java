@@ -154,6 +154,7 @@ public class FeatureCore extends CFWAppFeature {
 		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-v4.4.1.umd.js"); 
 		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-plugin-zoom-v2.2.0.js"); 
 		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-plugin-annotation-v3.1.0.min.js"); 
+		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-plugin-datalabels.min.js"); 
 		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "moment-v2.29.4.min.js"); // required by ChartJS
 		CFW.Registry.Components.addGlobalJavascript(HANDLE_JAR, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-adapter-moment-v1.0.1.js"); // required by ChartJS
 		
