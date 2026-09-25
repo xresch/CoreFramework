@@ -43,7 +43,10 @@ public class RequestHandler extends HandlerWrapper
                         HttpServletResponse response ) throws IOException,
                                                       ServletException
     {
-    	
+		
+		// Remove any potential leftovers from previous requests.
+		Context.Request.clearRequestContext();
+		
     	//==========================================
     	// Initialize
     	//==========================================
