@@ -72,14 +72,18 @@ function cfw_usermgmt_groups_initialDraw(){
 	$('#cfw-container').css('max-width', '80%');
 	
 	cfw_usermgmt_setScopeGroups();
+	
+	//-------------------------------------------
+	// Create Selector
+	cfw_spaces_createSpaceSelector(function(spaceid){ /* do nothing */ });
+		
+	//-------------------------------------------
+	// Create Tabs
 	cfw_usermgmt_groups_createTabs();
 	
 	//-------------------------------------------
-	// Create Selector and Draw
-	cfw_spaces_createSpaceSelector(function(spaceid){
-			cfw_usermgmt_groups_draw(null);
-		});
-
+	// Draw
+	cfw_usermgmt_groups_draw(null);
 }
 
 /******************************************************************

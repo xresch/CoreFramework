@@ -549,17 +549,24 @@ function cfwjobs_sanitizeCurrentOptions(options){
 
 function cfwjobs_initialDraw(){
 	
-	cfwjobs_createTabs();
-	
+
 	//-----------------------------------
 	// Make Broad Page
 	$('#cfw-container').css('max-width', '100%');
 
 	//-------------------------------------------
-	// Create Selector and Draw
+	// Create Selector 
 	cfw_spaces_createSpaceSelector(function(spaceid){
-			cfwjobs_draw(null);
+			
 		});
+		
+	//-------------------------------------------
+	// Create Tabs
+	cfwjobs_createTabs();
+	
+	//-------------------------------------------
+	// Draw
+	cfwjobs_draw(null);
 }
 
 /******************************************************************

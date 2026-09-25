@@ -1022,7 +1022,35 @@ class CFWQueryEditor{
 		);
 	
 	}
-	
+	/*******************************************************************************
+	 * Execute the query and fetch data from the server.
+	 * 
+	 * @param isPageLoad if the execution is caused by a page load 
+	 ******************************************************************************/
+	updateURLParams(isPageLoad){
+		let originalQuery =  this.textarea.val();
+		let queryLength = encodeURIComponent(originalQuery).length;
+		let finalLength = queryLength + CFW.http.getHostURL().length + CFW.http.getURLPath().length ;
+		
+		let timeframe = JSON.parse($('#'+this.settings.timeframePickerID).val());
+			
+		if(finalLength+300 > JSDATA.requestHeaderMaxSize){
+			CFW.ui.addToastInfo("The query is quite long and the URL might not work. Make sure to save a copy of your query.");
+		}
+
+		if(this.settings.useURLParams){
+			
+			let doPushHistoryState = !isPageLoad;
+			CFW.http.setURLParams({
+					  "query": originalQuery
+					, "offset": timeframe.offset
+					, "earliest": timeframe.earliest
+					, "latest": timeframe.latest
+				}, doPushHistoryState);
+		}
+	}
+		
+		
 	/*******************************************************************************
 	 * Execute the query and fetch data from the server.
 	 * 
@@ -1036,36 +1064,20 @@ class CFWQueryEditor{
 			return;
 		}
 
-		var timeframe = JSON.parse($('#'+this.settings.timeframePickerID).val());
+		let timeframe = JSON.parse($('#'+this.settings.timeframePickerID).val());
 	
-		var originalQuery =  this.textarea.val();
+		let originalQuery =  this.textarea.val();
 	
 		if(CFW.utils.isNullOrEmpty(originalQuery)){
 			return;
 		}
+		
 		this.isExecuting = true;
 						
 		//-----------------------------------
 		// Update Params in URL
-		
-		var queryLength = encodeURIComponent(originalQuery).length;
-		var finalLength = queryLength + CFW.http.getHostURL().length + CFW.http.getURLPath().length ;
-		
-		if(finalLength+300 > JSDATA.requestHeaderMaxSize){
-			CFW.ui.addToastInfo("The query is quite long and the URL might not work. Make sure to save a copy of your query.");
-		}
-		
-		if(this.settings.useURLParams){
-			
-			var doPushHistoryState = !isPageLoad;
-			CFW.http.setURLParams({
-					  "query": originalQuery
-					, "offset": timeframe.offset
-					, "earliest": timeframe.earliest
-					, "latest": timeframe.latest
-				}, doPushHistoryState);
-		}
-		
+		this.updateURLParams(isPageLoad);
+
 		//-----------------------------------			
 		// hide existing messages to not confuse user
 		$('.toast.show').removeClass('show').addClass('hide');
@@ -1076,16 +1088,16 @@ class CFWQueryEditor{
 		
 		//-----------------------------------
 		// Prepare Parameters
-		var pageParams;
-		var finalQuery = originalQuery;
+		let pageParams;
+		let finalQuery = originalQuery;
 		if (typeof cfw_parameter_getFinalPageParams !== "undefined"){ 
  			pageParams = cfw_parameter_getFinalPageParams();
 		} 
 		
-		var queryParams = {};
+		let queryParams = {};
 		if(pageParams != null){
-			for(var index in pageParams){
-				var current = pageParams[index];
+			for(let index in pageParams){
+				let current = pageParams[index];
 				queryParams[current.NAME] = current.VALUE;
 			}
 		}
@@ -1093,8 +1105,8 @@ class CFWQueryEditor{
 		//-----------------------------------
 		// Do Execution
 		
-		var queryEditor = this;
-		var saveToHistory = true;
+		let queryEditor = this;
+		let saveToHistory = true;
 		
 		this.executeQueryRequest(finalQuery, saveToHistory, timeframe, queryParams);
 

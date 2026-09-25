@@ -974,15 +974,16 @@ function cfw_filemanager_initialDraw(){
 	$('#cfw-container').css('max-width', '100%');
 	
 	//-------------------------------------------
+	// Create Selector and Draw
+	cfw_spaces_createSpaceSelector(function(spaceid){ /* do nothing */ });
+		
+	//-------------------------------------------
 	// Create Tabs
 	cfw_filemanager_createTabs();
 	
 	//-------------------------------------------
-	// Create Selector and Draw
-	cfw_spaces_createSpaceSelector(function(spaceid){
-			cfw_filemanager_draw(null);
-		});
-	
+	// Draw
+	cfw_filemanager_draw(null);
 }
 
 function cfw_filemanager_draw(options){

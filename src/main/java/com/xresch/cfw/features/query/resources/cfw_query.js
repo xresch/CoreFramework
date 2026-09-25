@@ -316,23 +316,30 @@ function cfw_query_initialDraw(){
 	
 	$('#cfw-content').css('padding', "10px 20px 20px 20px");
 	
+	//-------------------------------------------
+	// Create Selector
+	cfw_spaces_createSpaceSelector(function(spaceid){ 
+		
+		// save current editor contents to not lose edits when refreshing page
+		if(CFW_QUERY_EDITOR != null){
+			CFW_QUERY_EDITOR.updateURLParams(false);
+		}
+	});
+
 	//-----------------------------------
 	// Create Tabs
 	cfw_query_createTabs();
 	
 	var tabToDisplay = CFW.cache.retrieveValueForPage("cfw-query-lasttab", "editor");
-	
-	
-	//-------------------------------------------
-	// Create Selector and Draw
-	cfw_spaces_createSpaceSelector(function(spaceid){
-			cfw_query_draw(null);
-		});
-	
+
 	//-----------------------------------
 	// Create Editor
 	let parent = $('#tab-content-editor');
 	CFW_QUERY_EDITOR = cfw_query_editor_initializeEditor(parent);
+	
+	//-----------------------------------
+	// Draw
+	cfw_query_draw(null);
 	
 }
 
