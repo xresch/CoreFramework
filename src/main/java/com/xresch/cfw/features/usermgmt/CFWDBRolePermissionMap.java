@@ -326,7 +326,7 @@ public class CFWDBRolePermissionMap {
 	 ****************************************************************/
 	public static String createPermissionIDSpaced(int spaceID, String permissionName) {
 		//                !*!*!* IMPORTANT: *!*!*!
-		// If you ever thange this, also change it in method cfw.js >> cfw_hasPermission()
+		// If you ever change this, also change it in method cfw.js >> cfw_hasPermission()
 		return spaceID + "-" + permissionName;
 	}
 	/***************************************************************

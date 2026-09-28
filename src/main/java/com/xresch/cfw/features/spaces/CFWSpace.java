@@ -18,11 +18,7 @@ import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.spaces.CFWSpace.CFWSpaceType;
-import com.xresch.cfw.features.spaces.CFWSpaceEditorMap.CFWSpaceEditorMapFields;
 import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
-import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.EmailValidator;
 import com.xresch.cfw.validation.ExcludeStringsValidator;
@@ -44,6 +40,7 @@ public class CFWSpace extends CFWObject {
 	public static final String FIELDNAME_EDITORS 		= CFWSpaceFields.JSON_EDITORS.toString();
 	public static final String FIELDNAME_EDITOR_GROUPS 	= CFWSpaceFields.JSON_EDITOR_GROUPS.toString();
 	
+
 	public static final String[] SELECTOR_FIELDS = new String[] {
 			  FIELDNAME_USERS
 			, FIELDNAME_USER_GROUPS
@@ -207,6 +204,8 @@ public class CFWSpace extends CFWObject {
 		//-------------------------------------
 		// Create Default Spaces
 		if(CFWDBSpaces.getCount() == 0) {
+			
+			FeatureSpaces.setDefaultSpacesCreated(true);
 			
 			//-------------------------------------
 			// ALL

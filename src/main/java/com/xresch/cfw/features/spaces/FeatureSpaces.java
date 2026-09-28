@@ -46,6 +46,9 @@ public class FeatureSpaces extends CFWAppFeature {
 	
 	public static final String AUTOCOMPLETE_NOTICE = "<p><b>Note: </b> These suggestions depends on the selected space, adjust it if you don't see what you want. (Spaces lower in hierarchy show more.)</p>";
 	
+	// keeps track on if the Default spaces have been created on startup by CFWSpace.createTable()
+	private static boolean defaultSpacesCreated = false;
+	
 	// Default spaces created when activating the feature
 	public enum FeatureSpacesDefaults{
 		  ALL(0, "All", "This is a special space that can display everything in every space. Useful for admin purposes.")
@@ -205,39 +208,43 @@ public class FeatureSpaces extends CFWAppFeature {
 	 * initial setup of the database.
 	 **************************************************************************************/
 	private void addRolesToDefaultSpaces() {
-		//-------------------------------------
-		// Admin Role
-		Role superuserRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_SUPERUSER);
-		LinkedHashMap<String, String> superuserGroup = new LinkedHashMap<>();
-		superuserGroup.put(superuserRole.id()+"", superuserRole.name());
 		
-		//-------------------------------------
-		// User Role
-		Role userRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_USER);
-		LinkedHashMap<String, String> userGroup = new LinkedHashMap<>();
-		userGroup.put(userRole.id()+"", userRole.name());
-		
-		//-------------------------------------
-		// All
-		CFWSpace spaceAll = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.ALL.id() );
-		spaceAll.editorGroups(superuserGroup);
-		CFW.DB.Spaces.update(spaceAll);
-		spaceAll.saveSelectorFields();
-		
-		//-------------------------------------
-		// Default
-		CFWSpace spacedDefault = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.DEFAULT.id() );
-		spacedDefault.assignedGroups(userGroup);
-		spacedDefault.editorGroups(superuserGroup);
-		CFW.DB.Spaces.update(spacedDefault);
-		spacedDefault.saveSelectorFields();
-		
-		//-------------------------------------
-		// Global
-		CFWSpace spaceGlobal = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.GLOBAL.id() );
-		spaceGlobal.editorGroups(superuserGroup);
-		CFW.DB.Spaces.update(spaceGlobal);
-		spaceGlobal.saveSelectorFields();
+		// Only add Roles if default spaces have been newly created.
+		if(FeatureSpaces.defaultSpacesCreated) {
+			//-------------------------------------
+			// Admin Role
+			Role superuserRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_SUPERUSER);
+			LinkedHashMap<String, String> superuserGroup = new LinkedHashMap<>();
+			superuserGroup.put(superuserRole.id()+"", superuserRole.name());
+			
+			//-------------------------------------
+			// User Role
+			Role userRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_USER);
+			LinkedHashMap<String, String> userGroup = new LinkedHashMap<>();
+			userGroup.put(userRole.id()+"", userRole.name());
+			
+			//-------------------------------------
+			// All
+			CFWSpace spaceAll = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.ALL.id() );
+			spaceAll.editorGroups(superuserGroup);
+			CFW.DB.Spaces.update(spaceAll);
+			spaceAll.saveSelectorFields();
+			
+			//-------------------------------------
+			// Default
+			CFWSpace spacedDefault = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.DEFAULT.id() );
+			spacedDefault.assignedGroups(userGroup);
+			spacedDefault.editorGroups(superuserGroup);
+			CFW.DB.Spaces.update(spacedDefault);
+			spacedDefault.saveSelectorFields();
+			
+			//-------------------------------------
+			// Global
+			CFWSpace spaceGlobal = CFW.DB.Spaces.selectByID( FeatureSpacesDefaults.GLOBAL.id() );
+			spaceGlobal.editorGroups(superuserGroup);
+			CFW.DB.Spaces.update(spaceGlobal);
+			spaceGlobal.saveSelectorFields();
+		}
 	}
 	
 	/***********************************************************************
@@ -271,6 +278,13 @@ public class FeatureSpaces extends CFWAppFeature {
 		// TODO Auto-generated method stub
 	}
 	
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	protected static void setDefaultSpacesCreated(boolean defaultSpacesCreated) {
+		FeatureSpaces.defaultSpacesCreated = defaultSpacesCreated;
+	}
 	
 	/***********************************************************************
 	 * 

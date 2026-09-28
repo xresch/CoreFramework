@@ -73,6 +73,13 @@ public class CFWDBSpaces {
 		
 	}
 	
+	public static void resetCacheForUser(Integer userID){
+		
+		userSpacelistCache.invalidate(userID);
+		userBreadcrumbedSpacelistCache.invalidate(userID);
+				
+	}
+	
 	/**************************************************************
 	 * Returns a space from cache.
 	 * @param id

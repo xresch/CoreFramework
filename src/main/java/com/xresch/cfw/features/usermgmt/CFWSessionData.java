@@ -206,7 +206,7 @@ public class CFWSessionData implements Serializable {
 		if(user != null) {
 			user.id(userID);
 		}
-				
+	
 		// use putAll() to not clear the HashMaps which are cached in classes CFWDBUserRoleMap/CFWDBRolePermissionMap
 		this.userRolesAndGroups = new HashMap<>();
 		this.userRolesAndGroups.putAll( CFW.DB.Users.selectAllRolesAndGroupsForUser(userID) );
@@ -214,6 +214,7 @@ public class CFWSessionData implements Serializable {
 		this.userPermissions.putAll( CFW.DB.Users.selectPermissionsForUser(userID) );
 
 		user.resetPermissions();
+		CFW.DB.Spaces.resetCacheForUser(userID); // Needed to make sure Spaces are loaded correctly for admin users on first login
 		
 		loadMenu(true);
 	}
