@@ -107,6 +107,8 @@ public class FeatureCore extends CFWAppFeature {
 		String THEME_PATH = CSS_PATH + ".themes";
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-blue.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-cyborg-black.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-neon-cold.css");
+		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-neon-hot.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-orange-edged.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-orange-soft.css");
 		CFW.Registry.Components.addTheme(HANDLE_JAR, THEME_PATH, "dark-performator-purple.css");

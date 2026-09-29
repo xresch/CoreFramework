@@ -1437,7 +1437,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 					buttonLabel = "Load";
 				}
 				
-				let button = $('<button class="btn btn-sm btn-primary wh-100">'+buttonLabel+'</button>');
+				let button = $('<button class="btn btn-sm btn-primary border-radius-0 wh-100">'+buttonLabel+'</button>');
 				
 				button.click(function(){
 					widgetDefinition.createWidgetInstance(widgetCloneParameterized, finalParams,
