@@ -162,7 +162,7 @@ sup {
 }
 
 a {
-  color: rgb(255 209 49);
+  color: rgb(245, 210, 81);
   text-decoration: none;
   background-color: transparent;
 }
@@ -5103,7 +5103,7 @@ input[type="button"].btn-block {
   padding: 0.5rem 0.75rem;
   margin-left: -1px;
   line-height: 1.25;
-  color: rgb(255 209 49);
+  color: rgb(245, 210, 81);
   background-color: transparent;
   border: 1px solid rgb(28, 17, 36);
 }
@@ -5295,7 +5295,7 @@ a.badge-warning:focus, a.badge-warning.focus {
 
 .badge-danger {
   color: #fff;
-  background: #c72525 linear-gradient(45deg, #a61010, #c72525) repeat-x;
+  background: #930000 linear-gradient(45deg, #930000, #ff2c2c) repeat-x;
 }
 
 a.badge-danger:hover, a.badge-danger:focus {
@@ -6853,7 +6853,7 @@ button.bg-info:focus {
 }
 
 .bg-warning {
-  background-color: #cb4b16 !important;
+  background: #8a2800 linear-gradient(45deg, #8a2800, #ff8316) repeat-x;
 }
 
 a.bg-warning:hover, a.bg-warning:focus,
@@ -10392,7 +10392,7 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 .btn-primary {
-  background: #b58900 linear-gradient(45deg, #c09b26, #b58900) repeat-x;
+  background: #ffe554 linear-gradient(45deg, #98730e, #ffd800) repeat-x;
 }
 
 .btn-secondary {
@@ -10408,11 +10408,11 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 .btn-warning {
-  background: #cb4b16 linear-gradient(45deg, #d36639, #cb4b16) repeat-x;
+  background: #8a2800 linear-gradient(45deg, #8a2800, #ff8316) repeat-x;
 }
 
 .btn-danger {
-  background: #c72525 linear-gradient(45deg, #a61010, #c72525) repeat-x;
+  background: #930000 linear-gradient(45deg, #930000, #ff2c2c) repeat-x;
 }
 
 .btn-light {
@@ -10570,7 +10570,7 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 .alert-primary {
-  background: #b58900 linear-gradient(45deg, #c09b26, #b58900) repeat-x;
+  background: #ffe554 linear-gradient(45deg, #98730e, #ffd800) repeat-x;
 }
 
 .alert-secondary {
@@ -10586,11 +10586,11 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 .alert-warning {
-  background: #cb4b16 linear-gradient(45deg, #d36639, #cb4b16) repeat-x;
+  background: #8a2800 linear-gradient(45deg, #8a2800, #ff8316) repeat-x;
 }
 
 .alert-danger {
-  background: #c72525 linear-gradient(45deg, #a61010, #c72525) repeat-x;
+  background: #930000 linear-gradient(45deg, #930000, #ff2c2c) repeat-x;
 }
 
 .alert-light {
