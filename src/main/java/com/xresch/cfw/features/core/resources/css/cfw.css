@@ -405,6 +405,7 @@ button:disabled {
     right: 0px;
     height: 100vh;
     background-color: rgba(0,0,0,0.85);
+    color: white;
     backdrop-filter: blur(3px);
     padding: 5px;
     z-index: 1065;
