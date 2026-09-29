@@ -179,6 +179,7 @@ function cfw_selectElementContent(el) {
  * Checks if the user has the specified permission
  * @param permissionName the name of the Permission
  *************************************************************************************/
+var PERMISSION_SEPARATOR = "-#-";
 function  cfw_hasPermission(permissionName){
 	$.ajaxSetup({async: false});
 	cfw_http_fetchAndCacheData("/app/usermanagement/permissions", null, "userPermissions")
@@ -197,7 +198,10 @@ function  cfw_hasPermission(permissionName){
 		if(typeof cfw_spaces_getSelectedSpace === 'function'){
 			let spaceid = cfw_spaces_getSelectedSpace();
 			
-			if(CFW.cache.data["userPermissions"].payload.includes( spaceid +"-"+permissionName)){
+			if(CFW.cache.data["userPermissions"]
+						.payload
+						.includes( spaceid + PERMISSION_SEPARATOR + permissionName ) 
+			){
 				return true;
 			}
 		}

@@ -255,6 +255,16 @@ public class CFWContextRequest {
 		return new HashMap<String, Permission>();
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
+	public static HashMap<String, Permission> getUserPermissionsUnspaced() {
+		if(getContext().sessionData != null) {
+			return getContext().sessionData.getUserPermissionsUnspaced();
+		}
+		return new HashMap<String, Permission>();
+	}
+	
 	
 	/**************************************************************************
 	 * 
@@ -273,6 +283,26 @@ public class CFWContextRequest {
 		&& (   permissions.containsKey(permissionName) // Check Role (Global)
 		    || permissions.containsKey(permissionIDSpaced) // Check Group (Spaced)
 		   )
+		){
+			return true;
+		}
+
+		return false;
+	}
+	
+	
+	/**************************************************************************
+	 * Checks if a user has a permission somewhere in any space.
+	 **************************************************************************/
+	public static boolean hasPermissionUnspaced(String permissionName) {
+		
+		if(!CFW.Properties.AUTHENTICATION_ENABLED) {
+			return true;
+		}
+		
+		HashMap<String, Permission> permissions = getUserPermissionsUnspaced();
+		if(permissions != null 
+		&& permissions.containsKey(permissionName)
 		){
 			return true;
 		}

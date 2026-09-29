@@ -32,6 +32,8 @@ import com.xresch.xrutils.database.XRResultSetUtils;
  **************************************************************************************************************/
 public class CFWDBRolePermissionMap {
 
+	public static final String PERMISSION_SEPARATOR = "-#-";
+
 	private static final String TABLE_NAME = new RolePermissionMap().getTableName();
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBRolePermissionMap.class.getName());
@@ -327,7 +329,7 @@ public class CFWDBRolePermissionMap {
 	public static String createPermissionIDSpaced(int spaceID, String permissionName) {
 		//                !*!*!* IMPORTANT: *!*!*!
 		// If you ever change this, also change it in method cfw.js >> cfw_hasPermission()
-		return spaceID + "-" + permissionName;
+		return spaceID + PERMISSION_SEPARATOR + permissionName;
 	}
 	/***************************************************************
 	 * Retrieve the permissions for the specified user.

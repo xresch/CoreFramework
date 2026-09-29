@@ -91,28 +91,28 @@ public class ManualPage {
 	}
 	
 	/***********************************************************************************
-	 * Returns the Json data needed to build the navigation if the user has the required 
-	 * permissions for the page
-	 * @return String html for this item. 
+	 * Returns the content as a JsonObject for this page.
+	 * @return JsonObject
 	 ***********************************************************************************/
 	public JsonObject toJSONObjectWithContent() {
+		
 		//----------------------------------
 		// Check Permissions
-		if(permissions.size() > 0) {
-
-			boolean hasPermission = false;
-			HashMap<String, Permission> usersPermissions = CFW.Context.Request.getUserPermissions();
-			for(String permission : permissions) {
-				if(usersPermissions.containsKey(permission)) {
-					hasPermission = true;
-					break;
-				}
-			}
-			
-			if(!hasPermission) {
-				return null;
-			}
-		}
+//		if(permissions.size() > 0) {
+//
+//			boolean hasPermission = false;
+//			HashMap<String, Permission> usersPermissions = CFW.Context.Request.getUserPermissionsUnspaced();
+//			for(String permission : permissions) {
+//				if(usersPermissions.containsKey(permission)) {
+//					hasPermission = true;
+//					break;
+//				}
+//			}
+//			
+//			if(!hasPermission) {
+//				return null;
+//			}
+//		}
 
 		//----------------------------------
 		// Build JSON
@@ -135,22 +135,22 @@ public class ManualPage {
 		
 		//----------------------------------
 		// Check Permissions
-		if(permissions.size() > 0) {
-
-			boolean hasPermission = false;
-			HashMap<String, Permission> usersPermissions = sessionData.getUserPermissions();
-
-			for(String permission : permissions) {
-				if(usersPermissions.containsKey(permission)) {
-					hasPermission = true;
-					break;
-				}
-			}
-			
-			if(!hasPermission) {
-				return null;
-			}
-		}
+//		if(permissions.size() > 0) {
+//
+//			boolean hasPermission = false;
+//			HashMap<String, Permission> usersPermissions = sessionData.getUserPermissionsUnspaced();
+//
+//			for(String permission : permissions) {
+//				if(usersPermissions.containsKey(permission)) {
+//					hasPermission = true;
+//					break;
+//				}
+//			}
+//			
+//			if(!hasPermission) {
+//				return null;
+//			}
+//		}
 
 		//----------------------------------
 		// Build JSON

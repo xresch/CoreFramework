@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -42,7 +43,15 @@ public class CFWSessionData implements Serializable {
 	private int spaceID = FeatureSpacesDefaults.DEFAULT.id();
 	private boolean filterSpaceInclusive = true;
 	private HashMap<Integer, Role> userRolesAndGroups = new HashMap<>();
-	private HashMap<String, Permission> userPermissions = new HashMap<>();
+	
+	// Will contain key as:
+	// For Roles: "{PermissionName}"
+	// For Permissions: "{SpaceID}+{PermissionName}"
+	private HashMap<String, Permission> userPermissionsSpaced = new HashMap<>();
+	
+	// Will contain key as:
+	// For Both Permissions and Roles: "{PermissionName}"
+	private HashMap<String, Permission> userPermissionsUnspaced = new HashMap<>();
 	
 	private HashMap<String, String> customProperties = new HashMap<>();
 	
@@ -84,7 +93,7 @@ public class CFWSessionData implements Serializable {
 		
 		// make new HashMaps instead of map.clear() to avoid some strange NullPointerExceptions that occurs for some strange reasons and I have absolutely no intention to now go and check why the hell this is happening, as it seems that it is caused by Jetty session handler, which stores a strange state into the database but I have no interest in finding out how to reproduce the issue, so I write this overly lengthy comment just to make sure you have something to laugh when you get to the end of this line. ;-P 
 		userRolesAndGroups = new HashMap<>();
-		userPermissions = new HashMap<>();
+		userPermissionsSpaced = new HashMap<>();
 		customProperties= new HashMap<>();
 		
 		CFW.DB.UserRoleMap.invalidateCache(this.user.id());
@@ -206,16 +215,38 @@ public class CFWSessionData implements Serializable {
 		if(user != null) {
 			user.id(userID);
 		}
-	
-		// use putAll() to not clear the HashMaps which are cached in classes CFWDBUserRoleMap/CFWDBRolePermissionMap
+		
+		//----------------------------------------------------
+		// use putAll() to not clear the HashMaps which are 
+		// cached in classes CFWDBUserRoleMap/CFWDBRolePermissionMap
 		this.userRolesAndGroups = new HashMap<>();
 		this.userRolesAndGroups.putAll( CFW.DB.Users.selectAllRolesAndGroupsForUser(userID) );
-		this.userPermissions = new HashMap<>();
-		this.userPermissions.putAll( CFW.DB.Users.selectPermissionsForUser(userID) );
+		this.userPermissionsSpaced = new HashMap<>();
+		this.userPermissionsSpaced.putAll( CFW.DB.Users.selectPermissionsForUser(userID) );
 
+		//----------------------------------------------------
+		// Create Unspaced Permissions
+		String separator = CFWDBRolePermissionMap.PERMISSION_SEPARATOR;
+		this.userPermissionsUnspaced = new HashMap<>();
+		for(Entry<String, Permission> entry : this.getUserPermissions().entrySet()) {
+			String key = entry.getKey();
+			Permission permission = entry.getValue();
+			
+			if( ! key.contains(separator) ) {
+				userPermissionsUnspaced.put(key, permission);
+			}else {
+				String unspacedKey = key.split(separator)[1];
+				userPermissionsUnspaced.put(unspacedKey, permission);
+			}
+		}
+		
+		//----------------------------------------------------
+		// Reset Caches
 		user.resetPermissions();
 		CFW.DB.Spaces.resetCacheForUser(userID); // Needed to make sure Spaces are loaded correctly for admin users on first login
 		
+		//----------------------------------------------------
+		// Reload the menu
 		loadMenu(true);
 	}
 	
@@ -242,10 +273,30 @@ public class CFWSessionData implements Serializable {
 	}
 
 	/***********************************************************************
+	 * Will return a HashMap containing Permissions with spaced keys.
 	 * 
+	 * @return HashMap containing key as:
+	 * <ul>
+	 *   <li>For Roles: "{PermissionName}"</li>
+	 *   <li>For Groups: "{SpaceID} + CFWDBRolePermissionMap.PERMISSION_SEPARATOR + {PermissionName}"</li>
+	 * </ul>
 	 ***********************************************************************/
 	public HashMap<String, Permission> getUserPermissions() {
-		return userPermissions;
+		return userPermissionsSpaced;
+	}
+	
+	/***********************************************************************
+	 * Will return a HashMap containing Permissions with unspaced keys.
+	 * This is useful to check if a user has somewhere a permission in any 
+	 * space, useful for example in the Manual.
+	 * 
+	 * @return HashMap containing key as:
+	 * <ul>
+	 *   <li>For Roles and Groups: "{SpaceID} + CFWDBRolePermissionMap.PERMISSION_SEPARATOR + {PermissionName}"</li>
+	 * </ul>
+	 ***********************************************************************/
+	public HashMap<String, Permission> getUserPermissionsUnspaced() {
+		return userPermissionsUnspaced;
 	}
 
 	/***********************************************************************
