@@ -186,6 +186,7 @@ DONE
 - BUGFIX: Widget Label: Fixed links not working that contain quotes
 
 - Manual: Added links to existing youtube tutorials
+- Manual: Removed permission checks, all users can now access all pages.
 - UI: Timeframe Pickers are now showing a time range instead of "Custom Time" if such time is selected
 - Charts: Improved display of charts types: pie, doughnut, radar, polar
 - Charts: Added option "pointlabels" to display point values inside of chart

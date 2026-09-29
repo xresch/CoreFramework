@@ -194,6 +194,18 @@ public class CFWStoredFileReferences {
 					;
 	}
 	
+	/***************************************************************************************
+	 * Get the the Name of the file reference at the specified index.
+	 ***************************************************************************************/
+	public Long getSize(int index) {
+		return dbfileData
+					.get(index)
+					.getAsJsonObject()
+					.get(MEMBER_SIZE)
+					.getAsLong()
+					;
+	}
+	
 	
 	/***************************************************************************************
 	 * Convert to JSON String
