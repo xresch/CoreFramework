@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.JsonArray;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -66,7 +68,14 @@ public class APIDefinitionFetch extends APIDefinition{
 					return;
 				}
 				
-				ArrayList<CFWField> affectedFields = new ArrayList<CFWField>();
+				//-------------------------------
+				// Get Salt Field
+				CFWField<?> saltField = object.getSaltField();
+				
+				
+				//-------------------------------
+				// Find Affected Fields
+				ArrayList<CFWField> filteringFields = new ArrayList<CFWField>();
 				ArrayList<String> fieldnames = new ArrayList<String>();
 
 				
@@ -81,7 +90,7 @@ public class APIDefinitionFetch extends APIDefinition{
 					&& currentValue != null 
 					&& !currentValue.isEmpty()) {
 						field.setValueValidated(request.getParameter(current));
-						affectedFields.add(field);
+						filteringFields.add(field);
 						fieldnames.add(field.getName());
 					}
 					
@@ -94,8 +103,9 @@ public class APIDefinitionFetch extends APIDefinition{
 				
 				//--------------------------
 				// Add Filters From API
-				for(int i = 0; i < affectedFields.size(); i++) {
-					CFWField<?> currentField = affectedFields.get(i);
+
+				for(int i = 0; i < filteringFields.size(); i++) {
+					CFWField<?> currentField = filteringFields.get(i);
 					if(i == 0) {
 						statement.where(currentField.getName(), currentField.getValue(), false);
 					}else {
@@ -106,7 +116,7 @@ public class APIDefinitionFetch extends APIDefinition{
 				//--------------------------
 				// Add Space Filter
 				if( isSpaced() ) {
-					if(affectedFields.size() > 0) {
+					if(filteringFields.size() > 0) {
 						statement.and().append(FeatureSpaces.getSQLFilterInclusive());
 					}else {
 						statement.where().append(FeatureSpaces.getSQLFilterInclusive());
@@ -121,16 +131,37 @@ public class APIDefinitionFetch extends APIDefinition{
 				}
 				
 				//--------------------------
-				// Fetch Return Result
+				// Fetch Data
+				
+				// Note: Needed in case of encryption.
+				ArrayList<CFWObject> objectList = statement.getAsObjectList();
+				
+				// do not return salt field
+				if(saltField != null) {
+					for(CFWObject o : objectList) {
+						o.removeField(saltField.getName());
+					}
+				}
+				
+				//--------------------------
+				// Format and Return
+				JsonArray array = CFW.JSON.collectionToJsonArray(objectList);
 				if(format.toUpperCase().equals(APIReturnFormat.JSON.toString())) {
-					json.getContent().append(statement.getAsJSON());
+					json.setPayload(array);
+					//json.getContent().append(statement.getAsJSON());
 				}else if(format.toUpperCase().equals(APIReturnFormat.CSV.toString())){		
 					PlaintextResponse plaintext = new PlaintextResponse();
-					plaintext.getContent().append(statement.getAsCSV());
 					
-				}else if(format.toUpperCase().equals(APIReturnFormat.XML.toString())){		
+					plaintext.getContent().append(
+						CFW.JSON.toCSV(array, ",")
+					);
+					
+				}
+				else if(format.toUpperCase().equals(APIReturnFormat.XML.toString())){		
 					PlaintextResponse plaintext = new PlaintextResponse();
-					plaintext.getContent().append(statement.getAsXML());
+					plaintext.getContent().append(
+							CFW.JSON.toXML(array, true)
+						);
 				}
 
 			}

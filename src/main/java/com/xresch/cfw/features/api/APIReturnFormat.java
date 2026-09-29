@@ -6,5 +6,7 @@ package com.xresch.cfw.features.api;
  * @license MIT-License
  **************************************************************************************************************/
 public enum APIReturnFormat{
-	JSON, CSV, XML
+	  JSON
+	, CSV
+	, XML
 }
