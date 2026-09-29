@@ -49,7 +49,6 @@ public class FeatureDBExtensions extends CFWAppFeature {
 		CFW.Registry.Manual.addManualPage(null,
 				new ManualPage("Databases")
 					.faicon("fas fa-database")
-					.addPermission(FeatureManual.PERMISSION_MANUAL)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCE, "z_manual_widgets_database.html")
 			);
 		

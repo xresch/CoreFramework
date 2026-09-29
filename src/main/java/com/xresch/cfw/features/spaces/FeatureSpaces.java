@@ -110,9 +110,6 @@ public class FeatureSpaces extends CFWAppFeature {
     	// Register Manual 
 		CFW.Registry.Manual.addManualPage(null, new ManualPage("Spaces")
 				.faicon("fas fa-sitemap")
-				.addPermission(PERMISSION_SPACES_VIEWER)
-				.addPermission(PERMISSION_SPACES_CREATE)
-				.addPermission(PERMISSION_SPACES_ADMIN)
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_spaces_main.html")
 			);
 		

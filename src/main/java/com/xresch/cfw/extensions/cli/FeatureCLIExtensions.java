@@ -89,7 +89,6 @@ public class FeatureCLIExtensions extends CFWAppFeature {
 		CFW.Registry.Manual.addManualPage(null,
 				new ManualPage(FEATURE_NAME)
 					.faicon("fas fa-code")
-					.addPermission(FeatureCLIExtensions.PERMISSION_CLI_EXTENSIONS)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "manual_cli_extensions.html")
 			);
 		

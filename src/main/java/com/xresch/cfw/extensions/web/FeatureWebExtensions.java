@@ -87,7 +87,6 @@ public class FeatureWebExtensions extends CFWAppFeature {
 		CFW.Registry.Manual.addManualPage(null,
 				new ManualPage(FEATURE_NAME)
 					.faicon("fas fa-code")
-					.addPermission(FeatureWebExtensions.PERMISSION_WEB_EXTENSIONS)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "widget_cfw_webextensions_evaluateresponse.html")
 			);
 	}

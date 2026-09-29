@@ -32,9 +32,6 @@ public class ManualPage {
 	
 	private FileDefinition content = null;
 	
-	// if any permissions match page will be accessible by the user
-	// if no permission in the list page will be accessible by the user
-	private HashSet<String> permissions = new HashSet<String>();
 	private LinkedHashMap<String, ManualPage> childPages = new LinkedHashMap<String, ManualPage>();
 	
 	protected ManualPage parent = null;
@@ -50,10 +47,6 @@ public class ManualPage {
 		this.path = title;
 	}
 	
-	public ManualPage(String label, HashSet<String> permissions) {
-		this.title = label;
-		this.permissions = permissions;
-	}
 			
 	/***********************************************************************************
 	 * Overrloaded addChild to handle sub menu items.
@@ -62,8 +55,7 @@ public class ManualPage {
 	public ManualPage addChild(ManualPage childItem) {
 		
 		childPages.put(childItem.getLabel().trim(), childItem);
-		this.addPermissions(childItem.getPermissions());
-		
+
 		childItem.setParent(this);
 
 		return this;
@@ -97,24 +89,6 @@ public class ManualPage {
 	public JsonObject toJSONObjectWithContent() {
 		
 		//----------------------------------
-		// Check Permissions
-//		if(permissions.size() > 0) {
-//
-//			boolean hasPermission = false;
-//			HashMap<String, Permission> usersPermissions = CFW.Context.Request.getUserPermissionsUnspaced();
-//			for(String permission : permissions) {
-//				if(usersPermissions.containsKey(permission)) {
-//					hasPermission = true;
-//					break;
-//				}
-//			}
-//			
-//			if(!hasPermission) {
-//				return null;
-//			}
-//		}
-
-		//----------------------------------
 		// Build JSON
 		JsonObject result = new JsonObject();
 		
@@ -132,25 +106,6 @@ public class ManualPage {
 	 * @return String html for this item. 
 	 ***********************************************************************************/
 	public JsonObject toJSONObjectForMenu(CFWSessionData sessionData) {
-		
-		//----------------------------------
-		// Check Permissions
-//		if(permissions.size() > 0) {
-//
-//			boolean hasPermission = false;
-//			HashMap<String, Permission> usersPermissions = sessionData.getUserPermissionsUnspaced();
-//
-//			for(String permission : permissions) {
-//				if(usersPermissions.containsKey(permission)) {
-//					hasPermission = true;
-//					break;
-//				}
-//			}
-//			
-//			if(!hasPermission) {
-//				return null;
-//			}
-//		}
 
 		//----------------------------------
 		// Build JSON
@@ -188,43 +143,7 @@ public class ManualPage {
 			child.resolvePath(null);
 		}
 	}
-	
-	/***********************************************************************************
-	 * Add the permission needed to see this menu item.
-	 * @return String html for this item. 
-	 ***********************************************************************************/
-	public ManualPage addPermission(String permission) {
-		if(permissions == null) {
-			permissions = new HashSet<String>();
-		}
 		
-		permissions.add(permission);
-		
-		if(this.parent != null && parent instanceof ManualPage) {
-			((ManualPage)parent).addPermission(permission);
-		}
-		
-		return this;
-	}
-	
-	
-	/***********************************************************************************
-	 * Add the permissions needed to see this menu item.
-	 * @return String html for this item. 
-	 ***********************************************************************************/
-	public ManualPage addPermissions(HashSet<String> permissionArray) {
-		if(permissions == null) {
-			permissions = new HashSet<String>();
-		}
-		
-		permissions.addAll(permissionArray);
-		
-		if(this.parent != null && parent instanceof ManualPage) {
-			((ManualPage)parent).addPermissions(permissionArray);
-		}
-		
-		return this;
-	}
 	
 	/*****************************************************************************
 	 *  resolves the path of a page.
@@ -242,15 +161,7 @@ public class ManualPage {
 		}
 		return pagePath;
 	}
-	
-	/***********************************************************************************
-	 * 
-	 * @return permissions
-	 ***********************************************************************************/
-	public HashSet<String> getPermissions( ) {
-		return permissions;
-	}
-	
+		
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/

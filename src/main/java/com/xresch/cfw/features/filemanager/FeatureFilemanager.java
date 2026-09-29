@@ -246,9 +246,6 @@ public class FeatureFilemanager extends CFWAppFeature {
 		MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
 				new ManualPage(MANUAL_NAME_FILEMANAGER)
 					.faicon("fas fa-file")
-					.addPermission(PERMISSION_STOREDFILE_VIEWER)
-					.addPermission(PERMISSION_STOREDFILE_CREATOR)
-					.addPermission(PERMISSION_STOREDFILE_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "manual_filemanager.html")
 			);	
 

@@ -171,9 +171,6 @@ public class FeatureStoredQuery extends CFWAppFeature {
 		MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
 				new ManualPage(MANUAL_NAME_STOREDQUERY)
 					.faicon("fas fa-key")
-					.addPermission(PERMISSION_STOREDQUERY_VIEWER)
-					.addPermission(PERMISSION_STOREDQUERY_CREATOR)
-					.addPermission(PERMISSION_STOREDQUERY_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "manual_storedQuery.html")
 			);	
 

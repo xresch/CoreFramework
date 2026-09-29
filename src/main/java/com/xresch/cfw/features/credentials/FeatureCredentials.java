@@ -190,9 +190,6 @@ public class FeatureCredentials extends CFWAppFeature {
 		MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
 				new ManualPage(MANUAL_NAME_CREDENTIALS)
 					.faicon("fas fa-key")
-					.addPermission(PERMISSION_CREDENTIALS_VIEWER)
-					.addPermission(PERMISSION_CREDENTIALS_CREATOR)
-					.addPermission(PERMISSION_CREDENTIALS_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "manual_credentials.html")
 			);	
 

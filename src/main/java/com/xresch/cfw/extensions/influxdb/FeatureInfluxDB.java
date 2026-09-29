@@ -78,7 +78,6 @@ public class FeatureInfluxDB extends CFWAppFeature {
 		CFW.Registry.Manual.addManualPage(null,
 				new ManualPage("InfluxDB")
 					.faicon("fas fa-database")
-					.addPermission(FeatureManual.PERMISSION_MANUAL)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "z_manual_widgets_influxdb.html")
 			);
 	}

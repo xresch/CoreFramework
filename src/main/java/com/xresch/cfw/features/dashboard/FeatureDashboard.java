@@ -184,18 +184,12 @@ public class FeatureDashboard extends CFWAppFeature {
 		MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
 				new ManualPage(MANUAL_NAME_DASHBOARD)
 					.faicon("fas fa-tachometer-alt")
-					.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 			);
 
 
 		MANUAL_PAGE_WIDGETS = MANUAL_PAGE_ROOT.addChild( 
 			new ManualPage(MANUAL_NAME_WIDGETS)
 				.faicon("fas fa-th")
-				.addPermission(PERMISSION_DASHBOARD_VIEWER)
-				.addPermission(PERMISSION_DASHBOARD_CREATOR)
-				.addPermission(PERMISSION_DASHBOARD_ADMIN)
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "&nbsp;"))
 			;
 
@@ -211,43 +205,40 @@ public class FeatureDashboard extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuTools-Dashboards")
 				, null);
 		
-			//----------------------------------
-	    	// Register Menus
-			CFWHTMLItemMenuItem favoritesMenu = (CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Favorites")
-				.addPermission(PERMISSION_DASHBOARD_VIEWER)
-				.addPermission(PERMISSION_DASHBOARD_CREATOR)
-				.addPermission(PERMISSION_DASHBOARD_ADMIN)
-				.addAttribute("id", "cfwMenuButtons-Favorites")
-				.setDynamicCreator(new CFWHTMLItemDynamic() {		
-		
-					@Override
-					public ArrayList<CFWHTMLItem> createDynamicItems() {
-						
-						ArrayList<CFWHTMLItem> childitems = new ArrayList<CFWHTMLItem>();
-						ArrayList<Dashboard> dashboardList = CFW.DB.Dashboards.getFavedDashboardList();
-						
-						//-------------------------
-						// Handle no Faves
-						if(dashboardList.isEmpty()) {
-							childitems.add(
-									new CFWHTMLItemMenuItem("No Favorites")
-								);
-							return childitems;
-						}
-						
-						for(Dashboard current : dashboardList) {
-
-							childitems.add(
-								(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem(current.name())
-									.noIconSpace(true)
-									.href(URI_DASHBOARD_VIEW+ "?id="+current.id()) 	
+		//----------------------------------
+    	// Register Menus
+		CFWHTMLItemMenuItem favoritesMenu = (CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem("Favorites")
+			.addAttribute("id", "cfwMenuButtons-Favorites")
+			.setDynamicCreator(new CFWHTMLItemDynamic() {		
+	
+				@Override
+				public ArrayList<CFWHTMLItem> createDynamicItems() {
+					
+					ArrayList<CFWHTMLItem> childitems = new ArrayList<CFWHTMLItem>();
+					ArrayList<Dashboard> dashboardList = CFW.DB.Dashboards.getFavedDashboardList();
+					
+					//-------------------------
+					// Handle no Faves
+					if(dashboardList.isEmpty()) {
+						childitems.add(
+								new CFWHTMLItemMenuItem("No Favorites")
 							);
-						}
 						return childitems;
 					}
-				});
-			
-			favoritesMenu.faicon("fas fa-star");
+					
+					for(Dashboard current : dashboardList) {
+
+						childitems.add(
+							(CFWHTMLItemMenuItem)new CFWHTMLItemMenuItem(current.name())
+								.noIconSpace(true)
+								.href(URI_DASHBOARD_VIEW+ "?id="+current.id()) 	
+						);
+					}
+					return childitems;
+				}
+			});
+		
+		favoritesMenu.faicon("fas fa-star");
 		
 		CFW.Registry.Components.addButtonsMenuItem(favoritesMenu, null);
 		
@@ -437,9 +428,6 @@ public class FeatureDashboard extends CFWAppFeature {
 		MANUAL_PAGE_ROOT.addChild(
 				new ManualPage("Introduction")
 					.faicon("fas fa-star")
-					.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_00_introduction.html")
 			);
 		
@@ -448,9 +436,6 @@ public class FeatureDashboard extends CFWAppFeature {
 		MANUAL_PAGE_ROOT.addChild(
 				new ManualPage("Creating Dashboards")
 					.faicon("fas fa-plus-circle")
-					.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_creating_dashboards.html")
 			);
 		
@@ -459,9 +444,6 @@ public class FeatureDashboard extends CFWAppFeature {
 		MANUAL_PAGE_ROOT.addChild(
 				new ManualPage("Keyboard Shortcuts")
 					.faicon("fas fa-keyboard")
-					.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_shortcuts.html")
 			);
 		
@@ -525,9 +507,6 @@ public class FeatureDashboard extends CFWAppFeature {
 		MANUAL_PAGE_ROOT.addChild(
 				new ManualPage("Parameters")
 					.faicon("fas fa-sliders-h")
-					.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_parameters.html")
 			);
 		
@@ -536,9 +515,6 @@ public class FeatureDashboard extends CFWAppFeature {
 		MANUAL_PAGE_ROOT.addChild(
 				new ManualPage("Tips and Tricks")
 					.faicon("fas fa-asterisk")
-					.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_tips_tricks.html")
 			);
 		

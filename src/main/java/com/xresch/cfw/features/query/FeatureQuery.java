@@ -385,8 +385,6 @@ public class FeatureQuery extends CFWAppFeature {
 		ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
 				new ManualPage("Query")
 					.faicon("fas fa-terminal")
-					.addPermission(PERMISSION_QUERY_USER)
-					.addPermission(PERMISSION_QUERY_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "000_query.html"))
 				;
 		
