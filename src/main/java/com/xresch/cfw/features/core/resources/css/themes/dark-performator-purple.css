@@ -5220,7 +5220,7 @@ a.badge:hover, a.badge:focus {
 
 .badge-primary {
   color: #fff;
-  background-color: #b58900;
+  background: #ffe554 linear-gradient(45deg, #aa7618, #dcba00) repeat-x;
 }
 
 a.badge-primary:hover, a.badge-primary:focus {
@@ -5265,7 +5265,7 @@ a.badge-success:focus, a.badge-success.focus {
 
 .badge-info {
   color: #fff;
-  background-color: #268bd2;
+  background: #268bd2 linear-gradient(42deg, #114970, #268bd2) repeat-x;
 }
 
 a.badge-info:hover, a.badge-info:focus {
@@ -5280,7 +5280,7 @@ a.badge-info:focus, a.badge-info.focus {
 
 .badge-warning {
   color: #fff;
-  background-color: #cb4b16;
+  background: #ffe554 linear-gradient(45deg, #836308, #e2b600) repeat-x;
 }
 
 a.badge-warning:hover, a.badge-warning:focus {
@@ -6853,7 +6853,7 @@ button.bg-info:focus {
 }
 
 .bg-warning {
-  background: #8a2800 linear-gradient(45deg, #8a2800, #ff8316) repeat-x;
+  background: #ffe554 linear-gradient(45deg, #836308, #e2b600) repeat-x;
 }
 
 a.bg-warning:hover, a.bg-warning:focus,
@@ -10392,7 +10392,7 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 .btn-primary {
-  background: #ffe554 linear-gradient(45deg, #98730e, #ffd800) repeat-x;
+  background: #ffe554 linear-gradient(45deg, #aa7618, #dcba00) repeat-x;
 }
 
 .btn-secondary {
@@ -10408,7 +10408,7 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 .btn-warning {
-  background: #8a2800 linear-gradient(45deg, #8a2800, #ff8316) repeat-x;
+  background: #ffe554 linear-gradient(45deg, #836308, #e2b600) repeat-x;
 }
 
 .btn-danger {
@@ -10570,7 +10570,7 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 .alert-primary {
-  background: #ffe554 linear-gradient(45deg, #98730e, #ffd800) repeat-x;
+  background: #ffe554 linear-gradient(45deg, #aa7618, #dcba00) repeat-x;
 }
 
 .alert-secondary {
@@ -10586,7 +10586,7 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 .alert-warning {
-  background: #8a2800 linear-gradient(45deg, #8a2800, #ff8316) repeat-x;
+  background: #ffe554 linear-gradient(45deg, #836308, #e2b600) repeat-x;
 }
 
 .alert-danger {

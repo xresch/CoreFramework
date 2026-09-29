@@ -1563,7 +1563,7 @@ function cfw_internal_confirmSchedule(elementID){
 }
 
 /**************************************************************************************
- * Initialize a Date and/or Timepicker created with the Java object CFWField.
+ * Initialize a Date and/or Time picker created with the Java object CFWField.
  * @param fieldID the name of the field
  * @param epochMillis the initial date in epoch time or null
  * @return nothing
@@ -1669,7 +1669,7 @@ function cfw_initializeTimeframePicker(fieldID, initialData, onchangeCallbackFun
 	</button>
 	
 	<div class="dropdown">
-		<button id="${fieldID}-timeframeSelectorButton" class="btn btn-sm btn-primary dropdown-toggle" type="button"  data-toggle="collapse" data-target="#${fieldID}-timepickerDropdown" aria-haspopup="true" aria-expanded="false">
+		<button id="${fieldID}-timeframeSelectorButton" class="btn btn-sm btn-primary border-radius-0 dropdown-toggle" type="button"  data-toggle="collapse" data-target="#${fieldID}-timepickerDropdown" aria-haspopup="true" aria-expanded="false">
 			{!cfw_core_last!} 30 {!cfw_core_minutes!}
 		</button>
 	

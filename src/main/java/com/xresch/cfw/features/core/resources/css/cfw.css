@@ -149,6 +149,8 @@ select {
 .border-4 {	border-width: 4px; }
 .border-5 {	border-width: 5px; }
 
+.border-radius-0 { border-radius: 0; }
+
 .table {
 	color: inherit; /* Allows for dashboard widgets to apply text color. */
 }
