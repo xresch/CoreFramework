@@ -367,6 +367,17 @@ button:disabled {
     font-weight: 500;
 }
 
+.progress {
+	line-height: unset;
+}
+.progress span{
+	position: absolute;
+    font-weight: bolder;
+    padding-left: 4px;
+    color: white;
+
+}
+
 
 /*************************************************************************
  * Bootstrap Dropdown, Submenus and Menu Enhancements
