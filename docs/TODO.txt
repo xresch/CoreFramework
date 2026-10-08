@@ -184,6 +184,7 @@ DONE
 - BUGFIX: Number separators are properly shown for negative numbers
 - BUGFIX: Fixing that chartfields command did not evaluate records (e.g. could not adjust chart colors based on field value)
 - BUGFIX: Widget Label: Fixed links not working that contain quotes
+- BUGFIX: Fixed OutOfMemory error caused by an unclosed stream
 
 - Manual: Added links to existing youtube tutorials
 - Manual: Removed permission checks, all users can now access all pages.
