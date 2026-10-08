@@ -137,12 +137,7 @@ public class ServletFilemanager extends HttpServlet
 												break;	
 												
 					case "adminarchived": 		jsonResponse.getContent().append(CFW.DB.StoredFile.getAdminArchivedListAsJSON());
-												break;	
-												
-					case "storedfiletats": 	String timeframeString = request.getParameter("timeframe");
-												CFWTimeframe time = new CFWTimeframe(timeframeString);
-												jsonResponse.setPayload(CFW.DB.StoredFile.getEAVStats(ID, time.getEarliest(), time.getLatest()));
-												break;									
+												break;							
 																										
 					default: 					CFW.Messages.itemNotSupported(item);
 												break;

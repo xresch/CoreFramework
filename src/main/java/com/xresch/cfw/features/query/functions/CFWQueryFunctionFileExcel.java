@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query.functions;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -165,11 +166,16 @@ public class CFWQueryFunctionFileExcel extends CFWQueryFunction {
 		//----------------------------
 		// Excel
 		XRResultSet cfwResult =CFW.DB.StoredFile.retrieveDataStreamObject(file);
-		InputStream dataSream = cfwResult.getBytesStream(CFWStoredFileFields.DATA.toString());
-		JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(dataSream, sheetName, header);
-		cfwResult.close();
 		
-		return QueryPartValue.newFromJsonElement( array );
-				
+		try( InputStream dataStream = cfwResult.getBytesStream(CFWStoredFileFields.DATA.toString()) ){
+			JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(dataStream, sheetName, header);
+			cfwResult.close();
+			return QueryPartValue.newFromJsonElement( array );
+		} catch (IOException e) {
+			CFW.Messages.addErrorMessage("Error while reading Excel file: "+e.getMessage());
+		}
+		
+		return QueryPartValue.newNull();
+						
 	}
 }

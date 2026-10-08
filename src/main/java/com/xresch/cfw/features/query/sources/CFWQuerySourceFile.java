@@ -305,14 +305,16 @@ public class CFWQuerySourceFile extends CFWQuerySource {
 			//----------------------------
 			// Excel
 			XRResultSet cfwResult =CFW.DB.StoredFile.retrieveDataStreamObject(file);
-			InputStream dataSream = cfwResult.getBytesStream(CFWStoredFileFields.DATA.toString());
-			JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(dataSream, sheet, header);
-			cfwResult.close();
 			
-			result = new ArrayList<>();
-			for(JsonElement element : array) {
-				if(element != null && element.isJsonObject()) {
-					result.add(new EnhancedJsonObject( element.getAsJsonObject() ) ); 
+			try( InputStream dataSream = cfwResult.getBytesStream(CFWStoredFileFields.DATA.toString()) ){
+				JsonArray array = CFW.Excel.readExcelSheetAsJsonArray(dataSream, sheet, header);
+				cfwResult.close();
+				
+				result = new ArrayList<>();
+				for(JsonElement element : array) {
+					if(element != null && element.isJsonObject()) {
+						result.add(new EnhancedJsonObject( element.getAsJsonObject() ) ); 
+					}
 				}
 			}
 			

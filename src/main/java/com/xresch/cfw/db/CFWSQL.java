@@ -1890,6 +1890,8 @@ public class CFWSQL {
 	 * Streams bytes to a blob column with an UPDATE statement.
 	 * Ignores any other statement , creates it's own insert
 	 * statement.
+	 * This method will close the Input Stream when done.
+	 * 
 	 * @param queryOnly true
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
@@ -1905,7 +1907,14 @@ public class CFWSQL {
 		values.add(stream);
 		values.add(object.getPrimaryKeyValue());
 		
-		return dbInterface.preparedExecute(statement, values.toArray());
+
+		try(stream){
+			return dbInterface.preparedExecute(statement, values.toArray());
+		}catch (Exception e) {
+			new CFWLog(logger).severe("Error while streaming bytes: "+e.getMessage(), e);
+		}
+		
+		return false;
 
 	}
 	

@@ -108,6 +108,7 @@ public class CFWDBStoredFile {
 	
 	/**********************************************************************************
 	 * Store file data to the DATA column
+	 * This method will close the Input Stream when done.
 	 * 
 	 * @param item the file the data should be stored to.
 	 * @param fileData the inputStream providing the data.
@@ -118,6 +119,7 @@ public class CFWDBStoredFile {
 	
 	/**********************************************************************************
 	 * Store file data to the DATA column
+	 * This method will close the Input Stream when done.
 	 * 
 	 * @param item the file the data should be stored to.
 	 * @param fileData the inputStream providing the data.
@@ -176,6 +178,8 @@ public class CFWDBStoredFile {
 	
 	/**********************************************************************************
 	 * Creates a new file and stores the data.
+	 * This method will close the Input Stream when done.
+	 * 
 	 * @param item the file the data should be stored to.
 	 * @param fileData the inputStream providing the data.
 	 **********************************************************************************/
