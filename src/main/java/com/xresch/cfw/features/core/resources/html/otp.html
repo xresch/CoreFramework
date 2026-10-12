@@ -1,0 +1,25 @@
+
+<style>
+   #cfw-content{
+   		background-image: url("/resources/images/login_background.jpg");
+   		background-position: center;
+   		background-size: cover;
+   }
+</style>
+
+<div id="cfw-login">
+	<form id="cfw-login-form" class="form" method="post">
+		
+		<div class="form-group">
+			<!-- label for="username" >Username:</label--> 
+			<input type="text" placeholder="OTP" class="form-control" style="background-color: white; color: black;" name="otp" id="otp" autofocus/>
+		</div>
+		<input type="hidden" name="url" id="url" value="$$urlvalue$$" />
+		<input type="submit" class="btn btn-primary w-100" value="{!cfw_core_signin!}">
+	</form>
+	
+	<div id="cfw-sso">
+		$$sso_placeholder$$
+	</div>
+	
+</div>

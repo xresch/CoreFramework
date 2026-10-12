@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
@@ -18,6 +19,7 @@ import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemFooter;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenu;
 
@@ -37,6 +39,10 @@ public class CFWSessionData implements Serializable {
 	
 	private boolean isLoggedIn = false;
 
+	private String otp = null;
+	private long otpCreatedMillis = 0;
+	private long otpWrongAttemptCount = 0;
+	
 	private User user = null;
 	private String clientIP = "";
 	private String sessionID = null;
@@ -283,6 +289,84 @@ public class CFWSessionData implements Serializable {
 	 ***********************************************************************/
 	public HashMap<String, Permission> getUserPermissions() {
 		return userPermissionsSpaced;
+	}
+	
+	/***********************************************************************
+	 * Check if OTP check is required for the current user after login is 
+	 * attempted and session was generated
+	 * 
+	 * @return boolean
+	 ***********************************************************************/
+	public boolean otpIsRequired() {
+
+		//-----------------------------------
+		// Get OTP Config
+		boolean isOTPEnabled = CFW.DB.Config.getConfigAsBoolean(
+				FeatureUserManagement.CONFIG_CATEGORY_PW_POLICY_OTP
+				, FeatureUserManagement.CONFIG_PWPOLICY_OTP_ENABLE
+			);
+		
+		//-----------------------------------
+		// Check do nothing
+		if(! isOTPEnabled
+		|| ! CFW.Properties.MAIL_ENABLED
+		|| user == null
+		|| Strings.isNullOrEmpty( user.email() ) 
+		){
+			return false;
+		}
+
+		return true;
+	}
+	
+	/***********************************************************************
+	 * Generates a new OTP and sends an OTP eMail for this session. Resets counters.
+	 * 
+	 * @return OTP if successful, null if mailing is disabled
+	 ***********************************************************************/
+	public void otpGenerateNew() {
+		
+		//-----------------------------------
+		// Reset Login
+		if( ! otpIsRequired() ) { return; }
+		
+		//-----------------------------------
+		// Get OTP Config
+		int patternPercent = CFW.DB.Config.getConfigAsInt(
+				FeatureUserManagement.CONFIG_CATEGORY_PW_POLICY_OTP
+				, FeatureUserManagement.CONFIG_PWPOLICY_OTP_PATTERN_CHANCE
+			);
+		
+		int validityMinutes = CFW.DB.Config.getConfigAsInt(
+				FeatureUserManagement.CONFIG_CATEGORY_PW_POLICY_OTP
+				, FeatureUserManagement.CONFIG_PWPOLICY_OTP_VALIDITY
+			);
+		
+		otp = CFW.Random.patternedOTPMixed(patternPercent);
+		otpCreatedMillis = System.currentTimeMillis();
+		otpWrongAttemptCount = 0;
+		
+		//----------------------------------------
+		// Create and Send Mail 
+		String mailContent = "<p><b>Following is your OTP, valid for <b>"+ validityMinutes +" minutes<b>. Never share this code with anyone:</b></p>"
+				+"<br>"
+				+ "<pre style=\"font-size: 24px; font-weight: bold;\"><code>" + otp +  "</code></pre>"
+				+"<br>"
+				+ "<p>" + CFW.Random.peculiarAutomatedMailEndings(0) + "</p>"
+				+ "<p>The Automated Mailing System</p>"
+				;
+		
+		HashMap<Integer, User> recipients = new HashMap<>();
+		recipients.put(user.id(), user);
+		
+		CFWMailBuilder builder = new CFWMailBuilder("OTP - Never share with anyone: " + otp )
+				.addMessage(mailContent, true)
+				.fromNoReply()
+				.recipientsTo(recipients)
+				;
+		
+		builder.send();
+
 	}
 	
 	/***********************************************************************

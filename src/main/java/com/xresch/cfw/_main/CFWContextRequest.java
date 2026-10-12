@@ -150,6 +150,25 @@ public class CFWContextRequest {
 		return null;
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
+	public static boolean otpIsRequired() {
+		if(getContext().sessionData != null) {
+			return getContext().sessionData.otpIsRequired();
+		}
+		
+		return false;
+	}
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
+	public static void otpGenerateNew() {
+		if(getContext().sessionData != null) {
+			getContext().sessionData.otpGenerateNew();
+		}
+	}
+	
 	
 	/**************************************************************************
 	 * Returns null if there is no user logged in.

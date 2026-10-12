@@ -16,6 +16,7 @@ import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.core.auth.openid.SSOProviderSettingsOpenID;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
@@ -32,7 +33,7 @@ public class ServletLogin extends HttpServlet
 	
 	private static Logger logger = CFWLog.getLogger(ServletLogin.class.getName());
 	
-	/*****************************************************************
+	/******************************************************************
 	 *
 	 ******************************************************************/
 	protected void createLoginPage( HttpServletRequest request, HttpServletResponse response ) {
@@ -72,6 +73,32 @@ public class ServletLogin extends HttpServlet
         response.setStatus(HttpServletResponse.SC_OK);
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	protected void createOTPPage( HttpServletRequest request, HttpServletResponse response ) {
+		HTMLResponse html = new HTMLResponse("Login");
+		StringBuilder content = html.getContent();
+		
+		//------------------------------------
+		// Fetch Template 
+		String otpHTML = CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".html", "otp.html");
+		
+		//------------------------------------
+		// Handle Target URL
+		String url = request.getParameter("url");
+		url = CFW.Security.sanitizeHTML(url);
+		
+		if(url == null) { url = "";}
+		
+		otpHTML = otpHTML.replace("$$urlvalue$$", url);
+			
+		content.append(otpHTML);
+		
+        response.setContentType("text/html");
+        response.setStatus(HttpServletResponse.SC_OK);
+	}
+	
 	/*****************************************************************
 	 *
 	 ******************************************************************/
@@ -95,6 +122,7 @@ public class ServletLogin extends HttpServlet
     {
 		
 		String ssoid = request.getParameter("ssoid");
+
 		if(Strings.isNullOrEmpty(ssoid)) {
 			createLoginPage(request, response);
 		}else {
@@ -114,9 +142,25 @@ public class ServletLogin extends HttpServlet
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 
+		String otp = request.getParameter("otp");
+		
+		//--------------------------
+		// Check OTP
+		if(otp != null){
+			
+			String redirectTo = request.getParameter("url"); 
+			
+			if(redirectTo == null || redirectTo.isEmpty()) {
+				redirectTo = CFW.Context.App.getApp().getDefaultURL();
+			}
+			CFW.HTTP.redirectToURL(response, redirectTo);
+			
+			return; 
+		}
 		
 		//--------------------------
 		// Check authorization
+		System.out.println("A");
 		if(username == null || password == null){
 			
 			CFWContextRequest.addAlertMessage(MessageType.ERROR, "Please specify username and password.");
@@ -132,10 +176,18 @@ public class ServletLogin extends HttpServlet
 				//Login Failure
 				createLoginPage(request, response);
 				CFWContextRequest.addAlertMessage(MessageType.ERROR, "Username or password invalid.");
+			}else {
+				
+				System.out.println("B" );
+
+				if( CFW.Context.Request.otpIsRequired() ) {
+					System.out.println("C");
+					CFW.Context.Request.otpGenerateNew();
+					createOTPPage(request, response);
+				}
+				
 			}
 		}
 		
-		
-
 	}
 }
