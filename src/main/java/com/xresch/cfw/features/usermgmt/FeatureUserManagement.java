@@ -37,6 +37,11 @@ public class FeatureUserManagement extends CFWAppFeature {
 	public static final String CONFIG_PWPOLICY_SPECIAL = " Special Character";
 	public static final String CONFIG_PWPOLICY_SPECIALORNUM = " Special Or Number";
 	
+	public static final String CONFIG_PWPOLICY_OTP_ENABLE = "OTP: Enable";
+	public static final String CONFIG_PWPOLICY_OTP_VALIDITY = "OTP: Validity";
+	public static final String CONFIG_PWPOLICY_OTP_RETRIES = "OTP: Retries";
+	public static final String CONFIG_PWPOLICY_OTP_PATTERN_CHANCE = "OTP: Pattern Chance";
+	
 	public static final String CATEGORY_USER = "user";
 	
 	public static final String PERMISSION_USER_MANAGEMENT = "User Management";
@@ -178,7 +183,36 @@ public class FeatureUserManagement extends CFWAppFeature {
 				.value("false")
 				);
 		
+    	//----------------------------------
+    	// Register OTP Fields
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_OTP_ENABLE)
+				.description("Enable or disable checks of OTPs for users that have an eMail address defined in the user management. Emailing must be configured for this to work.")
+				.type(FormFieldType.BOOLEAN)
+				.value("false")
+			);
 
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_OTP_VALIDITY)
+				.description("Amount of minutes the OTP is valid until a new OTP would be needed to login.")
+				.type(FormFieldType.NUMBER)
+				.value("10")
+			);
+		
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_OTP_RETRIES)
+				.description("Amount of retries allowed until a new OTP needs to be generated.")
+				.type(FormFieldType.NUMBER)
+				.value("3")
+			);
+		
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_OTP_PATTERN_CHANCE)
+				.description("Percent chance(0-100) of generated OTPs to follow a more human-readable and human-satisfactory pattern.")
+				.type(FormFieldType.NUMBER)
+				.value("50")
+			);
+		
 		//-----------------------------------------
 		// Permission: User Management
 		//-----------------------------------------
