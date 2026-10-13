@@ -22,6 +22,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCaches;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
@@ -62,6 +63,7 @@ public class DashboardWidget extends CFWObject {
 		PARAM_WIDGET_LOAD,
 		BUTTON_POPUP,
 		BUTTON_LABEL,
+		CACHE_TIME,
 		JSON_SETTINGS,
 		JSON_TASK_PARAMETERS,
 	}
@@ -233,6 +235,13 @@ public class DashboardWidget extends CFWObject {
 			.setValue("")
 			;
 	
+	private CFWField<Integer> cacheTime = CFWField.newInteger(FormFieldType.SELECT, DashboardWidgetFields.CACHE_TIME)
+			.setDescription("Amount of minutes the data of the widget should be cached before it is refreshed.")
+			.addOptions(WidgetDataCaches.getSelectOptions())
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			.setValue(1)
+			;
+	
 	/** Settings are coming from the fields defined by {@link WidgetDefinition#getSettings()}. Security can be disabled here. */
 	private CFWField<String> settings = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_SETTINGS)
 			.setDescription("The custom settings of the widget as JSON.")
@@ -285,6 +294,7 @@ public class DashboardWidget extends CFWObject {
 				, paramWidgetLoad
 				, buttonPopup
 				, buttonLabel
+				, cacheTime
 				, settings
 				, taskParameters
 			);
@@ -348,6 +358,7 @@ public class DashboardWidget extends CFWObject {
 						DashboardWidgetFields.PAUSE.toString(),
 						DashboardWidgetFields.MANUAL_LOAD.toString(),
 						DashboardWidgetFields.PARAM_WIDGET_LOAD.toString(),
+						DashboardWidgetFields.CACHE_TIME.toString(),
 						DashboardWidgetFields.JSON_SETTINGS.toString(),	 	
 						DashboardWidgetFields.JSON_TASK_PARAMETERS.toString(),	 	
 				};
@@ -651,6 +662,15 @@ public class DashboardWidget extends CFWObject {
 	
 	public DashboardWidget taskParameters(String value) {
 		this.taskParameters.setValue(value);
+		return this;
+	}
+	
+	public Integer cacheTime() {
+		return cacheTime.getValue();
+	}
+	
+	public DashboardWidget cacheTime(Integer value) {
+		this.cacheTime.setValue(value);
 		return this;
 	}
 

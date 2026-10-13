@@ -142,7 +142,10 @@ public class CFWCacheManagement {
 		cacheDetails.addProperty("entry_count", entries.size());
 
 		if(entries.size() > 0) {
-			cacheDetails.addProperty("clazz", ((Entry<Object, Object>)entries.toArray()[0]).getValue().getClass().getName());
+			Object[] entryArray = entries.toArray();
+			if(entryArray.length > 0) {
+				cacheDetails.addProperty("clazz", ((Entry<Object, Object>)entryArray[0]).getValue().getClass().getName());
+			}
 		}
 		
 		JsonArray array = new JsonArray();

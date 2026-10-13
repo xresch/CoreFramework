@@ -351,10 +351,16 @@ public class CFWSessionData implements Serializable {
 		
 		//----------------------------------------
 		// Create and Send Mail 
+		
+		String style =  "font-size: 36px;"
+					  + " font-weight: bold;"
+					  + " color: white;"
+					  + " background-color: #081740;"
+					  + " padding: 15px;"
+					  ; 
+		
 		String mailContent = "<p><b>Following is your OTP, valid for <b>"+ validityMinutes +" minutes<b>. Never share this code with anyone:</b></p>"
-				+"<br>"
-				+ "<pre style=\"font-size: 24px; font-weight: bold;\"><code>" + otp +  "</code></pre>"
-				+"<br>"
+				+ "<pre style=\""+style+"\"><code>" + otp +  "</code></pre>"
 				+ "<p>" + CFW.Random.peculiarAutomatedMailEndings(0) + "</p>"
 				+ "<p>The Automated Mailing System</p>"
 				;
@@ -438,10 +444,13 @@ public class CFWSessionData implements Serializable {
 				, FeatureUserManagement.CONFIG_PWPOLICY_OTP_RETRIES
 			);
 		
-		if(otpWrongAttemptCount > allowedRetries) {
+		if(otpWrongAttemptCount >= allowedRetries) {
 			CFW.Messages.addWarningMessage("You reached the number of allowed retries with the same OTP. A new one was sent to your email.");
 			otpGenerateNew();
+		}else {
+			CFW.Messages.addWarningMessage("OTP didn't match. You have "+ (allowedRetries - otpWrongAttemptCount) +" attempts left with the current OTP.");
 		}
+		
 		return false;
 	}
 	

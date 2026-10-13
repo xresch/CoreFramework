@@ -14,44 +14,49 @@ function cfw_cachestatistics_showCacheDetails(element){
 	
 	CFW.http.getJSON(CFW_CACHE_STATISTICS_URL, {action: "fetch", item: "cachedetails", name: cacheName}, function(data){
 		
-		if(data.payload != null){
-			
-			//-----------------------------------
-			// Create Entry Table
-			var rendererSettings = {
-				 	idfield: 'PK_ID',
-				 	bgstylefield: null,
-				 	textstylefield: null,
-				 	titlefields: ['key'],
-				 	titleformat: '{0}',
-				 	labels: {},
-				 	customizers: {
-				 		key: function(record, value){ return '<p class="maxvw-15 word-wrap-break">'+value+'</p>'; },
-				 		value: function(record, value){ 
-				 			return $('<p class="word-break-all word-wrap-break">').text(value); 
-				 		},
-				 	},
-					data: data.payload.entries,
-					rendererSettings: {
-						table: {narrow: false, filterable: true}
-					},
-				};
-					
-			var renderResult = CFW.render.getRenderer('table').render(rendererSettings);	
-			
-			//-----------------------------------
-			// Create Details
-			var $details = $('<div>');
-			$details.append(
-					'<ul>'
-						+'<li><strong>Cache Name: </strong> '+data.payload.name+'</li>'
-						+'<li><strong>Total Entries(estimated): </strong> '+data.payload.entry_count+'</li>'
-						+'<li><strong>Entry Type: </strong> '+data.payload.clazz +'</li>'
-					+'</ul>'
-			);
-			$details.append(renderResult);
-			CFW.ui.showModalMedium("Cache Details", $details, null);
+		if(data.payload == null
+		||  data.payload.entries.length <= 0
+		){
+			CFW.ui.addToastInfo("Seems there aren't any valid entries in the cache.");
+			return;
 		}
+			
+		//-----------------------------------
+		// Create Entry Table
+		var rendererSettings = {
+			 	idfield: 'PK_ID',
+			 	bgstylefield: null,
+			 	textstylefield: null,
+			 	titlefields: ['key'],
+			 	titleformat: '{0}',
+			 	labels: {},
+			 	customizers: {
+			 		key: function(record, value){ return '<p class="maxvw-15 word-wrap-break">'+value+'</p>'; },
+			 		value: function(record, value){ 
+			 			return $('<p class="word-break-all word-wrap-break">').text(value); 
+			 		},
+			 	},
+				data: data.payload.entries,
+				rendererSettings: {
+					table: {narrow: false, filterable: true}
+				},
+			};
+				
+		var renderResult = CFW.render.getRenderer('table').render(rendererSettings);	
+		
+		//-----------------------------------
+		// Create Details
+		var $details = $('<div>');
+		$details.append(
+				'<ul>'
+					+'<li><strong>Cache Name: </strong> '+data.payload.name+'</li>'
+					+'<li><strong>Total Entries(estimated): </strong> '+data.payload.entry_count+'</li>'
+					+'<li><strong>Entry Type: </strong> '+data.payload.clazz +'</li>'
+				+'</ul>'
+		);
+		$details.append(renderResult);
+		CFW.ui.showModalMedium("Cache Details", $details, null);
+		
 	});
 	
 }

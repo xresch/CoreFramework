@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -32,6 +33,7 @@ import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.features.dashboard.widgets.ManualPageWidget;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCaches;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
 import com.xresch.cfw.features.jobs.CFWDBJob;
@@ -651,6 +653,11 @@ public class ServletDashboardViewMethods
 				//DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
 				
 				DashboardWidget clone = widget.createCloneForDefaultSettingsForm();
+				
+				if(definition.getCachePolicy() == WidgetDataCachePolicy.OFF) {
+					clone.getField(DashboardWidgetFields.CACHE_TIME).fieldType(FormFieldType.HIDDEN);
+				}
+				
 				CFWForm form = clone.toForm("formEditDefaultSettings"+widgetID, CFW.L("cfw_core_save", "Save") );
 				form.addAttribute("onclick", "cfw_dashboard_widget_save_defaultSettings('"+widgetID+"')");
 				
@@ -914,6 +921,7 @@ public class ServletDashboardViewMethods
 				// Do that Cache Thingy
 				
 				WidgetDataCachePolicy cachePolicy = definition.getCachePolicy();
+				Integer cacheTime = widget.cacheTime();
 				if( cachePolicy == WidgetDataCachePolicy.OFF
 				|| (
 					cachePolicy == WidgetDataCachePolicy.TIME_BASED 
@@ -936,20 +944,22 @@ public class ServletDashboardViewMethods
 					// jsonSettings.toString().hashCode(): because JsonElement.hashCode() is not 
 					// implemented and might return same hash for the Object even if settings have changed.
 					cacheID += "_"+dashboardParams.hashCode()+"_"+jsonSettings.toString().hashCode();
-										
+					
+					Cache<String, JSONResponse> cache = WidgetDataCaches.getCache(cacheTime);
+					
 					//----------------------------
 					// Force Cache Refresh
 					if(forceRefresh.trim().equalsIgnoreCase("true")) {
-						WidgetDataCache.CACHE.invalidate(cacheID);
+						cache.invalidate(cacheID);
 					}
 					 
 					//----------------------------
 					// Do Cached
-					if(WidgetDataCache.CACHE.getIfPresent(cacheID) != null) {
+					if(cache.getIfPresent(cacheID) != null) {
 						CFWDBDashboard.pushEAVStats(FeatureDashboard.EAV_STATS_WIDGET_LOADS_CACHED, ""+widget.foreignKeyDashboard(), 1);
 					}
 					
-					JSONResponse responseFromCache = WidgetDataCache.CACHE.get(cacheID,
+					JSONResponse responseFromCache = cache.get(cacheID,
 							new Callable<JSONResponse>() {
 
 								@Override
