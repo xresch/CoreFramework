@@ -19,6 +19,7 @@ import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.SysoutInterceptor;
 import com.xresch.cfw.response.HTMLResponse;
 
 /**************************************************************************************************************
@@ -148,19 +149,18 @@ public class ServletLogin extends HttpServlet
 		// Check OTP
 		if(otp != null){
 			
-			String redirectTo = request.getParameter("url"); 
-			
-			if(redirectTo == null || redirectTo.isEmpty()) {
-				redirectTo = CFW.Context.App.getApp().getDefaultURL();
+			if(CFW.Context.Request.getSessionData().otpVerify(otp)) {
+				String redirectTo = request.getParameter("url"); 
+				LoginUtils.doRedirect(response, redirectTo);
+			}else {
+				createOTPPage(request, response);
 			}
-			CFW.HTTP.redirectToURL(response, redirectTo);
 			
 			return; 
 		}
 		
 		//--------------------------
 		// Check authorization
-		System.out.println("A");
 		if(username == null || password == null){
 			
 			CFWContextRequest.addAlertMessage(MessageType.ERROR, "Please specify username and password.");
@@ -171,19 +171,19 @@ public class ServletLogin extends HttpServlet
 			User user = LoginUtils.checkCredentials(username, password);
 			
 			String redirectTo = request.getParameter("url"); 
-			boolean loginSuccess = LoginUtils.loginUserAndCreateSession(request, response, user, redirectTo);
+			boolean loginSuccess = LoginUtils.loginUserAndCreateSession(request, response, user);
+
 			if(!loginSuccess) {
 				//Login Failure
 				createLoginPage(request, response);
 				CFWContextRequest.addAlertMessage(MessageType.ERROR, "Username or password invalid.");
 			}else {
 				
-				System.out.println("B" );
-
 				if( CFW.Context.Request.otpIsRequired() ) {
-					System.out.println("C");
 					CFW.Context.Request.otpGenerateNew();
 					createOTPPage(request, response);
+				}else {
+					LoginUtils.doRedirect(response, redirectTo);
 				}
 				
 			}

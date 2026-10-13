@@ -317,7 +317,9 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			User user = LoginUtils.fetchUserCreateIfNotExists(username, email, firstname, lastname, true);
 			
 			if(user != null) {
-				LoginUtils.loginUserAndCreateSession(request, response, user, targetURL);
+				LoginUtils.loginUserAndCreateSession(request, response, user);
+				LoginUtils.doRedirect(response, targetURL);
+				
 			}else {
 				new HTMLResponse("Error Occured");
 				new CFWLog(logger).severe("Unable to retrieve user information.");

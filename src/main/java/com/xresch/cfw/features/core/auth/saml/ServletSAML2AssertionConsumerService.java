@@ -133,8 +133,9 @@ public class ServletSAML2AssertionConsumerService extends HttpServlet
 	    	//------------------------------
 	    	// Create User in DB if not exists
 
-	    	LoginUtils.loginUserAndCreateSession(request, response, user, redirectTo);
-
+	    	LoginUtils.loginUserAndCreateSession(request, response, user);
+	    	LoginUtils.doRedirect(response, redirectTo);
+	    	
 		} catch (SettingsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -42,6 +43,7 @@ public class CFWSessionData implements Serializable {
 	private String otp = null;
 	private long otpCreatedMillis = 0;
 	private long otpWrongAttemptCount = 0;
+	private boolean otpNeedsVerification = false;
 	
 	private User user = null;
 	private String clientIP = "";
@@ -345,6 +347,7 @@ public class CFWSessionData implements Serializable {
 		otp = CFW.Random.patternedOTPMixed(patternPercent);
 		otpCreatedMillis = System.currentTimeMillis();
 		otpWrongAttemptCount = 0;
+		otpNeedsVerification = true;
 		
 		//----------------------------------------
 		// Create and Send Mail 
@@ -367,6 +370,79 @@ public class CFWSessionData implements Serializable {
 		
 		builder.send();
 
+	}
+	
+	/***********************************************************************
+	 * Check if OTP needs verification.
+	 * 
+	 * @return boolean true if OTP needs Verification, false otherwise
+	 ***********************************************************************/
+	public boolean otpNeedsVerification() {
+		return otpNeedsVerification;
+	}
+		
+	/***********************************************************************
+	 * Check if OTP entered by user is correct.
+	 * 
+	 * @return boolean true if correct OTP or no verification needed, false otherwise 
+	 ***********************************************************************/
+	public boolean otpVerify(String usersOTP) {
+
+		//---------------------------
+		// Check needs Verification
+		if( ! otpNeedsVerification || otp == null ) {
+			return true;
+		}
+		
+		//---------------------------
+		// Check Validity
+		int validityMinutes = CFW.DB.Config.getConfigAsInt(
+				FeatureUserManagement.CONFIG_CATEGORY_PW_POLICY_OTP
+				, FeatureUserManagement.CONFIG_PWPOLICY_OTP_VALIDITY
+			);
+		
+		long millisPassed = System.currentTimeMillis() - otpCreatedMillis;
+		long minutesPassed = Duration.ofMillis(millisPassed).toMinutes();
+		
+		if(minutesPassed > validityMinutes) {
+			CFW.Messages.addWarningMessage("Your OTP reached the limit of it's validity period. A new one will be sent to your email.");
+			otpGenerateNew();
+			return false;
+		}
+		
+		//---------------------------
+		// Check Parameter
+		if( Strings.isNullOrEmpty(usersOTP) ) {
+			CFW.Messages.addInfoMessage("Your OTP was empty, please find your OTP in your email and provide it here.");
+			return false;
+		}
+		
+		//---------------------------
+		// Verify OTP
+		String trimmedOTP = usersOTP.trim();
+		
+		if( otp.equalsIgnoreCase(trimmedOTP) ) {
+			
+			otpNeedsVerification = false;
+			otp = null;
+			otpWrongAttemptCount = 0;
+			return true;
+		}
+		
+		//---------------------------
+		// Handle Wrong Attempt
+		otpWrongAttemptCount++;
+		
+		int allowedRetries = CFW.DB.Config.getConfigAsInt(
+				FeatureUserManagement.CONFIG_CATEGORY_PW_POLICY_OTP
+				, FeatureUserManagement.CONFIG_PWPOLICY_OTP_RETRIES
+			);
+		
+		if(otpWrongAttemptCount > allowedRetries) {
+			CFW.Messages.addWarningMessage("You reached the number of allowed retries with the same OTP. A new one was sent to your email.");
+			otpGenerateNew();
+		}
+		return false;
 	}
 	
 	/***********************************************************************

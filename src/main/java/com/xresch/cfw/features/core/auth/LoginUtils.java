@@ -80,7 +80,7 @@ public class LoginUtils {
 	 * @param tedirectTo URL to redirect or null for default 
 	 * @return boolean true if successfully logged in, false otherwise
 	 ******************************************************************************/
-	public static boolean loginUserAndCreateSession(HttpServletRequest request, HttpServletResponse response, User user, String redirectTo) {
+	public static boolean loginUserAndCreateSession(HttpServletRequest request, HttpServletResponse response, User user) {
 		
 		if(user != null 
 		&& user.status() != null 
@@ -92,14 +92,27 @@ public class LoginUtils {
 			data.setClientIP(CFW.HTTP.getClientIP(request));
 			data.triggerLogin();
 			
-			if(redirectTo == null || redirectTo.isEmpty()) {
-				redirectTo = CFW.Context.App.getApp().getDefaultURL();
-			}
-			CFW.HTTP.redirectToURL(response, redirectTo);
 			return true; 
 		}	
 		
 		return false;
+	}
+	
+	/******************************************************************************
+	 * Does redirect the user to either the redirectTo parameter, or the default
+	 * URL.
+	 * 
+	 * @param HttpServletResponse response
+	 * @param tedirectTo URL to redirect or null for default 
+	 * 
+	 ******************************************************************************/
+	public static void doRedirect(HttpServletResponse response, String redirectTo) {
+		
+		if(redirectTo == null || redirectTo.isEmpty()) {
+			redirectTo = CFW.Context.App.getApp().getDefaultURL();
+		}
+		CFW.HTTP.redirectToURL(response, redirectTo);
+
 	}
 		
 	
