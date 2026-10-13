@@ -14,7 +14,7 @@ function cfw_cachestatistics_showCacheDetails(element){
 	
 	CFW.http.getJSON(CFW_CACHE_STATISTICS_URL, {action: "fetch", item: "cachedetails", name: cacheName}, function(data){
 		
-		if(data.payload == null
+		if( data.payload == null
 		||  data.payload.entries.length <= 0
 		){
 			CFW.ui.addToastInfo("Seems there aren't any valid entries in the cache.");
