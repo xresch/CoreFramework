@@ -2030,7 +2030,8 @@ public class CFWField<T> extends CFWHTMLItem implements IValidatable<T> {
 			
 			//------------------------------------------
 			// Second Encryption: Salt of Parent
-			if( ! value.toString().startsWith(ENCRYPT_PREFIX_SECOND) ) {
+			if( ! value.toString().startsWith(ENCRYPT_PREFIX_SECOND) 
+			&& this.relatedCFWObject != null) {
 				CFWField<String> saltField = this.relatedCFWObject.getSaltField();
 				
 				if(saltField != null) {

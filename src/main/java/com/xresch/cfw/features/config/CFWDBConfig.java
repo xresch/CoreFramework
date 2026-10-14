@@ -237,11 +237,12 @@ public class CFWDBConfig {
 			}
 		}else {
 			//--------------------------
-			// Update Available Options
+			// Update Fields
 			Configuration configToUpdate = CFW.DB.Config.selectBy(config.category(), config.name());
 			if( configToUpdate != null ) {
 				configToUpdate.options( config.options() );
 				configToUpdate.type( config.type() );
+				configToUpdate.isEncrypted( config.isEncrypted() );
 				configToUpdate.update(ConfigFields.OPTIONS, ConfigFields.TYPE);
 			}
 			

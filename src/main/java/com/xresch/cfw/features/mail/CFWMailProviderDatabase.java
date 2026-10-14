@@ -7,6 +7,7 @@ import javax.mail.Session;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.SysoutInterceptor;
 
 public class CFWMailProviderDatabase extends CFWMailProvider {
 	
@@ -82,6 +83,7 @@ public class CFWMailProviderDatabase extends CFWMailProvider {
 			final String loginEmail = CFW.DB.Config.getConfigAsString(FeatureMail.CONFIG_CATEGORY, FeatureMail.CONFIG_MAIL_LOGIN_MAIL);
 			final String password 	= CFW.DB.Config.getConfigAsString(FeatureMail.CONFIG_CATEGORY, FeatureMail.CONFIG_MAIL_LOGIN_PASSWORD);
 			
+			System.out.println("password: "+password);
 			return createSession(host, port, authMethod, loginEmail, password);
 		}catch(Throwable e){
 			new CFWLog(logger).warn("Error while creating Mailing Session: "+e.getMessage(), e);

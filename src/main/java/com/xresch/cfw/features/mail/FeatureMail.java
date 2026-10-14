@@ -135,6 +135,7 @@ public class FeatureMail extends CFWAppFeature {
 			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_LOGIN_PASSWORD)
 				.description("The password used to login on the SMTP host.")
 				.type(FormFieldType.PASSWORD)
+				.isEncrypted(true)
 				.value("")
 		);
 		

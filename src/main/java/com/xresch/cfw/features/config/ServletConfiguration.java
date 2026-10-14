@@ -97,13 +97,14 @@ public class ServletConfiguration extends HttpServlet
 			
 			//--------------------------------------
 			// Toggle Encryption
+
 			if(config.isEncrypted()) {
 				field.enableEncryption(Configuration.getEncryptionSalt());
 			}
 			
 			//--------------------------------------
 			// Set Value
-			field.setValue(config.value());
+			field.setValueConvert(config.value(), false);
 			
 			//--------------------------------------
 			// Add to Form
@@ -122,7 +123,7 @@ public class ServletConfiguration extends HttpServlet
 			    	boolean success = true;
 			    	
 			    	for(CFWField<?> field : form.getFields().values() ) {
-			    		String value = (field.getValue() != null) ? field.getValue().toString() : "";
+			    		String value = (field.getValue() != null) ? field.getValueEncrypted().toString() : "";
 			    		String id = field.getName().replaceFirst(ID_PREFIX, "");
 			    		success = success && CFW.DB.Config.updateValue(Integer.parseInt(id), value);
 			    	}
