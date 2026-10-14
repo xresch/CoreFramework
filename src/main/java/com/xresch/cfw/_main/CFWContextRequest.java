@@ -160,13 +160,17 @@ public class CFWContextRequest {
 		
 		return false;
 	}
-	/**************************************************************************
+	/***********************************************************************
+	 * Generates a new OTP and sends an OTP eMail for this session. Resets counters.
 	 * 
-	 **************************************************************************/
-	public static void otpGenerateNew() {
+	 * @return true if otpNotRequored or sending OTP was successful, false otherwise
+	 ***********************************************************************/
+	public static boolean otpGenerateNew() {
 		if(getContext().sessionData != null) {
-			getContext().sessionData.otpGenerateNew();
+			return getContext().sessionData.otpGenerateNew();
 		}
+		
+		return true;
 	}
 	
 	

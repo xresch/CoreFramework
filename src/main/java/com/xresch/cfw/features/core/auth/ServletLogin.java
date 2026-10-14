@@ -180,8 +180,11 @@ public class ServletLogin extends HttpServlet
 			}else {
 				
 				if( CFW.Context.Request.otpIsRequired() ) {
-					CFW.Context.Request.otpGenerateNew();
-					createOTPPage(request, response);
+					if ( CFW.Context.Request.otpGenerateNew() ) {
+						createOTPPage(request, response);
+					}else {
+						LoginUtils.doRedirect(response, redirectTo);
+					}
 				}else {
 					LoginUtils.doRedirect(response, redirectTo);
 				}

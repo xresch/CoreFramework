@@ -24,25 +24,25 @@ public class FeatureMail extends CFWAppFeature {
 	public static String CONFIG_MAIL_ENABLED = "Mail: Enabled";
 	
 	/** The smtp host used for sending mails. */
-	public static String CONFIG_MAIL_SMTP_HOST = "Mail: SMTP Host";
+	public static String CONFIG_MAIL_HOST = "Mail: SMTP Host";
 	
 	/** The port of the smtp server. */
-	public static String CONFIG_MAIL_SMTP_PORT = "Mail: SMTP Port";
+	public static String CONFIG_MAIL_PORT = "Mail: SMTP Port";
 	
 	/** The method used to authenticate against the smtp server, either of:  NONE | TLS | SSL. */
-	public static String CONFIG_MAIL_SMTP_AUTHENTICATION = "Mail: SMTP Authentication";
+	public static String CONFIG_MAIL_AUTHENTICATION = "Mail: SMTP Authentication";
 	
 	/** The email used for login to the smtp server . */
-	public static String CONFIG_MAIL_SMTP_LOGIN_MAIL = "Mail: SMTP Login eMail";
+	public static String CONFIG_MAIL_LOGIN_MAIL = "Mail: SMTP Login eMail";
 	
 	/** The password used for login to the smtp server.  */
-	public static String CONFIG_MAIL_SMTP_LOGIN_PASSWORD = "Mail: SMTP Login Password";
+	public static String CONFIG_MAIL_LOGIN_PASSWORD = "Mail: SMTP Login Password";
 	
 	/** The eMail used as the from-address for repliable mails. */
-	public static String CONFIG_MAIL_SMTP_FROMMAIL_REPLY = "Mail: From Reply";
+	public static String CONFIG_MAIL_FROMMAIL_REPLY = "Mail: From Reply";
 	
 	/** The eMail used as the from-address for no-reply mails.*/
-	public static String CONFIG_MAIL_SMTP_FROMMAIL_NOREPLY = "Mail: From No-Reply";
+	public static String CONFIG_MAIL_FROMMAIL_NOREPLY = "Mail: From No-Reply";
 	
 	@Override
 	public void register() {
@@ -51,6 +51,7 @@ public class FeatureMail extends CFWAppFeature {
     	//----------------------------------
     	// Register Mail Providers
 		CFW.Registry.Mail.addProvider(new CFWMailProviderProperties());
+		CFW.Registry.Mail.addProvider(new CFWMailProviderDatabase());
 		
 	}
 
@@ -85,7 +86,7 @@ public class FeatureMail extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_SMTP_HOST)
+			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_HOST)
 				.description("The SMTP host for the provider 'database'.")
 				.type(FormFieldType.TEXT)
 				.value("")
@@ -95,10 +96,10 @@ public class FeatureMail extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_SMTP_PORT)
+			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_PORT)
 				.description("The port for the SMTP host of the provider 'database'. (Standard Ports: 25/NoAuth, 587/TLS, 465/SSL)")
 				.type(FormFieldType.NUMBER)
-				.value("")
+				.value("25")
 		);
 		
 		//-----------------------------------------
@@ -110,7 +111,7 @@ public class FeatureMail extends CFWAppFeature {
 		authOptions.add("SSL");
 		
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_SMTP_AUTHENTICATION)
+			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_AUTHENTICATION)
 				.description("The authentication method used to login on the SMTP host.")
 				.type(FormFieldType.SELECT)
 				.options(authOptions)
@@ -121,7 +122,7 @@ public class FeatureMail extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_SMTP_LOGIN_MAIL)
+			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_LOGIN_MAIL)
 				.description("The email used to login on the SMTP host.")
 				.type(FormFieldType.TEXT)
 				.value("")
@@ -131,9 +132,9 @@ public class FeatureMail extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_SMTP_LOGIN_PASSWORD)
+			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_LOGIN_PASSWORD)
 				.description("The password used to login on the SMTP host.")
-				.type(FormFieldType.TEXT)
+				.type(FormFieldType.PASSWORD)
 				.value("")
 		);
 		
@@ -141,7 +142,7 @@ public class FeatureMail extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_SMTP_FROMMAIL_REPLY)
+			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_FROMMAIL_REPLY)
 				.description("The email that is used for sending mails that a user can reply to.")
 				.type(FormFieldType.TEXT)
 				.value("")
@@ -151,7 +152,7 @@ public class FeatureMail extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_SMTP_FROMMAIL_NOREPLY)
+			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_FROMMAIL_NOREPLY)
 				.description("The email that is used for sending mails that a user cannot reply to.")
 				.type(FormFieldType.TEXT)
 				.value("")

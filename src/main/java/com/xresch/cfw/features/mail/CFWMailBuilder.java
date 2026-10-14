@@ -325,18 +325,20 @@ public class CFWMailBuilder {
 	
 	/***************************************************************
 	 * Send the eMail.
+	 * @return boolean true if successful or mailing disabled, false on error
 	 ***************************************************************/
-	public CFWMailBuilder send() {
+	public boolean send() {
 		
-		if( ! isMailingEnabled() ) { return this ; }
+		if( ! isMailingEnabled() ) { return true; }
 		
 		try {
 			message.setSentDate(new Date());
 	        Transport.send(message); 
 		} catch (MessagingException e) {
 			new CFWLog(logger).severe("Error sending eMail: "+e.getMessage(), e);
+			return false;
 		}
-		return this;
+		return true;
 	}
 	
 	/***************************************************************
@@ -345,10 +347,15 @@ public class CFWMailBuilder {
 	 ***************************************************************/
 	public static Session initializeSession() {
 
-		if( ! isMailingEnabled() ) { return null; }
+		try {
+			if( ! isMailingEnabled() ) { return null; }
+			
+			return CFW.Registry.Mail.getSelectedProvider().createSession();
+		}catch(Throwable e){
+			new CFWLog(logger).warn("Error while creating Mailing Session: "+e.getMessage(), e);
+		}
 		
-		return CFW.Registry.Mail.getSelectedProvider().createSession();
-		
+		return null;
 	}
 	
 	

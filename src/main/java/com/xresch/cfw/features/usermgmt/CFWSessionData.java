@@ -311,7 +311,7 @@ public class CFWSessionData implements Serializable {
 		//-----------------------------------
 		// Check do nothing
 		if(! isOTPEnabled
-		|| ! CFW.Properties.MAIL_ENABLED
+		|| ! CFW.Registry.Mail.getSelectedProvider().isMailingEnabled()
 		|| user == null
 		|| Strings.isNullOrEmpty( user.email() ) 
 		){
@@ -324,13 +324,13 @@ public class CFWSessionData implements Serializable {
 	/***********************************************************************
 	 * Generates a new OTP and sends an OTP eMail for this session. Resets counters.
 	 * 
-	 * @return OTP if successful, null if mailing is disabled
+	 * @return true if otpNotRequored or sending OTP was successful, false otherwise
 	 ***********************************************************************/
-	public void otpGenerateNew() {
+	public boolean otpGenerateNew() {
 		
 		//-----------------------------------
 		// Reset Login
-		if( ! otpIsRequired() ) { return; }
+		if( ! otpIsRequired() ) { return true; }
 		
 		//-----------------------------------
 		// Get OTP Config
@@ -374,7 +374,17 @@ public class CFWSessionData implements Serializable {
 				.recipientsTo(recipients)
 				;
 		
-		builder.send();
+		//----------------------------------------
+		// If there is an Error sending the eMail,
+		// do not require OTP to be verified.
+		// Else all logging might be blocked, including admins!
+		boolean successful =  builder.send();
+		if( ! successful) {
+			otp = null;
+			otpNeedsVerification = false;
+		}
+		
+		return successful;
 
 	}
 	
