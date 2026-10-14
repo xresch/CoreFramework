@@ -11,8 +11,8 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.config.Configuration.ConfigFields;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -56,39 +56,22 @@ public class CFWDBConfig {
 	 * 
 	 ********************************************************************************************/
 	public static boolean updateCache() {
-		ResultSet result = new Configuration()
-			.select(
-					  ConfigFields.CATEGORY.toString()
-					, ConfigFields.NAME.toString()
-					, ConfigFields.VALUE.toString()
-				)
-			.getResultSet();
 		
-		if(result == null) {
-			return false;
+		ArrayList<Configuration> result = new Configuration()
+			.select()
+			.getAsObjectListConvert(Configuration.class);
+		
+		LinkedHashMap<String, String> newCache = new LinkedHashMap<String, String>();
+		
+		for(Configuration config : result) {
+			String category = config.category();
+			String name = config.name();
+			String cacheKey = createKey(category, name);
+			
+			newCache.put( cacheKey, config.value() );
 		}
-		
-		try {
-			LinkedHashMap<String, String> newCache = new LinkedHashMap<String, String>();
-			
-			
-			while(result.next()) {
-				String category = result.getString(ConfigFields.CATEGORY.toString());
-				String name = result.getString(ConfigFields.NAME.toString());
-				String cacheKey = createKey(category, name);
-				
-				newCache.put( cacheKey, result.getString(ConfigFields.VALUE.toString()) );
-			}
-			cacheAndTriggerChange(newCache);
-			
-		} catch (SQLException e) {
-			new CFWLog(logger)
-			.severe("Error updating configuration cache.", e);
-			return false;
-		}finally {
-			CFWDB.close(result);
-		}
-		
+		cacheAndTriggerChange(newCache);
+
 		return true;
 	}
 	
@@ -348,63 +331,22 @@ public class CFWDBConfig {
 		
 	}
 	
-	/***************************************************************
-	 * Select a config by it's ID and return it as JSON string.
-	 * @param id of the config
-	 * @return Returns a config or null if not found or in case of exception.
-	 ****************************************************************/
-	public static String getConfigAsJSON(String id) {
 		
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "getConfigAsJSON")
-				.select()
-				.where(ConfigFields.PK_ID.toString(), Integer.parseInt(id))
-				.getAsJSON();
-		
-	}
-	
 	/***************************************************************
 	 * Return a list of all configs
 	 * 
 	 * @return Returns a resultSet with all configs or null.
 	 ****************************************************************/
-	public static ResultSet getConfigList() {
+	public static ArrayList<Configuration> getConfigObjectList() {
 		
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "getConfigList")
-				.select()
-				.orderby(ConfigFields.NAME.toString())
-				.getResultSet();
-		
-	}
-	
-	/***************************************************************
-	 * Return a list of all configs
-	 * 
-	 * @return Returns a resultSet with all configs or null.
-	 ****************************************************************/
-	public static ArrayList<CFWObject> getConfigObjectList() {
-		
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "getConfigList")
+		return new CFWSQL( new Configuration() )
+				.queryCache()
 				.select()
 				.orderby(ConfigFields.CATEGORY, ConfigFields.NAME)
-				.getAsObjectList();
+				.getAsObjectListConvert(Configuration.class);
 		
 	}
 	
-	/***************************************************************
-	 * Return a list of all users as json string.
-	 * 
-	 * @return Returns a result set with all users or null.
-	 ****************************************************************/
-	public static String getConfigListAsJSON() {
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "getConfigListAsJSON")
-				.select()
-				.orderby(ConfigFields.NAME.toString())
-				.getAsJSON();
-	}
 	
 	/***************************************************************
 	 * Updates the object selecting by ID.
@@ -426,6 +368,7 @@ public class CFWDBConfig {
 		}
 		String cacheKey = createKey(config.category(), config.name());
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Configuration.class, "Change config '"+config.name()+"' from '"+configCache.get(cacheKey)+"' to '"+config.value()+"'");
+		
 		boolean updateResult =  config
 				.queryCache(CFWDBConfig.class, "update")
 				.update();

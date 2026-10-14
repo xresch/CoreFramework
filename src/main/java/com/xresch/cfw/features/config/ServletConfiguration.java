@@ -82,17 +82,31 @@ public class ServletConfiguration extends HttpServlet
 		
 		CFWForm configForm = new CFWForm("cfwConfigMgmt", "Save");
 		configForm.addAttribute("autocomplete", "off");
-		ArrayList<CFWObject> configObjects = CFW.DB.Config.getConfigObjectList();
+		ArrayList<Configuration> configObjects = CFW.DB.Config.getConfigObjectList();
 		for(CFWObject object :  configObjects) {
+			
+			//--------------------------------------
+			// Add Fields
 			Configuration config = (Configuration)object;
 			CFWField<String> field = CFWField.newString(FormFieldType.valueOf(config.type()), ID_PREFIX+config.id());
 			field.setLabel(config.name());
-			field.setValue(config.value());
 			field.setDescription(config.description());
 			field.setOptions(config.options());		
 			field.disableSanitization();
 			field.addAttribute("data-category", config.category());
 			
+			//--------------------------------------
+			// Toggle Encryption
+			if(config.isEncrypted()) {
+				field.enableEncryption(Configuration.getEncryptionSalt());
+			}
+			
+			//--------------------------------------
+			// Set Value
+			field.setValue(config.value());
+			
+			//--------------------------------------
+			// Add to Form
 			configForm.addField(field);
 		}
 		

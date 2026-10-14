@@ -4,12 +4,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.validation.LengthValidator;
+import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
  * 
@@ -27,46 +29,54 @@ public class Configuration extends CFWObject {
 		DESCRIPTION,
 		TYPE,
 		VALUE,
-		OPTIONS
+		OPTIONS,
+		IS_ENCRYPTED
 	}
 
-	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, ConfigFields.PK_ID.toString())
+	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, ConfigFields.PK_ID)
 									.setPrimaryKeyAutoIncrement(this)
 									.apiFieldType(FormFieldType.NUMBER)
 									.setDescription("The id of the configuration.")
 									.setValue(null);
 	
-	private CFWField<String> category = CFWField.newString(FormFieldType.TEXT, ConfigFields.CATEGORY.toString())
+	private CFWField<String> category = CFWField.newString(FormFieldType.TEXT, ConfigFields.CATEGORY)
 									.setColumnDefinition("VARCHAR(255)")
 									.setDescription("The category of the configuration.")
 									.addValidator(new LengthValidator(1, 255))
 									;
 	
-	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, ConfigFields.NAME.toString())
+	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, ConfigFields.NAME)
 									.setColumnDefinition("VARCHAR(255)")
 									.setDescription("The name of the configuration.")
 									.addValidator(new LengthValidator(1, 255))
 									;
 	
-	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, ConfigFields.DESCRIPTION.toString())
+	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, ConfigFields.DESCRIPTION)
 											.setColumnDefinition("VARCHAR(4096)")
 											.setDescription("A description of the configuration.")
 											.addValidator(new LengthValidator(-1, 4096));
 	
-	private CFWField<String> type = CFWField.newString(FormFieldType.SELECT, ConfigFields.TYPE.toString())
+	private CFWField<String> type = CFWField.newString(FormFieldType.SELECT, ConfigFields.TYPE)
 			.setColumnDefinition("VARCHAR(32)")
 			.setDescription("The form field type of the configuration.")
 			.setOptions(FormFieldType.values())
 			.addValidator(new LengthValidator(1, 32));
 	
-	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, ConfigFields.VALUE.toString())
+	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, ConfigFields.VALUE)
 			.setColumnDefinition("VARCHAR(1024)")
 			.setDescription("The current value of the field. Can be null.")
 			.addValidator(new LengthValidator(-1, 1024));
 	
-	private CFWField<ArrayList<String>> options = CFWField.newArray(FormFieldType.NONE, ConfigFields.OPTIONS.toString())
+	private CFWField<ArrayList<String>> options = CFWField.newArray(FormFieldType.NONE, ConfigFields.OPTIONS)
 			.setDescription("The options available for the configuration(optional field).");
 	
+	private CFWField<Boolean> isEncrypted = CFWField.newBoolean(FormFieldType.BOOLEAN, ConfigFields.IS_ENCRYPTED)
+			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
+			.setDescription("Toggle if the value should be encrypted.")
+			.setOptions(FormFieldType.values())
+			.addValidator(new NotNullOrEmptyValidator())
+			.setValue(false)
+			;
 	
 	public Configuration() {
 		initialize();
@@ -85,7 +95,7 @@ public class Configuration extends CFWObject {
 	
 	private void initialize() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, name, description, type, value, options, category);
+		this.addFields(id, name, description, type, value, options, category, isEncrypted);
 	}
 	
 	
@@ -183,6 +193,9 @@ public class Configuration extends CFWObject {
 	}
 
 	public String value() {
+		
+		// make sure values are decrypted if required
+		if( isEncrypted() ) { value.enableEncryption(getEncryptionSalt()); }
 		return value.getValue();
 	}
 
@@ -208,6 +221,21 @@ public class Configuration extends CFWObject {
 		}
 		this.options.setValue(stringArray);
 		return this;
+	}
+	
+	public Boolean isEncrypted() {
+		return isEncrypted.getValue();
+	}
+	
+	public Configuration isEncrypted(boolean doEncrypt) {
+		if( doEncrypt ) { value.enableEncryption(getEncryptionSalt()); }
+		this.isEncrypted.setValue(doEncrypt);
+		return this;
+	}
+	
+	public static String getEncryptionSalt() {
+		// NEVER CHANGE THIS OR EXISTING APPS WILL BREAK!!!
+		return  CFW.Security.salter().defaultCSalt();
 	}
 	
 	
