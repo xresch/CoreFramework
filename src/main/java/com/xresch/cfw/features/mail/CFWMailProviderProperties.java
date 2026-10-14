@@ -1,14 +1,10 @@
 package com.xresch.cfw.features.mail;
 
-import java.util.Properties;
-
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 
 import com.xresch.cfw._main.CFW;
 
-public class CFWMailProviderProperties implements CFWMailProvider {
+public class CFWMailProviderProperties extends CFWMailProvider {
 	
 	public static final String UNIQUE_ID = "cfw.properties";
 	
@@ -70,49 +66,7 @@ public class CFWMailProviderProperties implements CFWMailProvider {
 		final String loginEmail = CFW.Properties.MAIL_SMTP_LOGIN_MAIL;
 		final String password = CFW.Properties.MAIL_SMTP_LOGIN_PASSWORD; 
 		
-		//------------------------------
-		//General Properties
-		Properties props = new Properties();
-		props.put("mail.smtp.host", host); 
-		
-		//------------------------------
-		// TLS Authentication
-		if(authMethod.equals("TLS")) {
-			props.put("mail.smtp.port", port); //TLS Port
-			props.put("mail.smtp.auth", "true"); //enable authentication
-			props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
-			
-			Authenticator auth = new Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(loginEmail, password);
-				}
-			};
-			
-			return Session.getInstance(props, auth);
-		}
-		
-		//------------------------------
-		// SSL Authentication
-		if(authMethod.equals("SSL")){
-			
-			props.put("mail.smtp.socketFactory.port", port);
-			props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); 
-			props.put("mail.smtp.ssl.checkserveridentity", "true"); 
-			props.put("mail.smtp.auth", "true"); 
-			props.put("mail.smtp.port", port); 
-			
-			Authenticator auth = new Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(loginEmail, password);
-				}
-			};
-			
-			return Session.getInstance(props, auth);
-		}
-		
-		//------------------------------
-		// No Authentication
-		return Session.getInstance(props, null);
+		return createSession(host, port, authMethod, loginEmail, password);
 			
 		
 	}
