@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.mail.CFWMailBuilder;
+import com.xresch.cfw.features.mail.CFWMailBuilder;
 import com.xresch.cfw.tests._master.WebTestMaster;
 
 

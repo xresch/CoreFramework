@@ -72,6 +72,8 @@ import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.keyvaluepairs.CFWDBKeyValuePairs;
 import com.xresch.cfw.features.keyvaluepairs.FeatureKeyValuePairs;
 import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
+import com.xresch.cfw.features.mail.CFWRegistryMail;
+import com.xresch.cfw.features.mail.FeatureMail;
 import com.xresch.cfw.features.manual.CFWRegistryManual;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.notifications.CFWDBNotifications;
@@ -244,6 +246,7 @@ public class CFW {
 		public static class Features extends CFWRegistryFeatures {} 
 		public static class Jobs extends CFWRegistryJobs {} 
 		public static class JobsReporting extends CFWJobsReporting {} 
+		public static class Mail extends CFWRegistryMail {} 
 		public static class Manual extends CFWRegistryManual {} 
 		public static class Objects extends CFWRegistryObjects {} 
 		public static class Parameters extends CFWRegistryParameters {} 
@@ -578,6 +581,7 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureCore.class);	
 		CFW.Registry.Features.addFeature(FeatureDateTime.class);	
 		CFW.Registry.Features.addFeature(FeatureEAV.class);
+		CFW.Registry.Features.addFeature(FeatureMail.class);
 		
 		CFW.Registry.Features.addFeature(FeatureSpaces.class);	// First we need Spaces to create other Objects
 

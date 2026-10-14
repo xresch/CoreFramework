@@ -18,8 +18,8 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.mail.CFWMailBuilder;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.utils.CFWMonitor;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 

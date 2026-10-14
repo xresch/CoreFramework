@@ -12,8 +12,8 @@ import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.jobs.channels.CFWJobsChannel;
+import com.xresch.cfw.features.mail.CFWMailBuilder;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.mail.CFWMailBuilder;
 
 /**************************************************************************************************************
  * 

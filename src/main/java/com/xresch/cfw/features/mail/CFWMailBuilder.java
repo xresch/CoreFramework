@@ -1,4 +1,4 @@
-package com.xresch.cfw.mail;
+package com.xresch.cfw.features.mail;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,9 +78,41 @@ public class CFWMailBuilder {
 	/***************************************************************
 	 * 
 	 ***************************************************************/
+	private static CFWMailProvider getProvider() {
+		return CFW.Registry.Mail.getSelectedProvider();
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public static boolean isMailingEnabled() {
+		return getProvider().isMailingEnabled();
+	}
+	
+	/***************************************************************
+	 * Set the from mail to the configured reply email.
+	 ***************************************************************/
+	public CFWMailBuilder fromReplyMail() {
+		try {
+			String replyMail = getProvider().getReplyMail();
+			message.setFrom(new InternetAddress(replyMail, replyMail));
+			message.setReplyTo(InternetAddress.parse(replyMail, false));
+			
+		} catch (MessagingException | UnsupportedEncodingException e) {
+			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
+		}
+		return this;
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
 	public CFWMailBuilder fromNoReply() {
 		try {
-			message.setFrom(new InternetAddress(CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY, CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY));
+		     String noReply = getProvider().getNoReplyMail();
+		     message.setFrom(new InternetAddress(noReply, noReply));
+		     message.setReplyTo(InternetAddress.parse(noReply, false));
+
 		} catch (MessagingException | UnsupportedEncodingException e) {
 			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
 		}
@@ -296,7 +328,7 @@ public class CFWMailBuilder {
 	 ***************************************************************/
 	public CFWMailBuilder send() {
 		
-		if(!CFW.Properties.MAIL_ENABLED) { return this ; }
+		if( ! isMailingEnabled() ) { return this ; }
 		
 		try {
 			message.setSentDate(new Date());
@@ -313,56 +345,10 @@ public class CFWMailBuilder {
 	 ***************************************************************/
 	public static Session initializeSession() {
 
-		if(CFW.Properties.MAIL_ENABLED) {
-			final String authMethod = CFW.Properties.MAIL_SMTP_AUTHENTICATION.trim().toUpperCase();
-			final String loginEmail = CFW.Properties.MAIL_SMTP_LOGIN_MAIL;
-			final String password = CFW.Properties.MAIL_SMTP_LOGIN_PASSWORD; 
-			
-			//------------------------------
-			//General Properties
-			Properties props = new Properties();
-			props.put("mail.smtp.host", CFW.Properties.MAIL_SMTP_HOST); 
-			
-			//------------------------------
-			// TLS Authentication
-			if(authMethod.equals("TLS")) {
-				props.put("mail.smtp.port", CFW.Properties.MAIL_SMTP_PORT); //TLS Port
-				props.put("mail.smtp.auth", "true"); //enable authentication
-				props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
-				
-				Authenticator auth = new Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(loginEmail, password);
-					}
-				};
-				
-				return Session.getInstance(props, auth);
-			}
-			
-			//------------------------------
-			// SSL Authentication
-			if(authMethod.equals("SSL")){
-				
-				props.put("mail.smtp.socketFactory.port", CFW.Properties.MAIL_SMTP_PORT);
-				props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); 
-				props.put("mail.smtp.ssl.checkserveridentity", "true"); 
-				props.put("mail.smtp.auth", "true"); 
-				props.put("mail.smtp.port", CFW.Properties.MAIL_SMTP_PORT); 
-				
-				Authenticator auth = new Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(loginEmail, password);
-					}
-				};
-				
-				return Session.getInstance(props, auth);
-			}
-			
-			//------------------------------
-			// No Authentication
-			return Session.getInstance(props, null);
-			}
-		return null;
+		if( ! isMailingEnabled() ) { return null; }
+		
+		return CFW.Registry.Mail.getSelectedProvider().createSession();
+		
 	}
 	
 	
@@ -386,7 +372,7 @@ public class CFWMailBuilder {
 	 ***************************************************************/
 	public static void sendFromNoReply(Session session, String toEmail, String subject, String body){
 		
-		if(!CFW.Properties.MAIL_ENABLED) { return ; }
+		if( ! isMailingEnabled() ) { return ; }
 		
 		try
 	    {
@@ -398,8 +384,10 @@ public class CFWMailBuilder {
 			msg.addHeader("Content-type", "text/html; charset=UTF-8");
 			msg.addHeader("Content-Transfer-Encoding", "8bit");
 			
-			msg.setFrom(new InternetAddress(CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY, CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY));
-			msg.setReplyTo(InternetAddress.parse(CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY, false));
+			String noReply = getProvider().getNoReplyMail();
+			
+			msg.setFrom(new InternetAddress(noReply, noReply) );
+			msg.setReplyTo(InternetAddress.parse(noReply, false));
 			
 			msg.setSubject(subject, "UTF-8");
 			msg.setContent(body, "text/html");
@@ -430,7 +418,7 @@ public class CFWMailBuilder {
 	 ***************************************************************/
 	public static void sendFromNoReplyWithAttachement(String toEmail, String subject, String body, File attachment){
 		
-		if(!CFW.Properties.MAIL_ENABLED) { return ; }
+		if( ! isMailingEnabled() ) { return ; }
 		
 		Session session = initializeSession();
 		sendFromNoReplyWithAttachement(session, toEmail, subject, body, attachment);
@@ -452,7 +440,7 @@ public class CFWMailBuilder {
 			, String attachmentFilename
 		){
 		
-		if(!CFW.Properties.MAIL_ENABLED) { return ; }
+		if( ! isMailingEnabled() ) { return ; }
 		
 		DataSource source;
 		try {
@@ -476,7 +464,7 @@ public class CFWMailBuilder {
 	 ***************************************************************/
 	public static void sendFromNoReplyWithAttachement(Session session, String toEmail, String subject, String body, String attachmentText, String attachmentFilename){
 		
-		if(!CFW.Properties.MAIL_ENABLED) { return ; }
+		if( ! isMailingEnabled() ) { return ; }
 		
 		DataSource source;
 		try {
@@ -500,7 +488,7 @@ public class CFWMailBuilder {
 	 ***************************************************************/
 	public static void sendFromNoReplyWithAttachement(Session session, String toEmail, String subject, String body, File attachment){
 		
-		if(!CFW.Properties.MAIL_ENABLED) { return ; }
+		if( ! isMailingEnabled() ) { return ; }
 		
 		DataSource source = new FileDataSource(attachment);
 
@@ -516,17 +504,18 @@ public class CFWMailBuilder {
 	 ***************************************************************/
 	public static void sendFromNoReplyWithAttachement(Session session, String toEmail, String subject, String body, DataSource attachment, String attachmentName){
 		
-		if(!CFW.Properties.MAIL_ENABLED) { return ; }
+		if( ! isMailingEnabled() ) { return ; }
 		
 		try{
 	         MimeMessage msg = new MimeMessage(session);
 	         msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
 		     msg.addHeader("format", "flowed");
 		     msg.addHeader("Content-Transfer-Encoding", "8bit");
-		      
-		     msg.setFrom(new InternetAddress(CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY, CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY));
+		     
+		     String noReply = getProvider().getNoReplyMail();
+		     msg.setFrom(new InternetAddress(noReply, noReply));
 
-		     msg.setReplyTo(InternetAddress.parse(CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY, false));
+		     msg.setReplyTo(InternetAddress.parse(noReply, false));
 
 		     msg.setSubject(subject, "UTF-8");
 

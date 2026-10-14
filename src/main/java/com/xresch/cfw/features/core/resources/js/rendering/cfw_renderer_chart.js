@@ -1137,7 +1137,7 @@ function cfw_renderer_chart_customTooltip(context) {
 	//---------------------------------
     // Create element on first render
     if ($tooltip.length === 0) {
-        $tooltip = $('<div id="chartjs-tooltip" class="bg-cfw-black"><table></table></div>');
+        $tooltip = $('<div id="chartjs-tooltip" class="bg-cfw-black text-cfw-white"><table></table></div>');
         $('body').append($tooltip);
     }
     

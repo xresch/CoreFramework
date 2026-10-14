@@ -18,9 +18,9 @@ import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw.features.mail.CFWMailBuilder;
 import com.xresch.cfw.features.spaces.FeatureSpaces.FeatureSpacesDefaults;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemFooter;
 import com.xresch.cfw.response.bootstrap.CFWHTMLItemMenu;
 
