@@ -7,6 +7,8 @@ import java.util.ServiceLoader;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
+import org.eclipse.jetty.util.MultiException;
+
 import com.xresch.cfw._main.CFWMessages.MessageType;
 import com.xresch.cfw.caching.CFWCacheManagement;
 import com.xresch.cfw.cli.ArgumentsException;
@@ -556,10 +558,17 @@ public class CFW {
 			appToStart.startApp(executor);
 			try {
 				executor.startServer();
-			} catch (Exception e) {
-				new CFWLog(logger)
-					.severe("Exception occured during application startup.", e);
-			}
+			} catch (MultiException e) {
+				
+				for(Throwable t : e.getThrowables()) {
+					new CFWLog(logger)
+						.severe("MultiException occured during application startup: "+t.getMessage(), t);
+				}
+				
+	    	} catch (Exception e) {
+	    		new CFWLog(logger)
+	    		.severe("Exception occured during application startup: "+e.getMessage(), e);
+	    	}
 				    	
     	}
 	}
