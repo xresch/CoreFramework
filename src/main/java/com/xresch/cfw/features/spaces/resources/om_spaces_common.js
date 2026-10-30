@@ -34,7 +34,10 @@ function cfw_spaces_createSpaceSelector(callBeforeFunction, selectedSpaceID, isD
 			function(data) {
 				
 				if(CFW.utils.isNullOrEmpty(selectedSpaceID) ) {
-					selectedSpaceID = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE, 1, "session");
+					selectedSpaceID = CFW.cache.retrieveValue(CFW_LAST_SELECTED_SPACE, -1, "session");
+					if(selectedSpaceID == -1){
+						selectedSpaceID = JSDATA.selectedSpace;
+					}
 				}
 	
 				if(data.success 
