@@ -19,30 +19,39 @@ public class FeatureMail extends CFWAppFeature {
 
 	public static final String CONFIG_CATEGORY = "Mailing";
 	public static final String CONFIG_MAILING_PROVIDER = "Mail Provider";
-	
+
 	/** Choose if you want the application to send mails. */
-	public static String CONFIG_MAIL_ENABLED = "Mail: Enabled";
+	public static final String CONFIG_MAIL_ENABLED = "Mail: Enabled";
 	
 	/** The smtp host used for sending mails. */
-	public static String CONFIG_MAIL_HOST = "Mail: SMTP Host";
+	public static final String CONFIG_MAIL_HOST = "Mail: SMTP Host";
 	
 	/** The port of the smtp server. */
-	public static String CONFIG_MAIL_PORT = "Mail: SMTP Port";
+	public static final String CONFIG_MAIL_PORT = "Mail: SMTP Port";
 	
 	/** The method used to authenticate against the smtp server, either of:  NONE | TLS | SSL. */
-	public static String CONFIG_MAIL_AUTHENTICATION = "Mail: SMTP Authentication";
+	public static final String CONFIG_MAIL_AUTHENTICATION = "Mail: SMTP Authentication";
 	
 	/** The email used for login to the smtp server . */
-	public static String CONFIG_MAIL_LOGIN_MAIL = "Mail: SMTP Login eMail";
+	public static final String CONFIG_MAIL_LOGIN_MAIL = "Mail: SMTP Login eMail";
 	
 	/** The password used for login to the smtp server.  */
-	public static String CONFIG_MAIL_LOGIN_PASSWORD = "Mail: SMTP Login Password";
+	public static final String CONFIG_MAIL_LOGIN_PASSWORD = "Mail: SMTP Login Password";
 	
 	/** The eMail used as the from-address for repliable mails. */
-	public static String CONFIG_MAIL_FROMMAIL_REPLY = "Mail: From Reply";
+	public static final String CONFIG_MAIL_FROMMAIL_REPLY = "Mail: From Reply";
 	
-	/** The eMail used as the from-address for no-reply mails.*/
-	public static String CONFIG_MAIL_FROMMAIL_NOREPLY = "Mail: From No-Reply";
+	/** The eMail used as the from-address for no-reply mails. */
+	public static final String CONFIG_MAIL_FROMMAIL_NOREPLY = "Mail: From No-Reply";
+	
+	/** The tenant id used for OAUTH authentication. */
+	public static final String CONFIG_MAIL_OAUTH_TENANTID = "Mail: OAUTH Tenant ID";
+	
+	/** The client id used for OAUTH authentication. */
+	public static final String CONFIG_MAIL_OAUTH_CLIENTID = "Mail: OAUTH Client ID";
+	
+	/** The client secret used for OAUTH authentication. */
+	public static final String CONFIG_MAIL_OAUTH_CLIENTSECRET = "Mail: OAUTH Client Secret";
 	
 	@Override
 	public void register() {
@@ -52,6 +61,7 @@ public class FeatureMail extends CFWAppFeature {
     	// Register Mail Providers
 		CFW.Registry.Mail.addProvider(new CFWMailProviderProperties());
 		CFW.Registry.Mail.addProvider(new CFWMailProviderDatabase());
+		CFW.Registry.Mail.addProvider(new CFWMailProviderMicrosoft());
 		
 	}
 
@@ -156,6 +166,37 @@ public class FeatureMail extends CFWAppFeature {
 			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_FROMMAIL_NOREPLY)
 				.description("The email that is used for sending mails that a user cannot reply to.")
 				.type(FormFieldType.TEXT)
+				.value("")
+		);
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_OAUTH_TENANTID)
+				.description("The tenant id used for OAUTH authentication.")
+				.type(FormFieldType.TEXT)
+				.value("")
+		);
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_OAUTH_CLIENTID)
+				.description("The client id used for OAUTH authentication.")
+				.type(FormFieldType.TEXT)
+				.value("")
+		);
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration(CONFIG_CATEGORY, CONFIG_MAIL_OAUTH_CLIENTSECRET)
+				.description("The client secret used for OAUTH authentication.")
+				.type(FormFieldType.PASSWORD)
+				.isEncrypted(true)
 				.value("")
 		);
 

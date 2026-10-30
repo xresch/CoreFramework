@@ -131,12 +131,22 @@
 		    <version>5.3.1</version>
 		</dependency>
 		
-		<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+		<!-- Source: https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
+		<dependency>
+		    <groupId>com.sun.mail</groupId>
+		    <artifactId>javax.mail</artifactId>
+		    <version>1.6.2</version>
+		    <scope>compile</scope>
+		</dependency>
+
+		<!-- Source: https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
 		<dependency>
 		    <groupId>javax.mail</groupId>
-		    <artifactId>mail</artifactId>
-		    <version>1.4.7</version>
+		    <artifactId>javax.mail-api</artifactId>
+		    <version>1.6.2</version>
+		    <scope>compile</scope>
 		</dependency>
+		
 
 		<!-- https://mvnrepository.com/artifact/io.prometheus/simpleclient -->
 		<dependency>
@@ -254,6 +264,14 @@
 			<groupId>com.onelogin</groupId>
 			<artifactId>java-saml</artifactId>
 			<version>2.9.0</version>
+		</dependency>
+		
+		<!-- Source: https://mvnrepository.com/artifact/com.microsoft.azure/msal4j -->
+		<dependency>
+		    <groupId>com.microsoft.azure</groupId>
+		    <artifactId>msal4j</artifactId>
+		    <version>1.26.0</version>
+		    <scope>compile</scope>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
