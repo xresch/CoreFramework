@@ -590,10 +590,10 @@ class CFWCompareObjectArrays {
 				
 				const span = $('<div class="'+ cssClasses+'">'+fixed+'</div>');
 					
-				var style = CFW.colors.getSplitThresholdStyle(value, tGreen, tRed, false);
+/*				var style = CFW.colors.getSplitThresholdStyle(value, tGreen, tRed, false);
 				style = (style == CFW.style.notevaluated) ? "cfw-none" : style;
 
-				CFW.colors.colorizeElement(span, style, "bg", "2px");
+				CFW.colors.colorizeElement(span, style, "bg", "2px");*/
 				return span;
 			}
 			
