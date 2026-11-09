@@ -2231,13 +2231,12 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 	
 	CFW.ui.toggleLoader(true, wrapperID);
 	
-	cfw_utils_sleep(500).then(() => {
+	cfw_utils_sleep(500).then(async () => {
 		
 		//-------------------------------
 		// Upload Files
 		let uploadedArray = [];
-		$.ajaxSetup({async: false});
-		
+
 			for(let i = 0; i < files.length; i++){
 				
 				console.log("============");
@@ -2262,14 +2261,20 @@ function cfw_filepicker_uploadFiles(wrapper, originalField, files) {
 		  		formData.append('lastModified', file.lastModified)
 		  		formData.append('file', file)
 		
-				CFW.http.postFormData(CFW_URL_FILEUPLOAD, formData, function(response, status, xhr){
-					if(response.payload != null){
-						uploadedArray = _.concat(uploadedArray, response.payload);
-					}
+				//$.ajaxSetup({async: false});
+
+				await new Promise((resolve, reject) => {
+					CFW.http.postFormData(CFW_URL_FILEUPLOAD, formData, function(response, status, xhr){
+						if(response.payload != null){
+							uploadedArray = _.concat(uploadedArray, response.payload);
+						}
+						
+						resolve();
+					});
 				});
-		
+				
+				//$.ajaxSetup({async: true});
 			}
-		$.ajaxSetup({async: true});
 		
 		//-------------------------------
 		// Update Selected Files
