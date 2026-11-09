@@ -66,6 +66,7 @@ import com.xresch.cfw.features.filemanager.CFWDBStoredFileEditorGroupsMap;
 import com.xresch.cfw.features.filemanager.CFWDBStoredFileEditorsMap;
 import com.xresch.cfw.features.filemanager.CFWDBStoredFileSharedGroupsMap;
 import com.xresch.cfw.features.filemanager.CFWDBStoredFileSharedUserMap;
+import com.xresch.cfw.features.filemanager.CFWRegistryStoredFile;
 import com.xresch.cfw.features.filemanager.FeatureFilemanager;
 import com.xresch.cfw.features.jobs.CFWDBJob;
 import com.xresch.cfw.features.jobs.CFWJobsReporting;
@@ -254,6 +255,7 @@ public class CFW {
 		public static class Parameters extends CFWRegistryParameters {} 
 		public static class Query extends CFWQueryRegistry {} 
 		public static class StatusMonitor extends CFWStatusMonitorRegistry {} 
+		public static class StoredFile extends CFWRegistryStoredFile {} 
 		public static class Widgets extends CFWRegistryWidgets {} 
 	}
 	public static class Schedule extends CFWTaskScheduler {}

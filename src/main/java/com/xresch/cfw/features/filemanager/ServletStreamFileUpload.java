@@ -114,7 +114,6 @@ public class ServletStreamFileUpload extends HttpServlet
 					Integer id = reference.getID(0);
 					if(id != null) {
 						
-
 						CFWStoredFile existingFile = CFW.DB.StoredFile.selectByID(id);
 
 						//-----------------------------------------
@@ -138,6 +137,8 @@ public class ServletStreamFileUpload extends HttpServlet
 						if(success) {
 							existingFile.lastUpdated( new Timestamp(System.currentTimeMillis()) );
 							CFW.DB.StoredFile.update(existingFile);
+							
+							CFW.Registry.StoredFile.afterFileContentUpdate( existingFile.id() );
 						}
 						
 						//--------------------------
@@ -189,15 +190,21 @@ public class ServletStreamFileUpload extends HttpServlet
 		newFile.foreignKeyOwner(CFW.Context.Request.getUserID());
 		setStoredFileData(newFile, name, extension, size, type, lastModified);
 		
-		boolean success = CFW.DB.StoredFile.createAndStoreData(newFile, dataInputStream);
+		Integer newID = CFW.DB.StoredFile.createAndStoreData(newFile, dataInputStream);
+		boolean success = (newID != null);
 		
 		CFWStoredFileReferences reference = new CFWStoredFileReferences(newFile);
 		
-		if(success) {	jsonResponse.addAlert(MessageType.SUCCESS, "File upload finished: "+name); }
-		else {			jsonResponse.addAlert(MessageType.ERROR, "File upload failed: "+name); }
+		if(success) {	
+			jsonResponse.addAlert(MessageType.SUCCESS, "File upload finished: "+name); 
+			CFW.Registry.StoredFile.afterCreate( newID );
+		}else {			
+			jsonResponse.addAlert(MessageType.ERROR, "File upload failed: "+name); 
+		}
 		
 		jsonResponse.setPayload( reference.getAsJsonArray() );
 		jsonResponse.setSuccess(success);
+		
 	}
 	
 	/******************************************************************

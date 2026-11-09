@@ -75,12 +75,17 @@ public class ServletStreamFileStoreJsonData extends HttpServlet
 				newFile.foreignKeyOwner(CFW.Context.Request.getUserID());
 				ServletStreamFileUpload.setStoredFileData(newFile, name, extension, size, type, lastModified);
 				
-				boolean success = CFW.DB.StoredFile.createAndStoreData(newFile, dataInputStream);
+				Integer newID = CFW.DB.StoredFile.createAndStoreData(newFile, dataInputStream);
+				boolean success = (newID != null);
 				
 				CFWStoredFileReferences reference = new CFWStoredFileReferences(newFile);
 				
-				if(success) {	jsonResponse.addAlert(MessageType.SUCCESS, "Stored successfully: "+name); }
-				else {			jsonResponse.addAlert(MessageType.ERROR, "Storing failed: "+name); }
+				if(success) {	
+					jsonResponse.addAlert(MessageType.SUCCESS, "Stored successfully: "+name); 
+					CFW.Registry.StoredFile.afterCreate( newID );
+				} else {			
+					jsonResponse.addAlert(MessageType.ERROR, "Storing failed: "+name); 
+				}
 				
 				jsonResponse.setPayload( reference.getAsJsonArray() );
 				jsonResponse.setSuccess(success);

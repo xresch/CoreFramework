@@ -83,15 +83,7 @@ public class CFWDBStoredFile {
 	};
 	
 	private static PrecheckHandler prechecksDelete =  new PrecheckHandler() {
-		public boolean doCheck(CFWObject object) {
-			CFWStoredFile storedfile = (CFWStoredFile)object;
-			
-			if(storedfile == null) {
-				new CFWLog(logger)
-				.severe("The credential ID was null, so nothing to delete.", new Throwable());
-				return false;
-			}
-			
+		public boolean doCheck(CFWObject object) {			
 			return true;
 		}
 	};
@@ -182,16 +174,18 @@ public class CFWDBStoredFile {
 	 * 
 	 * @param item the file the data should be stored to.
 	 * @param fileData the inputStream providing the data.
+	 * 
+	 * @return id of the new file or null if not created
 	 **********************************************************************************/
-	public static boolean createAndStoreData(CFWStoredFile item, InputStream fileData) { 
+	public static Integer createAndStoreData(CFWStoredFile item, InputStream fileData) { 
 		
 		boolean success = true;
-		
+		Integer newID = null;
 		CFW.DB.transactionStart();
 			
-			Integer primaryKey = createGetPrimaryKey(item);
+		newID = createGetPrimaryKey(item);
 			
-			if(primaryKey != null) {
+			if(newID != null) {
 				success &= storeData(item, fileData);
 			}else {
 				success = false;
@@ -199,7 +193,7 @@ public class CFWDBStoredFile {
 			
 		CFW.DB.transactionEnd(success);
 		
-		return success;
+		return newID;
 	
 	}
 	
@@ -306,6 +300,17 @@ public class CFWDBStoredFile {
 	// DELETE
 	//####################################################################################################
 	public static boolean deleteByID(String id) {
+		if(id == null) { return true; }
+		
+		return deleteByID( Integer.parseInt(id) );
+	}
+	
+	public static boolean deleteByID(Integer id) {
+		if(id == null) { return true; }
+		
+		if( ! CFW.Registry.StoredFile.canDelete( id )) { 
+			return false;
+		}
 		
 		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, CFWStoredFileFields.PK_ID.toString(), id); 
 
