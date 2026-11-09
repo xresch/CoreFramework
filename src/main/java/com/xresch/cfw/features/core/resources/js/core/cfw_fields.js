@@ -2202,12 +2202,16 @@ function cfw_filepicker_setSelectedFiles(wrapper, originalField, filesArray) {
 	console.log(originalField.val());*/
 	
 	let selectedDiv = wrapper.find('.cfw-filepicker-selected');
+	let hostURL = CFW.http.getHostURL() + "/app/stream/filedownload";
 	selectedDiv.html("");
 		
 	for(i = 0; i < filesArray.length; i++){
 		let currentFile = filesArray[i];
 		let size = CFW.format.numbersInThousands(currentFile.size, 1, true, true);
-		selectedDiv.append('<p><b>'+currentFile.name+'</b> ('+size+')</p>');
+		selectedDiv.append(`<p><b>${currentFile.name}</b> (${size}) 
+			<a alt="Download" title="Download" target="_blank" href="${hostURL}?id=${currentFile.id}&amp;mode=normal"><i class="fas fa-download"></i></a>
+		</p>`);
+		
 	}
 }
 
