@@ -93,6 +93,8 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public CFWObject getParameters() {
+		
+		
 		return new CFWObject()
 			.addField(
 				CFWField.newInteger(FormFieldType.NUMBER, "records")
@@ -101,7 +103,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 			)
 			.addField(
 					CFWField.newString(FormFieldType.TEXT, "type")
-						.setDescription("The type of data to generate, one of: 'default' | 'numbers' | 'arrays' | 'series' | 'stats' | 'tickets' | 'countries' | 'batchjobs' | 'rpg' | 'various' ")
+						.setDescription("The type of data to generate, one of: "+ RandomDataType.getOptionsHTML() )
 						.setValue("default")
 				)
 			.addField(

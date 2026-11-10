@@ -74,7 +74,7 @@ public abstract class CFWQuerySource{
 			}else {
 				for(CFWField entry : parameters.getFields().values()) {
 					builder.append("<li><b>"+entry.getName()+":&nbsp;</b>")
-						   .append(CFW.Security.escapeHTMLEntities(entry.getDescription()))
+						   .append(entry.getDescription())
 						   .append("</li>")
 						   ;
 				}
